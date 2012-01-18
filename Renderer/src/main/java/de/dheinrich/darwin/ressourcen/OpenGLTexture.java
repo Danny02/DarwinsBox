@@ -31,9 +31,9 @@ public class OpenGLTexture implements Resource {
     private final Texture tex;
     private final ResourceHandle handle;
 
-    public OpenGLTexture(Texture tex, ResourceHandle handle) {
-        this.tex = tex;
-        this.handle = handle;
+    public OpenGLTexture(Texture t, ResourceHandle h) {
+        tex = t;
+        handle = h;
     }
 
     public Texture getTex() {
