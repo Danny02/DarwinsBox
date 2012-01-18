@@ -1,0 +1,34 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.dheinrich.darwin</groupId>
+        <artifactId>DarwinsBox</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>BuildTools</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BuildTools</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Renderer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.dheinrich.libarys</groupId>
+            <artifactId>lzma-jio</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>lzma-jio</artifactId>
+                    <groupId>de.dheinrich.libarys</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>
