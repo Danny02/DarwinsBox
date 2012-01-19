@@ -4,13 +4,12 @@
  */
 package de.dheinrich.darwin.ressourcen.resmanagment;
 
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
-import de.dheinrich.darwin.ressourcen.io.ShaderFile;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.ShaderDescription;
-import de.dheinrich.darwin.ressourcen.io.ShaderUtil;
-import java.util.List;
-import org.apache.log4j.Logger;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
+import java.util.*;
+import org.apache.log4j.*;
 
 /**
  *

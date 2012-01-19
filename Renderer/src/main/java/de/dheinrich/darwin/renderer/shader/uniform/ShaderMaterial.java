@@ -4,18 +4,12 @@
  */
 package de.dheinrich.darwin.renderer.shader.uniform;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.media.opengl.GL;
-
-import com.jogamp.opengl.util.texture.Texture;
-
-import de.dheinrich.darwin.renderer.shader.Sampler;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.shader.ShaderUniform;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.TextureLoadJob;
-import de.dheinrich.darwin.ressourcen.wrapper.TextureContainer;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
+import de.dheinrich.darwin.ressourcen.wrapper.*;
+import java.util.*;
+import javax.media.opengl.*;
 
 import static de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader.*;
 

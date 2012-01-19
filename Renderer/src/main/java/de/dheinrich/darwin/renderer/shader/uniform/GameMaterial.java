@@ -4,10 +4,10 @@
  */
 package de.dheinrich.darwin.renderer.shader.uniform;
 
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ObjMaterial;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.ShaderDescription;
-import java.io.Serializable;
-import java.util.Arrays;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
+import java.io.*;
+import java.util.*;
 
 /**
  *

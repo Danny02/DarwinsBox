@@ -5,8 +5,8 @@
 
 package de.dheinrich.darwin.renderer.geometrie.attributs;
 
-import de.dheinrich.darwin.renderer.geometrie.data.DataAttribut;
-import de.dheinrich.darwin.renderer.shader.ShaderAttribute;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.shader.*;
 
 /**
  *

@@ -4,8 +4,8 @@
  */
 package de.dheinrich.darwin.ressourcen.io;
 
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ModelObjekt;
-import de.dheinrich.darwin.ressourcen.resmanagment.ObjConfig;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.*;
 
 /**
  * Abstrakte Klasse die von Parsern von unterschiedlichen Formaten von 3D Modellen

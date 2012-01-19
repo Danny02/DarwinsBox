@@ -5,7 +5,7 @@
 
 package de.dheinrich.darwin.ressourcen.wrapper;
 
-import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.*;
 
 
 /**

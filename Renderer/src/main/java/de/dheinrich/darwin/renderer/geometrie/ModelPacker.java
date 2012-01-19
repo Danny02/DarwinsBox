@@ -4,13 +4,12 @@
  */
 package de.dheinrich.darwin.renderer.geometrie;
 
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderModel;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.Model;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ModelObjekt;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.shader.uniform.GameMaterial;
-import java.util.ArrayList;
-import java.util.Collection;
+import de.dheinrich.darwin.renderer.geometrie.packed.*;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.renderer.shader.uniform.*;
+import java.util.*;
+
 import static de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader.*;
 
 

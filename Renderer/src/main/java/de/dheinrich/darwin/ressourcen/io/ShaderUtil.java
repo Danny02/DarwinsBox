@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import de.dheinrich.darwin.renderer.opengl.ShaderObjekt;
 import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
 import de.dheinrich.darwin.renderer.shader.BuildException;
-import de.dheinrich.darwin.ressourcen.io.ShaderFile;
 import de.dheinrich.darwin.ressourcen.resmanagment.texture.ShaderDescription;
 
 import static de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader.*;

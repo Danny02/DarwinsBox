@@ -4,14 +4,10 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.factorys.grids;
 
-import de.dheinrich.darwin.renderer.geometrie.factorys.Quad;
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.geometrie.data.DataType;
-import de.dheinrich.darwin.renderer.geometrie.data.Vertex;
-import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.geometrie.factorys.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import java.util.*;
 
 /**
  *
@@ -76,7 +72,7 @@ public class Cell {
 
     public void interpolate(VertexBuffer vb) {
         for (Element a : vb.layout.getElements()) {
-            Set<Integer> ids = new HashSet<Integer>();
+            Set<Integer> ids = new HashSet<>();
             for (int i : corners) {
                 ids.add(i);
             }

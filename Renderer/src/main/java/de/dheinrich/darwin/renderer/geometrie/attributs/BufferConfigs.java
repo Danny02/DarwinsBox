@@ -4,8 +4,8 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.attributs;
 
-import de.dheinrich.darwin.renderer.opengl.BufferObject;
-import javax.media.opengl.GL2GL3;
+import de.dheinrich.darwin.renderer.opengl.*;
+import javax.media.opengl.*;
 
 /**
  *

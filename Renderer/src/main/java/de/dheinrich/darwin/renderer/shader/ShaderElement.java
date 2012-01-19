@@ -4,8 +4,7 @@
  */
 package de.dheinrich.darwin.renderer.shader;
 
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
+import de.dheinrich.darwin.renderer.opengl.*;
 
 /**
  *

@@ -4,19 +4,14 @@
  */
 package de.dheinrich.darwin.ressourcen.io.obj;
 
-import de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ObjMaterial;
-import de.dheinrich.darwin.util.math.base.Vec3;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.*;
+import de.dheinrich.darwin.util.math.base.*;
 import de.dheinrich.darwin.util.math.base.Vector;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Hashtable;
-import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
+import org.apache.log4j.*;
 
 /**
  *
@@ -34,7 +29,7 @@ public class ObjFileParser
 
     public ObjFileParser(String file) {
         this.file = file;
-        materials = new Hashtable<String, ObjMaterial>();
+        materials = new Hashtable<>();
         leer = Pattern.compile(" ");
         slash = Pattern.compile("/");
     }
@@ -74,18 +69,26 @@ public class ObjFileParser
     }
 
     public void parseValue(ObjFile obj, String type, String[] values) {
-        if (type.equals("v"))
-            obj.addVertex(new Vec3(parseDoubless(values)));
-        else if (type.equals("vn"))
-            obj.getNormals().add(new Vec3(parseDoubless(values)));
-        else if (type.equals("vt"))
-            obj.getTexcoords().add(new Vector(parseDoubless(values)));
-        else if (type.equals("f"))
-            obj.addFace(parseFace(values));
-        else if (type.equals("usemtl"))
-            useMaterial(obj, values);
-        else if (type.equals("mtllib"))
-            parseMtlLib(values);
+        switch (type) {
+            case "v":
+                obj.addVertex(new Vec3(parseDoubless(values)));
+                break;
+            case "vn":
+                obj.getNormals().add(new Vec3(parseDoubless(values)));
+                break;
+            case "vt":
+                obj.getTexcoords().add(new Vector(parseDoubless(values)));
+                break;
+            case "f":
+                obj.addFace(parseFace(values));
+                break;
+            case "usemtl":
+                useMaterial(obj, values);
+                break;
+            case "mtllib":
+                parseMtlLib(values);
+                break;
+        }
     }
 
     private double[] parseDoubless(String[] values) {

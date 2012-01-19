@@ -4,19 +4,12 @@
  */
 package de.dheinrich.darwin.ressourcen.io;
 
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.GLSLType;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
-import de.dheinrich.darwin.renderer.shader.ShaderAttribute;
-import de.dheinrich.darwin.renderer.shader.ShaderUniform;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
+import org.apache.log4j.*;
 
 /**
  *
@@ -60,9 +53,9 @@ public class ShaderFile implements Serializable
         this.geometrie = geometrie;
         this.mutations = mutations;
 
-        uniforms = new ArrayList<ShaderUniform>();
-        attributs = new ArrayList<ShaderAttribute>();
-        sampler = new ArrayList<String>();
+        uniforms = new ArrayList<>();
+        attributs = new ArrayList<>();
+        sampler = new ArrayList<>();
 
         gatherAttributs(vertex);
 
@@ -118,7 +111,7 @@ public class ShaderFile implements Serializable
         if (source == null)
             return;
         Matcher m = attribut.matcher(source);
-        Set<Integer> set = new HashSet<Integer>();
+        Set<Integer> set = new HashSet<>();
         while (m.find()) {
 
             List<String> n = parseNames(m.group(2));
@@ -149,7 +142,7 @@ public class ShaderFile implements Serializable
     }
 
     private List<String> parseNames(String names) {
-        List<String> ret = new ArrayList<String>(5);
+        List<String> ret = new ArrayList<>(5);
         if (names != null) {
             Matcher m = elenames.matcher(names);
             while (m.find())
@@ -159,7 +152,7 @@ public class ShaderFile implements Serializable
     }
 
     private List<NVP> parseTags(String names) {
-        List<NVP> ret = new ArrayList<NVP>(5);
+        List<NVP> ret = new ArrayList<>(5);
         if (names != null) {
             Matcher m = tagnames.matcher(names);
             while (m.find()) {

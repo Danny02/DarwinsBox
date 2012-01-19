@@ -4,15 +4,10 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.factorys.grids;
 
-import de.dheinrich.darwin.renderer.geometrie.factorys.Quad;
-import de.dheinrich.darwin.renderer.geometrie.factorys.PerCellFiller;
-import de.dheinrich.darwin.renderer.geometrie.factorys.PerVertexFiller;
-import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.geometrie.factorys.*;
 import de.dheinrich.darwin.util.math.base.Vector;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -22,7 +17,7 @@ public class CellFactory
 {
     private final int tessfactor;
     private final QuadFactory qfactory;
-    private List<Cell> cells = new LinkedList<Cell>();
+    private List<Cell> cells = new LinkedList<>();
 
     public CellFactory(int tessfactor) {
         this.tessfactor = tessfactor;
@@ -76,7 +71,7 @@ public class CellFactory
             for (int i = vc - vb.getVcount(); i != 0; --i)
                 vb.addVertex();
 
-        Set<Integer> ready = new HashSet<Integer>();
+        Set<Integer> ready = new HashSet<>();
         for (int j = 0; j < cells.size(); j++) {
             Cell cell = cells.get(j);
             int[] corners = cell.getCorners();

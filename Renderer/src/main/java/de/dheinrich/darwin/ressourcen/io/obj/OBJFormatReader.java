@@ -4,11 +4,9 @@
  */
 package de.dheinrich.darwin.ressourcen.io.obj;
 
-import de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import org.apache.log4j.Logger;
+import de.dheinrich.darwin.ressourcen.resmanagment.*;
+import java.io.*;
+import org.apache.log4j.*;
 
 /**
  *

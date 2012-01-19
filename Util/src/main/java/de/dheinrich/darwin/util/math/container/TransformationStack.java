@@ -4,11 +4,9 @@
  */
 package de.dheinrich.darwin.util.math.container;
 
-import de.dheinrich.darwin.util.math.base.Matrix4;
-import de.dheinrich.darwin.util.math.composits.ModelMatrix;
-import de.dheinrich.darwin.util.math.base.Quaternion;
-import de.dheinrich.darwin.util.math.base.Vec3;
-import java.io.IOException;
+import de.dheinrich.darwin.util.math.base.*;
+import de.dheinrich.darwin.util.math.composits.*;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -25,7 +23,7 @@ public class TransformationStack implements TransformationContainer
 
     public TransformationStack() {
         packed = new ModelMatrix();
-        transform = new LinkedList<ModelMatrix>();
+        transform = new LinkedList<>();
         main = addTLayer2Beginning();
     }
 

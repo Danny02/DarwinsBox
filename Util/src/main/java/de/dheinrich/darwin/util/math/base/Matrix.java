@@ -4,10 +4,9 @@
  */
 package de.dheinrich.darwin.util.math.base;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
+import java.io.*;
+import java.nio.*;
+import java.util.*;
 
 /**
  * Quadratische Matrix beliebiger Dimension
@@ -374,7 +373,7 @@ public class Matrix implements Serializable, Cloneable
                                      FloatBuffer.wrap(data));
             c.getField("dimension").set(this,
                                         (int) Math.sqrt(data.length));
-        } catch (Exception ex) {
+        } catch (IOException | ClassNotFoundException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             ex.printStackTrace();
         }
     }

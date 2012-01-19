@@ -4,13 +4,8 @@
  */
 package de.dheinrich.darwin.util.math.util;
 
-import de.dheinrich.darwin.util.math.base.Matrix;
-import de.dheinrich.darwin.util.math.base.Matrix4;
-import de.dheinrich.darwin.util.math.base.Quaternion;
-import de.dheinrich.darwin.util.math.base.Vec3;
-import de.dheinrich.darwin.util.math.base.Vector;
-import de.dheinrich.darwin.util.math.composits.AABB;
-import de.dheinrich.darwin.util.math.composits.ProjectionMatrix;
+import de.dheinrich.darwin.util.math.base.*;
+import de.dheinrich.darwin.util.math.composits.*;
 
 /**
  *

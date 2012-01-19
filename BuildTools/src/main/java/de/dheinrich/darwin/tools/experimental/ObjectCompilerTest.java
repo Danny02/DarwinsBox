@@ -1,16 +1,8 @@
 package de.dheinrich.darwin.tools.experimental;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ObjMaterial;
-import de.dheinrich.darwin.ressourcen.io.obj.ObjFile;
-import de.dheinrich.darwin.ressourcen.io.obj.ObjFileParser;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.ressourcen.io.obj.*;
+import java.io.*;
 
 /**
  *

@@ -4,13 +4,12 @@
  */
 package de.dheinrich.darwin.ressourcen.resmanagment;
 
-import de.dheinrich.darwin.renderer.geometrie.ModelPacker;
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderModel;
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderObjekt;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ModelObjekt;
-import de.dheinrich.darwin.ressourcen.io.ObjektReader;
-import de.dheinrich.darwin.ressourcen.io.obj.ObjObjektReader;
-import java.util.List;
+import de.dheinrich.darwin.renderer.geometrie.*;
+import de.dheinrich.darwin.renderer.geometrie.packed.*;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import de.dheinrich.darwin.ressourcen.io.obj.*;
+import java.util.*;
 
 /**
  *

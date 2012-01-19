@@ -5,7 +5,7 @@
 
 package de.dheinrich.darwin.renderer.opengl;
 
-import de.dheinrich.darwin.renderer.geometrie.data.DataType;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
 
 
 /**

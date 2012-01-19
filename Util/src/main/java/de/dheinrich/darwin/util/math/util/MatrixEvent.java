@@ -4,7 +4,6 @@
  */
 package de.dheinrich.darwin.util.math.util;
 
-import de.dheinrich.darwin.util.math.util.MatType;
 import javax.swing.event.ChangeEvent;
 
 /**

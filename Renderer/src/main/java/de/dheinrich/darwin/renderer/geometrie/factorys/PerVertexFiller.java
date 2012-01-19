@@ -5,8 +5,8 @@
 
 package de.dheinrich.darwin.renderer.geometrie.factorys;
 
-import de.dheinrich.darwin.renderer.geometrie.data.Vertex;
-import de.dheinrich.darwin.util.math.base.Vector;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.util.math.base.*;
 
 /**
  *

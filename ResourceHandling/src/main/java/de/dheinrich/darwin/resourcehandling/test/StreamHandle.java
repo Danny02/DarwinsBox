@@ -4,10 +4,8 @@
  */
 package de.dheinrich.darwin.resourcehandling.test;
 
-import java.io.File;
-
-import de.dheinrich.darwin.resourcehandling.ResourceHandle;
-import java.io.InputStream;
+import de.dheinrich.darwin.resourcehandling.*;
+import java.io.*;
 
 /**
  *

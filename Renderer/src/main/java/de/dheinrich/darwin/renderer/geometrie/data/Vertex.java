@@ -4,9 +4,8 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.data;
 
-import java.nio.ByteBuffer;
-
-import de.dheinrich.darwin.renderer.opengl.Element;
+import de.dheinrich.darwin.renderer.opengl.*;
+import java.nio.*;
 
 /**
  * Proxy Klasse um ein einzelens Vertex aus einem VertexBuffer editieren zu k�nnen

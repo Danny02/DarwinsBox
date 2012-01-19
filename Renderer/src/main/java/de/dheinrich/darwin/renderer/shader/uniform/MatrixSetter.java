@@ -4,12 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.shader.uniform;
 
-import de.dheinrich.darwin.renderer.shader.ShaderUniform;
-import de.dheinrich.darwin.util.math.util.GenListener;
-import de.dheinrich.darwin.util.math.util.MatrixEvent;
-import de.dheinrich.darwin.util.math.util.MatrixCache;
-import java.util.Collection;
-import java.util.LinkedList;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.util.math.util.*;
+import java.util.*;
 
 /**
  *

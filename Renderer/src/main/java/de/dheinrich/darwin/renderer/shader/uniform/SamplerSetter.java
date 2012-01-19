@@ -4,9 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.shader.uniform;
 
-import com.jogamp.opengl.util.texture.Texture;
-import de.dheinrich.darwin.renderer.shader.Sampler;
-import de.dheinrich.darwin.ressourcen.wrapper.TextureContainer;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.ressourcen.wrapper.*;
 
 /**
  *

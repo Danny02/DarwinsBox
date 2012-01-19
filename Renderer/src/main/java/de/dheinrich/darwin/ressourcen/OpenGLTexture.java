@@ -16,11 +16,9 @@
  */
 package de.dheinrich.darwin.ressourcen;
 
-import com.jogamp.opengl.util.texture.Texture;
-import de.dheinrich.darwin.resourcehandling.Resource;
-import de.dheinrich.darwin.resourcehandling.ResourceHandle;
-import de.dheinrich.darwin.resourcehandling.ResourceRepository;
-import de.dheinrich.darwin.resourcehandling.test.StreamHandle;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.resourcehandling.*;
+import de.dheinrich.darwin.resourcehandling.test.*;
 
 /**
  *

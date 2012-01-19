@@ -4,12 +4,10 @@
  */
 package de.dheinrich.darwin.renderer.util;
 
-import de.dheinrich.darwin.ressourcen.io.TextureUtil;
-import com.jogamp.opengl.util.texture.Texture;
-import de.dheinrich.darwin.renderer.opengl.FrameBufferObject;
-import de.dheinrich.darwin.renderer.opengl.RenderBuffer;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import javax.media.opengl.*;
 
 /**
  *

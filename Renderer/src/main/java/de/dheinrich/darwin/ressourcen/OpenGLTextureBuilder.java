@@ -16,17 +16,12 @@
  */
 package de.dheinrich.darwin.ressourcen;
 
-import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.TextureIO;
-import de.dheinrich.darwin.resourcehandling.Resource;
-import de.dheinrich.darwin.resourcehandling.ResourceBuilder;
-import de.dheinrich.darwin.resourcehandling.ResourceState;
-import de.dheinrich.darwin.resourcehandling.WrongBuildArgsException;
-import de.dheinrich.darwin.resourcehandling.core.BaseResourceState;
-import de.dheinrich.darwin.resourcehandling.test.StreamHandle;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.media.opengl.GLException;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.resourcehandling.*;
+import de.dheinrich.darwin.resourcehandling.core.*;
+import de.dheinrich.darwin.resourcehandling.test.*;
+import java.io.*;
+import javax.media.opengl.*;
 
 /**
  *

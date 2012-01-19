@@ -4,8 +4,8 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.unpacked;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
 
 /**
  * H�lt eine Liste von Modellen

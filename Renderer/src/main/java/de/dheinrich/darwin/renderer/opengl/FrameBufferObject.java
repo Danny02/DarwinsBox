@@ -4,13 +4,8 @@
  */
 package de.dheinrich.darwin.renderer.opengl;
 
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
-import javax.media.opengl.GLDrawable;
-
-import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.*;
+import javax.media.opengl.*;
 
 import static de.dheinrich.darwin.renderer.GraphicContext.*;
 /**

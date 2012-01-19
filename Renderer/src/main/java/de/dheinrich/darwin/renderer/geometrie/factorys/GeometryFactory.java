@@ -5,8 +5,8 @@
 
 package de.dheinrich.darwin.renderer.geometrie.factorys;
 
-import de.dheinrich.darwin.renderer.geometrie.data.RenderMesh;
-import de.dheinrich.darwin.renderer.shader.Shader;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.shader.*;
 
 /**
  *

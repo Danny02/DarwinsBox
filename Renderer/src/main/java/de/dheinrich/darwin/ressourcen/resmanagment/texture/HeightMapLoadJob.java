@@ -4,17 +4,14 @@
  */
 package de.dheinrich.darwin.ressourcen.resmanagment.texture;
 
-import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.TextureIO;
-import de.dheinrich.darwin.ressourcen.io.TextureUtil;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
-import org.apache.log4j.Logger;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import java.io.*;
+import javax.media.opengl.*;
+import org.apache.log4j.*;
+
+import static de.dheinrich.darwin.renderer.GraphicContext.*;
 import static de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader.*;
-import static de.dheinrich.darwin.renderer.GraphicContext.getGL;
 
 /**
  *

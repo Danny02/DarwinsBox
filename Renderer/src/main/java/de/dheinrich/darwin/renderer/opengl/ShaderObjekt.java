@@ -4,15 +4,11 @@
  */
 package de.dheinrich.darwin.renderer.opengl;
 
-import de.dheinrich.darwin.renderer.shader.BuildException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import de.dheinrich.darwin.renderer.shader.*;
+import java.io.*;
+import javax.media.opengl.*;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
-
-import static de.dheinrich.darwin.renderer.GraphicContext.getGL;
+import static de.dheinrich.darwin.renderer.GraphicContext.*;
 import static de.dheinrich.darwin.renderer.shader.BuildException.BuildError.*;
 import static java.lang.Integer.*;
 

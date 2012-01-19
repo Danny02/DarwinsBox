@@ -5,6 +5,7 @@
 package de.dheinrich.darwin.renderer.geometrie.packed;
 
 import javax.media.opengl.*;
+
 import static de.dheinrich.darwin.renderer.GraphicContext.*;
 
 /**

@@ -5,11 +5,9 @@
 
 package de.dheinrich.darwin.util.math.container;
 
-import de.dheinrich.darwin.util.math.base.Matrix4;
-import de.dheinrich.darwin.util.math.composits.ModelMatrix;
-import de.dheinrich.darwin.util.math.base.Quaternion;
-import de.dheinrich.darwin.util.math.base.Vec3;
-import java.io.Serializable;
+import de.dheinrich.darwin.util.math.base.*;
+import de.dheinrich.darwin.util.math.composits.*;
+import java.io.*;
 
 /**
  *

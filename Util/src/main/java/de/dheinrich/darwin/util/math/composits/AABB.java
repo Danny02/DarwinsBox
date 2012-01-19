@@ -4,8 +4,8 @@
  */
 package de.dheinrich.darwin.util.math.composits;
 
-import de.dheinrich.darwin.util.math.base.Matrix4;
-import de.dheinrich.darwin.util.math.base.Vec3;
+import de.dheinrich.darwin.util.math.base.*;
+
 import static java.lang.Math.*;
 
 /**

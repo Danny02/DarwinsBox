@@ -5,16 +5,11 @@
 
 package de.dheinrich.darwin.renderer.geometrie.factorys;
 
-import de.dheinrich.darwin.renderer.geometrie.data.DataLayout;
 import de.dheinrich.darwin.renderer.geometrie.data.DataLayout.Format;
-import de.dheinrich.darwin.renderer.geometrie.data.RenderMesh;
-import de.dheinrich.darwin.renderer.opengl.VertexBO;
-import de.dheinrich.darwin.renderer.geometrie.data.Vertex;
-import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.GLSLType;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import javax.media.opengl.GL2GL3;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import javax.media.opengl.*;
 
 /**
  *

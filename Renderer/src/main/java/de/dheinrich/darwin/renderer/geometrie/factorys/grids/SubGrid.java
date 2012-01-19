@@ -4,10 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.factorys.grids;
 
-import com.jogamp.opengl.util.GLBuffers;
-import java.nio.IntBuffer;
-import java.util.HashSet;
-import java.util.Set;
+import com.jogamp.opengl.util.*;
+import java.nio.*;
+import java.util.*;
 
 /**
  *
@@ -17,7 +16,7 @@ public class SubGrid
 {
     private final MapGrid grid;
     private final IntBuffer indice;
-    private final Set<Integer> cells = new HashSet<Integer>();
+    private final Set<Integer> cells = new HashSet<>();
 
     public SubGrid(MapGrid grid) {
         this.grid = grid;

@@ -4,8 +4,9 @@
  */
 package de.dheinrich.darwin.util.math.base;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
+
 import static java.lang.Math.*;
 /**
  * Repr�sentation eines 3 Dimensionalen Vektors

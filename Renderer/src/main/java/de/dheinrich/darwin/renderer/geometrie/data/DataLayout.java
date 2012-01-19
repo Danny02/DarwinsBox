@@ -4,10 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.data;
 
-import de.dheinrich.darwin.renderer.opengl.Element;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
+import de.dheinrich.darwin.renderer.opengl.*;
+import java.io.*;
+import java.util.*;
 
 /**
  *

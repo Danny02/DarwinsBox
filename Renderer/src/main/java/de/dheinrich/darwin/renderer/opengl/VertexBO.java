@@ -7,7 +7,6 @@ package de.dheinrich.darwin.renderer.opengl;
 import de.dheinrich.darwin.renderer.geometrie.data.DataLayout;
 import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
 import de.dheinrich.darwin.renderer.opengl.BufferObject.*;
-import de.dheinrich.darwin.renderer.opengl.BufferObject;
 
 /**
  *

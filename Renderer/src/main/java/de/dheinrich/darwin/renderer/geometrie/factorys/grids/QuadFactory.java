@@ -4,13 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.factorys.grids;
 
-import de.dheinrich.darwin.renderer.geometrie.factorys.Quad;
+import de.dheinrich.darwin.renderer.geometrie.factorys.*;
 import de.dheinrich.darwin.util.math.base.Vector;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -18,8 +14,8 @@ import java.util.Set;
  */
 public class QuadFactory
 {
-    private Map<Vector, Integer> vertice = new LinkedHashMap<Vector, Integer>();
-    private List<Quad> quads = new LinkedList<Quad>();
+    private Map<Vector, Integer> vertice = new LinkedHashMap<>();
+    private List<Quad> quads = new LinkedList<>();
     private Vector[] points;
 
     public QuadFactory(double size) {

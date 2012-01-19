@@ -4,15 +4,12 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.data;
 
-import java.nio.ByteBuffer;
-import java.util.Objects;
+import com.jogamp.opengl.util.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import java.nio.*;
+import java.util.*;
 
-import com.jogamp.opengl.util.GLBuffers;
-
-import de.dheinrich.darwin.renderer.opengl.Element;
-
-import de.dheinrich.darwin.renderer.opengl.GLSLType;
-import static java.lang.Math.max;
+import static java.lang.Math.*;
 
 /**
  * DatenModel um Vertex Attribute eines Modeles zu halten

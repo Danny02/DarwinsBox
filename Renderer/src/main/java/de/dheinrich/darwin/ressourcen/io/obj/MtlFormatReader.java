@@ -4,16 +4,11 @@
  */
 package de.dheinrich.darwin.ressourcen.io.obj;
 
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ObjMaterial;
-import de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.Hashtable;
-import org.apache.log4j.Logger;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.*;
+import java.io.*;
+import java.util.*;
+import org.apache.log4j.*;
 
 /**
  * Parser f�r das MTL Material Format
@@ -37,7 +32,7 @@ public class MtlFormatReader {
     public Hashtable<String, ObjMaterial> loadMaterials() throws FileNotFoundException {
 
         if (materials == null) {
-            materials = new Hashtable<String, ObjMaterial>();
+            materials = new Hashtable<>();
             Reader fr;
             InputStream is = RessourcesLoader.getRessource(modelfolder + path);
             if (is == null) {
@@ -74,31 +69,43 @@ public class MtlFormatReader {
 
     public void parseValue(String type, String[] values) {
         type = type.trim();
-
-        if (type.equals("Ns")) {
-            accmat.setSpecular_exponent(parseFloats(values)[0]);
-        } else if (type.equals("Ka")) {
-            accmat.setAmbient(parseFloats(values));
-        } else if (type.equals("Kd")) {
-            accmat.setDiffuse(parseFloats(values));
-        } else if (type.equals("Ks")) {
-            accmat.setSepcular(parseFloats(values));
-        } else if (type.equals("Ke")) {
-            accmat.setEmission(parseFloats(values));
-        } else if (type.equals("map_Ka")) {
-            accmat.setAmbientTex(mergestrings(values));
-        } else if (type.equals("map_Kd")) {
-            accmat.setDiffuseTex(mergestrings(values));
-        } else if (type.equals("map_Ks")) {
-            accmat.setSpecularTex(mergestrings(values));
-        } else if (type.equals("map_bump")) {
-            accmat.setNormalTex(mergestrings(values));
-        } else if (type.equals("map_d")) {
-            accmat.setAlphaTex(mergestrings(values));
-        } else if (type.equals("bump")) {
-            accmat.setBumbTex(values[0]);
-        } else if (type.equals("newmtl")) {
-            newMaterial(values[0]);
+        switch (type) {
+            case "Ns":
+                accmat.setSpecular_exponent(parseFloats(values)[0]);
+                break;
+            case "Ka":
+                accmat.setAmbient(parseFloats(values));
+                break;
+            case "Kd":
+                accmat.setDiffuse(parseFloats(values));
+                break;
+            case "Ks":
+                accmat.setSepcular(parseFloats(values));
+                break;
+            case "Ke":
+                accmat.setEmission(parseFloats(values));
+                break;
+            case "map_Ka":
+                accmat.setAmbientTex(mergestrings(values));
+                break;
+            case "map_Kd":
+                accmat.setDiffuseTex(mergestrings(values));
+                break;
+            case "map_Ks":
+                accmat.setSpecularTex(mergestrings(values));
+                break;
+            case "map_bump":
+                accmat.setNormalTex(mergestrings(values));
+                break;
+            case "map_d":
+                accmat.setAlphaTex(mergestrings(values));
+                break;
+            case "bump":
+                accmat.setBumbTex(values[0]);
+                break;
+            case "newmtl":
+                newMaterial(values[0]);
+                break;
         }
     }
 

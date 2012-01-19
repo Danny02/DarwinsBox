@@ -4,14 +4,10 @@
  */
 package de.dheinrich.darwin.util.math.util;
 
-import de.dheinrich.darwin.util.math.base.Matrix;
-import de.dheinrich.darwin.util.math.base.Vec3;
-import de.dheinrich.darwin.util.math.composits.AABB;
-import de.dheinrich.darwin.util.math.composits.ModelMatrix;
-import de.dheinrich.darwin.util.math.composits.ProjectionMatrix;
-import de.dheinrich.darwin.util.math.composits.ViewMatrix;
-import java.util.Collection;
-import java.util.LinkedList;
+import de.dheinrich.darwin.util.math.base.*;
+import de.dheinrich.darwin.util.math.composits.*;
+import java.util.*;
+
 import static de.dheinrich.darwin.util.math.util.MatType.*;
 
 /**
@@ -41,7 +37,7 @@ public class MatrixCache {
         view = new ViewMatrix();
         view.loadIdentity();
         projektion = pro;
-        listener = new LinkedList<GenListener<MatrixEvent>>();
+        listener = new LinkedList<>();
 
         AABB scene = new AABB(new Vec3(), new Vec3());
         sutil = new ShadowUtil(scene);

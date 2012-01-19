@@ -4,19 +4,11 @@
  */
 package de.dheinrich.darwin.ressourcen.io.obj;
 
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ObjMaterial;
-import de.dheinrich.darwin.util.math.base.Vec3;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.util.math.base.*;
 import de.dheinrich.darwin.util.math.base.Vector;
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /**
  * DatenModell einer OBJ Datei
@@ -24,12 +16,12 @@ import java.util.Set;
  */
 public class ObjFile implements Externalizable
 {
-    private List<Vec3> verticies = new ArrayList<Vec3>();
-    private List<Vec3> normals = new ArrayList<Vec3>();
-    private List<Vector> texcoords = new ArrayList<Vector>();
+    private List<Vec3> verticies = new ArrayList<>();
+    private List<Vec3> normals = new ArrayList<>();
+    private List<Vector> texcoords = new ArrayList<>();
     transient private Vec3 min = new Vec3(), max = new Vec3();
     private Hashtable<ObjMaterial, List<Face>> subobjekts =
-                                               new Hashtable<ObjMaterial, List<Face>>();
+                                               new Hashtable<>();
     transient private List<Face> accfaces;
 
     public void addVertex(Vec3 pos) {
@@ -50,7 +42,7 @@ public class ObjFile implements Externalizable
 
     public void addFace(Face face) {
         if (accfaces == null) {
-            accfaces = new LinkedList<Face>();
+            accfaces = new LinkedList<>();
             subobjekts.put(new ObjMaterial("__empty"), accfaces);
         }
 
@@ -60,7 +52,7 @@ public class ObjFile implements Externalizable
     public void setAccMaterial(ObjMaterial mat) {
         accfaces = subobjekts.get(mat);
         if (accfaces == null) {
-            accfaces = new LinkedList<Face>();
+            accfaces = new LinkedList<>();
             subobjekts.put(mat, accfaces);
         }
     }
@@ -172,7 +164,7 @@ public class ObjFile implements Externalizable
     }
 
     private List<Vec3> readVec3List(ObjectInput in) throws IOException {
-        List<Vec3> ret = new ArrayList<Vec3>();
+        List<Vec3> ret = new ArrayList<>();
         int len = in.readInt();
         for (int i = 0; i < len; ++i)
             ret.add(new Vec3(in.readFloat(),
@@ -183,7 +175,7 @@ public class ObjFile implements Externalizable
 
     private List<Vector> readVecList(ObjectInput in)
             throws IOException {
-        List<Vector> ret = new ArrayList<Vector>();
+        List<Vector> ret = new ArrayList<>();
         int len = in.readInt();
         int dim = in.readInt();
         for (int i = 0; i < len; ++i) {

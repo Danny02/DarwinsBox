@@ -4,35 +4,17 @@
  */
 package de.dheinrich.darwin.renderer;
 
-import de.dheinrich.darwin.renderer.util.memory.PerformanceView;
-import de.dheinrich.darwin.util.math.util.MatType;
-import javax.media.opengl.GL2;
-import de.dheinrich.darwin.renderer.geometrie.packed.Renderable;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.shader.ShaderUniform;
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderModel;
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderObjekt;
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderWrapper;
-import de.dheinrich.darwin.renderer.geometrie.packed.Shaded;
-import de.dheinrich.darwin.util.math.util.MatrixCache;
-import de.dheinrich.darwin.renderer.util.memory.MemoryInfo;
-import de.dheinrich.darwin.util.math.base.Matrix;
-import de.dheinrich.darwin.util.math.composits.ProjectionMatrix;
-import de.dheinrich.darwin.util.math.base.Vec3;
-import de.dheinrich.darwin.util.math.composits.ViewMatrix;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.media.opengl.DebugGL2;
-import javax.media.opengl.GL2GL3;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import org.apache.log4j.Logger;
+import de.dheinrich.darwin.renderer.geometrie.packed.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.renderer.util.memory.*;
+import de.dheinrich.darwin.util.math.base.*;
+import de.dheinrich.darwin.util.math.composits.*;
+import de.dheinrich.darwin.util.math.util.*;
+import java.util.*;
+import java.util.concurrent.*;
+import javax.media.opengl.*;
+import org.apache.log4j.*;
+
 import static de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader.*;
 
 /**

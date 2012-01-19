@@ -4,25 +4,17 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.packed;
 
-import de.dheinrich.darwin.renderer.shader.uniform.GameMaterial;
-import de.dheinrich.darwin.renderer.shader.uniform.ShaderMaterial;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.opengl.BufferObject;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
 import de.dheinrich.darwin.renderer.opengl.BufferObject.Target;
-import de.dheinrich.darwin.renderer.opengl.BufferObject.Usage;
 import de.dheinrich.darwin.renderer.opengl.BufferObject.Type;
-import de.dheinrich.darwin.renderer.geometrie.data.RenderMesh;
-import de.dheinrich.darwin.renderer.opengl.VertexBO;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.Mesh;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.Model;
-import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
-import de.dheinrich.darwin.renderer.shader.uniform.SamplerSetter;
-import de.dheinrich.darwin.renderer.shader.uniform.UniformSetter;
-import de.dheinrich.darwin.ressourcen.wrapper.TextureContainer;
-import java.nio.Buffer;
-import java.nio.IntBuffer;
-import java.util.HashSet;
-import java.util.Set;
+import de.dheinrich.darwin.renderer.opengl.BufferObject.Usage;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.renderer.shader.uniform.*;
+import de.dheinrich.darwin.ressourcen.wrapper.*;
+import java.nio.*;
+import java.util.*;
 
 /**
  * Haelt alle Render relevanten Attribute eines 3D Modelles.
@@ -34,7 +26,7 @@ public class RenderModel implements Shaded, Cloneable
     private GameMaterial material;
     private RenderMesh rbuffer;
     private Shader shader;
-    private final Set<UniformSetter> uniforms = new HashSet<UniformSetter>();
+    private final Set<UniformSetter> uniforms = new HashSet<>();
     private AsyncIni initiator = null;
 
     public RenderModel(RenderMesh rbuffer, Shader shader,

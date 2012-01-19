@@ -5,8 +5,8 @@
 
 package de.dheinrich.darwin.ressourcen.resmanagment;
 
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
 
 
 /**

@@ -4,8 +4,8 @@
  */
 package de.dheinrich.darwin.ressourcen.resmanagment.texture;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
 
 /**
  *

@@ -4,22 +4,15 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.factorys;
 
-import de.dheinrich.darwin.renderer.opengl.BufferObject;
-import de.dheinrich.darwin.renderer.opengl.BufferObject.Target;
-import de.dheinrich.darwin.renderer.opengl.BufferObject.Usage;
-import de.dheinrich.darwin.renderer.opengl.BufferObject.Type;
-import de.dheinrich.darwin.renderer.geometrie.data.DataLayout;
 import de.dheinrich.darwin.renderer.geometrie.data.DataLayout.Format;
-import de.dheinrich.darwin.renderer.geometrie.data.RenderMesh;
-import de.dheinrich.darwin.renderer.opengl.VertexBO;
-import de.dheinrich.darwin.renderer.geometrie.data.Vertex;
-import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.GLSLType;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.opengl.BufferObject.Target;
+import de.dheinrich.darwin.renderer.opengl.BufferObject.Type;
+import de.dheinrich.darwin.renderer.opengl.BufferObject.Usage;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import java.nio.*;
+import java.util.*;
 
 /**
  *
@@ -28,7 +21,7 @@ import java.util.Map;
 public class Rahmen implements GeometryFactory
 {
     private static final Map<Float, GeometryFactory> instances =
-                                                     new HashMap<Float, GeometryFactory>();
+                                                     new HashMap<>();
 
     public static GeometryFactory getInstance(float inset) {
         GeometryFactory gf = instances.get(inset);

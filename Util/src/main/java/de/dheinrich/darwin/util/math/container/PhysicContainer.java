@@ -5,7 +5,7 @@
 
 package de.dheinrich.darwin.util.math.container;
 
-import de.dheinrich.darwin.util.math.base.Vec3;
+import de.dheinrich.darwin.util.math.base.*;
 
 /**
  *

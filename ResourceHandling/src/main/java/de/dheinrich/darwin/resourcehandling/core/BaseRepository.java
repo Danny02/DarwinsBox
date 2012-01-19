@@ -4,16 +4,8 @@
  */
 package de.dheinrich.darwin.resourcehandling.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import de.dheinrich.darwin.resourcehandling.Resource;
-import de.dheinrich.darwin.resourcehandling.ResourceBuilder;
-import de.dheinrich.darwin.resourcehandling.ResourceHandle;
-import de.dheinrich.darwin.resourcehandling.ResourceListener;
-import de.dheinrich.darwin.resourcehandling.ResourceRepository;
-import de.dheinrich.darwin.resourcehandling.ResourceState;
-import de.dheinrich.darwin.resourcehandling.WrongBuildArgsException;
+import de.dheinrich.darwin.resourcehandling.*;
+import java.util.*;
 
 /**
  *

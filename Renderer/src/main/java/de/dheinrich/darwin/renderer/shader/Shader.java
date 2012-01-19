@@ -4,24 +4,12 @@
  */
 package de.dheinrich.darwin.renderer.shader;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
-
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
-import de.dheinrich.darwin.renderer.shader.uniform.MatrixSetter;
-import de.dheinrich.darwin.renderer.shader.uniform.UniformSetter;
-import de.dheinrich.darwin.ressourcen.io.ShaderFile;
-import de.dheinrich.darwin.util.math.util.GenListener;
-import de.dheinrich.darwin.util.math.util.MatrixEvent;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.uniform.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import de.dheinrich.darwin.util.math.util.*;
+import java.util.*;
+import javax.media.opengl.*;
 
 import static de.dheinrich.darwin.renderer.GraphicContext.*;
 

@@ -16,8 +16,7 @@
  */
 package de.dheinrich.darwin.ressourcen;
 
-import de.dheinrich.darwin.resourcehandling.ResourceBuilder;
-import de.dheinrich.darwin.resourcehandling.ResourceState;
+import de.dheinrich.darwin.resourcehandling.*;
 
 /**
  *

@@ -4,11 +4,11 @@
  */
 package de.dheinrich.darwin.renderer.opengl;
 
-import com.jogamp.opengl.util.GLBuffers;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import javax.media.opengl.GL2GL3;
-import static de.dheinrich.darwin.renderer.GraphicContext.getGL;
+import com.jogamp.opengl.util.*;
+import java.nio.*;
+import javax.media.opengl.*;
+
+import static de.dheinrich.darwin.renderer.GraphicContext.*;
 
 /**
  *

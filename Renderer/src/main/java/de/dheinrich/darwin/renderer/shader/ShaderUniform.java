@@ -4,12 +4,10 @@
  */
 package de.dheinrich.darwin.renderer.shader;
 
-import com.jogamp.opengl.util.GLBuffers;
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import javax.media.opengl.GLUniformData;
+import com.jogamp.opengl.util.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import java.nio.*;
+import javax.media.opengl.*;
 
 /**
  *

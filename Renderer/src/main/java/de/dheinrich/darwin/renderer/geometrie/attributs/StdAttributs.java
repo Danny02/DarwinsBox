@@ -4,14 +4,11 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.attributs;
 
-import de.dheinrich.darwin.renderer.geometrie.data.DataLayout;
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.shader.ShaderAttribute;
-import de.dheinrich.darwin.renderer.opengl.BufferObject;
-import de.dheinrich.darwin.renderer.opengl.VertexBO;
-import java.util.LinkedList;
-import java.util.List;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import java.util.*;
+
 import static de.dheinrich.darwin.renderer.GraphicContext.*;
 
 /**

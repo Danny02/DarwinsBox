@@ -16,16 +16,7 @@
  */
 package de.dheinrich.darwin.renderer;
 
-import javax.media.opengl.DefaultGLCapabilitiesChooser;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLCapabilitiesImmutable;
-import javax.media.opengl.GLContext;
-import javax.media.opengl.GLDrawableFactory;
-import javax.media.opengl.GLException;
-import javax.media.opengl.GLPbuffer;
-import javax.media.opengl.GLProfile;
+import javax.media.opengl.*;
 
 /**
  *

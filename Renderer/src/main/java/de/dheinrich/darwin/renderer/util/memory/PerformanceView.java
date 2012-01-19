@@ -4,8 +4,6 @@
  */
 package de.dheinrich.darwin.renderer.util.memory;
 
-import de.dheinrich.darwin.renderer.util.memory.MemoryInfo;
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>

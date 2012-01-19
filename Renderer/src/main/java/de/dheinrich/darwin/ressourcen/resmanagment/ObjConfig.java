@@ -5,7 +5,7 @@
 package de.dheinrich.darwin.ressourcen.resmanagment;
 
 import de.dheinrich.darwin.ressourcen.io.obj.ObjObjektReader.Scale;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.ShaderDescription;
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
 
 /**
  *

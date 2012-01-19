@@ -5,8 +5,8 @@
 
 package de.dheinrich.darwin.renderer.shader.uniform;
 
-import de.dheinrich.darwin.renderer.shader.ShaderUniform;
-import java.nio.FloatBuffer;
+import de.dheinrich.darwin.renderer.shader.*;
+import java.nio.*;
 
 /**
  *

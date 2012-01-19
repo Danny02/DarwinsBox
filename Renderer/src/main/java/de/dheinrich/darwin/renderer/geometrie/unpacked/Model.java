@@ -4,8 +4,8 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.unpacked;
 
-import de.dheinrich.darwin.renderer.shader.uniform.GameMaterial;
-import java.io.Serializable;
+import de.dheinrich.darwin.renderer.shader.uniform.*;
+import java.io.*;
 
 /**
  * H�lt ein Mesh und das dazugeh�rige Material

@@ -4,12 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.data;
 
-import java.nio.ByteBuffer;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
-
-import com.jogamp.opengl.util.GLBuffers;
+import com.jogamp.opengl.util.*;
+import java.nio.*;
+import javax.media.opengl.*;
 
 /**
  * Definiert DatenTypen die in einem Vertex Attribut Array genutzt werden k�nnen.

@@ -17,7 +17,7 @@
 
 package de.dheinrich.darwin.renderer.opengl;
 
-import javax.media.opengl.GL2GL3;
+import javax.media.opengl.*;
 
 /**
  *

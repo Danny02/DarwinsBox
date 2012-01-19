@@ -4,22 +4,17 @@
  */
 package de.dheinrich.darwin.ressourcen.resmanagment;
 
-import LZMA.LzmaInputStream;
-import java.io.InputStream;
+import LZMA.*;
+import com.jogamp.opengl.util.texture.*;
+import de.dheinrich.darwin.renderer.geometrie.packed.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
+import de.dheinrich.darwin.ressourcen.wrapper.*;
+import java.io.*;
 import java.util.*;
-
-import org.apache.log4j.Logger;
-
-import com.jogamp.opengl.util.texture.Texture;
-
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderModel;
-import de.dheinrich.darwin.renderer.geometrie.packed.RenderObjekt;
-import de.dheinrich.darwin.renderer.opengl.ShaderProgramm;
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.ressourcen.io.ShaderFile;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.ShaderDescription;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.TextureLoadJob;
-import de.dheinrich.darwin.ressourcen.wrapper.TextureContainer;
+import org.apache.log4j.*;
 
 /**
  *

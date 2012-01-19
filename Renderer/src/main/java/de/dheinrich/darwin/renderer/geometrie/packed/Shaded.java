@@ -5,7 +5,7 @@
 
 package de.dheinrich.darwin.renderer.geometrie.packed;
 
-import de.dheinrich.darwin.renderer.shader.Shader;
+import de.dheinrich.darwin.renderer.shader.*;
 
 /**
  *

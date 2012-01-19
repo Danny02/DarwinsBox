@@ -4,29 +4,17 @@
  */
 package de.dheinrich.darwin.ressourcen.io.obj;
 
-import de.dheinrich.darwin.renderer.geometrie.data.DataLayout;
 import de.dheinrich.darwin.renderer.geometrie.data.DataLayout.Format;
-import de.dheinrich.darwin.renderer.geometrie.data.Vertex;
-import de.dheinrich.darwin.renderer.geometrie.data.VertexBuffer;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.Mesh;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.Model;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ModelObjekt;
-import de.dheinrich.darwin.renderer.geometrie.unpacked.ObjMaterial;
-import de.dheinrich.darwin.renderer.opengl.Element;
-import de.dheinrich.darwin.renderer.opengl.GLSLType;
-import de.dheinrich.darwin.ressourcen.io.ObjektReader;
-import de.dheinrich.darwin.ressourcen.resmanagment.ObjConfig;
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.ShaderDescription;
-import de.dheinrich.darwin.renderer.shader.uniform.GameMaterial;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
+import de.dheinrich.darwin.renderer.geometrie.data.*;
+import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.uniform.*;
+import de.dheinrich.darwin.ressourcen.io.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.*;
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
+import java.util.*;
+import javax.media.opengl.*;
+import org.apache.log4j.*;
 
 
 /**
@@ -84,7 +72,7 @@ public class ObjObjektReader implements ObjektReader
         texcoord = new Element(GLSLType.VEC2, "TexCoord");
         normal = new Element(GLSLType.VEC3, "Normal");
 
-        Collection<Element> ele = new LinkedList<Element>();
+        Collection<Element> ele = new LinkedList<>();
         ele.add(position);
         ele.add(texcoord);
         ele.add(normal);
@@ -130,7 +118,7 @@ public class ObjObjektReader implements ObjektReader
     }
 
     private Mesh loadMesh(ObjFile obj, ObjMaterial mat) {
-        Map<Integer, Integer> vmap = new Hashtable<Integer, Integer>();
+        Map<Integer, Integer> vmap = new Hashtable<>();
         List<Face> faces = obj.getFaces(mat);
 
         Iterator<Face> iter = faces.iterator();

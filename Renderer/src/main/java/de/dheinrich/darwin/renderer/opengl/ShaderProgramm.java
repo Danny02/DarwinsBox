@@ -4,16 +4,12 @@
  */
 package de.dheinrich.darwin.renderer.opengl;
 
-import de.dheinrich.darwin.renderer.shader.BuildException;
-import de.dheinrich.darwin.renderer.shader.ShaderAttribute;
-import java.util.List;
+import de.dheinrich.darwin.renderer.shader.*;
+import java.util.*;
+import javax.media.opengl.*;
+import org.apache.log4j.*;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
-
-import org.apache.log4j.Logger;
-
-import static de.dheinrich.darwin.renderer.GraphicContext.getGL;
+import static de.dheinrich.darwin.renderer.GraphicContext.*;
 import static de.dheinrich.darwin.renderer.shader.BuildException.BuildError.*;
 
 /**

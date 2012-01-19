@@ -4,9 +4,9 @@
  */
 package de.dheinrich.darwin.renderer.geometrie.attributs;
 
-import de.dheinrich.darwin.renderer.shader.Shader;
-import de.dheinrich.darwin.renderer.opengl.BufferObject;
-import de.dheinrich.darwin.renderer.opengl.VertexBO;
+import de.dheinrich.darwin.renderer.opengl.*;
+import de.dheinrich.darwin.renderer.shader.*;
+
 import static de.dheinrich.darwin.renderer.GraphicContext.*;
 
 /**

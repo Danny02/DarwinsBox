@@ -4,17 +4,14 @@
  */
 package de.dheinrich.darwin.ressourcen.wrapper;
 
+import de.dheinrich.darwin.ressourcen.resmanagment.texture.*;
 import java.io.*;
 import java.util.*;
-
-import javax.media.opengl.GL;
+import javax.media.opengl.*;
 import javax.xml.parsers.*;
-
-import org.apache.log4j.Logger;
+import org.apache.log4j.*;
 import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-
-import de.dheinrich.darwin.ressourcen.resmanagment.texture.TextureLoadJob;
+import org.xml.sax.*;
 
 import static de.dheinrich.darwin.ressourcen.resmanagment.RessourcesLoader.*;
 
@@ -78,7 +75,7 @@ public class TextureAtlas {
     }
 
     private void parseXML(String file) {
-        elements = new HashMap<String, TextureAtlasElement>();
+        elements = new HashMap<>();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
