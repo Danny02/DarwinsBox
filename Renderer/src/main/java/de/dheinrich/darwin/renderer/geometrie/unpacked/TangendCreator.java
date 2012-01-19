@@ -15,7 +15,7 @@ import org.apache.log4j.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class TangendCreator extends MeshModifier {
+public class TangendCreator implements MeshModifier {
 
     private final Logger logger = Logger.getLogger(
             TangendCreator.class.getName());
