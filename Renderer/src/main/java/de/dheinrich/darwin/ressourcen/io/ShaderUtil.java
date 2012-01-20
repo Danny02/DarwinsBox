@@ -89,8 +89,8 @@ public class ShaderUtil {
         String[] sources = new String[2 + len];
         sources[0] = Static.GLSL_VERISON_STRING;
         int i = 0;
-        while (i < len) {
-            sources[i + 1] = "#define " + mut[i++] + '\n';
+        while (i++ < len) {
+            sources[i] = "#define " + mut[i - 1] + '\n';
         }
 
         sources[i + 1] = source;
