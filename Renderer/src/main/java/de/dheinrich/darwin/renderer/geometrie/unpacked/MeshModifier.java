@@ -9,24 +9,6 @@ package de.dheinrich.darwin.renderer.geometrie.unpacked;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public abstract class MeshModifier {
-
-    private MeshModifier modifier;
-
-    public MeshModifier() {
-    }
-
-    public MeshModifier(MeshModifier modifier) {
-        this.modifier = modifier;
-    }
-
-    public Mesh modifie(Mesh m){
-        if(modifier == null)
-            return mod(m);
-        else
-            return mod(modifier.modifie(m));
-    }
-
-    protected abstract Mesh mod(Mesh m);
-
+public interface MeshModifier {
+    public Mesh modifie(Mesh m);
 }

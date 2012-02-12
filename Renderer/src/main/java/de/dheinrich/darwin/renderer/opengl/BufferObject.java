@@ -117,11 +117,8 @@ public class BufferObject
      * @param usage
      */
     public void bufferDataOptimized(Buffer data, Type type, Usage usage) {
-        int bsize = GLBuffers.sizeOfBufferElem(data);
-        allocate(data.limit() * bsize, type, usage);
-
-        data.rewind();
-        getGL().glBufferSubData(target.glvalue, 0, size, data);
+        allocate(data.limit() * GLBuffers.sizeOfBufferElem(data), type, usage);
+        bufferSubData(0, data);
     }
 
     /**
@@ -134,7 +131,7 @@ public class BufferObject
      */
     public void allocate(int bsize, Type type, Usage usage) {
         size = bsize;
-        getGL().glBufferData(target.glvalue, bsize, null,
+        getGL().glBufferData(target.glvalue, size, null,
                              getGLConst(type, usage));
     }
 

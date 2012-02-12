@@ -26,7 +26,6 @@ public class TextureUtil
                                                            "_UP",
                                                            "_DN", "_FT",
                                                            "_BK"};
-    private static final String filetyp = "dds";
 
     /**
      * Eine Factory methode um schnell eine leere 2D Textur im Graphic Speicher
@@ -103,9 +102,7 @@ public class TextureUtil
                                      int width, int height, int border,
                                      int pixelFormat, int pixelType,
                                      boolean mipmap) {
-        GL gl = getGL();
-
-        TextureData a = new TextureData(gl.getGLProfile(), internalFormat,
+        TextureData a = new TextureData(getGL().getGLProfile(), internalFormat,
                                         width, height, border,
                                         pixelFormat, pixelType,
                                         mipmap, false, false,
@@ -190,7 +187,7 @@ public class TextureUtil
         cubemap.bind(gl);
 
         for (int i = 0; i < 6; ++i) {
-            InputStream is = getRessource(path + postfixes[i] + "." + filetyp);
+            InputStream is = getRessource(path + postfixes[i] + ".dds");
             TextureData data = TextureIO.newTextureData(gl.getGLProfile(), is,
                                                         false, filetyp);
             cubemap.updateImage(gl, data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);

@@ -15,7 +15,7 @@ import org.apache.log4j.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class TangendCreator extends MeshModifier {
+public class TangendCreator implements MeshModifier {
 
     private final Logger logger = Logger.getLogger(
             TangendCreator.class.getName());
@@ -24,15 +24,8 @@ public class TangendCreator extends MeshModifier {
     private final Element texcoord = new Element(GLSLType.VEC2, "TexCoord");
     private final Element normal = new Element(GLSLType.VEC3, "Normal");
 
-    public TangendCreator() {
-    }
-
-    public TangendCreator(MeshModifier m) {
-        super(m);
-    }
-
     @Override
-    protected Mesh mod(Mesh m) {
+    protected Mesh modifie(Mesh m) {
         VertexBuffer old = m.getVertices();
         DataLayout layout = old.layout;
         boolean hasattr = layout.hasElement(position)
