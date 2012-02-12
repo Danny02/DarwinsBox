@@ -108,7 +108,7 @@ public class TextureUtil
                                         mipmap, false, false,
                                         null, null);
         Texture tex = TextureIO.newTexture(GL.GL_TEXTURE_2D);
-        tex.updateImage(gl, a);
+        tex.updateImage(getGL(), a);
 
         return tex;
     }
@@ -189,7 +189,7 @@ public class TextureUtil
         for (int i = 0; i < 6; ++i) {
             InputStream is = getRessource(path + postfixes[i] + ".dds");
             TextureData data = TextureIO.newTextureData(gl.getGLProfile(), is,
-                                                        false, filetyp);
+                                                        false, "dds");
             cubemap.updateImage(gl, data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
         }
         setTexturePara(cubemap, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);

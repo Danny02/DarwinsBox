@@ -25,7 +25,7 @@ public class TangendCreator implements MeshModifier {
     private final Element normal = new Element(GLSLType.VEC3, "Normal");
 
     @Override
-    protected Mesh modifie(Mesh m) {
+    public Mesh modifie(Mesh m) {
         VertexBuffer old = m.getVertices();
         DataLayout layout = old.layout;
         boolean hasattr = layout.hasElement(position)
