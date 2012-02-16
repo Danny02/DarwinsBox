@@ -32,7 +32,8 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ResourceHandling</artifactId>
-            <version>${project.version}</version>
+            <version>1.0</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>
