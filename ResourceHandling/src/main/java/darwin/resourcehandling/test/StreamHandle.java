@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dheinrich.darwin.resourcehandling.test;
+package darwin.resourcehandling.test;
 
-import de.dheinrich.darwin.resourcehandling.*;
+import darwin.resourcehandling.*;
 import java.io.*;
 
 /**
