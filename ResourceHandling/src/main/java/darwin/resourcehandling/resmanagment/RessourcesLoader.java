@@ -62,7 +62,7 @@ public class RessourcesLoader {
             file = job.getSfile();
             shaderfiles.put(job, file);
         }
-        Shader shader = new Shader(null);
+        Shader shader = new Shader(file);
         ShaderProgramm prog = (ShaderProgramm) ressourcen.get(job);
         if (prog == null) {
             List<Shader> l = shadermap.get(job);

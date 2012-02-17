@@ -34,5 +34,19 @@
             <artifactId>gluegen-rt</artifactId>
             <version>2.0-b33-20111219</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ResourceHandling</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
+
+
+    <repositories>
+        <repository>
+            <id>thirdparty.mave.iscpif.fr</id>
+            <name>ISCPIF repository</name>
+            <url>http://maven.iscpif.fr/thirdparty</url>
+        </repository>
+    </repositories>
 </project>
