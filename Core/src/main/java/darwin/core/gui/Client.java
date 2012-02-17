@@ -26,7 +26,7 @@ public class Client
 {
 
     private AnimatorBase animator;
-    private Logger log;
+    private Logger log = Logger.getLogger(Client.class);
     private final Collection<ShutdownListener> shutdownlistener = new LinkedList<>();
 
     public Client()

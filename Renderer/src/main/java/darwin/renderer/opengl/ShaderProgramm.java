@@ -5,7 +5,7 @@
 package darwin.renderer.opengl;
 
 import java.util.List;
-import javax.media.opengl.GLES2;
+import javax.media.opengl.GL2ES2;
 import javax.media.opengl.GLProfile;
 import org.apache.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class ShaderProgramm
     }
 
     static {
-        assert GLProfile.isAvailable(GLProfile.GLES2) : "This device doesn't support Shaders";
+        assert GLProfile.isAvailable(GLProfile.GL2ES2) : "This device doesn't support Shaders";
     }
     static ShaderProgramm shaderinuse = null;
     private int programObject;
@@ -55,7 +55,7 @@ public class ShaderProgramm
      */
     public ShaderProgramm(List<ShaderAttribute> attr, ShaderObjekt... sobject) throws BuildException
     {
-        GLES2 gl = getGL().getGLES2();
+        GL2ES2 gl = getGL().getGL2ES2();
         programObject = gl.glCreateProgram();
 
         for (ShaderObjekt so : sobject) {
@@ -67,7 +67,7 @@ public class ShaderProgramm
 
         //TODO GL Treiber Constanten in einen Globalen Constanten-Pool verfrachten
         int[] max = new int[1];
-        gl.glGetIntegerv(GLES2.GL_MAX_VERTEX_ATTRIBS, max, 0);
+        gl.glGetIntegerv(GL2ES2.GL_MAX_VERTEX_ATTRIBS, max, 0);
 
         //TODO buggy, anscheined werden manche attribute ned gefunden
         for (ShaderAttribute sa : attr) {
@@ -80,7 +80,7 @@ public class ShaderProgramm
         gl.glLinkProgram(programObject);
         gl.glValidateProgram(programObject);
         int[] error = new int[]{-1};
-        gl.glGetProgramiv(programObject, GLES2.GL_LINK_STATUS, error, 0);
+        gl.glGetProgramiv(programObject, GL2ES2.GL_LINK_STATUS, error, 0);
         if (error[0] == 0) {
             int[] len = new int[]{512};
             byte[] errormessage = new byte[512];
