@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.dheinrich.darwin</groupId>
+        <groupId>darwin</groupId>
         <artifactId>DarwinsBox</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -20,13 +20,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.dheinrich.libarys</groupId>
+            <groupId>libarys</groupId>
             <artifactId>lzma-jio</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>lzma-jio</artifactId>
-                    <groupId>de.dheinrich.libarys</groupId>
+                    <groupId>libarys</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

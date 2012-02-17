@@ -1,4 +1,4 @@
-package de.dheinrich.darwin.core.gui;
+package darwin.core.gui;
 
 import com.jogamp.opengl.util.*;
 import java.awt.event.*;

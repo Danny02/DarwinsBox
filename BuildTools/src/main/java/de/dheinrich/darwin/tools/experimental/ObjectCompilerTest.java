@@ -1,7 +1,7 @@
-package de.dheinrich.darwin.tools.experimental;
+package darwin.tools.experimental;
 
-import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
-import de.dheinrich.darwin.ressourcen.io.obj.*;
+import darwin.renderer.geometrie.unpacked.*;
+import darwin.ressourcen.io.obj.*;
 import java.io.*;
 
 /**

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.dheinrich.darwin</groupId>
+        <groupId>darwin</groupId>
         <artifactId>DarwinsBox</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -25,14 +25,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.jogamp.jogl</groupId>
-            <artifactId>jogl-all</artifactId>
-            <version>2.0-beta3</version>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl.all</artifactId>
+            <version>2.0-b45-20111219</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ResourceHandling</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <version>2.0-b33-20111219</version>
         </dependency>
     </dependencies>
 </project>

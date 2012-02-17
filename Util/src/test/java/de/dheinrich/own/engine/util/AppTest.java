@@ -1,4 +1,4 @@
-package de.dheinrich.darwin.util;
+package darwin.util;
 
 import junit.framework.*;
 

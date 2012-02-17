@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.dheinrich.darwin.core.logging;
+package darwin.core.logging;
 
 import org.apache.log4j.*;
 
