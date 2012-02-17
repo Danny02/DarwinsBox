@@ -6,3 +6,5 @@
 /.svn/
 /JavaApplication1/nbproject/private/
 /JavaApplication1/build/
+/Renderer/src/main/resources/resources/shaders/util/.svn/
+/Renderer/src/main/resources/resources/shaders/filter/.svn/
