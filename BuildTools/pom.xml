@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.dheinrich.darwin</groupId>
+        <groupId>org.darwin</groupId>
         <artifactId>DarwinsBox</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <artifactId>BuildTools</artifactId>
     <packaging>jar</packaging>
