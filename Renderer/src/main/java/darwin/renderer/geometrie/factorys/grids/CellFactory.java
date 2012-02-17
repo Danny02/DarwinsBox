@@ -4,10 +4,11 @@
  */
 package darwin.renderer.geometrie.factorys.grids;
 
-import darwin.renderer.geometrie.data.*;
+import java.util.*;
+
+import darwin.renderer.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.factorys.*;
 import darwin.util.math.base.Vector;
-import java.util.*;
 
 /**
  *

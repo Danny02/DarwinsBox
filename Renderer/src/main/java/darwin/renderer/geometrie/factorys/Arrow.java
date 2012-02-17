@@ -5,11 +5,12 @@
 
 package darwin.renderer.geometrie.factorys;
 
+import javax.media.opengl.GLES2;
+
 import darwin.renderer.geometrie.data.DataLayout.Format;
 import darwin.renderer.geometrie.data.*;
 import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
-import javax.media.opengl.*;
+import darwin.renderer.shader.Shader;
 
 /**
  *
@@ -37,6 +38,6 @@ public final class Arrow implements GeometryFactory{
     }
 
     public RenderMesh buildRenderable(Shader shader) {
-        return new RenderMesh(shader, GL2GL3.GL_LINE_STRIP, null, attr);
+        return new RenderMesh(shader, GLES2.GL_LINE_STRIP, null, attr);
     }
 }

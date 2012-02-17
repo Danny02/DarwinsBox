@@ -4,9 +4,11 @@
  */
 package darwin.renderer.opengl;
 
-import com.jogamp.opengl.util.*;
-import java.nio.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.util.GLBuffers;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import javax.media.opengl.GL2GL3;
+import javax.media.opengl.GLProfile;
 
 import static darwin.renderer.GraphicContext.*;
 
@@ -16,6 +18,9 @@ import static darwin.renderer.GraphicContext.*;
  */
 public class BufferObject
 {
+    static {
+        assert GLProfile.isAvailable(GLProfile.GL2GL3) : "This device doesn't support BufferObjects";
+    }
     // <editor-fold defaultstate="collapsed" desc="OpenGL Enums">
     public enum Target
     {
@@ -87,7 +92,6 @@ public class BufferObject
 
     public BufferObject(Target target) {
         this.target = target;
-//        gl = (GL2GL3) GLProxy.newInstance(gl);
         int[] ids = new int[1];
         getGL().glGenBuffers(1, ids, 0);
         id = ids[0];

@@ -23,17 +23,20 @@ import darwin.util.math.util.MatrixCache;
 
 import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
 
+import static darwin.renderer.GraphicContext.*;
+
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public abstract class BasicScene implements GLEventListener {
+public abstract class BasicScene implements GLEventListener
+{
 
-    private static class Log {
+    private static class Log
+    {
 
         private static Logger ger = Logger.getLogger(BasicScene.class);
     }
-    private GL2GL3 gl;
 //    private final List<GenListener<Dimension>> dimlistener =
 //                                               new LinkedList<GenListener<Dimension>>();
     private final Queue<Renderable> robjekts = new ConcurrentLinkedQueue<>();
@@ -46,7 +49,8 @@ public abstract class BasicScene implements GLEventListener {
     private PerformanceView info;
     private MemoryInfo meminfo;
 
-    public BasicScene() {
+    public BasicScene()
+    {
         matrices = new MatrixCache(new ProjectionMatrix());
         half = new LinkedList<>();
         lightdir = new LinkedList<>();
@@ -55,7 +59,8 @@ public abstract class BasicScene implements GLEventListener {
 
     protected abstract void customRender();
 
-    protected void renderObjects() {
+    protected void renderObjects()
+    {
         Iterator<RenderObjekt> iter = needini.iterator();
         while (iter.hasNext()) {
             RenderModel[] rms = iter.next().getModels();
@@ -72,36 +77,32 @@ public abstract class BasicScene implements GLEventListener {
     }
 
     @Override
-    public void init(GLAutoDrawable drawable) {
-
-//        gl = drawable.getGL().getGL2();
-//        gl = (GL2GL3) GLProxy.newInstance(gl);
-        drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
-        gl = drawable.getGL().getGL2GL3();
-
+    public void init(GLAutoDrawable drawable)
+    {
+        //TODO Debug und Trace GL einbauen
+        GL gl = getGL();
         Log.ger.info("INIT GL IS: " + gl.getClass().getName());
 
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL.GL_LEQUAL);
         // Enable VSync
         gl.setSwapInterval(1);
         // Setup the drawing area and shading mode
         gl.glClearColor(0.0f, 1.0f, 1.0f, 0f);
-//        gl.glClearColor(1.0f, 0.0f, 1.0f, 0f);
 
         meminfo = MemoryInfo.INSTANCE;
     }
 
     @Override
-    public final void display(GLAutoDrawable drawable) {
-
+    public final void display(GLAutoDrawable drawable)
+    {
         RESOURCES.workAllJobs();
         try {
             customRender();
         } catch (Throwable ex) {
             Log.ger.fatal("Error in custom code!", ex);
         }
-
+//TODO GameTime updates einbaun
         if (time != 0) {
             long t = new Date().getTime();
             frametime = t - time;
@@ -132,29 +133,34 @@ public abstract class BasicScene implements GLEventListener {
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-            int height) {
+            int height)
+    {
         final float ratio = (float) height / Math.min(1, width);
         matrices.getProjektion().perspective(50, ratio, 0.001, 1000);
         matrices.fireChange(MatType.PROJECTION);
     }
 
     @Override
-    public void dispose(GLAutoDrawable drawable) {
+    public void dispose(GLAutoDrawable drawable)
+    {
         robjekts.clear();
         shaders.clear();
     }
 
-    public void addSceneObject(RenderObjekt ro) {
+    public void addSceneObject(RenderObjekt ro)
+    {
         needini.add(ro);
         robjekts.add(new RenderWrapper(ro, matrices));
     }
 
-    public void addSceneObject(Shaded r) {
+    public void addSceneObject(Shaded r)
+    {
         robjekts.add(r);
         addShader(r.getShader());
     }
 
-    public void addShader(Shader shader) {
+    public void addShader(Shader shader)
+    {
         if (shaders.add(shader)) {
             ShaderUniform h = shader.getUniform("halfvector");
             if (h != null) {
@@ -173,18 +179,22 @@ public abstract class BasicScene implements GLEventListener {
         }
     }
 
-    protected void iniShader(Shader shader) {
+    protected void iniShader(Shader shader)
+    {
     }
 
-    public void removeSceneObject(Renderable wo) {
+    public void removeSceneObject(Renderable wo)
+    {
         robjekts.remove(wo);
     }
 
-    public void removeSceneObject(RenderObjekt ro) {
+    public void removeSceneObject(RenderObjekt ro)
+    {
         robjekts.remove(new RenderWrapper(ro, null));
     }
 
-    public void setLigthDir(Vec3 lightdir) {
+    public void setLigthDir(Vec3 lightdir)
+    {
         getMatrices().setLight(lightdir.mult(-1));
         Matrix view3 = matrices.getView().getMinor(3, 3);
         Vec3 light = new Vec3(view3.mult(lightdir));
@@ -197,7 +207,8 @@ public abstract class BasicScene implements GLEventListener {
         setLightUniforms(light, halfvector);
     }
 
-    protected void setLightUniforms(Vec3 ldir, Vec3 half) {
+    protected void setLightUniforms(Vec3 ldir, Vec3 half)
+    {
         for (ShaderUniform su : this.lightdir) {
             su.setData(ldir.getCoordsF());
         }
@@ -207,35 +218,38 @@ public abstract class BasicScene implements GLEventListener {
         }
     }
 
-    public void setViewMatrix(ViewMatrix mv) {
+    public void setViewMatrix(ViewMatrix mv)
+    {
         matrices.setView(mv);
     }
 
-    public void viewChanged() {
+    public void viewChanged()
+    {
         matrices.fireChange(MatType.VIEW);
     }
 
-    public MatrixCache getMatrices() {
+    public MatrixCache getMatrices()
+    {
         return matrices;
     }
 
-    protected Iterator<Shader> getShaders() {
+    protected Iterator<Shader> getShaders()
+    {
         return shaders.iterator();
     }
 
-    public boolean append2Initiation(RenderObjekt e) {
+    public boolean append2Initiation(RenderObjekt e)
+    {
         return needini.add(e);
     }
 
-    public long getFrametime() {
+    public long getFrametime()
+    {
         return frametime;
     }
 
-    protected GL2GL3 getGl() {
-        return gl;
-    }
-
-    public void setInfoDisplay(PerformanceView info) {
+    public void setInfoDisplay(PerformanceView info)
+    {
         this.info = info;
     }
 }

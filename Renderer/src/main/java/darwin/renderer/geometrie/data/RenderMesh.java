@@ -4,10 +4,13 @@
  */
 package darwin.renderer.geometrie.data;
 
-import darwin.renderer.geometrie.attributs.*;
-import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
-import javax.media.opengl.*;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2ES2;
+
+import darwin.renderer.geometrie.attributs.VertexAttributs;
+import darwin.renderer.opengl.BufferObject;
+import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.shader.Shader;
 
 import static darwin.renderer.GraphicContext.*;
 
@@ -18,6 +21,7 @@ import static darwin.renderer.GraphicContext.*;
 //TODO Mesh organisation verbessern das verschiedenen shader genutzt werden können
 public class RenderMesh implements Cloneable
 {
+
     private VertexAttributs attributs;
     private final int indextype, vertexcount;
     private final BufferObject indice;
@@ -25,48 +29,55 @@ public class RenderMesh implements Cloneable
     private final boolean asarray;
 
     public RenderMesh(Shader shader, int primitivtype,
-                      BufferObject indice, VertexBO... vertexdata) {
-//        gl = (GL2GL3) GLProxy.newInstance(gl);
+            BufferObject indice, VertexBO... vertexdata)
+    {
         this.primitivtype = primitivtype;
         asarray = indice == null;
         this.indice = indice;
         vertexcount = vertexdata[0].getVertexCount();
         attributs = new VertexAttributs(shader, vertexdata, indice);
-        indextype = GL2GL3.GL_UNSIGNED_INT;
+        indextype = GL2ES2.GL_UNSIGNED_INT;
     }
 
-    public RenderMesh(Shader shader, BufferObject indice, VertexBO... vertexdata) {
-        this(shader, GL2GL3.GL_TRIANGLES, indice, vertexdata);
+    public RenderMesh(Shader shader, BufferObject indice, VertexBO... vertexdata)
+    {
+        this(shader, GL.GL_TRIANGLES, indice, vertexdata);
     }
 
-    public int getIndexcount() {
+    public int getIndexcount()
+    {
         return asarray ? vertexcount : indice.getSize() / 4; // Integer 4 byte;
     }
 
     //TODO subsets auch erlauben, nicht nur genaue übereinstimmungen
-    public boolean isCompatible(Shader shader) {
+    public boolean isCompatible(Shader shader)
+    {
         return attributs.isCompatible(shader);
     }
 
-    public void render() {
+    public void render()
+    {
         renderRange(0, getIndexcount());
     }
 
-    public void renderRange(int offset, int length) {
+    public void renderRange(int offset, int length)
+    {
         attributs.bind();
-        if (asarray)
+        if (asarray) {
             getGL().glDrawArrays(primitivtype, offset, length);
-        else
+        } else {
             getGL().glDrawElements(primitivtype, length, indextype, offset * 4L);
+        }
         attributs.disable();
     }
 
     @Override
-    public RenderMesh clone() {
+    public RenderMesh clone()
+    {
         RenderMesh rm = null;
         try {
             rm =
-            (RenderMesh) super.clone();
+                    (RenderMesh) super.clone();
         } catch (CloneNotSupportedException ex) {
         }
         return rm;

@@ -4,10 +4,11 @@
  */
 package darwin.renderer.geometrie.factorys.grids;
 
-import darwin.renderer.geometrie.data.*;
-import darwin.renderer.geometrie.factorys.*;
-import darwin.renderer.opengl.*;
 import java.util.*;
+
+import darwin.renderer.geometrie.data.*;
+import darwin.renderer.geometrie.factorys.Quad;
+import darwin.renderer.opengl.Element;
 
 /**
  *

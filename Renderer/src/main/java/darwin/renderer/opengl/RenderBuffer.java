@@ -19,21 +19,21 @@ public class RenderBuffer {
     private static final int max_samples = iniMaxSamples();
 
     public RenderBuffer(int id) {
-        GL2GL3 gl = getGL().getGL2GL3();
+        GL2ES2 gl = getGL().getGL2ES2();
         this.id = id;
         bind();
         int[] ret = new int[1];
-        gl.glGetRenderbufferParameteriv(GL2GL3.GL_RENDERBUFFER,
-                GL2GL3.GL_RENDERBUFFER_WIDTH, ret, 0);
+        gl.glGetRenderbufferParameteriv(GL2ES2.GL_RENDERBUFFER,
+                GL2ES2.GL_RENDERBUFFER_WIDTH, ret, 0);
         width = ret[0];
-        gl.glGetRenderbufferParameteriv(GL2GL3.GL_RENDERBUFFER,
-                GL2GL3.GL_RENDERBUFFER_HEIGHT, ret, 0);
+        gl.glGetRenderbufferParameteriv(GL2ES2.GL_RENDERBUFFER,
+                GL2ES2.GL_RENDERBUFFER_HEIGHT, ret, 0);
         height = ret[0];
-        gl.glGetRenderbufferParameteriv(GL2GL3.GL_RENDERBUFFER,
+        gl.glGetRenderbufferParameteriv(GL2ES2.GL_RENDERBUFFER,
                 GL2GL3.GL_RENDERBUFFER_SAMPLES, ret, 0);
         samples = ret[0];
-        gl.glGetRenderbufferParameteriv(GL2GL3.GL_RENDERBUFFER,
-                GL2GL3.GL_RENDERBUFFER_INTERNAL_FORMAT,
+        gl.glGetRenderbufferParameteriv(GL2ES2.GL_RENDERBUFFER,
+                GL2ES2.GL_RENDERBUFFER_INTERNAL_FORMAT,
                 ret, 0);
         texformat = ret[0];
     }
@@ -127,13 +127,13 @@ public class RenderBuffer {
         gl.glGenRenderbuffers(1, i, 0);
         id = i[0];
         bind();
-        gl.glRenderbufferStorageMultisample(GL2GL3.GL_RENDERBUFFER, this.samples,
+        gl.glRenderbufferStorageMultisample(GL2ES2.GL_RENDERBUFFER, this.samples,
                 texformat,
                 width, height);
     }
 
     private void bind() {
-        getGL().glBindRenderbuffer(GL2GL3.GL_RENDERBUFFER, id);
+        getGL().glBindRenderbuffer(GL2ES2.GL_RENDERBUFFER, id);
     }
 
     /**
@@ -185,7 +185,7 @@ public class RenderBuffer {
 
     private static int iniMaxSamples() {
         int[] r = new int[1];
-        getContext().getGL().glGetIntegerv(GL2GL3.GL_MAX_SAMPLES, r, 0);
+        getGL().glGetIntegerv(GL2GL3.GL_MAX_SAMPLES, r, 0);
         return r[0];
     }
 

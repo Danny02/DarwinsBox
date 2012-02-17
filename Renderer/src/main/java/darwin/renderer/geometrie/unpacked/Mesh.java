@@ -4,9 +4,10 @@
  */
 package darwin.renderer.geometrie.unpacked;
 
-import darwin.renderer.geometrie.data.*;
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.Arrays;
+
+import darwin.renderer.geometrie.data.VertexBuffer;
 
 /**
  * H�lt VertexBuffern Indicies und Primitiv Typ eines Models

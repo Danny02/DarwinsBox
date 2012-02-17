@@ -6,9 +6,12 @@ package darwin.renderer.geometrie.factorys.grids;
 
 import darwin.renderer.geometrie.data.DataLayout.Format;
 import darwin.renderer.geometrie.data.*;
-import darwin.renderer.geometrie.factorys.*;
-import darwin.renderer.opengl.*;
-import darwin.util.math.base.*;
+import darwin.renderer.geometrie.factorys.PerCellFiller;
+import darwin.renderer.geometrie.factorys.PerVertexFiller;
+import darwin.renderer.opengl.Element;
+import darwin.renderer.opengl.GLSLType;
+import darwin.util.math.base.Matrix4;
+import darwin.util.math.base.Vector;
 
 /**
  *

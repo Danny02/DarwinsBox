@@ -4,8 +4,9 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
+import darwin.renderer.opengl.BufferObject;
+import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.shader.Shader;
 
 import static darwin.renderer.GraphicContext.*;
 

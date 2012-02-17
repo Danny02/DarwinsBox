@@ -4,7 +4,7 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import darwin.util.math.container.*;
+import darwin.util.math.container.TransformationContainer;
 
 
 /**

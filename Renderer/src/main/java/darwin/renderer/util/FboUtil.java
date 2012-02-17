@@ -4,10 +4,13 @@
  */
 package darwin.renderer.util;
 
-import com.jogamp.opengl.util.texture.*;
-import darwin.renderer.opengl.*;
-import darwin.resourcehandling.ressourcen.io.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.util.texture.Texture;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2ES2;
+
+import darwin.renderer.opengl.FrameBufferObject;
+import darwin.renderer.opengl.RenderBuffer;
+import darwin.resourcehandling.ressourcen.io.TextureUtil;
 
 /**
  *
@@ -38,7 +41,7 @@ public class FboUtil
                                  true);
         TextureUtil.setTexturePara(tex, GL.GL_NEAREST, GL.GL_CLAMP_TO_EDGE);
 
-        RenderBuffer rb = new RenderBuffer(width, height, GL2GL3.GL_DEPTH_COMPONENT);
+        RenderBuffer rb = new RenderBuffer(width, height, GL2ES2.GL_DEPTH_COMPONENT);
 
         fbo.setColor_Attachment(0, tex);
         fbo.setDepth_Attachment(rb);
@@ -48,8 +51,8 @@ public class FboUtil
     public static FrameBufferObject newDefaultFBO(int width, int height, int samples){
         FrameBufferObject fbo = new FrameBufferObject();
 
-        RenderBuffer col = new RenderBuffer(samples, width, height, GL2GL3.GL_RGBA8);
-        RenderBuffer dep = new RenderBuffer(samples, width, height, GL2GL3.GL_DEPTH_COMPONENT);
+        RenderBuffer col = new RenderBuffer(samples, width, height, GL2ES2.GL_RGBA8);
+        RenderBuffer dep = new RenderBuffer(samples, width, height, GL2ES2.GL_DEPTH_COMPONENT);
 
         fbo.setColor_Attachment(0, col);
         fbo.setDepth_Attachment(dep);

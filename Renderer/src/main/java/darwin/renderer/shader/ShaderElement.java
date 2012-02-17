@@ -4,7 +4,8 @@
  */
 package darwin.renderer.shader;
 
-import darwin.renderer.opengl.*;
+import darwin.renderer.opengl.Element;
+import darwin.renderer.opengl.ShaderProgramm;
 
 /**
  *

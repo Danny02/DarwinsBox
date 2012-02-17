@@ -5,7 +5,7 @@
 
 package darwin.renderer.geometrie.packed;
 
-import darwin.renderer.shader.*;
+import darwin.renderer.shader.Shader;
 
 /**
  *

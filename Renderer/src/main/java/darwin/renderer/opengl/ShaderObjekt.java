@@ -4,9 +4,11 @@
  */
 package darwin.renderer.opengl;
 
-import darwin.renderer.shader.*;
 import java.io.*;
-import javax.media.opengl.*;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2ES2;
+
+import darwin.renderer.shader.BuildException;
 
 import static darwin.renderer.GraphicContext.*;
 import static darwin.renderer.shader.BuildException.BuildError.*;
@@ -22,14 +24,14 @@ public class ShaderObjekt
     private int globject;
 
     public ShaderObjekt(int type, String[] shadertext) throws BuildException {
-        GL2GL3 gl = getGL().getGL2GL3();
+        GL2ES2 gl = getGL().getGL2ES2();
         this.type = type;
 
         globject = gl.glCreateShader(type);
         gl.glShaderSource(globject, shadertext.length, shadertext, null);
         gl.glCompileShader(globject);
         int[] error = new int[1];
-        gl.glGetShaderiv(globject, GL2GL3.GL_COMPILE_STATUS,
+        gl.glGetShaderiv(globject, GL2ES2.GL_COMPILE_STATUS,
                          error, 0);
         if (error[0] == GL.GL_FALSE) {
             int[] len = new int[]{512};

@@ -4,7 +4,7 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import javax.media.opengl.*;
+import javax.media.opengl.GL;
 
 import static darwin.renderer.GraphicContext.*;
 

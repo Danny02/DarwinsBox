@@ -4,10 +4,11 @@
  */
 package darwin.renderer.shader.uniform;
 
-import darwin.renderer.geometrie.unpacked.*;
-import darwin.resourcehandling.resmanagment.texture.*;
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.Arrays;
+
+import darwin.renderer.geometrie.unpacked.ObjMaterial;
+import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 /**
  *

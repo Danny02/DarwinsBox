@@ -5,11 +5,14 @@
 package darwin.renderer.geometrie.unpacked;
 
 
+import javax.media.opengl.GL;
+import org.apache.log4j.Logger;
+
 import darwin.renderer.geometrie.data.*;
-import darwin.renderer.opengl.*;
-import darwin.util.math.base.*;
-import javax.media.opengl.*;
-import org.apache.log4j.*;
+import darwin.renderer.opengl.Element;
+import darwin.renderer.opengl.GLSLType;
+import darwin.util.math.base.Vec3;
+import darwin.util.math.base.Vector;
 
 /**
  *

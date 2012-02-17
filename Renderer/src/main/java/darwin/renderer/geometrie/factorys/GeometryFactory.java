@@ -5,8 +5,8 @@
 
 package darwin.renderer.geometrie.factorys;
 
-import darwin.renderer.geometrie.data.*;
-import darwin.renderer.shader.*;
+import darwin.renderer.geometrie.data.RenderMesh;
+import darwin.renderer.shader.Shader;
 
 /**
  *

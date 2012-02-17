@@ -5,8 +5,9 @@
 
 package darwin.renderer.shader.uniform;
 
-import darwin.renderer.shader.*;
-import java.nio.*;
+import java.nio.FloatBuffer;
+
+import darwin.renderer.shader.ShaderUniform;
 
 /**
  *

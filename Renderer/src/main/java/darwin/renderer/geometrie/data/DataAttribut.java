@@ -5,7 +5,7 @@
 
 package darwin.renderer.geometrie.data;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  *

@@ -4,10 +4,11 @@
  */
 package darwin.renderer.geometrie.data;
 
-import com.jogamp.opengl.util.*;
-import darwin.renderer.opengl.*;
-import java.nio.*;
-import java.util.*;
+import com.jogamp.opengl.util.GLBuffers;
+import java.nio.ByteBuffer;
+import java.util.Objects;
+
+import darwin.renderer.opengl.Element;
 
 import static java.lang.Math.*;
 

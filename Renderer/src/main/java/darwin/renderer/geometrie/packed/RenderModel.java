@@ -4,17 +4,23 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import darwin.renderer.geometrie.data.*;
-import darwin.renderer.geometrie.unpacked.*;
+import java.nio.Buffer;
+import java.nio.IntBuffer;
+import java.util.HashSet;
+import java.util.Set;
+
+import darwin.renderer.geometrie.data.RenderMesh;
+import darwin.renderer.geometrie.data.VertexBuffer;
+import darwin.renderer.geometrie.unpacked.Mesh;
+import darwin.renderer.geometrie.unpacked.Model;
+import darwin.renderer.opengl.BufferObject;
 import darwin.renderer.opengl.BufferObject.Target;
 import darwin.renderer.opengl.BufferObject.Type;
 import darwin.renderer.opengl.BufferObject.Usage;
-import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
+import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.uniform.*;
-import darwin.resourcehandling.wrapper.*;
-import java.nio.*;
-import java.util.*;
+import darwin.resourcehandling.wrapper.TextureContainer;
 
 /**
  * Haelt alle Render relevanten Attribute eines 3D Modelles.

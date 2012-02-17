@@ -4,9 +4,11 @@
  */
 package darwin.renderer.geometrie.data;
 
-import darwin.renderer.opengl.*;
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+
+import darwin.renderer.opengl.Element;
 
 /**
  *

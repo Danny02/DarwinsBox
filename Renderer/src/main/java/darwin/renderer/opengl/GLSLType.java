@@ -5,7 +5,7 @@
 
 package darwin.renderer.opengl;
 
-import darwin.renderer.geometrie.data.*;
+import darwin.renderer.geometrie.data.DataType;
 
 
 /**

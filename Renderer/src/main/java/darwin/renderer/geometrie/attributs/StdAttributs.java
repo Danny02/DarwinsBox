@@ -4,12 +4,13 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import darwin.renderer.geometrie.data.*;
-import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
-import static darwin.renderer.GraphicContext.*;
+import darwin.renderer.geometrie.data.DataLayout;
+import darwin.renderer.opengl.*;
+import darwin.renderer.shader.Shader;
+import darwin.renderer.shader.ShaderAttribute;
 
 /**
  *
@@ -45,7 +46,7 @@ class StdAttributs implements AttributsConfigurator {
     @Override
     public void prepare() {
         for (BufferConfigs bc : configs) {
-            bc.prepare(getGL2GL3());
+            bc.prepare();
         }
         if (indice != null) {
             indice.bind();
@@ -55,7 +56,7 @@ class StdAttributs implements AttributsConfigurator {
     @Override
     public void disable() {
         for (BufferConfigs bc : configs) {
-            bc.disable(getGL2GL3());
+            bc.disable();
         }
         if (indice != null) {
             indice.disable();

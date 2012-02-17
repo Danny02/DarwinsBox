@@ -5,8 +5,8 @@
 
 package darwin.renderer.geometrie.attributs;
 
-import darwin.renderer.geometrie.data.*;
-import darwin.renderer.shader.*;
+import darwin.renderer.geometrie.data.DataAttribut;
+import darwin.renderer.shader.ShaderAttribute;
 
 /**
  *

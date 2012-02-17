@@ -4,7 +4,7 @@
  */
 package darwin.renderer.opengl;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  *

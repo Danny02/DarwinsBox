@@ -4,117 +4,120 @@
  */
 package darwin.renderer.opengl;
 
-import darwin.renderer.shader.*;
-import java.util.*;
-import javax.media.opengl.*;
-import org.apache.log4j.*;
+import java.util.List;
+import javax.media.opengl.GLES2;
+import javax.media.opengl.GLProfile;
+import org.apache.log4j.Logger;
+
+import darwin.renderer.shader.BuildException;
+import darwin.renderer.shader.ShaderAttribute;
 
 import static darwin.renderer.GraphicContext.*;
 import static darwin.renderer.shader.BuildException.BuildError.*;
 
 /**
  * CPU seitige Repr�sentation eines OpenGL Shader Programmes
+ * <p/>
  * @author Daniel Heinrich
  */
 public class ShaderProgramm
 {
+
     private static class Log
     {
+
         private static Logger ger = Logger.getLogger(ShaderProgramm.class);
+    }
+
+    static {
+        assert GLProfile.isAvailable(GLProfile.GLES2) : "This device doesn't support Shaders";
     }
     static ShaderProgramm shaderinuse = null;
     private int programObject;
 
     /**
-     * Erstellt eines ShaderProgramm Object.
-     * <br>
-     * @param gl
-     * <br>
-     * Der GL Context in dem das Programm erstellt werden soll.
-     * <br>
-     * @param vs
-     * <br>
-     * Vertex Shader Objekt das gelinked werden soll.
-     * <br>
-     * Falls NULL wird kein Vertex Shader gelinked und die Fixed-Function Pipeline wird verwendet.
-     * <br>
-     * Vorsicht!! Die Fixed-Function Pipeline ist Depricated und ist ab OpenGL 3.2 nicht mehr vorhanden.
-     * <br>
-     * @param fs
-     * <br>
-     * Fragment Shader Objekt das gelinked werden soll.
-     * <br>
-     * Falls NULL wird kein Fragment Shader gelinked und die Fixed-Function Pipeline wird verwendet.
-     * <br>
-     * Vorsicht!! Die Fixed-Function Pipeline ist Depricated und ist ab OpenGL 3.2 nicht mehr vorhanden.
-     * <br>
-     * @param uni
-     * <br>
-     * Eine Liste von Uniform variable der ShaderProgramm deren positionen abgefragt werden sollen.
+     * Erstellt eines ShaderProgramm Object. <br>
+     * <p/>
+     * @param gl  <br> Der GL Context in dem das Programm erstellt werden soll.
+     *            <br>
+     * @param vs  <br> Vertex Shader Objekt das gelinked werden soll. <br> Falls
+     *            NULL wird kein Vertex Shader gelinked und die Fixed-Function
+     *            Pipeline wird verwendet. <br> Vorsicht!! Die Fixed-Function
+     *            Pipeline ist Depricated und ist ab OpenGL 3.2 nicht mehr
+     *            vorhanden. <br>
+     * @param fs  <br> Fragment Shader Objekt das gelinked werden soll. <br>
+     *            Falls NULL wird kein Fragment Shader gelinked und die
+     *            Fixed-Function Pipeline wird verwendet. <br> Vorsicht!! Die
+     *            Fixed-Function Pipeline ist Depricated und ist ab OpenGL 3.2
+     *            nicht mehr vorhanden. <br>
+     * @param uni <br> Eine Liste von Uniform variable der ShaderProgramm deren
+     *            positionen abgefragt werden sollen.
      */
-    public ShaderProgramm(List<ShaderAttribute> attr, ShaderObjekt... sobject) throws BuildException {
-        GL2GL3 gl = getGL().getGL2GL3();
+    public ShaderProgramm(List<ShaderAttribute> attr, ShaderObjekt... sobject) throws BuildException
+    {
+        GLES2 gl = getGL().getGLES2();
         programObject = gl.glCreateProgram();
 
         for (ShaderObjekt so : sobject) {
-            if (so == null)
+            if (so == null) {
                 continue;
+            }
             gl.glAttachShader(programObject, so.getShaderobjekt());
         }
 
         //TODO GL Treiber Constanten in einen Globalen Constanten-Pool verfrachten
         int[] max = new int[1];
-        gl.glGetIntegerv(GL2.GL_MAX_VERTEX_ATTRIBS, max, 0);
+        gl.glGetIntegerv(GLES2.GL_MAX_VERTEX_ATTRIBS, max, 0);
 
         //TODO buggy, anscheined werden manche attribute ned gefunden
         for (ShaderAttribute sa : attr) {
             int index = sa.getIndex();
-            if (index >= 0 && index < max[0])
-                gl.glBindAttribLocation(programObject,
-                                        sa.getIndex(), sa.getName());
+            if (index >= 0 && index < max[0]) {
+                gl.glBindAttribLocation(programObject, sa.getIndex(), sa.getName());
+            }
         }
 
         gl.glLinkProgram(programObject);
         gl.glValidateProgram(programObject);
         int[] error = new int[]{-1};
-        gl.glGetProgramiv(programObject, GL2.GL_LINK_STATUS,
-                          error, 0);
+        gl.glGetProgramiv(programObject, GLES2.GL_LINK_STATUS, error, 0);
         if (error[0] == 0) {
             int[] len = new int[]{512};
             byte[] errormessage = new byte[512];
-            gl.glGetProgramInfoLog(programObject, 512, len,
-                                   0, errormessage,
-                                   0);
+            gl.glGetProgramInfoLog(programObject, 512, len, 0, errormessage, 0);
             throw new BuildException(new String(errormessage, 0, len[0]), LinkTime);
         }
     }
 
     /**
-     * @return
-     * Gibt den Index des Programm Objekt im Grafikspeicher zur�ck.
+     * @return Gibt den Index des Programm Objekt im Grafikspeicher zur�ck.
      */
-    public int getPObject() {
+    public int getPObject()
+    {
         return programObject;
     }
 
-    public int getUniformLocation(String s) {
+    public int getUniformLocation(String s)
+    {
         return getGL().getGL2GL3().glGetUniformLocation(getPObject(), s);
     }
 
     /**
-     * @param name
-     * Name der Attribut Variable(wie im Vertex ShaderProgramm definiert).
-     * @return
-     * Gibt den Index der Attribut Varibale im Grafikspeicher zur�ck.
+     * @param name Name der Attribut Variable(wie im Vertex ShaderProgramm
+     *             definiert).
+     * <p/>
+     * @return Gibt den Index der Attribut Varibale im Grafikspeicher zur�ck.
      */
-    public int getAttrLocation(String name) {
+    public int getAttrLocation(String name)
+    {
         return getGL().getGL2GL3().glGetAttribLocation(programObject, name);
     }
 
     /**
      * Aktiviert das ShaderProgramm Programm im GL Context.
      */
-    public void use() {
+    public void use()
+    {
         if (shaderinuse != this) {
             getGL().getGL2GL3().glUseProgram(getPObject());
             shaderinuse = this;
@@ -124,31 +127,39 @@ public class ShaderProgramm
     /**
      * Deaktiviert ShaderProgramm Programme im GL Context.
      */
-    public void disable() {
+    public void disable()
+    {
         getGL().getGL2GL3().glUseProgram(0);
         shaderinuse = null;
     }
 
-    public void delete() {
+    public void delete()
+    {
         getGL().getGL2GL3().glDeleteProgram(getPObject());
-        if (shaderinuse == this)
+        if (shaderinuse == this) {
             disable();
+        }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final ShaderProgramm other = (ShaderProgramm) obj;
-        if (this.programObject != other.programObject)
+        if (this.programObject != other.programObject) {
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 3;
         hash = 41 * hash + this.programObject;
         return hash;

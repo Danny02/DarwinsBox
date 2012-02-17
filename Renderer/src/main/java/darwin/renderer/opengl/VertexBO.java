@@ -6,7 +6,9 @@ package darwin.renderer.opengl;
 
 import darwin.renderer.geometrie.data.DataLayout;
 import darwin.renderer.geometrie.data.VertexBuffer;
-import darwin.renderer.opengl.BufferObject.*;
+import darwin.renderer.opengl.BufferObject.Target;
+import darwin.renderer.opengl.BufferObject.Type;
+import darwin.renderer.opengl.BufferObject.Usage;
 
 /**
  *

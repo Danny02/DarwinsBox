@@ -4,9 +4,11 @@
  */
 package darwin.renderer.shader.uniform;
 
-import darwin.renderer.shader.*;
+import java.util.Collection;
+import java.util.LinkedList;
+
+import darwin.renderer.shader.ShaderUniform;
 import darwin.util.math.util.*;
-import java.util.*;
 
 /**
  *

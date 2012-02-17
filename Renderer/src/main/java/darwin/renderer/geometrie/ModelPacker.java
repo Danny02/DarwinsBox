@@ -4,11 +4,14 @@
  */
 package darwin.renderer.geometrie;
 
-import darwin.renderer.geometrie.packed.*;
-import darwin.renderer.geometrie.unpacked.*;
-import darwin.renderer.shader.*;
-import darwin.renderer.shader.uniform.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import darwin.renderer.geometrie.packed.RenderModel;
+import darwin.renderer.geometrie.unpacked.Model;
+import darwin.renderer.geometrie.unpacked.ModelObjekt;
+import darwin.renderer.shader.Shader;
+import darwin.renderer.shader.uniform.GameMaterial;
 
 import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
 

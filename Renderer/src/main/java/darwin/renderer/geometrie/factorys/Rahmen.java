@@ -4,15 +4,17 @@
  */
 package darwin.renderer.geometrie.factorys;
 
+import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import darwin.renderer.geometrie.data.DataLayout.Format;
 import darwin.renderer.geometrie.data.*;
 import darwin.renderer.opengl.BufferObject.Target;
 import darwin.renderer.opengl.BufferObject.Type;
 import darwin.renderer.opengl.BufferObject.Usage;
 import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
-import java.nio.*;
-import java.util.*;
+import darwin.renderer.shader.Shader;
 
 /**
  *

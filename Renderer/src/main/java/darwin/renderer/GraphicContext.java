@@ -22,84 +22,90 @@ import javax.media.opengl.*;
  *
  * @author daniel
  */
-public final class GraphicContext {
+public final class GraphicContext
+{
 
+    private static final GraphicContext gcontext;
+
+    static {
+        GLCapabilities capabilitys = new GLCapabilities(GLProfile.getMaximum());
+        capabilitys.setHardwareAccelerated(true);
+        capabilitys.setDoubleBuffered(true);
+
+        gcontext = new GraphicContext(capabilitys);
+    }
     private GL gl;
     private GLContext context;
     private GLPbuffer backend;
-    private Thread mthread;
-    private final GLCapabilitiesImmutable capas;
+    private Thread renderThreadhread;
+    private final GLCapabilitiesImmutable capabilitys;
 
-    private GraphicContext(GLCapabilitiesImmutable capa) {
-        capas = capa;
+    private GraphicContext(GLCapabilitiesImmutable capa)
+    {
+        capabilitys = capa;
     }
 
-    synchronized public GLProfile ini() throws GLException {
-        assert backend == null : "Context already initialized.";
-
-        GLDrawableFactory factory = GLDrawableFactory.getFactory(GLProfile.getMaximum());
+    synchronized private void ini() throws GLException
+    {
+        GLDrawableFactory factory = GLDrawableFactory.getDesktopFactory();
         if (!factory.canCreateGLPbuffer(null)) {
-            throw new GLException("Das System unterstützt keine pbuffer.");
+            throw new GLException("The System doesn't support pbuffer!");
         }
-        backend = factory.createGLPbuffer(null, capas, new DefaultGLCapabilitiesChooser(), 1, 1, null);
-        backend.releaseTexture();
-        context = backend.getContext();
-        gl = context.getGL();
-        mthread = Thread.currentThread();
-        return gl.getGLProfile();
+
+        backend = factory.createGLPbuffer(null, capabilitys, new DefaultGLCapabilitiesChooser(), 1, 1, null);
+//        backend.releaseTexture(); //TODO X11 doesn't implement this until now(16.02.12)
+
+        renderThreadhread = Thread.currentThread();
     }
 
-    public void doAsserts() {
-        assert mthread == Thread.currentThread() : "No OpenGL context current on this thread";
+    public void doAsserts()
+    {
+        assert renderThreadhread == Thread.currentThread() : "No OpenGL context current on this thread";
         assert backend != null : "Context is not initialized";
     }
 
     /**
-     * sets the render thread to the calling thread if it is the current on the context.
-     *
+     * sets the render thread to the calling thread if it is the current on the
+     * context.
+     * <p/>
      * should be called after context.makeCurrent() calls
      */
-    public void resetRenderThread() {
+    public void resetRenderThread()
+    {
         if (context.isCurrent()) {
-            mthread = Thread.currentThread();
+            renderThreadhread = Thread.currentThread();
         }
     }
 
-    public synchronized void destroy() {
+    public synchronized void destroy()
+    {
         assert backend != null : "Can only destroy already initialized Context.";
         backend.destroy();
         backend = null;
     }
 
-    private static final GraphicContext gcontext;
-
-    static {
-        GLCapabilities CAPABILITIES = new GLCapabilities(GLProfile.getMaximum());
-        CAPABILITIES.setHardwareAccelerated(true);
-        CAPABILITIES.setDoubleBuffered(true);
-        gcontext = new GraphicContext(CAPABILITIES);
-    }
-
-    public static GL getGL() {
-        gcontext.doAsserts();
-        return gcontext.gl;
-    }
-
-    public static GL2GL3 getGL2GL3()
+    public static GL getGL()
     {
-        return getGL().getGL2GL3();
+        gcontext.doAsserts();
+        return gcontext.backend.getGL();
     }
 
-    public static void iniContext() throws GLException {
+    public static void iniContext() throws GLException
+    {
         gcontext.ini();
-
     }
 
-    public static GLContext getContext() {
-        return gcontext.context;
+    public static GLContext getContext()
+    {
+        return gcontext.backend.getContext();
     }
 
-    public static GLCapabilitiesImmutable getCapabilities() {
-        return gcontext.capas;
+    public static GLCapabilitiesImmutable getCapabilities()
+    {
+        return gcontext.capabilitys;
+    }
+    public static void main(String[] args)
+    {
+     GraphicContext.iniContext();
     }
 }

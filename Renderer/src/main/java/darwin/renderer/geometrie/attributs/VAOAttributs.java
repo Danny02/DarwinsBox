@@ -4,8 +4,11 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import darwin.renderer.opengl.*;
-import darwin.renderer.shader.*;
+import javax.media.opengl.GLProfile;
+
+import darwin.renderer.opengl.BufferObject;
+import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.shader.Shader;
 
 import static darwin.renderer.GraphicContext.*;
 
@@ -15,12 +18,17 @@ import static darwin.renderer.GraphicContext.*;
  */
 final class VAOAttributs implements AttributsConfigurator
 {
+
+    static {
+        assert GLProfile.isAvailable(GLProfile.GL2GL3) : "This device doesn't support VAOs";
+    }
     private final int id;
 
-    public VAOAttributs(Shader shader, VertexBO[] vbuffers, BufferObject indice) {
+    public VAOAttributs(Shader shader, VertexBO[] vbuffers, BufferObject indice)
+    {
 
         int[] i = new int[1];
-        getGL2GL3().glGenVertexArrays(1, i, 0);
+        getGL().getGL2GL3().glGenVertexArrays(1, i, 0);
         id = i[0];
 
         StdAttributs sa = new StdAttributs(shader, vbuffers, indice);
@@ -32,12 +40,14 @@ final class VAOAttributs implements AttributsConfigurator
     }
 
     @Override
-    public void prepare() {
-        getGL2GL3().glBindVertexArray(id);
+    public void prepare()
+    {
+        getGL().getGL2GL3().glBindVertexArray(id);
     }
 
     @Override
-    public void disable() {
-        getGL2GL3().glBindVertexArray(0);
+    public void disable()
+    {
+        getGL().getGL2GL3().glBindVertexArray(0);
     }
 }

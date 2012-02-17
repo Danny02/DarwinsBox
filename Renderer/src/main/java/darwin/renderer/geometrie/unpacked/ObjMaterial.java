@@ -5,7 +5,7 @@
 package darwin.renderer.geometrie.unpacked;
 
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 
 import static java.lang.Math.*;
 

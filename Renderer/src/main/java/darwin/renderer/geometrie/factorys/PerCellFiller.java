@@ -5,7 +5,7 @@
 
 package darwin.renderer.geometrie.factorys;
 
-import darwin.renderer.geometrie.data.*;
+import darwin.renderer.geometrie.data.Vertex;
 
 /**
  *

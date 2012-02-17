@@ -4,9 +4,10 @@
  */
 package darwin.renderer.geometrie.factorys.grids;
 
-import darwin.renderer.geometrie.factorys.*;
-import darwin.util.math.base.Vector;
 import java.util.*;
+
+import darwin.renderer.geometrie.factorys.Quad;
+import darwin.util.math.base.Vector;
 
 /**
  *

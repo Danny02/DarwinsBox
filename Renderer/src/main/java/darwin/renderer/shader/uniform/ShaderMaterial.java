@@ -4,12 +4,14 @@
  */
 package darwin.renderer.shader.uniform;
 
-import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.Texture;
+import java.util.LinkedList;
+import java.util.List;
+import javax.media.opengl.GL;
+
 import darwin.renderer.shader.*;
-import darwin.resourcehandling.resmanagment.texture.*;
-import darwin.resourcehandling.wrapper.*;
-import java.util.*;
-import javax.media.opengl.*;
+import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
+import darwin.resourcehandling.wrapper.TextureContainer;
 
 import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
 
