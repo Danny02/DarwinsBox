@@ -16,7 +16,10 @@
  */
 package darwin.renderer;
 
+import com.jogamp.newt.opengl.GLWindow;
 import javax.media.opengl.*;
+import org.apache.log4j.Logger;
+
 
 /**
  *
@@ -25,87 +28,64 @@ import javax.media.opengl.*;
 public final class GraphicContext
 {
 
-    private static final GraphicContext gcontext;
+    private static class Log
+    {
 
-    static {
-        GLCapabilities capabilitys = new GLCapabilities(GLProfile.getMaximum());
+        private static final Logger ger = Logger.getLogger(GraphicContext.class);
+    }
+
+    public static final GraphicContext INSTANCE = new GraphicContext();
+    private GLWindow window;
+
+    private GraphicContext()
+    {
+    }
+
+    private final GLCapabilitiesImmutable getCapabilities(GLProfile profile)
+    {
+        GLCapabilities capabilitys = new GLCapabilities(profile);
+//        c.setSampleBuffers(true);
+//        c.setNumSamples(16);
         capabilitys.setHardwareAccelerated(true);
         capabilitys.setDoubleBuffered(true);
 
-        gcontext = new GraphicContext(capabilitys);
-    }
-    private GL gl;
-    private GLContext context;
-    private GLPbuffer backend;
-    private Thread renderThreadhread;
-    private final GLCapabilitiesImmutable capabilitys;
-
-    private GraphicContext(GLCapabilitiesImmutable capa)
-    {
-        capabilitys = capa;
+        return capabilitys;
     }
 
     synchronized private void ini() throws GLException
     {
-        GLDrawableFactory factory = GLDrawableFactory.getDesktopFactory();
-        if (!factory.canCreateGLPbuffer(null)) {
-            throw new GLException("The System doesn't support pbuffer!");
+        assert window == null : "The Context is already initialized!";
+
+        GLProfile.initSingleton();
+        GLProfile profile = null;
+        try {
+            profile = GLProfile.getMaximum();
+        } catch (Throwable t) {
+            throw new GLException("Couldn't initialize OpenGL!", t);
         }
 
-        backend = factory.createGLPbuffer(null, capabilitys, new DefaultGLCapabilitiesChooser(), 1, 1, null);
-//        backend.releaseTexture(); //TODO X11 doesn't implement this until now(16.02.12)
-
-        renderThreadhread = Thread.currentThread();
+        window = GLWindow.create(getCapabilities(profile));
     }
 
     public void doAsserts()
     {
-        assert renderThreadhread == Thread.currentThread() : "No OpenGL context current on this thread";
-        assert backend != null : "Context is not initialized";
-    }
-
-    /**
-     * sets the render thread to the calling thread if it is the current on the
-     * context.
-     * <p/>
-     * should be called after context.makeCurrent() calls
-     */
-    public void resetRenderThread()
-    {
-        if (context.isCurrent()) {
-            renderThreadhread = Thread.currentThread();
-        }
-    }
-
-    public synchronized void destroy()
-    {
-        assert backend != null : "Can only destroy already initialized Context.";
-        backend.destroy();
-        backend = null;
+        assert window != null : "Context is not initialized";
+        assert window.getContext().isCurrent() : "No OpenGL context current on this thread";
     }
 
     public static GL getGL()
     {
-        gcontext.doAsserts();
-        return gcontext.backend.getGL();
+        INSTANCE.doAsserts();
+        return INSTANCE.window.getGL();
     }
 
     public static void iniContext() throws GLException
     {
-        gcontext.ini();
+        INSTANCE.ini();
     }
 
-    public static GLContext getContext()
+    public static GLWindow getGLWindow()
     {
-        return gcontext.backend.getContext();
-    }
-
-    public static GLCapabilitiesImmutable getCapabilities()
-    {
-        return gcontext.capabilitys;
-    }
-    public static void main(String[] args)
-    {
-     GraphicContext.iniContext();
+        return INSTANCE.window;
     }
 }

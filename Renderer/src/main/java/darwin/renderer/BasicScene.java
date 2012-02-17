@@ -44,7 +44,6 @@ public abstract class BasicScene implements GLEventListener
     private final List<ShaderUniform> half, lightdir, animated;
     private final Queue<RenderObjekt> needini = new ConcurrentLinkedQueue<>();
     private final MatrixCache matrices;
-    private long time, frametime, starttime;
     //test
     private PerformanceView info;
     private MemoryInfo meminfo;
@@ -102,26 +101,16 @@ public abstract class BasicScene implements GLEventListener
         } catch (Throwable ex) {
             Log.ger.fatal("Error in custom code!", ex);
         }
+
+        GLAnimatorControl ani = drawable.getAnimator();
 //TODO GameTime updates einbaun
-        if (time != 0) {
-            long t = new Date().getTime();
-            frametime = t - time;
-            double fts = frametime / 1000.;
-            if (frametime > 0) {
-                Log.ger.trace(String.format("%d Objects took %dms  to render; fps:$f",
-                        robjekts.size(), frametime, 1 / fts));
-            }
-            if (info != null) {
-                info.setFPS(1 / fts);
-            }
+        Log.ger.trace(String.format("%d Objects took %dms  to render; fps:$f",
+                robjekts.size(), ani.getLastFPSPeriod(), ani.getLastFPS()));
+        if (info != null) {
+            info.setFPS(ani.getTotalFPS());
         }
 
-        time = new Date().getTime();
-        if (starttime == 0) {
-            starttime = time;
-        }
-
-        float delta = time - starttime;
+        float delta = ani.getLastFPSPeriod();
         for (ShaderUniform su : animated) {
             su.setData(delta);
         }
@@ -241,11 +230,6 @@ public abstract class BasicScene implements GLEventListener
     public boolean append2Initiation(RenderObjekt e)
     {
         return needini.add(e);
-    }
-
-    public long getFrametime()
-    {
-        return frametime;
     }
 
     public void setInfoDisplay(PerformanceView info)

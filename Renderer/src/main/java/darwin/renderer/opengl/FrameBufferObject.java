@@ -536,7 +536,7 @@ public class FrameBufferObject
         return new FrameBufferObject(0)
         {
 
-            private GLDrawable drawable = getContext().getGLDrawable();
+            private GLDrawable drawable = getGLWindow();
 
             @Override
             public int getWidth()
