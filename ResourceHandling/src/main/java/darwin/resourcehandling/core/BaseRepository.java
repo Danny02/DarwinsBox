@@ -4,8 +4,10 @@
  */
 package darwin.resourcehandling.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import darwin.resourcehandling.*;
-import java.util.*;
 
 /**
  *
@@ -26,6 +28,7 @@ public class BaseRepository implements ResourceRepository {
         if (resources == null) {
             resources = new HashMap<>();
             iniHandle(handle, resources);
+            libary.put(handle, resources);
         } else {
             Resource r = resources.get(state);
             if (r != null) {
