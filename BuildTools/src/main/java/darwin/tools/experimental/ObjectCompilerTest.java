@@ -1,8 +1,10 @@
-package de.dheinrich.darwin.tools.experimental;
+package darwin.tools.experimental;
 
-import de.dheinrich.darwin.renderer.geometrie.unpacked.*;
-import de.dheinrich.darwin.ressourcen.io.obj.*;
 import java.io.*;
+
+import darwin.renderer.geometrie.unpacked.ObjMaterial;
+import darwin.resourcehandling.io.obj.ObjFile;
+import darwin.resourcehandling.io.obj.ObjFileParser;
 
 /**
  *
@@ -26,8 +28,7 @@ public class ObjectCompilerTest {
         long parse = 0, save = 0, total = 0, comp = 0;
         for (File obj : files) {
             long time = System.currentTimeMillis();
-            ObjFileParser ofr =
-                    new ObjFileParser("resources/Models/" + obj.getName());
+            ObjFileParser ofr = new ObjFileParser("resources/Models/" + obj.getName());
             ObjFile f = ofr.loadOBJ();
             parse += System.currentTimeMillis() - time;
             try {

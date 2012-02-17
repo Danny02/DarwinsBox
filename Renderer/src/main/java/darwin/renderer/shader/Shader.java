@@ -12,7 +12,7 @@ import darwin.renderer.opengl.Element;
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.uniform.MatrixSetter;
 import darwin.renderer.shader.uniform.UniformSetter;
-import darwin.resourcehandling.ressourcen.io.ShaderFile;
+import darwin.resourcehandling.io.ShaderFile;
 import darwin.util.math.util.GenListener;
 import darwin.util.math.util.MatrixEvent;
 

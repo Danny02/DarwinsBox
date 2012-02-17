@@ -4,7 +4,8 @@
  */
 package darwin.renderer.opengl;
 
-import javax.media.opengl.*;
+import javax.media.opengl.GL2ES2;
+import javax.media.opengl.GL2GL3;
 
 import static darwin.renderer.GraphicContext.*;
 

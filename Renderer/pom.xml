@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.darwin</groupId>
         <artifactId>DarwinsBox</artifactId>
-        <version>1.0</version>
+        <version>2.0-SNAPSHOT</version>
     </parent>
     <artifactId>Renderer</artifactId>
     <packaging>jar</packaging>
@@ -25,14 +25,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>darwin</groupId>
             <artifactId>ResourceHandling</artifactId>
             <version>1.0</version>
             <type>jar</type>
             <exclusions>
                 <exclusion>
-                    <groupId>${project.groupId}</groupId>
                     <artifactId>${project.artifactId}</artifactId>
+                    <groupId>darwin</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

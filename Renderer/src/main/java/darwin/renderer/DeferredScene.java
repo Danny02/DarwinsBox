@@ -9,7 +9,8 @@ import javax.media.opengl.*;
 
 import darwin.renderer.opengl.FrameBufferObject;
 import darwin.renderer.opengl.RenderBuffer;
-import darwin.resourcehandling.ressourcen.io.TextureUtil;
+import darwin.resourcehandling.io.TextureUtil;
+
 import static darwin.renderer.GraphicContext.*;
 
 /**

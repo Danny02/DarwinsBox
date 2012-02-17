@@ -1,4 +1,4 @@
-package de.dheinrich.darwin.tools.experimental;
+package darwin.tools.experimental;
 
 ///*
 // *  Copyright (C) 2011 Daniel Heinrich <DannyNullZwo@gmail.com>
