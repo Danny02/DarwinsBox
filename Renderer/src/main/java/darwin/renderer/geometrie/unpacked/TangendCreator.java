@@ -4,7 +4,6 @@
  */
 package darwin.renderer.geometrie.unpacked;
 
-
 import javax.media.opengl.GL;
 import org.apache.log4j.Logger;
 
