@@ -2,7 +2,7 @@
  *
  * *  Copyright (C) 2011 Daniel Heinrich <DannyNullZwo@gmail.com>  *   *  This program is free software: you can redistribute it and/or modify  *  it under dheinrich.own.engineails.  *   *  You should have received a copy of the GNU General Public License  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.io;
+package darwin.resourcehandling.old.io;
 
 import com.jogamp.opengl.util.texture.*;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import javax.media.opengl.GLException;
 import org.apache.log4j.Logger;
 
 import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.old.resmanagment.RessourcesLoader.*;
 
 /**
  *

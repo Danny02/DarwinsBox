@@ -2,7 +2,7 @@
  *
  * *  Copyright (C) 2011 Daniel Heinrich <DannyNullZwo@gmail.com>  *   *  This program is free software: you can redistribute it and/or modify  *  it under dheinrich.own.engineails.  *   *  You should have received a copy of the GNU General Public License  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.resmanagment.texture;
+package darwin.resourcehandling.old.resmanagment.texture;
 
 import com.jogamp.opengl.util.texture.Texture;
 import java.io.File;
@@ -10,9 +10,9 @@ import java.io.IOException;
 import javax.media.opengl.GL;
 import org.apache.log4j.Logger;
 
-import darwin.resourcehandling.io.TextureUtil;
-import darwin.resourcehandling.resmanagment.LoadJob;
-import darwin.resourcehandling.wrapper.TextureContainer;
+import darwin.resourcehandling.old.io.TextureUtil;
+import darwin.resourcehandling.old.resmanagment.LoadJob;
+import darwin.resourcehandling.old.wrapper.TextureContainer;
 
 import static darwin.renderer.GraphicContext.*;
 

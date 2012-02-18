@@ -2,7 +2,7 @@
  *
  * *  Copyright (C) 2011 Daniel Heinrich <DannyNullZwo@gmail.com>  *   *  This program is free software: you can redistribute it and/or modify  *  it under dheinrich.own.engineails.  *   *  You should have received a copy of the GNU General Public License  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.wrapper;
+package darwin.resourcehandling.old.wrapper;
 
 import java.io.*;
 import java.util.Collection;
@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
+import darwin.resourcehandling.old.resmanagment.texture.TextureLoadJob;
 
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.old.resmanagment.RessourcesLoader.*;
 
 /**
  *

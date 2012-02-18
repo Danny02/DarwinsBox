@@ -2,7 +2,7 @@
  *
  * *  Copyright (C) 2011 Daniel Heinrich <DannyNullZwo@gmail.com>  *   *  This program is free software: you can redistribute it and/or modify  *  it under dheinrich.own.engineails.  *   *  You should have received a copy of the GNU General Public License  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.resmanagment;
+package darwin.resourcehandling.old.resmanagment;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ import darwin.renderer.geometrie.ModelPacker;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
 import darwin.renderer.geometrie.unpacked.ModelObjekt;
-import darwin.resourcehandling.io.ObjektReader;
-import darwin.resourcehandling.io.obj.ObjObjektReader;
+import darwin.resourcehandling.old.io.ObjektReader;
+import darwin.resourcehandling.old.io.obj.ObjObjektReader;
 
 /**
  *
