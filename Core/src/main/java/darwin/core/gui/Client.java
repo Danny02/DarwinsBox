@@ -26,7 +26,7 @@ public class Client
 {
 
     private AnimatorBase animator;
-    private Logger log = Logger.getLogger(Client.class);
+    private Logger log = Logger.getLogger("darwin");
     private final Collection<ShutdownListener> shutdownlistener = new LinkedList<>();
 
     public Client()
@@ -35,13 +35,14 @@ public class Client
         Thread.setDefaultUncaughtExceptionHandler(el);
     }
 
-    public void iniClient()
+    public void iniClient() throws InstantiationException
     {
         try {
             iniContext();
         } catch (GLException ex) {
             log.fatal("Couldn't Initialize a graphic context!", ex);
             shutdown();
+            throw new InstantiationException("Couldn't create an OpenGL Context");
         }
 
         animator = new Animator(getGLWindow());

@@ -14,9 +14,11 @@ import static darwin.renderer.GraphicContext.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class VertexAttributs {
+public class VertexAttributs
+{
 
-    private static class Static {
+    private static class Static
+    {
 
         private static final boolean vao_available = checkExtension();
     }
@@ -24,29 +26,35 @@ public class VertexAttributs {
     private final int hash;
 
     public VertexAttributs(Shader shader, VertexBO[] vbuffers,
-            BufferObject indice) {
+            BufferObject indice)
+    {
         hash = shader.getAttributsHash();
 
         //TODO indice werden im TerrainRenderer mit VAO nicht richtig gebunden
-//        if (Static.vao_available)
-//            configurator = new VAOAttributs(shader, vbuffers, indice);
-//        else
-        configurator = new StdAttributs(shader, vbuffers, indice);
+        if (Static.vao_available) {
+            configurator = new VAOAttributs(shader, vbuffers, indice);
+        } else {
+            configurator = new StdAttributs(shader, vbuffers, indice);
+        }
     }
 
-    public void bind() {
+    public void bind()
+    {
         configurator.prepare();
     }
 
-    public void disable() {
+    public void disable()
+    {
         configurator.disable();
     }
 
-    public boolean isCompatible(Shader shader) {
+    public boolean isCompatible(Shader shader)
+    {
         return hash == shader.getAttributsHash();
     }
 
-    private static boolean checkExtension() {
+    private static boolean checkExtension()
+    {
         return getGL().isExtensionAvailable("GL_ARB_vertex_array_object");
     }
 }

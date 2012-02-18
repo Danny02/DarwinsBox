@@ -13,7 +13,7 @@ import darwin.renderer.shader.*;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
 import darwin.resourcehandling.wrapper.TextureContainer;
 
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *

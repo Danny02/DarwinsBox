@@ -61,7 +61,7 @@ public class ClientWindow implements ShutdownListener
         });
     }
 
-    public void startUp()
+    public void startUp() throws InstantiationException
     {
         client.iniClient();
         GLWindow win = getGLWindow();

@@ -69,7 +69,7 @@ public class Shader implements GenListener<MatrixEvent>
         }
     }
 
-    public void ini(ShaderProgramm prog)
+    public Shader ini(ShaderProgramm prog)
     {
         programm = prog;
 
@@ -80,6 +80,8 @@ public class Shader implements GenListener<MatrixEvent>
         for (Sampler s : sampler.values()) {
             s.setShader(prog);
         }
+
+        return this;
     }
 
     @SuppressWarnings("unchecked")

@@ -22,7 +22,7 @@ import darwin.util.math.util.MatType;
 import darwin.util.math.util.MatrixCache;
 
 import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *

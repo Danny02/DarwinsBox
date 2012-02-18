@@ -14,11 +14,13 @@ import darwin.renderer.opengl.Element;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class DataLayout implements Serializable {
+public class DataLayout implements Serializable
+{
 
     private static final long serialVersionUID = 8468234920530037630L;
 
-    public enum Format {
+    public enum Format
+    {
 
         /**
          * Erweitert die größe eines Vertex auf ein vielfaches von 2bit
@@ -37,11 +39,13 @@ public class DataLayout implements Serializable {
     private final int bytesize;
     private final Format format;
 
-    public DataLayout(Element... elements) {
+    public DataLayout(Element... elements)
+    {
         this(Format.AUTO, elements);
     }
 
-    public DataLayout(Format format, Element... elements) {
+    public DataLayout(Format format, Element... elements)
+    {
         this.format = format;
         int[] offsets = new int[elements.length];
         for (int i = 0; i < elements.length - 1; ++i) {
@@ -51,7 +55,9 @@ public class DataLayout implements Serializable {
         int stride = offsets[offsets.length - 1]
                 + elements[elements.length - 1].gltype.getByteSize();
 
-        stride = calcStride(format, stride);
+        if (elements.length > 1) {
+            stride = calcStride(format, stride);
+        }
 
         for (int i = 0; i < elements.length; ++i) {
             alignments.put(elements[i], new DataAttribut(stride, offsets[i]));
@@ -60,12 +66,14 @@ public class DataLayout implements Serializable {
         bytesize = stride;
     }
 
-    public DataLayout(DataLayout layout, Element... elements) {
+    public DataLayout(DataLayout layout, Element... elements)
+    {
         this(layout.format, collect(layout.getElements(), elements));
     }
 
     private static Element[] collect(Collection<Element> ele,
-            Element... elements) {
+            Element... elements)
+    {
         Element[] re = new Element[ele.size() + elements.length];
         ele.toArray(re);
         for (int i = ele.size(); i < re.length; ++i) {
@@ -75,7 +83,8 @@ public class DataLayout implements Serializable {
     }
 
     @SuppressWarnings("fallthrough")
-    private int calcStride(Format f, int stride) {
+    private int calcStride(Format f, int stride)
+    {
         int mod = stride % 32;
         switch (f) {
             case INTERLEAVE:
@@ -94,23 +103,28 @@ public class DataLayout implements Serializable {
         return 0;
     }
 
-    public int getBytesize() {
+    public int getBytesize()
+    {
         return bytesize;
     }
 
-    public Collection<DataAttribut> getAttributs() {
+    public Collection<DataAttribut> getAttributs()
+    {
         return alignments.values();
     }
 
-    public DataAttribut getAttribut(Element a) {
+    public DataAttribut getAttribut(Element a)
+    {
         return alignments.get(a);
     }
 
-    public boolean hasElement(Element e) {
+    public boolean hasElement(Element e)
+    {
         return alignments.containsKey(e);
     }
 
-    public Collection<Element> getElements() {
+    public Collection<Element> getElements()
+    {
         return alignments.keySet();
     }
 }

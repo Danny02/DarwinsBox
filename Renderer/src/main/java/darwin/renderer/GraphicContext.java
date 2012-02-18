@@ -41,13 +41,14 @@ public final class GraphicContext
     {
     }
 
-    private final GLCapabilitiesImmutable getCapabilities(GLProfile profile)
+    private GLCapabilitiesImmutable getCapabilities(GLProfile profile)
     {
         GLCapabilities capabilitys = new GLCapabilities(profile);
 //        c.setSampleBuffers(true);
 //        c.setNumSamples(16);
-        capabilitys.setHardwareAccelerated(true);
-        capabilitys.setDoubleBuffered(true);
+//        capabilitys.setHardwareAccelerated(true);
+//        capabilitys.setDoubleBuffered(true);
+        capabilitys.setBackgroundOpaque(false);
 
         return capabilitys;
     }
@@ -67,15 +68,10 @@ public final class GraphicContext
         window = GLWindow.create(getCapabilities(profile));
     }
 
-    public void doAsserts()
-    {
-        assert window != null : "Context is not initialized";
-        assert window.getContext().isCurrent() : "No OpenGL context current on this thread";
-    }
-
     public static GL getGL()
     {
-        INSTANCE.doAsserts();
+        assert INSTANCE.window != null : "Context is not initialized";
+        assert INSTANCE.window.getContext().isCurrent() : "No OpenGL context current on this thread";
         return INSTANCE.window.getGL();
     }
 
@@ -86,6 +82,7 @@ public final class GraphicContext
 
     public static GLWindow getGLWindow()
     {
+        assert INSTANCE.window != null : "Context is not initialized";
         return INSTANCE.window;
     }
 }

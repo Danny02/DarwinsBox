@@ -7,7 +7,7 @@ package darwin.resourcehandling.io.obj;
 import java.io.*;
 import org.apache.log4j.Logger;
 
-import darwin.resourcehandling.resmanagment.RessourcesLoader;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 
 /**
  *
@@ -28,7 +28,7 @@ public class OBJFormatReader
     public ObjFile loadOBJ() {
         ObjFile obj = null;
 
-        InputStream is = RessourcesLoader.getRessource(file + ".bin");
+        InputStream is = ResourcesLoader.getRessource(file + ".bin");
         if (is != null)
             try {
                 ObjectInputStream ois = new ObjectInputStream(is);

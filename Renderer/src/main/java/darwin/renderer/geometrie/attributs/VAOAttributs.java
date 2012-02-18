@@ -36,7 +36,7 @@ final class VAOAttributs implements AttributsConfigurator
         sa.prepare();
         disable();
         //TODO: wtf??? GL Error about vbo not bound
-//        sa.disable();
+        sa.disable();
     }
 
     @Override

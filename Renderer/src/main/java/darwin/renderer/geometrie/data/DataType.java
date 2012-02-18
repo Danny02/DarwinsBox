@@ -23,14 +23,14 @@ public enum DataType
         public void put(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                buf.putShort(id + 1, (Short) values[i]);
+                buf.putShort(id + i*byteSize, values[i].shortValue());
             }
         }
 
         public void get(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                values[i] = buf.getShort(id + i);
+                values[i] = buf.getShort(id + i*byteSize);
             }
         }
 
@@ -38,7 +38,7 @@ public enum DataType
         {
             Short[] c = new Short[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (short) ((Short) a[i] * mul);
+                c[i] = (short) (a[i].shortValue() * mul);
             }
             return c;
         }
@@ -47,7 +47,7 @@ public enum DataType
         {
             Short[] c = new Short[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (short) ((Short) a[i] + (Short) b[i]);
+                c[i] = (short)(a[i].shortValue() + b[i].shortValue());
             }
             return c;
         }
@@ -57,14 +57,14 @@ public enum DataType
         public void put(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                buf.putInt(id + i, (Integer) values[i]);
+                buf.putInt(id + i*byteSize, values[i].intValue());
             }
         }
 
         public void get(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                values[i] = buf.getInt(id + i);
+                values[i] = buf.getInt(id + i*byteSize);
             }
         }
 
@@ -72,7 +72,7 @@ public enum DataType
         {
             Integer[] c = new Integer[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (int) ((Integer) a[i] * mul);
+                c[i] = (int) (a[i].intValue() * mul);
             }
             return c;
         }
@@ -81,7 +81,7 @@ public enum DataType
         {
             Integer[] c = new Integer[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (Integer) a[i] + (Integer) b[i];
+                c[i] = a[i].intValue() + b[i].intValue();
             }
             return c;
         }
@@ -92,14 +92,14 @@ public enum DataType
         public void put(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                buf.putFloat(id + i, (float) (Float) values[i]);
+                buf.putFloat(id + i*byteSize, values[i].floatValue());
             }
         }
 
         public void get(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                values[i] = buf.getFloat(id + i);
+                values[i] = buf.getFloat(id + i*byteSize);
             }
         }
 
@@ -107,7 +107,7 @@ public enum DataType
         {
             Float[] c = new Float[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (float) ((Float) a[i] * mul);
+                c[i] = (float) (a[i].floatValue() * mul);
             }
             return c;
         }
@@ -116,7 +116,7 @@ public enum DataType
         {
             Float[] c = new Float[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (Float) a[i] + (Float) b[i];
+                c[i] =  a[i].floatValue() +  b[i].floatValue();
             }
             return c;
         }
@@ -127,14 +127,14 @@ public enum DataType
         public void put(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                buf.putDouble(id + i, (Double) values[i]);
+                buf.putDouble(id + i*byteSize, values[i].doubleValue());
             }
         }
 
         public void get(ByteBuffer buf, int id, Number[] values)
         {
             for (int i = 0; i < values.length; i++) {
-                values[i] = buf.getDouble(id + i);
+                values[i] = buf.getDouble(id + i*byteSize);
             }
         }
 
@@ -142,7 +142,7 @@ public enum DataType
         {
             Double[] c = new Double[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (Double) a[i] * mul;
+                c[i] = a[i].doubleValue() * mul;
             }
             return c;
         }
@@ -151,17 +151,18 @@ public enum DataType
         {
             Double[] c = new Double[a.length];
             for (int i = 0; i < a.length; ++i) {
-                c[i] = (Double) a[i] + (Double) b[i];
+                c[i] = a[i].doubleValue() + b[i].doubleValue();
             }
             return c;
         }
-    },;
-    private int gl_const, size_of;
+    };
+
+    public final int gl_const, byteSize;
 
     private DataType(int cst, int so)
     {
         gl_const = cst;
-        size_of = so;
+        byteSize = so;
     }
 
     /**
@@ -178,7 +179,7 @@ public enum DataType
      */
     public int getBSize()
     {
-        return size_of;
+        return byteSize;
     }
 
     /**

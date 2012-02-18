@@ -6,9 +6,10 @@ package darwin.core.gui;
 
 //import netscape.javascript.JSException;
 //import netscape.javascript.JSObject;
-
 import com.jogamp.newt.awt.NewtCanvasAWT;
 import java.awt.BorderLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JApplet;
 
 import static darwin.renderer.GraphicContext.*;
@@ -18,31 +19,40 @@ import static darwin.renderer.GraphicContext.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ClientApplet extends JApplet implements ShutdownListener {
+public class ClientApplet extends JApplet implements ShutdownListener
+{
 
     private Client client;
 
     @Override
-    public void init() {
+    public void init()
+    {
         client = new Client();
         client.addShutdownListener(this);
         setLayout(new BorderLayout());
     }
 
     @Override
-    public void start() {
-        client.iniClient();
+    public void start()
+    {
+        try {
+            client.iniClient();
+            NewtCanvasAWT canvas = new NewtCanvasAWT(getGLWindow());
+            add(canvas, BorderLayout.CENTER);
+        } catch (InstantiationException ex) {
+            doShutDown();
+        }
     }
 
     @Override
-    public void stop() {
+    public void stop()
+    {
+        doShutDown();
+    }
+
+    @Override
+    public void doShutDown()
+    {
         client.shutdown();
-        NewtCanvasAWT canvas = new NewtCanvasAWT(getGLWindow());
-        add(canvas, BorderLayout.CENTER);
-    }
-
-    @Override
-    public void doShutDown() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

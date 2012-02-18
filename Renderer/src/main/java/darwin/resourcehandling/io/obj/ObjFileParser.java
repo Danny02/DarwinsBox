@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import darwin.renderer.geometrie.unpacked.ObjMaterial;
-import darwin.resourcehandling.resmanagment.RessourcesLoader;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.math.base.Vec3;
 import darwin.util.math.base.Vector;
 
@@ -37,7 +37,7 @@ public class ObjFileParser
 
     public ObjFile loadOBJ() {
         ObjFile obj = new ObjFile();
-        InputStream is = RessourcesLoader.getRessource(file);
+        InputStream is = ResourcesLoader.getRessource(file);
         if (is == null) {
             Log.ger.fatal("Model \"" + file
                     + "\" konnte nicht gefunden werden.");

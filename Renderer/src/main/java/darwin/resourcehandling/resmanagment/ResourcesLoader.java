@@ -22,13 +22,13 @@ import darwin.resourcehandling.wrapper.TextureContainer;
  *
  * @author dheinrich
  */
-public class RessourcesLoader {
+public class ResourcesLoader {
 
     private static class Log {
 
-        private static Logger ger = Logger.getLogger(RessourcesLoader.class);
+        private static Logger ger = Logger.getLogger(ResourcesLoader.class);
     }
-    public static final RessourcesLoader RESOURCES = new RessourcesLoader();
+    public static final ResourcesLoader RESOURCES = new ResourcesLoader();
     private final Queue<LoadJob<?>> jobs = new LinkedList<>();
     private final Queue<LoadJob<?>> oldjobs = new LinkedList<>();
     private final HashMap<LoadJob<?>, Object> ressourcen = new HashMap<>();
@@ -42,7 +42,7 @@ public class RessourcesLoader {
     //Mesh stuff
     private final HashMap<ROLoadJob, List<RenderObjekt>> meshmap = new HashMap<>();
 
-    private RessourcesLoader() {
+    private ResourcesLoader() {
     }
 
     public Shader getShader(String frag, String vertex, String geo,

@@ -36,6 +36,11 @@ public class MatrixCache {
         this.normal = normal;
     }
 
+    public MatrixCache()
+    {
+        this(new ProjectionMatrix());
+    }   
+
     public MatrixCache(ProjectionMatrix pro) {
         view = new ViewMatrix();
         view.loadIdentity();

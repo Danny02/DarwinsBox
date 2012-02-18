@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
 
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *

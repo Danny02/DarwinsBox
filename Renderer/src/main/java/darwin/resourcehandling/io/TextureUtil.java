@@ -12,7 +12,7 @@ import javax.media.opengl.GLException;
 import org.apache.log4j.Logger;
 
 import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *

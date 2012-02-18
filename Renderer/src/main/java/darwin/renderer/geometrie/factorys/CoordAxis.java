@@ -28,26 +28,17 @@ public class CoordAxis implements GeometryFactory
     private CoordAxis() {
         Element pos = new Element(GLSLType.VEC3, "Position");
 
-        DataLayout dl = new DataLayout(Format.INTERLEAVE, pos);
+        DataLayout dl = new DataLayout(pos);
 
         VertexBuffer vb = new VertexBuffer(dl, 4);
-        indice = new BufferObject(
-                Target.ELEMENT_ARRAY);
 
         vb.newVertex().setAttribute(pos, 0f, 0f, 0f);
         vb.newVertex().setAttribute(pos, 1f, 0f, 0f);
         vb.newVertex().setAttribute(pos, 0f, 1f, 0f);
         vb.newVertex().setAttribute(pos, 0f, 0f, 1f);
 
-        IntBuffer a = IntBuffer.allocate(5);
-        int[] ind = new int[]{1, 0, 2, 0, 3};
-        a.put(ind);
-        indice.bind();
-        {
-            indice.bufferData(a, Type.STATIC, Usage.DRAW);
-        }
-        indice.disable();
         attr = new VertexBO(vb);
+        indice = BufferObject.buildIndiceBuffer(1, 0, 2, 0, 3);
     }
 
     public RenderMesh buildRenderable(Shader shader) {

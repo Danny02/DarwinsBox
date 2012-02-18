@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import darwin.resourcehandling.io.TextureUtil;
 
 import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *

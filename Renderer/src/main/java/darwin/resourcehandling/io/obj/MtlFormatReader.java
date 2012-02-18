@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import darwin.renderer.geometrie.unpacked.ObjMaterial;
-import darwin.resourcehandling.resmanagment.RessourcesLoader;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 
 /**
  * Parser f�r das MTL Material Format
@@ -35,7 +35,7 @@ public class MtlFormatReader {
         if (materials == null) {
             materials = new Hashtable<>();
             Reader fr;
-            InputStream is = RessourcesLoader.getRessource(modelfolder + path);
+            InputStream is = ResourcesLoader.getRessource(modelfolder + path);
             if (is == null) {
                 Log.ger.error("Ressource \"" + path
                         + "\" konnte nicht gefunden werden.");

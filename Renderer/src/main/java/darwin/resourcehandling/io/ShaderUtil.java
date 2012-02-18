@@ -16,7 +16,7 @@ import darwin.renderer.shader.BuildException;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *
@@ -32,7 +32,7 @@ public class ShaderUtil {
     private static class Static {
 
         private static final String GLSL_VERISON_STRING;
-        private static final String RES_PATH = "resources/Shaders/";
+        private static final String RES_PATH = "resources/shaders/";
 
         static {
             int v = 110;
@@ -82,7 +82,8 @@ public class ShaderUtil {
         String[] sources = new String[2 + len];
         sources[0] = Static.GLSL_VERISON_STRING;
         int i = 0;
-        while (i++ < len) {
+        while (i < len) {
+            ++i;
             sources[i] = "#define " + mut[i - 1] + '\n';
         }
 

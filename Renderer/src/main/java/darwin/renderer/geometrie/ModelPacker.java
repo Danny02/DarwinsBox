@@ -13,7 +13,7 @@ import darwin.renderer.geometrie.unpacked.ModelObjekt;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.uniform.GameMaterial;
 
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 
 /**
