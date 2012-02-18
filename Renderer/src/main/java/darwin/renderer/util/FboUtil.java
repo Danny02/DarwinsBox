@@ -10,7 +10,7 @@ import javax.media.opengl.GL2ES2;
 
 import darwin.renderer.opengl.FrameBufferObject;
 import darwin.renderer.opengl.RenderBuffer;
-import darwin.resourcehandling.ressourcen.io.TextureUtil;
+import darwin.resourcehandling.io.TextureUtil;
 
 /**
  *
