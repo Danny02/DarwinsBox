@@ -24,6 +24,7 @@ public class DeferredScene extends BasicScene implements GLEventListener
 
     public DeferredScene()
     {
+        throw new UnsupportedOperationException();
     }
 
     @Override
