@@ -15,7 +15,7 @@ import darwin.renderer.shader.ShaderAttribute;
 class AttributConfig {
     public final int index, stride, offset, glconst, size;
 
-    public AttributConfig(ShaderAttribute sa, DataAttribut dattr) {
+    AttributConfig(ShaderAttribute sa, DataAttribut dattr) {
         this.index = sa.getIndex();
         stride = dattr.stride;
         offset = dattr.offset;

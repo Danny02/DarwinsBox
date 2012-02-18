@@ -51,8 +51,7 @@ public class ATIMemoryInfo implements MemoryInfo
 
     @Override
     public String getStatus() {
-        StringBuffer status = new StringBuffer();
-        status.append("Total physical video memory: ");
+        StringBuffer status = new StringBuffer("Total physical video memory: ");
         appendKiByte(status, total_mem);
         status.append('\n');
 

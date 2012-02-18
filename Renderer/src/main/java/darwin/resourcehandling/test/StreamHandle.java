@@ -4,8 +4,9 @@
  */
 package darwin.resourcehandling.test;
 
-import darwin.resourcehandling.*;
 import java.io.*;
+
+import darwin.resourcehandling.ResourceHandle;
 
 /**
  *

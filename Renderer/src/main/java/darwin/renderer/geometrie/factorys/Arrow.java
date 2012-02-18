@@ -37,6 +37,7 @@ public final class Arrow implements GeometryFactory{
         attr = new VertexBO(vb);
     }
 
+    @Override
     public RenderMesh buildRenderable(Shader shader) {
         return new RenderMesh(shader, GLES2.GL_LINE_STRIP, null, attr);
     }

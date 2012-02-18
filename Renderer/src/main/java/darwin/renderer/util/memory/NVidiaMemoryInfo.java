@@ -34,7 +34,7 @@ public class NVidiaMemoryInfo implements MemoryInfo
 
     @Override
     public String getStatus() {
-        StringBuffer status = new StringBuffer();
+        StringBuilder status = new StringBuilder();
         status.append("Total available memory available for allocations: ");
         appendKiByte(status, total_mem);
         status.append('\n');
@@ -50,7 +50,7 @@ public class NVidiaMemoryInfo implements MemoryInfo
         return status.toString();
     }
 
-    private void appendKiByte(StringBuffer buffer, int b) {
+    private void appendKiByte(StringBuilder buffer, int b) {
         buffer.append(b);
         buffer.append("KiByte\n");
     }
