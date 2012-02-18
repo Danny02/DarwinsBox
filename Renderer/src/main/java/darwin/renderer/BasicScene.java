@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 import javax.media.opengl.*;
 import org.apache.log4j.*;
 
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.old.resmanagment.RessourcesLoader.*;
 
 /**
  *

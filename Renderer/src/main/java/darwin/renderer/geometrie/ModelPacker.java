@@ -10,7 +10,7 @@ import darwin.renderer.shader.*;
 import darwin.renderer.shader.uniform.*;
 import java.util.*;
 
-import static darwin.resourcehandling.resmanagment.RessourcesLoader.*;
+import static darwin.resourcehandling.old.resmanagment.RessourcesLoader.*;
 
 
 /**

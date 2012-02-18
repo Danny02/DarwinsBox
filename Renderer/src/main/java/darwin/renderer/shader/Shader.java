@@ -11,7 +11,7 @@ import darwin.util.math.util.*;
 import java.util.*;
 import javax.media.opengl.*;
 
-import darwin.resourcehandling.io.ShaderFile;
+import darwin.resourcehandling.old.io.ShaderFile;
 import static darwin.renderer.GraphicContext.*;
 
 /**

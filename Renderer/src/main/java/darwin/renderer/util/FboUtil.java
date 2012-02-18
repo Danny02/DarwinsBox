@@ -9,7 +9,7 @@ import com.jogamp.opengl.util.texture.*;
 import darwin.renderer.opengl.*;
 import javax.media.opengl.*;
 
-import darwin.resourcehandling.io.TextureUtil;
+import darwin.resourcehandling.old.io.TextureUtil;
 
 /**
  *

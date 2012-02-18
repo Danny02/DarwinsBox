@@ -4,7 +4,7 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import darwin.resourcehandling.wrapper.TextureContainer;
+import darwin.resourcehandling.old.wrapper.TextureContainer;
 import darwin.renderer.geometrie.data.*;
 import darwin.renderer.geometrie.unpacked.*;
 import darwin.renderer.opengl.BufferObject.Target;

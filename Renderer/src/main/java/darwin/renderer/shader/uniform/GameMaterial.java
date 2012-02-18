@@ -4,7 +4,7 @@
  */
 package darwin.renderer.shader.uniform;
 
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.resourcehandling.old.resmanagment.texture.ShaderDescription;
 import darwin.renderer.geometrie.unpacked.*;
 import java.io.*;
 import java.util.*;

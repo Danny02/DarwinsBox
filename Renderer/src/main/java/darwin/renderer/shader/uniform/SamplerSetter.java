@@ -4,7 +4,7 @@
  */
 package darwin.renderer.shader.uniform;
 
-import darwin.resourcehandling.wrapper.TextureContainer;
+import darwin.resourcehandling.old.wrapper.TextureContainer;
 import com.jogamp.opengl.util.texture.*;
 import darwin.renderer.shader.*;
 
