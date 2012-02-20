@@ -25,10 +25,10 @@ import static darwin.renderer.GraphicContext.*;
 import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
- *
+ *  Basic scene manager
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public abstract class BasicScene implements GLEventListener
+public class BasicScene implements GLEventListener
 {
 
     private static class Log
@@ -55,7 +55,10 @@ public abstract class BasicScene implements GLEventListener
         animated = new LinkedList<>();
     }
 
-    protected abstract void customRender();
+    protected void customRender()
+    {
+        renderObjects();
+    };
 
     protected void renderObjects()
     {
@@ -94,6 +97,7 @@ public abstract class BasicScene implements GLEventListener
     @Override
     public final void display(GLAutoDrawable drawable)
     {
+            if(!drawable.getContext().isCurrent())return;
         RESOURCES.workAllJobs();
         try {
             customRender();
@@ -103,7 +107,7 @@ public abstract class BasicScene implements GLEventListener
 
         GLAnimatorControl ani = drawable.getAnimator();
 //TODO GameTime updates einbaun
-        Log.ger.trace(String.format("%d Objects took %dms  to render; fps:$f",
+        Log.ger.trace(String.format("%d Objects took %dms  to render; fps:%f",
                 robjekts.size(), ani.getLastFPSPeriod(), ani.getLastFPS()));
         if (info != null) {
             info.setFPS(ani.getTotalFPS());

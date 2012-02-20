@@ -4,14 +4,17 @@
  */
 package darwin.renderer.util.memory;
 
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLRunnable;
 import static darwin.renderer.GraphicContext.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ATIMemoryInfo implements MemoryInfo
+final class ATIMemoryInfo extends MemoryInfo
 {
+
     private static final int VBO_FREE_MEMORY_ATI = 0x87FB;
     private static final int TEXTURE_FREE_MEMORY_ATI = 0x87FC;
     private static final int RENDERBUFFER_FREE_MEMORY_ATI = 0x87FD;
@@ -21,38 +24,53 @@ public class ATIMemoryInfo implements MemoryInfo
     private static final int total_mem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
 
     @Override
-    public int getTotalMemory() {
+    public int getTotalMemory()
+    {
         return total_mem;
     }
 
     @Override
-    public int getCurrentMemory() {
+    public int getCurrentMemory()
+    {
         return getData(TEXTURE_FREE_MEMORY_ATI)[0];
     }
 
     @Override
-    public double getFreeRatio() {
+    public double getFreeRatio()
+    {
         return (double) getCurrentMemory() / total_mem;
     }
 
     /**
-     * param[0] - total memory free in the pool
-     * param[1] - largest available free block in the pool
-     * param[2] - total auxiliary memory free
-     * param[3] - largest auxiliary free block
-     * @param pool
+     * param[0] - total memory free in the pool param[1] - largest available
+     * free block in the pool param[2] - total auxiliary memory free param[3] -
+     * largest auxiliary free block
+     * <p/>
+     * @param pool < p/>
+     * <p/>
      * @return
      */
-    private static int[] getData(int pool) {
-        int[] result = new int[4];
-        getGL().glGetIntegerv(pool, result, 0);
+    private static int[] getData(final int pool)
+    {
+        final int[] result = new int[4];
+        getGLWindow().invoke(true, new GLRunnable()
+        {
+
+            @Override
+            public boolean run(GLAutoDrawable drawable)
+            {
+                getGL().glGetIntegerv(pool, result, 0);
+                return true;
+            }
+        });
         return result;
     }
 
     @Override
-    public String getStatus() {
+    public String getStatus()
+    {
         StringBuffer status = new StringBuffer("Total physical video memory: ");
-        appendKiByte(status, total_mem);
+        appendMiByte(status, getTotalMemory());
         status.append('\n');
 
         status.append("--- VBO POOL ---\n");
@@ -65,20 +83,21 @@ public class ATIMemoryInfo implements MemoryInfo
         return status.toString();
     }
 
-    private void appendData(StringBuffer buffer, int[] data) {
+    private void appendData(StringBuffer buffer, int[] data)
+    {
         buffer.append("\ttotal memory free in the pool: ");
-        appendKiByte(buffer, data[0]);
+        appendMiByte(buffer, data[0]);
         buffer.append("\tlargest available free block in the pool: ");
-        appendKiByte(buffer, data[1]);
+        appendMiByte(buffer, data[1]);
         buffer.append("\ttotal auxiliary memory free: ");
-        appendKiByte(buffer, data[2]);
+        appendMiByte(buffer, data[2]);
         buffer.append("\tlargest auxiliary free block: ");
-        appendKiByte(buffer, data[3]);
+        appendMiByte(buffer, data[3]);
         buffer.append('\n');
     }
 
-    private void appendKiByte(StringBuffer buffer, int b) {
-        buffer.append(b);
-        buffer.append("KiByte\n");
+    private void appendMiByte(StringBuffer buffer, int b)
+    {
+        buffer.append(b / 1024.).append("MiByte\n");
     }
 }

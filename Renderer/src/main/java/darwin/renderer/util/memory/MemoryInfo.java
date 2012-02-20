@@ -4,41 +4,74 @@
  */
 package darwin.renderer.util.memory;
 
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLRunnable;
+
 import static darwin.renderer.GraphicContext.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public interface MemoryInfo {
+public abstract class MemoryInfo
+{
 
-    public static final MemoryInfo INSTANCE = getGL().isExtensionAvailable("GL_ATI_meminfo")
-            ? new ATIMemoryInfo() : getGL().isExtensionAvailable("GL_NVX_gpu_memory_info")
-            ? new NVidiaMemoryInfo() : null;
+    public static final MemoryInfo INSTANCE;
+
+    static {
+        if (checkExtension("GL_ATI_meminfo")) {
+            INSTANCE = new ATIMemoryInfo();
+        } else if (checkExtension("GL_NVX_gpu_memory_info")) {
+            INSTANCE = new NVidiaMemoryInfo();
+        } else {
+            INSTANCE = new DummyMemInfo();
+        }
+    }
 
     /**
      * total available video memory of the GPU
-     * @return
-     * Memory in KiByte
+     * <p/>
+     * @return Memory in KiByte
      */
-    public int getTotalMemory();
+    public abstract int getTotalMemory();
 
     /**
      * Memory which is currently available
-     * @return
-     * Memory in KiByte
+     * <p/>
+     * @return Memory in KiByte
      */
-    public int getCurrentMemory();
+    public abstract int getCurrentMemory();
 
     /**
      * Vendor specific memory Info
+     * <p/>
      * @return
      */
-    public String getStatus();
+    public abstract String getStatus();
 
     /**
      * Percentage of free video memory
+     * <p/>
      * @return
      */
-    public double getFreeRatio();
+    public abstract double getFreeRatio();
+
+    public static boolean canCollectData()
+    {
+        return !(INSTANCE instanceof DummyMemInfo);
+    }
+
+    private static boolean checkExtension(final String ex)
+    {
+        final boolean[] result = new boolean[1];
+        getGLWindow().invoke(true, new GLRunnable() {
+            @Override
+            public boolean run(GLAutoDrawable drawable)
+            {
+                result[0] = drawable.getGL().isExtensionAvailable(ex);
+                return true;
+            }
+        });
+        return result[0];
+    }
 }

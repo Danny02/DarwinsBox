@@ -38,7 +38,7 @@ public class Client
     public void iniClient() throws InstantiationException
     {
         try {
-            iniContext();
+            iniDefault();
         } catch (GLException ex) {
             log.fatal("Couldn't Initialize a graphic context!", ex);
             shutdown();

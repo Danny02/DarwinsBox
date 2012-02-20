@@ -14,7 +14,7 @@ import darwin.resourcehandling.io.TextureUtil;
 import static darwin.renderer.GraphicContext.*;
 
 /**
- *
+ * Scene manager which renders deferred
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public class DeferredScene extends BasicScene implements GLEventListener

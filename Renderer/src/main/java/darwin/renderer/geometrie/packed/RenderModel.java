@@ -4,13 +4,11 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
 import darwin.renderer.geometrie.data.RenderMesh;
-import darwin.renderer.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.unpacked.Mesh;
 import darwin.renderer.geometrie.unpacked.Model;
 import darwin.renderer.opengl.BufferObject;
@@ -23,12 +21,14 @@ import darwin.renderer.shader.uniform.*;
 import darwin.resourcehandling.wrapper.TextureContainer;
 
 /**
- * Haelt alle Render relevanten Attribute eines 3D Modelles.
- * Rendert ein Modell nach diesen Attributen
+ * Haelt alle Render relevanten Attribute eines 3D Modelles. Rendert ein Modell
+ * nach diesen Attributen
+ * <p/>
  * @author Daniel Heinrich
  */
-public class RenderModel implements Shaded, Cloneable
+public final class RenderModel implements Shaded, Cloneable
 {
+
     private GameMaterial material;
     private RenderMesh rbuffer;
     private Shader shader;
@@ -36,81 +36,92 @@ public class RenderModel implements Shaded, Cloneable
     private AsyncIni initiator = null;
 
     public RenderModel(RenderMesh rbuffer, Shader shader,
-                       GameMaterial mat) {
+            GameMaterial mat)
+    {
         this.rbuffer = rbuffer;
         material = mat;
         setShader(shader);
     }
 
-    public RenderModel(Model model, final Shader shader) {
+    public RenderModel(Model model, final Shader shader)
+    {
         material = model.getMat();
 
         final Mesh m = model.getMesh();
-        VertexBuffer vb = m.getVertices();
-        final VertexBO vbo = new VertexBO(vb);
-
-        final BufferObject indice = new BufferObject(
-                Target.ELEMENT_ARRAY);
-
-        Buffer ind = IntBuffer.wrap(m.getIndicies());
-        indice.bind();
-        {
-            indice.bufferData(ind, Type.STATIC, Usage.DRAW);
-        }
-        indice.disable();
         initiator = new AsyncIni()
         {
+
             @Override
-            public void ini() {
-                rbuffer = new RenderMesh(shader, m.getPrimitiv_typ(), indice,
-                                         vbo);
+            public void ini()
+            {
+                VertexBO vbo = new VertexBO(m.getVertices());
+                int[] i = m.getIndicies();
+                BufferObject indice = null;
+                if (i != null) {
+                    indice = new BufferObject(Target.ELEMENT_ARRAY);
+                    indice.bind();
+                    {
+                        indice.bufferData(IntBuffer.wrap(i), Type.STATIC, Usage.DRAW);
+                    }
+                    indice.disable();
+                }
+                rbuffer = new RenderMesh(shader, m.getPrimitiv_typ(), indice, vbo);
             }
         };
         setShader(shader);
     }
 
     @Override
-    public void render() {
+    public void render()
+    {
         if (shader.isInitialized()) {
             init();
-            for (UniformSetter us : uniforms)
+            for (UniformSetter us : uniforms) {
                 us.set();
+            }
             shader.updateUniformData();
             rbuffer.render();
         }
     }
 
-    private void init() {
+    private void init()
+    {
         if (initiator != null) {
             initiator.ini();
             initiator = null;
         }
     }
 
-    public void setShader(Shader shader) {
+    public void setShader(Shader shader)
+    {
         this.shader = shader;
         if (material != null) {
             ShaderMaterial smaterial = new ShaderMaterial(shader, material);
-            for (UniformSetter us : smaterial.getSetter())
+            for (UniformSetter us : smaterial.getSetter()) {
                 uniforms.add(us);
+            }
         }
     }
 
-    public void addSamplerSetter(String s, TextureContainer tc) {
+    public void addSamplerSetter(String s, TextureContainer tc)
+    {
         uniforms.add(new SamplerSetter(shader.getSampler(s), tc));
     }
 
-    public void addUniformSetter(UniformSetter us) {
+    public void addUniformSetter(UniformSetter us)
+    {
         uniforms.add(us);
     }
 
     @Override
-    public Shader getShader() {
+    public Shader getShader()
+    {
         return shader;
     }
 
     @Override
-    public RenderModel clone() {
+    public RenderModel clone()
+    {
         return new RenderModel(rbuffer.clone(), shader, material);
     }
 }
