@@ -4,7 +4,8 @@ package darwin.tools.annotations;
  * To change this template, choose Tools | Templates and open the template in
  * the editor.
  */
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
