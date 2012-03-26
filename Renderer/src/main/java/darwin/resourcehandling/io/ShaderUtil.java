@@ -54,6 +54,8 @@ public class ShaderUtil {
         }
     }
 
+    private static final String includePrefix = "#pragma include";
+
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
     public static ShaderProgramm compileShader(ShaderFile sfile) {
         ShaderObjekt fso, vso, gso;
@@ -168,8 +170,8 @@ public class ShaderUtil {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.startsWith("//<include")) {
-                    String path = line.split(" ")[1];
+                if (line.startsWith(includePrefix)) {
+                    String path = line.substring(includePrefix.length()).trim();
                     path = path.substring(0, path.length() - 1);
                     InputStream shader = getRessource(Static.RES_PATH + path);
                     if (shader != null) {

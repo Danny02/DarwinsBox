@@ -1,7 +1,7 @@
 #define COMPILED
 #define GAMMA
-//<include includes/StdLib.frag>
-//<include includes/gamma.h>
+#pragma include includes/StdLib.frag
+#pragma include includes/gamma.h
 
 in vec3 normal, tangent, bitangent;
 in vec2 texcoord;

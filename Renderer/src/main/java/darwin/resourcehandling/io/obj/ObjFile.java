@@ -15,18 +15,17 @@ import darwin.util.math.base.Vector;
  * DatenModell einer OBJ Datei
  * @author Daniel Heinrich
  */
-public class ObjFile implements Externalizable
+ public class ObjFile implements Externalizable
 {
     private List<Vec3> verticies = new ArrayList<>();
     private List<Vec3> normals = new ArrayList<>();
     private List<Vector> texcoords = new ArrayList<>();
     transient private Vec3 min = new Vec3(), max = new Vec3();
-    private Hashtable<ObjMaterial, List<Face>> subobjekts =
-                                               new Hashtable<>();
+    private Map<ObjMaterial, List<Face>> subobjekts = new HashMap<>();
     transient private List<Face> accfaces;
 
     public void addVertex(Vec3 pos) {
-        if (verticies.size() == 0) {
+        if (verticies.isEmpty()) {
             min = pos.clone();
             max = pos.clone();
         } else
@@ -59,7 +58,7 @@ public class ObjFile implements Externalizable
     }
 
     public void center() {
-        if (verticies.size() == 0)
+        if (verticies.isEmpty())
             return;
 
         Vec3 shift = min.add(max);
@@ -126,8 +125,10 @@ public class ObjFile implements Externalizable
 
     private void writeObject(ObjectOutputStream out)
             throws IOException {
+        throw new UnsupportedOperationException();
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         writeVec3List(out, verticies);
         writeVec3List(out, normals);
@@ -156,12 +157,13 @@ public class ObjFile implements Externalizable
                 out.writeFloat((float) dd);
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         verticies = readVec3List(in);
         buildMinMax();
         normals = readVec3List(in);
         texcoords = readVecList(in);
-        subobjekts = (Hashtable<ObjMaterial, List<Face>>) in.readObject();
+        subobjekts = (Map<ObjMaterial, List<Face>>) in.readObject();
     }
 
     private List<Vec3> readVec3List(ObjectInput in) throws IOException {
@@ -190,7 +192,7 @@ public class ObjFile implements Externalizable
     }
 
     private void buildMinMax() {
-        if (verticies.size() == 0)
+        if (verticies.isEmpty())
             return;
 
         min = verticies.get(0).clone();

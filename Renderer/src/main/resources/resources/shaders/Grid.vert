@@ -1,5 +1,5 @@
 #version 120
-//<include includes/StdLib.vert>
+#pragma include includes/StdLib.vert
 
 in vec4 in_position;    //<Position>
 in vec2 in_texcoord;    //<TexCoord>

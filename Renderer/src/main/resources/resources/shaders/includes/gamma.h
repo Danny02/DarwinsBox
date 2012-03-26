@@ -1,11 +1,11 @@
-//<include includes/misc.h>
 #ifndef GAMMA_VAL
     #define GAMMA_VAL 2.2
 #endif
-uconst vec3 gamma = vec3(GAMMA_VAL);
+
+uconst float gamma = GAMMA_VAL;
 
 #ifdef COMPILED
-    const vec3 invgamma = vec3(1. / gamma);
+    const float invgamma = 1. / gamma;
 #else
     #define invgamma (1./gamma)
 #endif

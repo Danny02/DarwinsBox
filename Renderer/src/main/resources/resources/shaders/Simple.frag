@@ -1,5 +1,5 @@
 #version 120
-//<include includes/StdLib.frag>
+#pragma include includes/StdLib.frag
 
 in vec2 texcoord;
 

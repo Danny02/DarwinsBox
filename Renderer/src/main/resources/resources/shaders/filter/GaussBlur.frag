@@ -1,5 +1,5 @@
 #version 150
-//<include includes/StdLib.frag>
+#pragma include includes/StdLib.frag
 //<defines [X,Y],GEWICHTUNG>
 
 uniform sampler2D texture;

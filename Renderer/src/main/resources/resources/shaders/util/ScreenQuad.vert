@@ -1,4 +1,4 @@
-//<include includes/StdLib.vert>
+#pragma include includes/StdLib.vert
 
 in vec2 in_position; //<Position>
 out vec2 texcoord;

@@ -10,34 +10,13 @@ import java.util.*;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.*;
+import javax.lang.model.util.SimpleTypeVisitor7;
 import javax.tools.*;
 
 /**
  *
  * @author daniel
- * <p/>
- * Usage with maven: add this to the pom
- * <p/>
- * <build> <plugins> <!-- Run annotation processors on src/main/java sources -->
- * <plugin> <groupId>org.bsc.maven</groupId>
- * <artifactId>maven-processor-plugin</artifactId> <executions> <execution>
- * <id>process</id> <goals> <goal>process</goal> </goals>
- * <phase>generate-sources</phase> <configuration> <processors>
- * <processor>darwin.tools.annotations.ServiceProcessor</processor>
- * </processors> </configuration> </execution> </executions> </plugin> <!--
- * Disable annotation processors during normal compilation --> <plugin>
- * <groupId>org.apache.maven.plugins</groupId>
- * <artifactId>maven-compiler-plugin</artifactId> <configuration>
- * <compilerArgument>-proc:none</compilerArgument> <source>1.7</source>
- * <target>1.7</target> </configuration> </plugin>
- * <p/>
- * </plugins> </build>
- * <p/>
- * <pluginRepositories> <pluginRepository> <id>sonatype-repo</id>
- * <url>https://oss.sonatype.org/content/repositories/snapshots</url> <releases>
- * <enabled>false</enabled> </releases> <snapshots> <enabled>true</enabled>
- * </snapshots> </pluginRepository> </pluginRepositories>
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ServiceProcessor extends AbstractProcessor
@@ -45,6 +24,16 @@ public class ServiceProcessor extends AbstractProcessor
 
     private static final String servicePath = "META-INF/services/";
     private static final Map<String, PrintWriter> writer = new HashMap<>();
+    private static final TypeVisitor<Boolean, Void> noArgsVisitor =
+            new SimpleTypeVisitor7<Boolean, Void>()
+            {
+
+                @Override
+                public Boolean visitExecutable(ExecutableType t, Void v)
+                {
+                    return t.getParameterTypes().isEmpty();
+                }
+            };
 
     @Override
     public Set<String> getSupportedAnnotationTypes()
@@ -64,20 +53,32 @@ public class ServiceProcessor extends AbstractProcessor
         return true;
     }
 
-    private void appendProvider(ServiceProvider provider, Element service)
+    private void appendProvider(ServiceProvider service, Element provider)
     {
-        assert provider != null;
+
+        Messager m = processingEnv.getMessager();
+
+        String providerName = getFQN(provider).toString();
+
+        if (!hasNoArgsConstructor(provider)) {
+            m.printMessage(Diagnostic.Kind.ERROR, "Following ServiceProvider "
+                    + "couldn't be registered, because no public NoArgs"
+                    + " constructor is supplied. " + providerName);
+            return;
+        }
 
         String servicename = null;
         try {
-            provider.value().getCanonicalName();
-        } catch (MirroredTypeException exsx) {
-            servicename = exsx.getTypeMirror().toString();
+            service.value().getCanonicalName();
+        } catch (MirroredTypeException ex) {
+            servicename = ex.getTypeMirror().toString();
         }
         try {
             PrintWriter pw = getWriter(servicename);
-            pw.println(getFQN(service));
+            pw.println(providerName);
             pw.flush();
+            m.printMessage(Diagnostic.Kind.NOTE, "Registered provider \""
+                    + providerName + "\" to service \"" + servicename + "\"");
         } catch (IOException ex) {
             Messager messager = processingEnv.getMessager();
             messager.printMessage(Diagnostic.Kind.ERROR, ex.getLocalizedMessage());
@@ -106,5 +107,19 @@ public class ServiceProcessor extends AbstractProcessor
             writer.put(name, pw);
         }
         return pw;
+    }
+
+    private boolean hasNoArgsConstructor(Element el)
+    {
+        for (Element subelement : el.getEnclosedElements()) {
+            if (subelement.getKind() == ElementKind.CONSTRUCTOR
+                    && subelement.getModifiers().contains(Modifier.PUBLIC)) {
+                TypeMirror mirror = subelement.asType();
+                if (mirror.accept(noArgsVisitor, null)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

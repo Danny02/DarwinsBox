@@ -1,5 +1,5 @@
 #version 120
-//<include includes/StdLib.frag>
+#pragma include includes/StdLib.frag
 
 // found on http://www.gamerendering.com/
 

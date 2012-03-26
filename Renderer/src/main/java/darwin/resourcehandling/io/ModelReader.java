@@ -4,15 +4,27 @@
  */
 package darwin.resourcehandling.io;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import darwin.renderer.geometrie.unpacked.ModelObjekt;
-import darwin.resourcehandling.resmanagment.ObjConfig;
 
 /**
- * Abstrakte Klasse die von Parsern von unterschiedlichen Formaten von 3D Modellen
- * implementiert wird
+ * Abstrakte Klasse die von Parsern von unterschiedlichen Formaten von 3D
+ * Modellen implementiert wird
+ * <p/>
  * @author Daniel Heinrich
  */
-public interface ObjektReader
+public interface ModelReader
 {
-    public ModelObjekt loadObjekt(ObjConfig ljob);
+
+    public ModelObjekt readModel(InputStream source) throws IOException, WrongFileTypeException;
+
+    /**
+     * Checks if the Reader supports a given file extension
+     * @param fileExtension
+     * @return
+     * true if the Reader things that he can read the named file extension
+     */
+    public boolean isSupported(String fileExtension);
 }

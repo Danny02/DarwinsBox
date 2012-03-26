@@ -7,8 +7,6 @@ package darwin.renderer.shader.uniform;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import darwin.renderer.geometrie.unpacked.ObjMaterial;
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 /**
  *
@@ -22,30 +20,17 @@ public class GameMaterial implements Serializable
     public final String specularTex;
     public final String normalTex;
     public final String alphaTex;
-    public final ShaderDescription description;
 
-    public GameMaterial(ObjMaterial mat, ShaderDescription description) {
-        this.description = description;
-        diffuse = trimToThree(mat.getDiffuse());
-        ambient = trimToThree(mat.getAmbient());
-        specular = trimToThree(mat.getSepcular());
-        specular_exponet = mat.getSpecular_exponent();
-
-        diffuseTex = mat.getDiffuseTex();
-        specularTex = mat.getSpecularTex();
-        alphaTex = mat.getAlphaTex();
-
-        String nt = mat.getNormalTex();
-        if(nt == null)
-            normalTex = mat.getBumbTex();
-        else
-            normalTex = nt;
-    }
-
-    private float[] trimToThree(float[] arr){
-        if(arr == null)
-            return null;
-        return new float[]{arr[0], arr[1], arr[2]};
+    public GameMaterial(float[] diffuse, float[] ambient, float[] specular, float specular_exponet, String diffuseTex, String specularTex, String normalTex, String alphaTex)
+    {
+        this.diffuse = diffuse;
+        this.ambient = ambient;
+        this.specular = specular;
+        this.specular_exponet = specular_exponet;
+        this.diffuseTex = diffuseTex;
+        this.specularTex = specularTex;
+        this.normalTex = normalTex;
+        this.alphaTex = alphaTex;
     }
 
     public float[] getDiffuse() {
@@ -83,8 +68,6 @@ public class GameMaterial implements Serializable
             return false;
         if ((this.alphaTex == null) ? (other.alphaTex != null) : !this.alphaTex.equals(other.alphaTex))
             return false;
-        if (this.description != other.description && (this.description == null || !this.description.equals(other.description)))
-            return false;
         return true;
     }
 
@@ -103,8 +86,6 @@ public class GameMaterial implements Serializable
         97 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
         hash =
         97 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
-        hash =
-        97 * hash + (this.description != null ? this.description.hashCode() : 0);
         return hash;
     }
 

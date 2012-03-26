@@ -4,7 +4,7 @@
  */
 package darwin.resourcehandling.resmanagment;
 
-import darwin.resourcehandling.io.obj.ObjObjektReader.Scale;
+import darwin.resourcehandling.io.obj.ObjModelReader.Scale;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 /**

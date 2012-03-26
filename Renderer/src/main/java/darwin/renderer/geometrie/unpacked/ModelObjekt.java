@@ -14,19 +14,13 @@ import java.util.Arrays;
 public class ModelObjekt implements Serializable
 {
     private Model[] models;
-    private String name;
 
-    public ModelObjekt(Model[] models, String n) {
-        name = n;
+    public ModelObjekt(Model[] models) {
         this.models = models;
     }
 
     public Model[] getModels() {
         return models;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -38,9 +32,6 @@ public class ModelObjekt implements Serializable
         final ModelObjekt other = (ModelObjekt) obj;
         if (!Arrays.deepEquals(this.models, other.models))
             return false;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(
-                other.name))
-            return false;
         return true;
     }
 
@@ -48,7 +39,6 @@ public class ModelObjekt implements Serializable
     public int hashCode() {
         int hash = 7;
         hash = 13 * hash + Arrays.deepHashCode(this.models);
-        hash = 13 * hash + (this.name != null ? this.name.hashCode() : 0);
         return hash;
     }
 }

@@ -5,8 +5,11 @@
 package darwin.resourcehandling.resmanagment;
 
 import com.jogamp.opengl.util.texture.Texture;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import lzma.sdk.lzma.Decoder;
+import lzma.streams.LzmaInputStream;
 import org.apache.log4j.Logger;
 
 import darwin.renderer.geometrie.packed.RenderModel;
@@ -22,9 +25,11 @@ import darwin.resourcehandling.wrapper.TextureContainer;
  *
  * @author dheinrich
  */
-public class ResourcesLoader {
+public class ResourcesLoader
+{
 
-    private static class Log {
+    private static class Log
+    {
 
         private static Logger ger = Logger.getLogger(ResourcesLoader.class);
     }
@@ -42,20 +47,24 @@ public class ResourcesLoader {
     //Mesh stuff
     private final HashMap<ROLoadJob, List<RenderObjekt>> meshmap = new HashMap<>();
 
-    private ResourcesLoader() {
+    private ResourcesLoader()
+    {
     }
 
     public Shader getShader(String frag, String vertex, String geo,
-            String... mutations) {
+            String... mutations)
+    {
         return getShader(new ShaderDescription(frag, vertex, geo, mutations));
     }
 
-    public Shader getShader(String name) {
+    public Shader getShader(String name)
+    {
         return getShader(new ShaderDescription(name));
     }
 
     synchronized public Shader getShader(ShaderDescription descr,
-            String... mutations) {
+            String... mutations)
+    {
         ShaderLoadJob job = new ShaderLoadJob(descr.mergeFlags(mutations));
         ShaderFile file = shaderfiles.get(job);
         if (file == null) {
@@ -80,7 +89,8 @@ public class ResourcesLoader {
         return shader;
     }
 
-    synchronized public void getRenderObjekt(RenderObjekt ro, ObjConfig oconf) {
+    synchronized public void getRenderObjekt(RenderObjekt ro, ObjConfig oconf)
+    {
         ROLoadJob job = new ROLoadJob(oconf);
         RenderModel[] models = (RenderModel[]) ressourcen.get(job);
         List<RenderObjekt> l = meshmap.get(job);
@@ -98,7 +108,8 @@ public class ResourcesLoader {
         }
     }
 
-    synchronized public TextureContainer getTexture(TextureLoadJob ljob) {
+    synchronized public TextureContainer getTexture(TextureLoadJob ljob)
+    {
         Texture res = (Texture) ressourcen.get(ljob);
         if (res == null) {
             TextureContainer tc = texturemap.get(ljob);
@@ -114,7 +125,8 @@ public class ResourcesLoader {
         }
     }
 
-    synchronized public void workAllJobs() {
+    synchronized public void workAllJobs()
+    {
         try {
             while (!jobs.isEmpty()) {
                 loadJob(jobs.remove());
@@ -127,27 +139,36 @@ public class ResourcesLoader {
         }
     }
 
-    private void loadJob(LoadJob<?> j) {
+    private void loadJob(LoadJob<?> j)
+    {
         ressourcen.put(j, j.load());
         oldjobs.add(j);
     }
 
-    synchronized public void reloadRessources() {
+    synchronized public void reloadRessources()
+    {
         while (!oldjobs.isEmpty()) {
             jobs.add(oldjobs.remove());
         }
     }
 
-    public static InputStream getRessource(String path) {
-//        InputStream is = getStream(path + ".lzma");
-//        if (is != null) {
-//            return new LzmaInputStream(is);
-//        }
+    public static InputStream getRessource(String path) throws IOException
+    {
+        InputStream is = getStream(path + ".lzma");
+        if (is != null) {
+            return new LzmaInputStream(is, new Decoder());
+        } else {
+            is = getStream(path);
+            if (is == null) {
+                throw new IOException("Resource couldn't be found: " + path);
+            }
+        }
 
-        return getStream(path);
+        return is;
     }
 
-    private static InputStream getStream(String path) {
+    private static InputStream getStream(String path)
+    {
         return RESOURCES.getClass().getResourceAsStream('/' + path);
     }
 }

@@ -5,33 +5,38 @@ import java.io.*;
 import darwin.renderer.geometrie.unpacked.ObjMaterial;
 import darwin.resourcehandling.io.obj.ObjFile;
 import darwin.resourcehandling.io.obj.ObjFileParser;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 
 /**
  *
  * @author some
  */
-public class ObjectCompilerTest {
+public class ObjectCompilerTest
+{
 
-    public ObjectCompilerTest() {
-    }
-
-    public void compile() {
+    public void compile()
+    {
         System.out.println("----- Compiling Object Files -----");
         File folder = new File("src/resources/Models");
-        File[] files = folder.listFiles(new FilenameFilter() {
+        File[] files = folder.listFiles(new FilenameFilter()
+        {
 
-            public boolean accept(File dir, String name) {
+            @Override
+            public boolean accept(File dir, String name)
+            {
                 return name.endsWith("obj");
             }
         });
 
         long parse = 0, save = 0, total = 0, comp = 0;
+        int fileCount = files.length;
         for (File obj : files) {
             long time = System.currentTimeMillis();
-            ObjFileParser ofr = new ObjFileParser("resources/Models/" + obj.getName());
-            ObjFile f = ofr.loadOBJ();
-            parse += System.currentTimeMillis() - time;
             try {
+                InputStream in = ResourcesLoader.getRessource("resources/Models/" + obj.getName());
+                ObjFileParser ofr = new ObjFileParser(in);
+                ObjFile f = ofr.loadOBJ();
+                parse += System.currentTimeMillis() - time;
                 int tris = 0;
                 for (ObjMaterial m : f.getMaterials()) {
                     tris += f.getFaces(m).size();
@@ -40,33 +45,36 @@ public class ObjectCompilerTest {
 
                 FileOutputStream fos = new FileOutputStream(
                         obj.getAbsolutePath() + ".bin");
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                try (ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                    time = System.currentTimeMillis();
+                    oos.writeObject(f);
+                    save += System.currentTimeMillis() - time;
 
-                time = System.currentTimeMillis();
-                oos.writeObject(f);
-                save += System.currentTimeMillis() - time;
-
-                total += obj.length();
-                comp += fos.getChannel().size();
-
-                oos.close();
+                    total += obj.length();
+                    comp += fos.getChannel().size();
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
+                fileCount--;
             }
         }
-        System.out.println("Objects Compressed: " + files.length);
+        System.out.println("Objects Compressed: " + fileCount);
         System.out.println("Parse time: " + parse
                 + "ms;  Write/Compress time: " + save + "ms");
         System.out.println("Compression-Ratio: " + (float) comp / total);
         System.out.println();
     }
 
-    public void load() {
+    public void load()
+    {
         System.out.println("----- Load Compressed Object Files -----");
         File folder = new File("src/resources/Models");
-        File[] files = folder.listFiles(new FilenameFilter() {
+        File[] files = folder.listFiles(new FilenameFilter()
+        {
 
-            public boolean accept(File dir, String name) {
+            @Override
+            public boolean accept(File dir, String name)
+            {
                 return name.endsWith("obj.bin");
             }
         });
@@ -75,17 +83,15 @@ public class ObjectCompilerTest {
             try {
                 FileInputStream fos = new FileInputStream(
                         obj.getAbsolutePath());
-                ObjectInputStream oos = new ObjectInputStream(fos);
-
-                try {
-                    long time = System.currentTimeMillis();
-                    Object o = oos.readObject();
-                    load += System.currentTimeMillis() - time;
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
+                try (ObjectInputStream oos = new ObjectInputStream(fos)) {
+                    try {
+                        long time = System.currentTimeMillis();
+                        Object o = oos.readObject();
+                        load += System.currentTimeMillis() - time;
+                    } catch (ClassNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
                 }
-
-                oos.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -94,7 +100,8 @@ public class ObjectCompilerTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException
+    {
         new ObjectCompilerTest().compile();
     }
 }

@@ -1,7 +1,8 @@
 #version 130
-//<include includes/StdLib.frag>
+#pragma include includes/StdLib.frag
 #define GAMMA
-//<include includes/gamma.h>
+#pragma include includes/gamma.h
+
 //<defines DIFFUSE_MAPPING,SPECULAR_MAPPING,ALPHA_TEST,NORMAL_MAPPING,AMBIENT_GRADIENT,[CEM,BPCEM]>
 
 in vec3 ambient, diffuse, specular;
@@ -75,7 +76,7 @@ void main() {
 
     float NdotL = dot(N, light_pos);
 
-    if(NdotL >= 0.0){
+    if(NdotL > 0.0){
         float HdotN = dot(N, halfvector);
         vec3 scolor = specular;
         #ifdef SPECULAR_MAPPING
@@ -111,7 +112,6 @@ void main() {
         color = mix(textureCube(env_sampler, rdir).rgb, color, 0.5);
     #endif
     // write Total Color:
-    color = toGamma(color);
-    FragColor =  vec4(color, clamp(height, 0., 1.));
+    FragColor =  vec4(toGamma(color), clamp(height, 0., 1.));
 }
 

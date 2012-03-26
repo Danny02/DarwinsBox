@@ -1,4 +1,4 @@
-//<include includes/StdLib.frag>
+#pragma include includes/StdLib.frag
 
 in vec2 texcoord;
 in vec3 normal;

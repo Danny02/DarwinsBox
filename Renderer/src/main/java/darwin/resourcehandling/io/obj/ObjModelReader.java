@@ -4,6 +4,7 @@
  */
 package darwin.resourcehandling.io.obj;
 
+import java.io.*;
 import java.util.*;
 import javax.media.opengl.GL;
 import org.apache.log4j.Logger;
@@ -13,47 +14,56 @@ import darwin.renderer.geometrie.data.*;
 import darwin.renderer.geometrie.unpacked.*;
 import darwin.renderer.opengl.Element;
 import darwin.renderer.opengl.GLSLType;
-import darwin.renderer.shader.uniform.GameMaterial;
-import darwin.resourcehandling.io.ObjektReader;
-import darwin.resourcehandling.resmanagment.ObjConfig;
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
-
+import darwin.resourcehandling.io.ModelReader;
+import darwin.tools.annotations.ServiceProvider;
 
 /**
  * Parser fuer das OBJ Modell Format
+ * <p/>
  * @author Daniel Heinrich
  */
 //TODO the error handling of this file format reader is totaly wrong or not excistaned
-public class ObjObjektReader implements ObjektReader
+@ServiceProvider(ModelReader.class)
+public class ObjModelReader implements ModelReader
 {
     // <editor-fold defaultstate="collapsed" desc="misc">
+
     public enum Scale
     {
+
         ABSOLUTE
         {
+
             @Override
-            protected double scalefaktor(ObjFile obj, double scale) {
+            protected double scalefaktor(ObjFile obj, double scale)
+            {
                 return scale;
             }
         },
         HEIGHT
         {
+
             @Override
-            protected double scalefaktor(ObjFile obj, double scale) {
+            protected double scalefaktor(ObjFile obj, double scale)
+            {
                 return scale / obj.getHeight();
             }
         },
         WIDTH
         {
+
             @Override
-            protected double scalefaktor(ObjFile obj, double scale) {
+            protected double scalefaktor(ObjFile obj, double scale)
+            {
                 return scale / obj.getWidth();
             }
         },
         DEPTH
         {
+
             @Override
-            protected double scalefaktor(ObjFile obj, double scale) {
+            protected double scalefaktor(ObjFile obj, double scale)
+            {
                 return scale / obj.getDepth();
             }
         };
@@ -63,13 +73,14 @@ public class ObjObjektReader implements ObjektReader
 
     private static class Log
     {
-        public static Logger ger = Logger.getLogger(ObjObjektReader.class);
 
+        public static Logger ger = Logger.getLogger(ObjModelReader.class);
     }// </editor-fold>
     private final Element[] elements;
     private final Element position, texcoord, normal;
 
-    public ObjObjektReader() {
+    public ObjModelReader()
+    {
         position = new Element(GLSLType.VEC4, "Position");
         texcoord = new Element(GLSLType.VEC2, "TexCoord");
         normal = new Element(GLSLType.VEC3, "Normal");
@@ -84,42 +95,59 @@ public class ObjObjektReader implements ObjektReader
     }
 
     @Override
-    public ModelObjekt loadObjekt(ObjConfig ljob) {
-        OBJFormatReader ofr = new OBJFormatReader(ljob.getPath());
-        ObjFile obj = ofr.loadOBJ();
-        if (ljob.isCentered())
-            obj.center();
+    public ModelObjekt readModel(InputStream source) throws IOException
+    {
+        ObjFile obj = null;
+
+        BufferedInputStream in = new BufferedInputStream(source);
+        int serializationHeader = 16 + ObjFile.class.getName().length();
+        in.mark(serializationHeader);
+
         try {
-            obj.rescale(ljob.getScaleType().scalefaktor(obj, ljob.getScale()));
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            ObjectInputStream oi = new ObjectInputStream(in);
+            obj = (ObjFile) oi.readObject();
+        } catch (ClassNotFoundException | ObjectStreamException e) {
+            in.reset();
         }
-        Model[] models = loadModels(obj, ljob.getShader());
-        ModelObjekt mo = new ModelObjekt(models, ljob.getPath());
-        int triscount = 0;
-        int vertcount = 0;
-        for (Model m : models) {
-            triscount += m.getMesh().getIndexCount() / 3;
-            vertcount += m.getMesh().getVertexCount();
+
+        if (obj == null) {
+            ObjFileParser ofp = new ObjFileParser(in);
+            obj = ofp.loadOBJ();
         }
-        Log.ger.info(ljob.getPath() + "  ...loaded! (triscount: "
-                + triscount + ", vertcount: " + vertcount + ")");
+
+        Model[] models = loadModels(obj);
+        ModelObjekt mo = new ModelObjekt(models);
         return mo;
+    }
+
+    @Override
+    public boolean isSupported(String fileExtension)
+    {
+        switch (fileExtension) {
+            case "obj":
+            case "objbin":
+                return true;
+            default:
+                return false;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Vollst�ndiges OBJFile in Models konvertieren">
-    private Model[] loadModels(ObjFile obj, ShaderDescription descr) {
+    private Model[] loadModels(ObjFile obj)
+    {
         Model[] mo = new Model[obj.getMaterials().size()];
 
         int i = 0;
-        for (ObjMaterial mat : obj.getMaterials())
+        for (ObjMaterial mat : obj.getMaterials()) {
             mo[i++] =
-            new Model(loadMesh(obj, mat), new GameMaterial(mat, descr));
+                    new Model(loadMesh(obj, mat), mat.creatGameMaterial());
+        }
 
         return mo;
     }
 
-    private Mesh loadMesh(ObjFile obj, ObjMaterial mat) {
+    private Mesh loadMesh(ObjFile obj, ObjMaterial mat)
+    {
         Map<Integer, Integer> vmap = new Hashtable<>();
         List<Face> faces = obj.getFaces(mat);
 
@@ -141,8 +169,9 @@ public class ObjObjektReader implements ObjektReader
         for (int j = 0; iter.hasNext();) {
             Face face = iter.next();
             int[] vi = new int[face.getVertCount()];
-            for (int i = 0; i < vi.length; i++)
+            for (int i = 0; i < vi.length; i++) {
                 vi[i] = getVertex(vb, face.getVertice()[i], obj, vmap);
+            }
             indicies[j++] = vi[0];
             indicies[j++] = vi[1];
             indicies[j++] = vi[2];
@@ -158,29 +187,33 @@ public class ObjObjektReader implements ObjektReader
     }
 
     private int getVertex(VertexBuffer vb, VertexIDs ids, ObjFile obj,
-                          Map<Integer, Integer> vmap) {
+            Map<Integer, Integer> vmap)
+    {
         double[] vert = null, nor = null, tex = null;
 
         int p = ids.getPosition();
         if (p != 0) {
-            if (p < 0)
+            if (p < 0) {
                 p = obj.getVerticies().size() + p + 1;
+            }
             vert = Arrays.copyOf(obj.getVerticies().get(p - 1).getCoords(), 4);
             vert[3] = 1.;
         }
 
         int t = ids.getTexcoord();
         if (t != 0) {
-            if (t < 0)
+            if (t < 0) {
                 t = obj.getTexcoords().size() + t + 1;
+            }
             tex = obj.getTexcoords().get(t - 1).getCoords();
             tex = new double[]{tex[0], tex[1]};
         }
 
         int n = ids.getNormal();
         if (n != 0) {
-            if (n < 0)
+            if (n < 0) {
                 n = obj.getNormals().size() + n + 1;
+            }
             nor = obj.getNormals().get(n - 1).getCoords();
         }
 
@@ -189,23 +222,28 @@ public class ObjObjektReader implements ObjektReader
         if (vi == null) {
             vi = vb.addVertex();
             Vertex v = vb.getVertex(vi);
-            if (vert != null)
+            if (vert != null) {
                 v.setAttribute(position, double2Float(
                         vert));
-            if (nor != null)
+            }
+            if (nor != null) {
                 v.setAttribute(normal, double2Float(nor));
-            if (tex != null)
+            }
+            if (tex != null) {
                 v.setAttribute(texcoord, double2Float(tex));
+            }
             vmap.put(hs, vi);
         }
 
         return vi;
     }
 
-    private Float[] double2Float(double[] fs) {
+    private Float[] double2Float(double[] fs)
+    {
         Float[] i = new Float[fs.length];
-        for (int j = 0; j < i.length; j++)
+        for (int j = 0; j < i.length; j++) {
             i[j] = (float) fs[j];
+        }
         return i;
     }// </editor-fold>
 }

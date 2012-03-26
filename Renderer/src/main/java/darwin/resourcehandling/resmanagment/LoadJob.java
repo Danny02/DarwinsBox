@@ -5,10 +5,12 @@
 
 package darwin.resourcehandling.resmanagment;
 
+import java.io.IOException;
+
 /**
  *
  * @author dheinrich
  */
 public interface LoadJob<T> {
-    public T load();
+    public T load() throws IOException;
 }

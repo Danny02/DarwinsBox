@@ -12,6 +12,7 @@ import darwin.renderer.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.unpacked.ModelObjekt;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.uniform.GameMaterial;
+import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
@@ -22,7 +23,7 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  */
 public class ModelPacker
 {
-    public static RenderModel[] packModel(ModelObjekt model) {
+    public static RenderModel[] packModel(ModelObjekt model, ShaderDescription description) {
         Model[] submodels = model.getModels();
         RenderModel[] out = new RenderModel[submodels.length];
 
@@ -49,7 +50,7 @@ public class ModelPacker
             String[] mutations = new String[mut.size()];
             mut.toArray(mutations);
 
-            Shader s = RESOURCES.getShader(gm.description, mutations);
+            Shader s = RESOURCES.getShader(description, mutations);
 
             out[i] = new RenderModel(m, s);
         }

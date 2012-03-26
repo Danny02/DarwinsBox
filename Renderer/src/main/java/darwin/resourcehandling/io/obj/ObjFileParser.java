@@ -5,12 +5,12 @@
 package darwin.resourcehandling.io.obj;
 
 import java.io.*;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import darwin.renderer.geometrie.unpacked.ObjMaterial;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.math.base.Vec3;
 import darwin.util.math.base.Vector;
 
@@ -24,29 +24,20 @@ public class ObjFileParser
     {
         private static Logger ger = Logger.getLogger(ObjFileParser.class);
     }
-    private String file;
+    private InputStream file;
     private Pattern leer, slash;
-    private Hashtable<String, ObjMaterial> materials;
+    private Map<String, ObjMaterial> materials;
 
-    public ObjFileParser(String file) {
+    public ObjFileParser(InputStream file) {
         this.file = file;
-        materials = new Hashtable<>();
+        materials = new HashMap<>();
         leer = Pattern.compile(" ");
         slash = Pattern.compile("/");
     }
 
-    public ObjFile loadOBJ() {
+    public ObjFile loadOBJ() throws IOException {
         ObjFile obj = new ObjFile();
-        InputStream is = ResourcesLoader.getRessource(file);
-        if (is == null) {
-            Log.ger.fatal("Model \"" + file
-                    + "\" konnte nicht gefunden werden.");
-            return obj;
-        }
-
-        Reader fr = null;
-        try {
-            fr = new InputStreamReader(is);
+        Reader fr = new InputStreamReader(file);
             BufferedReader br = new BufferedReader(fr);
             String line;
             while ((line = br.readLine()) != null) {
@@ -54,22 +45,11 @@ public class ObjFileParser
                 if (s.length == 2)
                     parseValue(obj, s[0], leer.split(s[1].trim()));
             }
-            // <editor-fold defaultstate="collapsed" desc="catching stuff">
-        } catch (IOException ex) {
-            Log.ger.fatal(ex.getMessage(), ex);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }// </editor-fold>
-
 
         return obj;
     }
 
-    public void parseValue(ObjFile obj, String type, String[] values) {
+    private void parseValue(ObjFile obj, String type, String[] values) {
         switch (type) {
             case "v":
                 obj.addVertex(new Vec3(parseDoubless(values)));
