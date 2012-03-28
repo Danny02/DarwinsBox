@@ -4,14 +4,10 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 
-import darwin.renderer.geometrie.data.DataLayout.Format;
-import darwin.renderer.geometrie.data.*;
-import darwin.renderer.opengl.BufferObject.Target;
-import darwin.renderer.opengl.BufferObject.Type;
-import darwin.renderer.opengl.BufferObject.Usage;
+import darwin.geometrie.data.*;
+import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
 
@@ -41,6 +37,7 @@ public class CoordAxis implements GeometryFactory
         indice = BufferObject.buildIndiceBuffer(1, 0, 2, 0, 3);
     }
 
+    @Override
     public RenderMesh buildRenderable(Shader shader) {
         return new RenderMesh(shader, GL.GL_LINE_STRIP, indice, attr);
     }

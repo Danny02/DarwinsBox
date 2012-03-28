@@ -26,7 +26,7 @@ public class MatrixSetter implements UniformSetter,
     }
 
     public void addUniform(final ShaderUniform uni) {
-        String matType = uni.getElement().bezeichnung.substring(4);
+        String matType = uni.getElement().getBezeichnung().substring(4);
         switch (matType) {
             case "M":
                 setter.add(new UniformSetter() {

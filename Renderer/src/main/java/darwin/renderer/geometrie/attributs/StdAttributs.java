@@ -4,10 +4,11 @@
  */
 package darwin.renderer.geometrie.attributs;
 
+import darwin.geometrie.data.Element;
 import java.util.LinkedList;
 import java.util.List;
 
-import darwin.renderer.geometrie.data.DataLayout;
+import darwin.geometrie.data.DataLayout;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.ShaderAttribute;

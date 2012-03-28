@@ -4,17 +4,17 @@
  */
 package darwin.resourcehandling.resmanagment;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.ServiceLoader;
+import org.apache.log4j.Logger;
 
+import darwin.geometrie.io.ModelReader;
+import darwin.geometrie.io.WrongFileTypeException;
+import darwin.geometrie.unpacked.ModelObjekt;
 import darwin.renderer.geometrie.ModelPacker;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
-import darwin.renderer.geometrie.unpacked.ModelObjekt;
-import darwin.resourcehandling.io.ModelReader;
-import darwin.resourcehandling.io.WrongFileTypeException;
 
 /**
  *
@@ -22,14 +22,8 @@ import darwin.resourcehandling.io.WrongFileTypeException;
  */
 public class ROLoadJob implements LoadJob<RenderModel[]>
 {
-//    private static class Static
-//    {
-//        private static final Element texcoord =
-//                                     new Element(GLSLType.VEC2, "TexCoord");
-//        private static final Element normal =
-//                                     new Element(GLSLType.VEC3, "Normal");
-//    }
 
+    private static final Logger logger = Logger.getLogger(ROLoadJob.class);
     private final ObjConfig ljob;
     private List<RenderObjekt> mcontainer;
 
@@ -44,29 +38,28 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
         String path = ljob.getPath();
         String ext = path.substring(path.lastIndexOf('.') + 1);
 
-        ModelReader reader = null;
+        InputStream in = new BufferedInputStream(ResourcesLoader.getRessource(path));
+        in.mark(1024);//one kilobyte should be enough to check if the file is of the right type
 
+        ModelObjekt mo = null;
         ServiceLoader<ModelReader> services = ServiceLoader.load(ModelReader.class);
         for (ModelReader mr : services) {
             if (mr.isSupported(ext)) {
-                reader = mr;
+                try {
+                    mo = mr.readModel(in);
+                    break;
+                } catch (WrongFileTypeException ex) {
+                    logger.warn("The choosen reader \"" + mr.getClass().getName()
+                            + "\" for the fileformat \"" + ext
+                            + "\" reports a wrong file type for \"" + path + "\"!");
+                    in.reset();
+                }
             }
         }
 
-        if (reader == null) {
-            throw new IOException("No model format reader found for "
-                    + "the extension of the file \"" + path + "\"");
-        }
-
-        InputStream in = ResourcesLoader.getRessource(path);
-
-        ModelObjekt mo = null;
-        try {
-            mo = reader.readModel(in);
-        } catch (WrongFileTypeException ex) {
-            throw new IOException("The choosen reader \""
-                    + reader.getClass().getName() + "\" for the fileformat \""
-                    + ext + "\" is not compatible to the file \"" + path + "\"!");
+        if (mo == null) {
+            throw new IOException("No model format reader found for the file \""
+                    + path + "\"");
         }
 
         RenderModel[] models = ModelPacker.packModel(mo, ljob.getShader());

@@ -141,8 +141,13 @@ public class ResourcesLoader
 
     private void loadJob(LoadJob<?> j)
     {
-        ressourcen.put(j, j.load());
-        oldjobs.add(j);
+        try {
+            Object r = j.load();
+            ressourcen.put(j, r);
+            oldjobs.add(j);
+        } catch (IOException ex) {
+            Log.ger.warn("One resource failed to load: " + ex.getLocalizedMessage());
+        }
     }
 
     synchronized public void reloadRessources()

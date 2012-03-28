@@ -61,7 +61,7 @@ public class TextureLoadJob implements LoadJob<Texture>
     }
 
     @Override
-    public Texture load() {
+    public Texture load(){
         GL gl = getGL();
         Texture re = tcontainer.getTexture();
         if (re != null)

@@ -5,14 +5,15 @@
 
 package darwin.renderer.opengl;
 
-import darwin.renderer.geometrie.data.DataType;
+import darwin.geometrie.data.DataType;
+import darwin.geometrie.data.VectorType;
 
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public enum GLSLType{
+public enum GLSLType implements VectorType{
     FLOAT(DataType.FLOAT, 1, false),
     VEC2(DataType.FLOAT, 2, false),
     VEC3(DataType.FLOAT, 3, false),
@@ -20,9 +21,9 @@ public enum GLSLType{
     MAT3(DataType.FLOAT, 9, true),
     MAT4(DataType.FLOAT, 16, true);
 
-    public final int size;
-    public final DataType datatype;
-    public final boolean ismatrix;
+    private final int size;
+    private final DataType datatype;
+    private final boolean ismatrix;
 
     private GLSLType(DataType type, int size, boolean ismatrix) {
         this.datatype = type;
@@ -30,8 +31,26 @@ public enum GLSLType{
         this.ismatrix = ismatrix;
     }
 
-    public int getByteSize(){
-        return datatype.getBSize() * size;
+    @Override
+    public DataType getDataType()
+    {
+        return datatype;
     }
 
+    @Override
+    public int getElementCount()
+    {
+        return size;
+    }
+
+    @Override
+    public int getByteSize()
+    {
+        return datatype.getByteSize() * size;
+    }
+
+    public boolean isMatrix()
+    {
+        return ismatrix;
+    }
 }

@@ -9,7 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import javax.media.opengl.GLUniformData;
 
-import darwin.renderer.opengl.Element;
+import darwin.geometrie.data.Element;
+import darwin.renderer.opengl.GlElement;
 import darwin.renderer.opengl.ShaderProgramm;
 
 /**
@@ -18,82 +19,97 @@ import darwin.renderer.opengl.ShaderProgramm;
  */
 public class ShaderUniform implements ShaderElement
 {
+
     private final String name;
-    private final Element element;
+    private final GlElement element;
     private transient final GLUniformData data;
     private transient boolean changed = false;
 
-    public ShaderUniform(String name, Element element) {
+    public ShaderUniform(String name, GlElement element)
+    {
         this.name = name;
         this.element = element;
 
-        if (element.gltype.ismatrix) {
-            int s = (int) Math.sqrt(element.gltype.size);
+        int eleCount = element.getVectorType().getElementCount();
+        if (element.isMatrix()) {
+            int s = (int) Math.sqrt(eleCount);
             data = new GLUniformData(name, s, s,
-                              GLBuffers.newDirectFloatBuffer(element.gltype.size));
-        } else
-            data = new GLUniformData(name, element.gltype.size,
-                                     (FloatBuffer) null);
+                    GLBuffers.newDirectFloatBuffer(eleCount));
+        } else {
+            data = new GLUniformData(name, eleCount, (FloatBuffer) null);
+        }
     }
 
     @Override
-    public Element getElement() {
+    public GlElement getElement()
+    {
         return element;
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
     @Override
-    public int getIndex() {
+    public int getIndex()
+    {
         return data.getLocation();
     }
 
     @Override
-    public void ini(ShaderProgramm sp) {
+    public void ini(ShaderProgramm sp)
+    {
         sp.use();
         data.setLocation(sp.getUniformLocation(name));
     }
 
-    GLUniformData getData() {
+    GLUniformData getData()
+    {
         return data;
     }
 
-    public void setData(int value){
+    public void setData(int value)
+    {
         data.setData(value);
         changed = true;
     }
 
-    public void setData(float value){
+    public void setData(float value)
+    {
         data.setData(value);
         changed = true;
     }
 
-    public void setData(float... array){
+    public void setData(float... array)
+    {
         data.setData(FloatBuffer.wrap(array));
         changed = true;
     }
 
-    public void setData(FloatBuffer value){
+    public void setData(FloatBuffer value)
+    {
         data.setData(value);
         changed = true;
     }
 
-    public void setData(IntBuffer value){
+    public void setData(IntBuffer value)
+    {
         data.setData(value);
         changed = true;
     }
 
-    public boolean wasChanged(){
+    public boolean wasChanged()
+    {
         boolean res = changed;
         changed = false;
         return res;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return name;
     }
 }

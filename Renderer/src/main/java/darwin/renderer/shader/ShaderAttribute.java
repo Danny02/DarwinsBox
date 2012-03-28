@@ -4,7 +4,7 @@
  */
 package darwin.renderer.shader;
 
-import darwin.renderer.opengl.Element;
+import darwin.geometrie.data.Element;
 import darwin.renderer.opengl.ShaderProgramm;
 
 /**
@@ -71,7 +71,7 @@ public class ShaderAttribute implements ShaderElement {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 17 * hash + (element != null ? element.gltype.hashCode() : 0);
+        hash = 17 * hash + (element != null ? element.getVectorType().hashCode() : 0);
         hash = 17 * hash + index;
         return hash;
     }

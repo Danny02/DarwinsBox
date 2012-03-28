@@ -33,14 +33,8 @@ public class HeightMapLoadJob extends TextureLoadJob
 
     @Override
     public Texture load() {
-        InputStream is = getRessource(getPath());
         Texture re = null;
-        try {
-            if (is == null) {
-                Log.ger.fatal("Ressource \"" + getPath()
-                        + "\" konnte nicht gefunden werden.");
-                throw new IOException("Error loading file " + getPath());
-            }
+        try (InputStream is = getRessource(getPath());){
             String[] suffix = getPath().split("\\.");
             TextureData td = TextureIO.newTextureData(getGL().getGLProfile(), is,
                                                  GL2GL3.GL_LUMINANCE_FLOAT32_ATI,
@@ -55,12 +49,6 @@ public class HeightMapLoadJob extends TextureLoadJob
             Log.ger.fatal("Heigthmap " + getPath()
                     + " konnte nicht geladen werden.\n("
                     + ex.getLocalizedMessage() + ")", ex);
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                }
         }
 
         return re;

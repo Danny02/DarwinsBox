@@ -8,7 +8,7 @@ import java.util.*;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
 
-import darwin.renderer.opengl.Element;
+import darwin.geometrie.data.Element;
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.uniform.MatrixSetter;
 import darwin.renderer.shader.uniform.UniformSetter;
@@ -55,7 +55,7 @@ public class Shader implements GenListener<MatrixEvent>
         uniforms = new HashMap<>(15);
         for (ShaderUniform su : uni) {
             uniforms.put(su.getName(), su);
-            String b = su.getElement().bezeichnung;
+            String b = su.getElement().getBezeichnung();
             if (b != null && b.startsWith("MAT_")) {
                 matricen.addUniform(su);
             }

@@ -21,9 +21,11 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  *
  * @author dheinrich
  */
-public class TextureAtlas {
+public class TextureAtlas
+{
 
-    private static class Log {
+    private static class Log
+    {
 
         private static Logger ger = Logger.getLogger(TextureAtlas.class);
     }
@@ -31,7 +33,8 @@ public class TextureAtlas {
     transient private HashMap<String, TextureAtlasElement> elements;
     transient private TextureContainer texture;
 
-    public TextureAtlas(String file) {
+    public TextureAtlas(String file)
+    {
         if (file.substring(file.lastIndexOf(".") + 1).equals("xml")) {
             parseXML(file);
         } else {
@@ -39,12 +42,11 @@ public class TextureAtlas {
         }
     }
 
-    public final void parseTAI(String file) {
+    public final void parseTAI(String file)
+    {
         elements = new HashMap<>();
-        InputStream is = getRessource(path + file);
-        assert is != null : "TextureAtlass " + path + file + " wurde nicht gefunden";
 
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getRessource(path + file)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.isEmpty()) {
@@ -59,7 +61,8 @@ public class TextureAtlas {
         }
     }
 
-    private void parseLine(String line) {
+    private void parseLine(String line)
+    {
         String[] eles = line.split(",");
         String[] name = eles[0].split("\\s+");
         if (texture == null) {
@@ -76,7 +79,8 @@ public class TextureAtlas {
 
     }
 
-    private void parseXML(String file) {
+    private void parseXML(String file)
+    {
         elements = new HashMap<>();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -136,7 +140,8 @@ public class TextureAtlas {
         }
     }
 
-    public TextureAtlasElement getElement(String name) {
+    public TextureAtlasElement getElement(String name)
+    {
         TextureAtlasElement e = elements.get(name);
         if (e == null) {
             Log.ger.fatal("nicht existierendes TexAtlass Element angefordert.("
@@ -145,11 +150,13 @@ public class TextureAtlas {
         return e;
     }
 
-    public Collection<TextureAtlasElement> getElements() {
+    public Collection<TextureAtlasElement> getElements()
+    {
         return elements.values();
     }
 
-    public TextureContainer getTexContainer() {
+    public TextureContainer getTexContainer()
+    {
         return texture;
     }
 }

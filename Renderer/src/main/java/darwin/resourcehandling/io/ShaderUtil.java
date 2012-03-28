@@ -94,7 +94,7 @@ public class ShaderUtil {
         return new ShaderObjekt(target, sources);
     }
 
-    public static ShaderFile loadShader(ShaderDescription dscr) {
+    public static ShaderFile loadShader(ShaderDescription dscr) throws IOException {
         return loadShader(dscr.f, dscr.v, dscr.g, dscr.flags);
     }
 
@@ -118,7 +118,7 @@ public class ShaderUtil {
      * Eine Liste von Uniform variable der ShaderProgramm deren positionen abgefragt werden sollen.
      */
     public static ShaderFile loadShader(String fs, String vs, String gs,
-            String... ms) {
+            String... ms) throws IOException {
         InputStream fragis = getRessource(Static.RES_PATH + fs);
         InputStream vertis = getRessource(Static.RES_PATH + vs);
         InputStream geois = getRessource(Static.RES_PATH + gs);

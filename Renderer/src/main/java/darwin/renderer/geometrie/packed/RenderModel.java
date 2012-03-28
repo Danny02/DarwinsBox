@@ -5,12 +5,9 @@
 package darwin.renderer.geometrie.packed;
 
 import java.nio.IntBuffer;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import darwin.renderer.geometrie.data.RenderMesh;
-import darwin.renderer.geometrie.unpacked.Mesh;
-import darwin.renderer.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.renderer.opengl.BufferObject;
 import darwin.renderer.opengl.BufferObject.Target;
 import darwin.renderer.opengl.BufferObject.Type;
@@ -29,14 +26,14 @@ import darwin.resourcehandling.wrapper.TextureContainer;
 public final class RenderModel implements Shaded, Cloneable
 {
 
-    private GameMaterial material;
+    private Material material;
     private RenderMesh rbuffer;
     private Shader shader;
     private final Set<UniformSetter> uniforms = new HashSet<>();
     private AsyncIni initiator = null;
 
     public RenderModel(RenderMesh rbuffer, Shader shader,
-            GameMaterial mat)
+            Material mat)
     {
         this.rbuffer = rbuffer;
         material = mat;
@@ -97,9 +94,7 @@ public final class RenderModel implements Shaded, Cloneable
         this.shader = shader;
         if (material != null) {
             ShaderMaterial smaterial = new ShaderMaterial(shader, material);
-            for (UniformSetter us : smaterial.getSetter()) {
-                uniforms.add(us);
-            }
+            uniforms.addAll(Arrays.asList(smaterial.getSetter()));
         }
     }
 

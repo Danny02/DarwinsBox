@@ -2,10 +2,9 @@ package darwin.tools.experimental;
 
 import java.io.*;
 
-import darwin.renderer.geometrie.unpacked.ObjMaterial;
-import darwin.resourcehandling.io.obj.ObjFile;
-import darwin.resourcehandling.io.obj.ObjFileParser;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
+import darwin.geometrie.io.ResourcesLoader;
+import darwin.geometrie.io.obj.*;
+
 
 /**
  *

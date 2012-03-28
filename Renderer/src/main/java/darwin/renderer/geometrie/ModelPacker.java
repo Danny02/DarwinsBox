@@ -7,15 +7,12 @@ package darwin.renderer.geometrie;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import darwin.geometrie.unpacked.*;
 import darwin.renderer.geometrie.packed.RenderModel;
-import darwin.renderer.geometrie.unpacked.Model;
-import darwin.renderer.geometrie.unpacked.ModelObjekt;
 import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.uniform.GameMaterial;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
-
 
 /**
  *
@@ -23,7 +20,9 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  */
 public class ModelPacker
 {
-    public static RenderModel[] packModel(ModelObjekt model, ShaderDescription description) {
+
+    public static RenderModel[] packModel(ModelObjekt model, ShaderDescription description)
+    {
         Model[] submodels = model.getModels();
         RenderModel[] out = new RenderModel[submodels.length];
 
@@ -31,15 +30,18 @@ public class ModelPacker
 
         for (int i = 0; i < out.length; i++) {
             Model m = submodels[i];
-            GameMaterial gm = m.getMat();
+            Material gm = m.getMat();
             Collection<String> mut = new ArrayList<>(3);
 
-            if (gm.alphaTex != null)
+            if (gm.alphaTex != null) {
                 mut.add("ALPHA_TEST");
-            if (gm.specularTex != null)
+            }
+            if (gm.specularTex != null) {
                 mut.add("SPECULAR_MAPPING");
-            if (gm.diffuseTex != null)
+            }
+            if (gm.diffuseTex != null) {
                 mut.add("DIFFUSE_MAPPING");
+            }
             //TODO normalmapping
 //            if (gm.normalTex != null){
 //                mut.add("NORMAL_MAPPING");

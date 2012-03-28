@@ -4,6 +4,7 @@
  */
 package darwin.resourcehandling.resmanagment;
 
+import java.io.IOException;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
     }
 
     @Override
-    public ShaderProgramm load() {
+    public ShaderProgramm load() throws IOException {
         long t = System.currentTimeMillis();
         ShaderProgramm sp = ShaderUtil.compileShader(getSfile());
         if (scontainer != null)
@@ -66,7 +67,7 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
         return sb.toString();
     }
 
-    public ShaderFile getSfile() {
+    public ShaderFile getSfile() throws IOException {
         if (sfile == null)
             sfile = ShaderUtil.loadShader(desc);
         return sfile;

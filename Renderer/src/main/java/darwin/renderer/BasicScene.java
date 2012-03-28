@@ -25,7 +25,8 @@ import static darwin.renderer.GraphicContext.*;
 import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
- *  Basic scene manager
+ * Basic scene manager
+ * <p/>
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public class BasicScene implements GLEventListener
@@ -58,7 +59,9 @@ public class BasicScene implements GLEventListener
     protected void customRender()
     {
         renderObjects();
-    };
+    }
+
+    ;
 
     protected void renderObjects()
     {
@@ -97,7 +100,9 @@ public class BasicScene implements GLEventListener
     @Override
     public final void display(GLAutoDrawable drawable)
     {
-            if(!drawable.getContext().isCurrent())return;
+        if (!drawable.getContext().isCurrent()) {
+            return;
+        }
         RESOURCES.workAllJobs();
         try {
             customRender();

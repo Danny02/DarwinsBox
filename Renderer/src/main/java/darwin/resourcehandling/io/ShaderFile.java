@@ -103,7 +103,7 @@ public class ShaderFile implements Serializable
                 String bez = null;
                 if (b.size() > i)
                     bez = b.get(i);
-                Element ele = parseElement(gtype, bez);
+                GlElement ele = parseElement(gtype, bez);
                 uniforms.add(new ShaderUniform(n.get(i), ele));
             }
         }
@@ -130,7 +130,7 @@ public class ShaderFile implements Serializable
                     ind = nvp.index;
                 }
 
-                Element ele = parseElement(gtype, bez);
+                GlElement ele = parseElement(gtype, bez);
                 if (ind != null)
                     if (!set.add(ind)) {
                         Log.ger.warn("Eine Attribut(" + n.get(i)
@@ -169,10 +169,10 @@ public class ShaderFile implements Serializable
         return ret;
     }
 
-    private Element parseElement(GLSLType type, String name) {
+    private GlElement parseElement(GLSLType type, String name) {
         if (name == null || name.trim().isEmpty())
             name = "Element" + count++;
-        return new Element(type, name);
+        return new GlElement(type, name);
     }
 
     private GLSLType parseType(String type) {

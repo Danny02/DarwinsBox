@@ -4,6 +4,7 @@
  */
 package darwin.renderer.shader.uniform;
 
+import darwin.geometrie.unpacked.Material;
 import com.jogamp.opengl.util.texture.Texture;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,11 +37,11 @@ public class ShaderMaterial {
         this.setter = setter;
     }
 
-    public ShaderMaterial(Shader shader, GameMaterial material) {
+    public ShaderMaterial(Shader shader, Material material) {
         this(shader, material, new LinkedList<UniformSetter>());
     }
 
-    public ShaderMaterial(Shader shader, GameMaterial material,
+    public ShaderMaterial(Shader shader, Material material,
             List<UniformSetter> setter) {
         this.shader = shader;
         add2List(setter, createSetter("mat_diffuse", material.getDiffuse()));

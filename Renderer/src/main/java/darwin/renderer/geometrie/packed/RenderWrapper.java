@@ -4,6 +4,7 @@
  */
 package darwin.renderer.geometrie.packed;
 
+import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.util.math.util.MatrixCache;
 
 /**
