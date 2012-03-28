@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Objects;
 
-
 import static java.lang.Math.*;
 
 /**
@@ -31,6 +30,11 @@ public final class VertexBuffer implements Iterable<Vertex>
         this.layout = layout;
         buffer = GLBuffers.newDirectByteBuffer(size * layout.getBytesize());
         buffer.limit(0);
+    }
+
+    public void fullyInitialize()
+    {
+        setVCount(size);
     }
 
     public Vertex getVertex(int ind)

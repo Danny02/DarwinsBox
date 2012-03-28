@@ -79,7 +79,7 @@ public class ObjModelReader implements ModelReader
     @Override
     public boolean isSupported(String fileExtension)
     {
-        switch (fileExtension) {
+        switch (fileExtension.toLowerCase()) {
             case "obj":
             case "objbin":
                 return true;
