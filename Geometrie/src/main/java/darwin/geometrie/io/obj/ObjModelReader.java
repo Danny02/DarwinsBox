@@ -12,8 +12,9 @@ import org.apache.log4j.Logger;
 import darwin.geometrie.data.DataLayout.Format;
 import darwin.geometrie.data.*;
 import darwin.geometrie.io.ModelReader;
-import darwin.geometrie.unpacked.*;
-import darwin.tools.annotations.ServiceProvider;
+import darwin.geometrie.unpacked.Mesh;
+import darwin.geometrie.unpacked.Model;
+import darwin.annotations.ServiceProvider;
 
 import static darwin.geometrie.data.DataType.*;
 
@@ -33,14 +34,16 @@ public class ObjModelReader implements ModelReader
         public static Logger ger = Logger.getLogger(ObjModelReader.class);
     }// </editor-fold>
     private final Element[] elements;
-    private final Element position, texcoord, normal;
+    private static final Element position, texcoord, normal;
 
-    public ObjModelReader()
-    {
+    static {
         position = new Element(new GenericVector(FLOAT, 3), "Position");
         texcoord = new Element(new GenericVector(FLOAT, 2), "TexCoord");
         normal = new Element(new GenericVector(FLOAT, 3), "Normal");
+    }
 
+    public ObjModelReader()
+    {
         Collection<Element> ele = new LinkedList<>();
         ele.add(position);
         ele.add(texcoord);
@@ -51,7 +54,7 @@ public class ObjModelReader implements ModelReader
     }
 
     @Override
-    public ModelObjekt readModel(InputStream source) throws IOException
+    public Model[] readModel(InputStream source) throws IOException
     {
         ObjFile obj = null;
 
@@ -71,9 +74,7 @@ public class ObjModelReader implements ModelReader
             obj = ofp.loadOBJ();
         }
 
-        Model[] models = loadModels(obj);
-        ModelObjekt mo = new ModelObjekt(models);
-        return mo;
+        return loadModels(obj);
     }
 
     @Override

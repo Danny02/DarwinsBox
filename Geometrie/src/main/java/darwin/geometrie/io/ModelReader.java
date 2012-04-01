@@ -7,7 +7,7 @@ package darwin.geometrie.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import darwin.geometrie.unpacked.ModelObjekt;
+import darwin.geometrie.unpacked.Model;
 
 
 /**
@@ -27,7 +27,7 @@ public interface ModelReader
      * @throws WrongFileTypeException
      * is thrown when the read file is not of the supported file format of the reader
      */
-    public ModelObjekt readModel(InputStream source) throws IOException, WrongFileTypeException;
+    public Model[] readModel(InputStream source) throws IOException, WrongFileTypeException;
 
     /**
      * Checks if the reader supports a given file extension

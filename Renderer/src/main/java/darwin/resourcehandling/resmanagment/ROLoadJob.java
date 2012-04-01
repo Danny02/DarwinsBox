@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import darwin.geometrie.io.ModelReader;
 import darwin.geometrie.io.WrongFileTypeException;
-import darwin.geometrie.unpacked.ModelObjekt;
+import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.ModelPacker;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
@@ -41,7 +41,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
         InputStream in = new BufferedInputStream(ResourcesLoader.getRessource(path));
         in.mark(1024);//one kilobyte should be enough to check if the file is of the right type
 
-        ModelObjekt mo = null;
+        Model[] mo = null;
         ServiceLoader<ModelReader> services = ServiceLoader.load(ModelReader.class);
         for (ModelReader mr : services) {
             if (mr.isSupported(ext)) {

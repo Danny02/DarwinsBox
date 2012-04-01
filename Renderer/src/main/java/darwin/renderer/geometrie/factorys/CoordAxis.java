@@ -6,7 +6,8 @@ package darwin.renderer.geometrie.factorys;
 
 import javax.media.opengl.GL;
 
-import darwin.geometrie.data.*;
+import darwin.geometrie.data.DataLayout;
+import darwin.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
@@ -22,7 +23,8 @@ public class CoordAxis implements GeometryFactory
     private final BufferObject indice;
 
     private CoordAxis() {
-        Element pos = new Element(GLSLType.VEC3, "Position");
+
+        darwin.geometrie.data.Element pos = new darwin.geometrie.data.Element(GLSLType.VEC3, "Position");
 
         DataLayout dl = new DataLayout(pos);
 

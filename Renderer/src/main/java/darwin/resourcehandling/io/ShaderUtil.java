@@ -22,22 +22,23 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  *
  * @author Daniel Heinrich
  */
-public class ShaderUtil {
+public class ShaderUtil
+{
 
-    private static class Log {
+    private static class Log
+    {
 
         private static Logger ger = Logger.getLogger(ShaderUtil.class);
     }
 
-    private static class Static {
+    private static class Static
+    {
 
         private static final String GLSL_VERISON_STRING;
         private static final String RES_PATH = "resources/shaders/";
 
         static {
-            int v = 110;
-            //TODO geht bei andis 5850 ned komischerweise, gibt version 409 zurück
-            //und compiled deswegen ned weil es ned kompatibel zu opengl2 is
+            int v = 120;
             try {
                 String ver = getGL().glGetString(GL2.GL_SHADING_LANGUAGE_VERSION);
                 String s = ver.split(" ")[0];
@@ -45,19 +46,18 @@ public class ShaderUtil {
                 double d = Double.parseDouble(s);
                 d *= 100;
                 v = (int) Math.round(d);
-            } catch (GLException ex) {
+            } catch (Throwable ex) {
+                Log.ger.warn(ex.getLocalizedMessage());
             }
-
-//            v = Math.min(v, 330);
 
             GLSL_VERISON_STRING = "#version " + v + '\n';
         }
     }
-
     private static final String includePrefix = "#pragma include";
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
-    public static ShaderProgramm compileShader(ShaderFile sfile) {
+    public static ShaderProgramm compileShader(ShaderFile sfile)
+    {
         ShaderObjekt fso, vso, gso;
         try {
             fso = createSObject(GL2.GL_FRAGMENT_SHADER,
@@ -68,7 +68,7 @@ public class ShaderUtil {
                     sfile.geometrie, sfile.mutations);
             return new ShaderProgramm(sfile.getAttributs(), fso, vso, gso);
         } catch (BuildException ex) {
-            //Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
+            //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
             Log.ger.fatal("Shader " + ex.getErrorType() + " ERROR in : "
                     + sfile.name + "\n" + ex.getMessage());
             throw new Error("Shutting down!");
@@ -76,52 +76,53 @@ public class ShaderUtil {
     }
 
     private static ShaderObjekt createSObject(int target, String source,
-            String... mut) throws BuildException {
+            String... mut) throws BuildException
+    {
         if (source == null) {
             return null;
         }
         int len = mut != null ? mut.length : 0;
         String[] sources = new String[2 + len];
         sources[0] = Static.GLSL_VERISON_STRING;
-        int i = 0;
-        while (i < len) {
-            ++i;
-            sources[i] = "#define " + mut[i - 1] + '\n';
+        for (int i = 0; i < len; ++i) {
+            sources[i + 1] = "#define " + mut[i] + '\n';
         }
 
-        sources[i + 1] = source;
+        sources[len + 1] = source;
 
         return new ShaderObjekt(target, sources);
     }
 
-    public static ShaderFile loadShader(ShaderDescription dscr) throws IOException {
+    public static ShaderFile loadShader(ShaderDescription dscr) throws IOException
+    {
         return loadShader(dscr.f, dscr.v, dscr.g, dscr.flags);
     }
 
     /**
-     * Erstellt eines ShaderProgramm Object.
-     * <br>
-     * @param gl
-     * <br>
-     * Der GL Context in dem das Programm erstellt werden soll.
-     * <br>
-     * @param vs
-     * <br>
-     * Pfad der auf eine Vertex ShaderProgramm Datei zeigt (relativ zu "./resources/Shaders/").
-     * <br>
-     * @param fs
-     * <br>
-     * Pfad der auf eine Fragment ShaderProgramm Datei zeigt (relativ zu "./resources/Shaders/").
-     * <br>
-     * @param uni
-     * <br>
-     * Eine Liste von Uniform variable der ShaderProgramm deren positionen abgefragt werden sollen.
+     * Erstellt eines ShaderProgramm Object. <br>
+     * <p/>
+     * @param gl  <br> Der GL Context in dem das Programm erstellt werden soll.
+     *            <br>
+     * @param vs  <br> Pfad der auf eine Vertex ShaderProgramm Datei zeigt
+     *            (relativ zu "./resources/Shaders/"). <br>
+     * @param fs  <br> Pfad der auf eine Fragment ShaderProgramm Datei zeigt
+     *            (relativ zu "./resources/Shaders/"). <br>
+     * @param uni <br> Eine Liste von Uniform variable der ShaderProgramm deren
+     *            positionen abgefragt werden sollen.
      */
     public static ShaderFile loadShader(String fs, String vs, String gs,
-            String... ms) throws IOException {
-        InputStream fragis = getRessource(Static.RES_PATH + fs);
-        InputStream vertis = getRessource(Static.RES_PATH + vs);
-        InputStream geois = getRessource(Static.RES_PATH + gs);
+            String... ms) throws IOException
+    {
+        InputStream fragis = null, vertis = null, geois = null;
+        if (fs != null) {
+            fragis = getRessource(Static.RES_PATH + fs);
+        }
+        if (vs != null) {
+            vertis = getRessource(Static.RES_PATH + vs);
+        }
+        if (gs != null) {
+            geois = getRessource(Static.RES_PATH + gs);
+        }
 
         String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
         ShaderFile ret = loadShader(name, fragis, vertis, geois, ms);
@@ -149,7 +150,8 @@ public class ShaderUtil {
 
     private static ShaderFile loadShader(String name, InputStream fs,
             InputStream vs, InputStream gs,
-            String... mutations) {
+            String... mutations)
+    {
         //TODO ueberlegen defines nicht der src hinzuzufügen
         //sondern als weiteren src string uebergeben
         String f = getData(fs);
@@ -158,7 +160,8 @@ public class ShaderUtil {
         return new ShaderFile(name, f, v, g, mutations);
     }
 
-    private static String getData(InputStream file) {
+    private static String getData(InputStream file)
+    {
         if (file == null) {
             return null;
         }
@@ -172,7 +175,6 @@ public class ShaderUtil {
                 line = line.trim();
                 if (line.startsWith(includePrefix)) {
                     String path = line.substring(includePrefix.length()).trim();
-                    path = path.substring(0, path.length() - 1);
                     InputStream shader = getRessource(Static.RES_PATH + path);
                     if (shader != null) {
                         String src = getData(shader);
@@ -189,7 +191,8 @@ public class ShaderUtil {
                 sb.append(line).append("\n");
             }
         } catch (IOException ex) {
-            Log.ger.fatal("Fehler beim laden eines Shader Source Strings", null);
+            Log.ger.fatal("Fehler beim laden eines Shader Source Strings: "
+                    + ex.getLocalizedMessage(), null);
         }
         out = sb.toString();
         return out;

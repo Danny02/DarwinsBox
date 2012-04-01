@@ -4,10 +4,8 @@
  */
 package darwin.core.gui;
 
-import com.jogamp.newt.awt.NewtCanvasAWT;
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.AnimatorBase;
-import java.awt.Container;
 import java.util.Collection;
 import java.util.LinkedList;
 import javax.media.opengl.GLException;

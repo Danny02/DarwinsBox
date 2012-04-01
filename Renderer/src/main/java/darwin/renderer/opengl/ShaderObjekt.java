@@ -16,14 +16,17 @@ import static java.lang.Integer.*;
 
 /**
  * CPU seitige Repraesentation eines OpenGL Shader Objekts
+ * <p/>
  * @author Daniel Heinrich
  */
 public class ShaderObjekt
 {
+
     private int type;
     private int globject;
 
-    public ShaderObjekt(int type, String[] shadertext) throws BuildException {
+    public ShaderObjekt(int type, String[] shadertext) throws BuildException
+    {
         GL2ES2 gl = getGL().getGL2ES2();
         this.type = type;
 
@@ -32,13 +35,13 @@ public class ShaderObjekt
         gl.glCompileShader(globject);
         int[] error = new int[1];
         gl.glGetShaderiv(globject, GL2ES2.GL_COMPILE_STATUS,
-                         error, 0);
+                error, 0);
         if (error[0] == GL.GL_FALSE) {
             int[] len = new int[]{512};
             byte[] errormessage = new byte[512];
             gl.glGetShaderInfoLog(globject, 512, len,
-                                  0, errormessage,
-                                  0);
+                    0, errormessage,
+                    0);
             String tmp = new String(errormessage, 0, len[0]);
             BufferedReader errors = new BufferedReader(new StringReader(tmp));
 
@@ -46,15 +49,16 @@ public class ShaderObjekt
             try {
                 sb.append('\t').append(errors.readLine()).append('\n');
                 String[][] texts = new String[shadertext.length][];
-                for (int i = 0; i < shadertext.length; i++)
+                for (int i = 0; i < shadertext.length; i++) {
                     texts[i] = shadertext[i].split("\n");
+                }
                 String line;
                 while ((line = errors.readLine()) != null) {
                     String[] er = line.split(":");
-                    if (er.length < 4)
+                    if (er.length < 4) {
                         break;
-                    String sline =
-                           texts[parseInt(er[1].trim())][parseInt(er[2]) - 1];
+                    }
+                    String sline = texts[parseInt(er[1].trim())][parseInt(er[2]) - 1];
                     sb.append('\t').append(line).append('\n');
                     sb.append("\t\t").append(sline).append('\n');
                 }
@@ -65,15 +69,18 @@ public class ShaderObjekt
 
     }
 
-    public void delete() {
+    public void delete()
+    {
         getGL().getGL2GL3().glDeleteShader(getShaderobjekt());
     }
 
-    public int getShaderobjekt() {
+    public int getShaderobjekt()
+    {
         return globject;
     }
 
-    public int getType() {
+    public int getType()
+    {
         return type;
     }
 }

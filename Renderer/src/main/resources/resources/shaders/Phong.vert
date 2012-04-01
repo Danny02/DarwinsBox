@@ -1,6 +1,6 @@
 #version 130
 #pragma include includes/StdLib.vert
-#pragma include includes/misc.h>
+#pragma include includes/misc.h
 //<defines OBJECT_PLACMENT,NORMAL_MAPPING,AMBIENT_GRADIENT,[CEM,BPCEM]>
 
 in vec4 in_position; //<Position>

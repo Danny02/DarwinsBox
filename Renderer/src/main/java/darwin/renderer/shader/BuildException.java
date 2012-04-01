@@ -20,26 +20,39 @@ package darwin.renderer.shader;
  *
  * @author daniel
  */
-public class BuildException extends Exception {
+public class BuildException extends Exception
+{
 
     private final BuildError type;
+    private final String msg;
 
-    public enum BuildError {
+    public enum BuildError
+    {
 
         CompileTime, LinkTime;
     }
 
-    public BuildException(String message, BuildError errortype) {
-        super(message);
+    public BuildException(String message, BuildError errortype)
+    {
+        msg = message;
         type = errortype;
     }
 
-    public BuildException(String message, Throwable cause, BuildError errortype) {
-        super(message, cause);
+    public BuildException(String message, Throwable cause, BuildError errortype)
+    {
+        super(cause);
+        msg = message;
         type = errortype;
     }
 
-    public BuildError getErrorType() {
+    public BuildError getErrorType()
+    {
         return type;
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return msg;
     }
 }

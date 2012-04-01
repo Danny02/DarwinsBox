@@ -1,4 +1,4 @@
-package darwin.tools.annotations;
+package darwin.annotations;
 
 /*
  * To change this template, choose Tools | Templates and open the template in

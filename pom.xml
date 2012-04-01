@@ -13,11 +13,13 @@
     <modules>
         <module>Core</module>
         <module>Renderer</module>
-        <module>Util</module>
         <module>ResourceHandling</module>
         <module>BuildTools</module>
-    <module>Geometrie</module>
-  </modules>
+        <module>Geometrie</module>
+        <module>AnnotationsProcessing</module>
+        <module>Util</module>
+        <module>../JOpenCTM</module>
+    </modules>
 
     <issueManagement>
         <url>${project.url}/issues</url>

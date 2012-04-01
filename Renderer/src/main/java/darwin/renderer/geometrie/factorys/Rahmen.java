@@ -8,8 +8,9 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import darwin.geometrie.data.DataLayout.Format;
 import darwin.geometrie.data.*;
+import darwin.geometrie.data.DataLayout.Format;
+import darwin.geometrie.data.Element;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.opengl.BufferObject.Target;
 import darwin.renderer.opengl.BufferObject.Type;

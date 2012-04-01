@@ -25,4 +25,5 @@
             </plugin>
         </plugins>
     </build>
+    <groupId>darwin</groupId>
 </project>

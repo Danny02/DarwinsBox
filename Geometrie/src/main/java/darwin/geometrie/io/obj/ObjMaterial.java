@@ -136,7 +136,7 @@ public final class ObjMaterial implements Externalizable, Cloneable
         if (nt == null) {
             nt = getBumbTex();
         }
-        return new Material(getDiffuse(), getAmbient(), getSepcular(),
+        return new Material(name, getDiffuse(), getAmbient(), getSepcular(),
                 getSpecularExponent(), getDiffuseTex(), getSpecularTex(),
                 nt, getAlphaTex());
 

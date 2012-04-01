@@ -13,7 +13,8 @@ import java.util.Collection;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.*;
-import darwin.geometrie.unpacked.*;
+import darwin.geometrie.unpacked.Mesh;
+import darwin.geometrie.unpacked.Model;
 import darwin.jopenctm.AttributeData;
 import darwin.jopenctm.CtmFileReader;
 
@@ -27,34 +28,45 @@ import static darwin.geometrie.data.DataType.*;
 public class CtmModelReader implements ModelReader
 {
 
-    private static final Element pos, tex, nor;
+    private static final Element position, texcoord, normal;
 
     static {
-        pos = new Element(new GenericVector(FLOAT, 3), "position");
-        tex = new Element(new GenericVector(FLOAT, 2), "texcoord");
-        nor = new Element(new GenericVector(FLOAT, 3), "position");
+        position = new Element(new GenericVector(FLOAT, 3), "Position");
+        texcoord = new Element(new GenericVector(FLOAT, 2), "TexCoord");
+        normal = new Element(new GenericVector(FLOAT, 3), "Normal");
     }
 
     @Override
-    public ModelObjekt readModel(InputStream source) throws IOException, WrongFileTypeException
+    public Model[] readModel(InputStream source) throws IOException, WrongFileTypeException
     {
         CtmFileReader cr = new CtmFileReader(source);
         darwin.jopenctm.Mesh rm = cr.getMesh();
 
-        Collection<Element> elements = new ArrayList<>();
-        elements.add(pos);
+        return new Model[]{convertMesh(rm)};
+    }
 
-        if (rm.hasNormals()) {
-            elements.add(nor);
+    @Override
+    public boolean isSupported(String fileExtension)
+    {
+        return fileExtension.toLowerCase().equals("cmt");
+    }
+
+    private Model convertMesh(darwin.jopenctm.Mesh mesh)
+    {
+        Collection<Element> elements = new ArrayList<>();
+        elements.add(position);
+
+        if (mesh.hasNormals()) {
+            elements.add(normal);
         }
 
-        Element[] uvEle = new Element[rm.getUVCount() - 1];
-        if (rm.getUVCount() > 0) {
-            elements.add(tex);
-            if (rm.getUVCount() > 1) {
+        Element[] uvEle = new Element[mesh.getUVCount() - 1];
+        if (mesh.getUVCount() > 0) {
+            elements.add(texcoord);
+            if (mesh.getUVCount() > 1) {
                 VectorType float2 = new GenericVector(FLOAT, 2);
-                for (int i = 1; i < rm.texcoordinates.length; i++) {
-                    AttributeData ad = rm.texcoordinates[i];
+                for (int i = 1; i < mesh.texcoordinates.length; i++) {
+                    AttributeData ad = mesh.texcoordinates[i];
                     uvEle[i - 1] = new Element(float2, ad.name);
                     elements.add(uvEle[i - 1]);
                 }
@@ -62,9 +74,9 @@ public class CtmModelReader implements ModelReader
         }
 
         VectorType float4 = new GenericVector(FLOAT, 4);
-        Element[] attEle = new Element[rm.getAttrCount()];
-        for (int i = 0; i < rm.attributs.length; ++i) {
-            attEle[i] = new Element(float4, rm.attributs[i].name);
+        Element[] attEle = new Element[mesh.getAttrCount()];
+        for (int i = 0; i < mesh.attributs.length; ++i) {
+            attEle[i] = new Element(float4, mesh.attributs[i].name);
             elements.add(attEle[i]);
         }
 
@@ -72,37 +84,37 @@ public class CtmModelReader implements ModelReader
 
         elements.toArray(elar);
         DataLayout layout = new DataLayout(AUTO, elar);
-        int vcount = rm.getVertexCount();
+        int vcount = mesh.getVertexCount();
         VertexBuffer vb = new VertexBuffer(layout, vcount);
 
         vb.fullyInitialize();
 
-        fillElement(vb, pos, rm.vertices);
+        fillElement(vb, position, mesh.vertices);
 
-        if (rm.hasNormals()) {
-            fillElement(vb, nor, rm.normals);
+        if (mesh.hasNormals()) {
+            fillElement(vb, normal, mesh.normals);
         }
 
-        if (rm.getUVCount() > 0) {
-            fillElement(vb, tex, rm.texcoordinates[0].values);
-            if (rm.getUVCount() > 1) {
+        if (mesh.getUVCount() > 0) {
+            fillElement(vb, texcoord, mesh.texcoordinates[0].values);
+            if (mesh.getUVCount() > 1) {
                 VectorType float2 = new GenericVector(FLOAT, 2);
-                for (int i = 1; i < rm.texcoordinates.length; i++) {
-                    AttributeData ad = rm.texcoordinates[i];
+                for (int i = 1; i < mesh.texcoordinates.length; i++) {
+                    AttributeData ad = mesh.texcoordinates[i];
                     elements.add(new Element(float2, ad.name));
-                    fillElement(vb, uvEle[i - 1], rm.texcoordinates[i].values);
+                    fillElement(vb, uvEle[i - 1], mesh.texcoordinates[i].values);
                 }
             }
         }
 
-        for (int i = 0; i < rm.attributs.length; ++i) {
-            fillElement(vb, attEle[i], rm.attributs[i].values);
+        for (int i = 0; i < mesh.attributs.length; ++i) {
+            fillElement(vb, attEle[i], mesh.attributs[i].values);
         }
 
-        Mesh m = new Mesh(rm.indices, vb, GL.GL_TRIANGLES);
+        Mesh m = new Mesh(mesh.indices, vb, GL.GL_TRIANGLES);
 
         //TODO Material
-        return new ModelObjekt(new Model[]{new Model(m, null)});
+        return new Model(m, null);
     }
 
     public void fillElement(VertexBuffer vb, Element e, float[] data)
@@ -115,11 +127,5 @@ public class CtmModelReader implements ModelReader
         for (Vertex v : vb) {
             v.setAttribute(e, b);
         }
-    }
-
-    @Override
-    public boolean isSupported(String fileExtension)
-    {
-        return fileExtension.toLowerCase().equals("cmt");
     }
 }

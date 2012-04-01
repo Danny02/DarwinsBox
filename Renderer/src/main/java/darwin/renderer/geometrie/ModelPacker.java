@@ -7,7 +7,8 @@ package darwin.renderer.geometrie;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import darwin.geometrie.unpacked.*;
+import darwin.geometrie.unpacked.Material;
+import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
@@ -21,15 +22,14 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 public class ModelPacker
 {
 
-    public static RenderModel[] packModel(ModelObjekt model, ShaderDescription description)
+    public static RenderModel[] packModel(Model[] models, ShaderDescription description)
     {
-        Model[] submodels = model.getModels();
-        RenderModel[] out = new RenderModel[submodels.length];
+        RenderModel[] out = new RenderModel[models.length];
 
 //        MeshModifier mm = new TangendCreator();
 
         for (int i = 0; i < out.length; i++) {
-            Model m = submodels[i];
+            Model m = models[i];
             Material gm = m.getMat();
             Collection<String> mut = new ArrayList<>(3);
 

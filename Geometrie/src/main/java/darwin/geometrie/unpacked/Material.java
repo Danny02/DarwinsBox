@@ -7,13 +7,14 @@ package darwin.geometrie.unpacked;
 import java.io.Serializable;
 import java.util.Arrays;
 
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public class Material implements Serializable
 {
+
+    public final String name;
     private final float[] diffuse, ambient, specular;
     public final float specular_exponet;
     public final String diffuseTex;
@@ -21,8 +22,9 @@ public class Material implements Serializable
     public final String normalTex;
     public final String alphaTex;
 
-    public Material(float[] diffuse, float[] ambient, float[] specular, float specular_exponet, String diffuseTex, String specularTex, String normalTex, String alphaTex)
+    public Material(String name, float[] diffuse, float[] ambient, float[] specular, float specular_exponet, String diffuseTex, String specularTex, String normalTex, String alphaTex)
     {
+        this.name = name;
         this.diffuse = diffuse;
         this.ambient = ambient;
         this.specular = specular;
@@ -33,60 +35,74 @@ public class Material implements Serializable
         this.alphaTex = alphaTex;
     }
 
-    public float[] getDiffuse() {
+    public float[] getDiffuse()
+    {
         return diffuse;
     }
 
-    public float[] getAmbient() {
+    public float[] getAmbient()
+    {
         return ambient;
     }
 
-    public float[] getSpecular() {
+    public float[] getSpecular()
+    {
         return specular;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final Material other = (Material) obj;
-        if (!Arrays.equals(this.diffuse, other.diffuse))
+        if (!Arrays.equals(this.diffuse, other.diffuse)) {
             return false;
-        if (!Arrays.equals(this.ambient, other.ambient))
+        }
+        if (!Arrays.equals(this.ambient, other.ambient)) {
             return false;
-        if (!Arrays.equals(this.specular, other.specular))
+        }
+        if (!Arrays.equals(this.specular, other.specular)) {
             return false;
-        if (this.specular_exponet != other.specular_exponet)
+        }
+        if (this.specular_exponet != other.specular_exponet) {
             return false;
-        if ((this.diffuseTex == null) ? (other.diffuseTex != null) : !this.diffuseTex.equals(other.diffuseTex))
+        }
+        if ((this.diffuseTex == null) ? (other.diffuseTex != null) : !this.diffuseTex.equals(other.diffuseTex)) {
             return false;
-        if ((this.specularTex == null) ? (other.specularTex != null) : !this.specularTex.equals(other.specularTex))
+        }
+        if ((this.specularTex == null) ? (other.specularTex != null) : !this.specularTex.equals(other.specularTex)) {
             return false;
-        if ((this.normalTex == null) ? (other.normalTex != null) : !this.normalTex.equals(other.normalTex))
+        }
+        if ((this.normalTex == null) ? (other.normalTex != null) : !this.normalTex.equals(other.normalTex)) {
             return false;
-        if ((this.alphaTex == null) ? (other.alphaTex != null) : !this.alphaTex.equals(other.alphaTex))
+        }
+        if ((this.alphaTex == null) ? (other.alphaTex != null) : !this.alphaTex.equals(other.alphaTex)) {
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 5;
         hash = 97 * hash + Arrays.hashCode(this.diffuse);
         hash = 97 * hash + Arrays.hashCode(this.ambient);
         hash = 97 * hash + Arrays.hashCode(this.specular);
         hash = 97 * hash + Float.floatToIntBits(this.specular_exponet);
         hash =
-        97 * hash + (this.diffuseTex != null ? this.diffuseTex.hashCode() : 0);
+                97 * hash + (this.diffuseTex != null ? this.diffuseTex.hashCode() : 0);
         hash =
-        97 * hash + (this.specularTex != null ? this.specularTex.hashCode() : 0);
+                97 * hash + (this.specularTex != null ? this.specularTex.hashCode() : 0);
         hash =
-        97 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
+                97 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
         hash =
-        97 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
+                97 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
         return hash;
     }
-
 }

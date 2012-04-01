@@ -6,10 +6,9 @@ package darwin.core.gui;
 
 //import netscape.javascript.JSException;
 //import netscape.javascript.JSObject;
+
 import com.jogamp.newt.awt.NewtCanvasAWT;
 import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JApplet;
 
 import static darwin.renderer.GraphicContext.*;

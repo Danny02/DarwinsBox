@@ -68,7 +68,12 @@ public class ResourcesLoader
         ShaderLoadJob job = new ShaderLoadJob(descr.mergeFlags(mutations));
         ShaderFile file = shaderfiles.get(job);
         if (file == null) {
-            file = job.getSfile();
+            try {
+                file = job.getSfile();
+            } catch (IOException ex) {
+                Log.ger.error(ex.getLocalizedMessage());
+                throw new UnsupportedOperationException(ex);
+            }
             shaderfiles.put(job, file);
         }
         Shader shader = new Shader(file);
@@ -135,7 +140,7 @@ public class ResourcesLoader
                 shadertoset.pop().load();
             }
         } catch (Throwable ex) {
-            Log.ger.fatal("Unresolved error in resource loading!", ex);
+            Log.ger.fatal("Unresolved error in resource loading! Error: "+ex.getLocalizedMessage(), ex);
         }
     }
 
