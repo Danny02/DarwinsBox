@@ -1,10 +1,11 @@
 package darwin.tools.experimental;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import darwin.geometrie.io.ResourcesLoader;
+import darwin.geometrie.io.*;
 import darwin.geometrie.io.obj.*;
-
 
 /**
  *
@@ -31,26 +32,17 @@ public class ObjectCompilerTest
         int fileCount = files.length;
         for (File obj : files) {
             long time = System.currentTimeMillis();
-            try {
-                InputStream in = ResourcesLoader.getRessource("resources/Models/" + obj.getName());
-                ObjFileParser ofr = new ObjFileParser(in);
-                ObjFile f = ofr.loadOBJ();
-                parse += System.currentTimeMillis() - time;
-                int tris = 0;
-                for (ObjMaterial m : f.getMaterials()) {
-                    tris += f.getFaces(m).size();
-                }
-                System.out.println(obj.getName() + " verts:" + f.getVerticies().size() + " faces:" + tris);
-
-                FileOutputStream fos = new FileOutputStream(
-                        obj.getAbsolutePath() + ".bin");
-                try (ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-                    time = System.currentTimeMillis();
-                    oos.writeObject(f);
-                    save += System.currentTimeMillis() - time;
-
-                    total += obj.length();
-                    comp += fos.getChannel().size();
+            try (InputStream in = ResourcesLoader.getRessource("resources/Models/" + obj.getName());) {
+                ModelReader mr = new ObjModelReader();
+                ModelWriter mw = new CtmModelWriter();
+                try (FileOutputStream fos = new FileOutputStream(
+                                obj.getAbsolutePath() + mw.getDefaultFileExtension())) {
+                    try {
+                        mw.writeModel(fos, mr.readModel(in));
+                    } catch (WrongFileTypeException ex) {
+                        ex.printStackTrace();
+                    }
+                    fos.flush();
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();

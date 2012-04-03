@@ -19,6 +19,7 @@ import darwin.jopenctm.CtmFileWriter;
 import darwin.jopenctm.compression.MeshEncoder;
 import darwin.jopenctm.compression.RawEncoder;
 import darwin.annotations.ServiceProvider;
+import darwin.jopenctm.compression.*;
 
 import static darwin.geometrie.data.DataType.*;
 import static darwin.jopenctm.CtmFileReader.*;
@@ -46,7 +47,7 @@ public class CtmModelWriter implements ModelWriter
 
     public CtmModelWriter()
     {
-        this(new RawEncoder());//TODO exchange default encoder with MG1
+        this(new MG1Encoder());
     }
 
     public CtmModelWriter(MeshEncoder encoder)
