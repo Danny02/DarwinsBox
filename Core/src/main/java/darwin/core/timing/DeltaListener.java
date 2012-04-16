@@ -8,6 +8,6 @@ package darwin.core.timing;
  *
  * @author daniel
  */
-public interface GameTimeListener {
+public interface DeltaListener {
     public void update(double timeDelta);
 }

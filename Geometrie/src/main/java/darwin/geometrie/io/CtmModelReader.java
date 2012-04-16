@@ -10,13 +10,17 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.*;
 import darwin.geometrie.unpacked.Mesh;
 import darwin.geometrie.unpacked.Model;
-import darwin.jopenctm.AttributeData;
-import darwin.jopenctm.CtmFileReader;
+import darwin.jopenctm.data.AttributeData;
+import darwin.jopenctm.errorhandling.BadFormatException;
+import darwin.jopenctm.errorhandling.InvalidDataException;
+import darwin.jopenctm.io.CtmFileReader;
 
 import static darwin.geometrie.data.DataLayout.Format.*;
 import static darwin.geometrie.data.DataType.*;
@@ -37,10 +41,18 @@ public class CtmModelReader implements ModelReader
     }
 
     @Override
-    public Model[] readModel(InputStream source) throws IOException, WrongFileTypeException
+    public Model[] readModel(InputStream source) throws WrongFileTypeException, IOException
     {
         CtmFileReader cr = new CtmFileReader(source);
-        darwin.jopenctm.Mesh rm = cr.getMesh();
+        try {
+            cr.decode();
+        } catch (BadFormatException ex) {
+            throw new WrongFileTypeException("The model has some bad format: "
+                    + ex.getMessage());
+        } catch (InvalidDataException ex) {
+            throw new IOException("The model has some invalide data: " + ex.getMessage());
+        }
+        darwin.jopenctm.data.Mesh rm = cr.getMesh();
 
         return new Model[]{convertMesh(rm)};
     }
@@ -51,7 +63,7 @@ public class CtmModelReader implements ModelReader
         return fileExtension.toLowerCase().equals("cmt");
     }
 
-    private Model convertMesh(darwin.jopenctm.Mesh mesh)
+    private Model convertMesh(darwin.jopenctm.data.Mesh mesh)
     {
         Collection<Element> elements = new ArrayList<>();
         elements.add(position);

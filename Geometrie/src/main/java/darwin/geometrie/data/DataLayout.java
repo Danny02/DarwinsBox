@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
@@ -95,6 +94,8 @@ public class DataLayout implements Serializable
             case INTERLEAVE32:
                 if (mod != 0) {
                     return stride + 32 - mod;
+                } else {
+                    return stride;
                 }
         }
 

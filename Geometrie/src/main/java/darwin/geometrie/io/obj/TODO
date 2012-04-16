@@ -1,0 +1,7 @@
+STRICT COMPAPILITY profiles for ModelReader
+STRICT, aborts instantly on the first sight of a wrong file format with an exception.
+COMPAPILITY, must result in a renderable Mesh
+
+what is with mesh integrity checks? when who should do them cause they may be slow
+
+add BadFormat exception

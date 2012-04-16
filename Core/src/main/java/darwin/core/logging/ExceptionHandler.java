@@ -16,7 +16,7 @@
  */
 package darwin.core.logging;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 
 /**

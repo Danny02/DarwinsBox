@@ -5,6 +5,7 @@
 package darwin.geometrie.data;
 
 import com.jogamp.opengl.util.GLBuffers;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Objects;
@@ -39,16 +40,19 @@ public final class VertexBuffer implements Iterable<Vertex>
 
     public Vertex getVertex(int ind)
     {
-        assert ind < getVcount() :
-                "Vertexcount: " + getVcount() + ", requested Vertex: " + ind;
+        if (ind >= getVcount()) {
+            throw new IndexOutOfBoundsException("Vertexcount: " + getVcount()
+                    + ", requested Vertex: " + ind);
+        }
         return new Vertex(this, ind);
     }
 
     public int addVertex()
     {
-        assert vcount < size;
-        setVCount(++vcount);
-        return vcount - 1;
+        assert (vcount < size) : "No new vertices can be added to this vertex buffer!";
+        int vid = vcount;
+        setVCount(vcount + 1);
+        return vid;
     }
 
     public Vertex newVertex()
@@ -83,16 +87,9 @@ public final class VertexBuffer implements Iterable<Vertex>
         }
     }
 
-    public void copyVertex(int id, VertexBuffer vbuffer)
-    {
-        copyVertex(id, 0, vbuffer);
-    }
-
     public void copyVertex(int id, int offset, VertexBuffer vbuffer)
     {
-
-        assert (id + offset < vcount) : "Das Ziel Vertex in das Kopiert werden"
-                + " soll liegt außerhalb der Buffer Groesse.";
+        assert (id + offset < vcount) : "The destination vertex is not in bound of the destination buffer";
         if (layout.equals(vbuffer.layout)) {
             ByteBuffer buf = vbuffer.buffer;
             int limit = offset + layout.getBytesize();
@@ -129,18 +126,7 @@ public final class VertexBuffer implements Iterable<Vertex>
         return getSize() - getVcount();
     }
 
-//    public void writeExternal(ObjectOutput out) throws IOException {
-//        out.writeInt(vcount);
-//        out.writeObject(layout);
-//        buffer.position(0);
-//        byte[] bytes = new byte[vcount * layout.getBytesize()];
-//        buffer.get(bytes);
-//        out.write(bytes);
-//    }
-//
-//    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
+    @Override
     public boolean equals(Object obj)
     {
         if (obj == null) {
@@ -162,6 +148,7 @@ public final class VertexBuffer implements Iterable<Vertex>
         return true;
     }
 
+    @Override
     public int hashCode()
     {
         int hash = 7;
@@ -172,6 +159,10 @@ public final class VertexBuffer implements Iterable<Vertex>
         return hash;
     }
 
+    /**
+     * The remove method of the Iterator Interface is not supported and will
+     * throw an UnsupportedOperationException
+     */
     @Override
     public Iterator<Vertex> iterator()
     {
@@ -197,7 +188,7 @@ public final class VertexBuffer implements Iterable<Vertex>
             @Override
             public void remove()
             {
-                throw new UnsupportedOperationException("Not supported yet.");
+                throw new UnsupportedOperationException();
             }
         };
     }

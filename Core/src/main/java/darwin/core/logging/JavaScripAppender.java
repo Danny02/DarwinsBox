@@ -11,7 +11,7 @@ import org.apache.log4j.spi.*;
  *
  * @author daniel
  */
-public class JavaScriptLogger extends AppenderSkeleton {
+public class JavaScripAppender extends AppenderSkeleton {
 
     private Layout l = new SimpleLayout();
 

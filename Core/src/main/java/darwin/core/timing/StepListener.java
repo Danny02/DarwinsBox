@@ -8,6 +8,6 @@ package darwin.core.timing;
  *
  * @author daniel
  */
-public interface TickListener {
-    public void update(int tickCount);
+public interface StepListener {
+    public void update(int tickCount, float lerp);
 }

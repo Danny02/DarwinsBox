@@ -47,6 +47,34 @@ public class GenericVector implements VectorType
     @Override
     public int getByteSize()
     {
-        return type.getByteSize() * elementCount;
+        return type.getByteSize() * getElementCount();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof VectorType)) {
+            return false;
+        }
+        final VectorType other = (VectorType) obj;
+        if (this.type != other.getDataType()) {
+            return false;
+        }
+        if (this.elementCount != other.getElementCount()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 29 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 29 * hash + this.elementCount;
+        return hash;
     }
 }

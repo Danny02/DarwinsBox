@@ -11,18 +11,18 @@ import java.util.List;
 import javax.media.opengl.GL;
 import org.apache.log4j.Logger;
 
+import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
 import darwin.geometrie.unpacked.Mesh;
 import darwin.geometrie.unpacked.Model;
-import darwin.jopenctm.AttributeData;
-import darwin.jopenctm.CtmFileWriter;
+import darwin.jopenctm.compression.MG1Encoder;
 import darwin.jopenctm.compression.MeshEncoder;
-import darwin.jopenctm.compression.RawEncoder;
-import darwin.annotations.ServiceProvider;
-import darwin.jopenctm.compression.*;
+import darwin.jopenctm.data.AttributeData;
+import darwin.jopenctm.errorhandling.InvalidDataException;
+import darwin.jopenctm.io.CtmFileWriter;
 
 import static darwin.geometrie.data.DataType.*;
-import static darwin.jopenctm.CtmFileReader.*;
+import static darwin.jopenctm.data.Mesh.*;
 
 /**
  *
@@ -69,19 +69,24 @@ public class CtmModelWriter implements ModelWriter
     {
         CtmFileWriter writer = new CtmFileWriter(out, encoder);
         for (Model m : models) {
-            writer.encode(convertMesh(m.getMesh(), m.getMat().name), fileComment);
+            try {
+                writer.encode(convertMesh(m.getMesh(), m.getMat().name), fileComment);
+            } catch (InvalidDataException ex) {
+                throw new IOException("The model has some invalid data: " + ex.getMessage());
+            }
         }
     }
 
-    private darwin.jopenctm.Mesh convertMesh(Mesh mesh, String matName) throws IOException
+    private darwin.jopenctm.data.Mesh convertMesh(Mesh mesh, String matName) throws IOException
     {
         if (mesh.getPrimitiv_typ() != GL.GL_TRIANGLES) {
             throw new IOException("The CTM File Format only supports triangle Meshes");
         }
 
         VertexBuffer vbuffer = mesh.getVertices();
+        int vc = mesh.getVertexCount();
 
-        float[] vertices = new float[mesh.getVertexCount() * position.getVectorType().getElementCount()];
+        float[] vertices = new float[vc * CTM_POSITION_ELEMENT_COUNT];
         float[] normals = null;
         AttributeData texcoords = null;
         int[] indices = new int[mesh.getIndexCount()];
@@ -99,7 +104,7 @@ public class CtmModelWriter implements ModelWriter
                 logger.warn("The mesh-attribute " + el.toString() + " can't be exported to the ctm format!");
                 continue;
             }
-            float[] values = new float[vertices.length * CTM_ATTR_ELEMENT_COUNT];
+            float[] values = new float[vc * CTM_ATTR_ELEMENT_COUNT];
             int k = 0;
             for (Vertex v : vbuffer) {
                 copyToBuffer(values, k, v, el);
@@ -118,7 +123,7 @@ public class CtmModelWriter implements ModelWriter
         }
 
         if (vbuffer.layout.hasElement(normal)) {
-            normals = new float[vertices.length * CTM_NORMAL_ELEMENT_COUNT];
+            normals = new float[vc * CTM_NORMAL_ELEMENT_COUNT];
             int k = 0;
             for (Vertex v : vbuffer) {
                 copyToBuffer(normals, k, v, normal);
@@ -126,7 +131,7 @@ public class CtmModelWriter implements ModelWriter
             }
         }
         if (vbuffer.layout.hasElement(texcoord)) {
-            float[] values = new float[vertices.length * CTM_UV_ELEMENT_COUNT];
+            float[] values = new float[vc * CTM_UV_ELEMENT_COUNT];
             int k = 0;
             for (Vertex v : vbuffer) {
                 copyToBuffer(values, k, v, texcoord);
@@ -138,16 +143,16 @@ public class CtmModelWriter implements ModelWriter
 
         AttributeData[] atts = new AttributeData[attribute.size()];
         attribute.toArray(atts);
-        return new darwin.jopenctm.Mesh(vertices, normals, indices,
+        return new darwin.jopenctm.data.Mesh(vertices, normals, indices,
                 texcoords == null ? new AttributeData[0] : new AttributeData[]{texcoords},
                 atts);
     }
 
     private void copyToBuffer(float[] buffer, int offset, Vertex v, Element e)
     {
-        Float[] data = (Float[]) v.getAttribute(e);
+        Number[] data = v.getAttribute(e);
         for (int j = 0; j < data.length; j++) {
-            buffer[offset + j] = data[j];
+            buffer[offset + j] = (float) data[j];
         }
     }
 

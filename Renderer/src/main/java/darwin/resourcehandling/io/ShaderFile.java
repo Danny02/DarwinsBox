@@ -21,6 +21,7 @@ import darwin.renderer.shader.ShaderUniform;
 //TODO: Uniform/Attribut arrays parsen
 public class ShaderFile implements Serializable
 {
+
     private static final Pattern attribut = Pattern.compile(
             "\\n[^(?://)\\n]*in\\s+(\\w+)\\s+(\\w.*;)(?:.*//<(.+>))?");
     private static final Pattern uniform = Pattern.compile(
@@ -29,15 +30,16 @@ public class ShaderFile implements Serializable
     private static final Pattern uniform2 = Pattern.compile(
             "\\n[^(?://)\\n]*uconst\\s+(\\w+)\\s+(\\w.*;)(?:.*//<(.+>))?");
     private static final Pattern elenames =
-                                 Pattern.compile(
+            Pattern.compile(
             "([a-zA-Z]\\w*)(?:\\[.*\\])?(?=\\s*=|,|;|>)");
     private static final Pattern tagnames =
-                                 Pattern.compile(
+            Pattern.compile(
             "([a-zA-Z]\\w*)(?::(\\d+))?(?=\\s*=|,|>)");
     private static int count = 0;
 
     private static class Log
     {
+
         private static Logger ger = Logger.getLogger(ShaderProgramm.class);
     }
     private static final long serialVersionUID = -5822433543998474334L;
@@ -49,7 +51,8 @@ public class ShaderFile implements Serializable
     private List<String> sampler;
 
     public ShaderFile(String name, String fragment, String vertex,
-                      String geometrie, String... mutations) {
+            String geometrie, String... mutations)
+    {
         this.name = name;
         this.vertex = vertex;
         this.fragment = fragment;
@@ -67,42 +70,50 @@ public class ShaderFile implements Serializable
         gatherUniforms(geometrie);
     }
 
-    public List<ShaderAttribute> getAttributs() {
+    public List<ShaderAttribute> getAttributs()
+    {
         return attributs;
     }
 
-    public List<ShaderUniform> getUniforms() {
+    public List<ShaderUniform> getUniforms()
+    {
         return uniforms;
     }
 
-    public List<String> getSampler() {
+    public List<String> getSampler()
+    {
         return sampler;
     }
 
-    private void gatherUniforms(String source) {
-        if (source == null)
+    private void gatherUniforms(String source)
+    {
+        if (source == null) {
             return;
+        }
         parseUniform(uniform.matcher(source));
         parseUniform(uniform2.matcher(source));
     }
 
-    private void parseUniform(Matcher m) {
+    private void parseUniform(Matcher m)
+    {
         while (m.find()) {
             List<String> n = parseNames(m.group(2));
             List<String> b = parseNames(m.group(3));
 
             String type = m.group(1);
             if (type.startsWith("sampler")) {
-                for (String na : n)
+                for (String na : n) {
                     sampler.add(na);
+                }
                 continue;
             }
 
             GLSLType gtype = parseType(m.group(1));
             for (int i = 0; i < n.size(); ++i) {
                 String bez = null;
-                if (b.size() > i)
+                if (b.size() > i) {
                     bez = b.get(i);
+                }
                 GlElement ele = parseElement(gtype, bez);
                 uniforms.add(new ShaderUniform(n.get(i), ele));
             }
@@ -110,9 +121,11 @@ public class ShaderFile implements Serializable
     }
 
     @SuppressWarnings("empty-statement")
-    private void gatherAttributs(String source) {
-        if (source == null)
+    private void gatherAttributs(String source)
+    {
+        if (source == null) {
             return;
+        }
         Matcher m = attribut.matcher(source);
         Set<Integer> set = new HashSet<>();
         while (m.find()) {
@@ -131,7 +144,7 @@ public class ShaderFile implements Serializable
                 }
 
                 GlElement ele = parseElement(gtype, bez);
-                if (ind != null)
+                if (ind != null) {
                     if (!set.add(ind)) {
                         Log.ger.warn("Eine Attribut(" + n.get(i)
                                 + ") Location(" + ind
@@ -139,57 +152,79 @@ public class ShaderFile implements Serializable
                                 + " Dies kann zu Link Fehler führen.");
                         while (set.contains(++ind));
                     }
+                }
                 attributs.add(new ShaderAttribute(n.get(i), ele, ind));
             }
         }
     }
 
-    private List<String> parseNames(String names) {
+    private List<String> parseNames(String names)
+    {
         List<String> ret = new ArrayList<>(5);
         if (names != null) {
             Matcher m = elenames.matcher(names);
-            while (m.find())
-                ret.add(m.group(1));
-        }
-        return ret;
-    }
-
-    private List<NVP> parseTags(String names) {
-        List<NVP> ret = new ArrayList<>(5);
-        if (names != null) {
-            Matcher m = tagnames.matcher(names);
             while (m.find()) {
-                String index = m.group(2);
-                if (index != null)
-                    ret.add(new NVP(m.group(1), Integer.parseInt(index)));
-                else
-                    ret.add(new NVP(m.group(1), null));
+                ret.add(m.group(1));
             }
         }
         return ret;
     }
 
-    private GlElement parseElement(GLSLType type, String name) {
-        if (name == null || name.trim().isEmpty())
+    private List<NVP> parseTags(String names)
+    {
+        List<NVP> ret = new ArrayList<>(5);
+        if (names != null) {
+            Matcher m = tagnames.matcher(names);
+            while (m.find()) {
+                String index = m.group(2);
+                if (index != null) {
+                    ret.add(new NVP(m.group(1), Integer.parseInt(index)));
+                } else {
+                    ret.add(new NVP(m.group(1), null));
+                }
+            }
+        }
+        return ret;
+    }
+
+    private GlElement parseElement(GLSLType type, String name)
+    {
+        if (name == null || name.trim().isEmpty()) {
             name = "Element" + count++;
+        }
         return new GlElement(type, name);
     }
 
-    private GLSLType parseType(String type) {
-        for (GLSLType gt : GLSLType.values())
-            if (gt.name().equalsIgnoreCase(type))
-                return gt;
-        //TODO gscheite fehler behandlung, eigenen exception
-        throw new RuntimeException("GLSL Typ konnte nicht aufgelöst "
-                + "werden. ( Typ: " + type + " )");
+    public static GLSLType parseType(String name)
+    {
+        switch (name.toLowerCase()) {
+            case "float":
+                return GLSLType.FLOAT;
+            case "vec2":
+                return GLSLType.VEC2;
+            case "vec3":
+                return GLSLType.VEC3;
+            case "vec4":
+                return GLSLType.VEC4;
+            case "mat3":
+                return GLSLType.MAT3;
+            case "mat4":
+                return GLSLType.MAT4;
+            default:
+                //TODO gscheite fehler behandlung, eigenen exception
+                throw new RuntimeException("GLSL Typ konnte nicht aufgelöst "
+                        + "werden. ( Typ: " + name + " )");
+        }
     }
 
     private final static class NVP
     {
+
         public final String name;
         public final Integer index;
 
-        public NVP(String name, Integer index) {
+        public NVP(String name, Integer index)
+        {
             this.name = name;
             this.index = index;
         }

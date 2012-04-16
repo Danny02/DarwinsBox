@@ -25,22 +25,20 @@ public class ObjFileParser
 
         private static Logger ger = Logger.getLogger(ObjFileParser.class);
     }
-    private InputStream file;
     private Pattern leer, slash;
     private Map<String, ObjMaterial> materials;
 
-    public ObjFileParser(InputStream file)
+    public ObjFileParser()
     {
-        this.file = file;
         materials = new HashMap<>();
         leer = Pattern.compile(" ");
         slash = Pattern.compile("/");
     }
 
-    public ObjFile loadOBJ() throws IOException
+    public synchronized ObjFile loadOBJ(InputStream in) throws IOException
     {
         ObjFile obj = new ObjFile();
-        Reader fr = new InputStreamReader(file);
+        Reader fr = new InputStreamReader(in);
         BufferedReader br = new BufferedReader(fr);
         String line;
         while ((line = br.readLine()) != null) {
@@ -53,7 +51,7 @@ public class ObjFileParser
         return obj;
     }
 
-    private void parseValue(ObjFile obj, String type, String[] values)
+    private void parseValue(ObjFile obj, String type, String[] values) throws IOException
     {
         switch (type) {
             case "v":
@@ -63,7 +61,11 @@ public class ObjFileParser
                 obj.getNormals().add(new Vec3(parseDoubless(values)));
                 break;
             case "vt":
-                obj.getTexcoords().add(new Vector(parseDoubless(values)));
+                double[] vals = parseDoubless(values);
+                if (vals.length != 2) {
+                    throw new IOException("The Texture Coordinats of the OBJ file must be of only 2 elements!");
+                }
+                obj.getTexcoords().add(new Vector(vals));
                 break;
             case "f":
                 obj.addFace(parseFace(values));
@@ -77,18 +79,22 @@ public class ObjFileParser
         }
     }
 
-    private double[] parseDoubless(String[] values)
+    private double[] parseDoubless(String[] values) throws IOException
     {
         double[] vals = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             if (!values[i].isEmpty()) {
-                vals[i] = Double.parseDouble(values[i]);
+                try {
+                    vals[i] = Double.parseDouble(values[i]);
+                } catch (NumberFormatException ex) {
+                    throw new IOException("Exception while trying to parse nummber values!", ex);
+                }
             }
         }
         return vals;
     }
 
-    private Face parseFace(String[] values)
+    private Face parseFace(String[] values) throws IOException
     {
         VertexIDs[] vertice = new VertexIDs[values.length];
 
@@ -98,6 +104,9 @@ public class ObjFileParser
             for (int j = 0; j < ids.length; j++) {
                 if (!ids[j].isEmpty()) {
                     vertex[j] = Integer.parseInt(ids[j]);
+                    if (vertex[j] == 0) {
+                        throw new IOException("OBJ indicies mustn't be 0!");
+                    }
                 } else {
                     vertex[j] = 0;
                 }
@@ -116,6 +125,7 @@ public class ObjFileParser
         } catch (IOException ex) {
             Log.ger.error("Eine Material Bibilothek konnte nicht geladen werde.\n\t"
                     + ex.getLocalizedMessage());
+            //TODO import womoeglich abbrechen
         }
     }
 
