@@ -16,7 +16,6 @@
  */
 package darwin.geometrie.unpacked;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import darwin.geometrie.data.VertexBuffer;
@@ -25,7 +24,7 @@ import darwin.geometrie.data.VertexBuffer;
  * H�lt VertexBuffern Indicies und Primitiv Typ eines Models
  * @author Daniel Heinrich
  */
-public class Mesh implements Serializable
+public class Mesh
 {
     private int[] indicies;     // Primitve indicies
     private VertexBuffer vertices;  // Vertex Data

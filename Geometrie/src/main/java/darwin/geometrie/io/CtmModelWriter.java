@@ -122,8 +122,8 @@ public class CtmModelWriter implements ModelWriter
                 copyToBuffer(values, k, v, el);
                 k += CTM_ATTR_ELEMENT_COUNT;
             }
-            AttributeData adata = new AttributeData(el.getBezeichnung(), null,
-                    AttributeData.STANDART_PRECISION, values);
+            attribute.add(new AttributeData(el.getBezeichnung(), null,
+                    AttributeData.STANDART_PRECISION, values));
         }
 
         System.arraycopy(mesh.getIndicies(), 0, indices, 0, indices.length);

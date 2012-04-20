@@ -340,7 +340,7 @@ public class FrameBufferObject
     /**
      * bindet das FBO an den GL Context.
      */
-    public synchronized void bind()
+    public void bind()
     {
         getGL().glBindFramebuffer(GL.GL_FRAMEBUFFER, id);
         currdraw = id;
@@ -359,7 +359,7 @@ public class FrameBufferObject
         popViewPort();
     }
 
-    public synchronized void bindAsDrawBuffer()
+    public void bindAsDrawBuffer()
     {
         bindDrawBuffer(id);
     }

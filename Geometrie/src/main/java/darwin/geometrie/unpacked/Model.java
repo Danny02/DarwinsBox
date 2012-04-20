@@ -16,14 +16,12 @@
  */
 package darwin.geometrie.unpacked;
 
-import java.io.Serializable;
-
 
 /**
  * H�lt ein Mesh und das dazugeh�rige Material
  * @author Daniel Heinrich
  */
-public class Model implements Serializable
+public class Model
 {
     private Mesh mesh;
     private Material mat;

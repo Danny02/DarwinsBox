@@ -20,6 +20,6 @@ package darwin.resourcehandling;
  *
  * @author daniel
  */
-public interface ResourceHandle extends Resource{
+public interface ResourceHandle{
 
 }

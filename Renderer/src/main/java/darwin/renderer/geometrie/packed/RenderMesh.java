@@ -78,7 +78,7 @@ public class RenderMesh implements Cloneable
         if (asarray) {
             getGL().glDrawArrays(primitivtype, offset, length);
         } else {
-            getGL().glDrawElements(primitivtype, length, indextype, offset * 4);
+            getGL().glDrawElements(primitivtype, length, indextype, offset * 4L);
         }
         attributs.disable();
     }

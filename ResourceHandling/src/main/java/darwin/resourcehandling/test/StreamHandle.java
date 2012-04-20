@@ -16,7 +16,7 @@
  */
 package darwin.resourcehandling.test;
 
-import java.io.*;
+import java.io.InputStream;
 
 import darwin.resourcehandling.ResourceHandle;
 
@@ -38,10 +38,5 @@ public class StreamHandle implements ResourceHandle {
 
     public InputStream getStream() {
         return stream;
-    }
-
-    @Override
-    public ResourceHandle getHandle() {
-        return this;
     }
 }

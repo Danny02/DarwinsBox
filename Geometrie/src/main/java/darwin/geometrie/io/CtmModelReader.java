@@ -22,8 +22,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.*;
@@ -64,9 +62,8 @@ public class CtmModelReader implements ModelReader
         } catch (InvalidDataException ex) {
             throw new IOException("The model has some invalide data: " + ex.getMessage());
         }
-        darwin.jopenctm.data.Mesh rm = cr.getMesh();
 
-        return new Model[]{convertMesh(rm)};
+        return new Model[]{convertMesh(cr.getMesh())};
     }
 
     @Override

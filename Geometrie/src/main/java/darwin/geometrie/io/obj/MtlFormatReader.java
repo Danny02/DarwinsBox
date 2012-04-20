@@ -52,8 +52,7 @@ public class MtlFormatReader
         if (materials == null) {
             materials = new HashMap<>();
             InputStream is = ResourcesLoader.getRessource(modelfolder + path);
-            try (Reader fr = new InputStreamReader(is)) {
-                BufferedReader br = new BufferedReader(fr);
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] s = line.split(" ", 2);

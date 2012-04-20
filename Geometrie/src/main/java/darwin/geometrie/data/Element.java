@@ -16,13 +16,11 @@
  */
 package darwin.geometrie.data;
 
-import java.io.Serializable;
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Element implements Serializable
+public class Element
 {
 
     private static final long serialVersionUID = -8104245050243213668L;

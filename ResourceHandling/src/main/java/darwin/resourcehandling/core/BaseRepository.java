@@ -69,3 +69,4 @@ public class BaseRepository implements ResourceRepository {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
+

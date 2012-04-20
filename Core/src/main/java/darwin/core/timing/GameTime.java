@@ -23,21 +23,24 @@ package darwin.core.timing;
 import java.util.*;
 
 /**
- * Class to handle all time relevant management. There are different Listeners types
- * which can be managed. Each time the update method get called, every listener gets
- * notified about the progress the time has made since the last invocation.
- *
+ * Class to handle all time relevant management. There are different Listeners
+ * types which can be managed. Each time the update method get called, every
+ * listener gets notified about the progress the time has made since the last
+ * invocation.
+ * <p/>
  * DeltaListener: gets notified about the delta of the time in seconds(double)
  * StepListener: every update,
+ * <p/>
  * @author daniel
  */
-public class GameTime {
+public class GameTime
+{
 
-    private static class Start {
+    private static class Start
+    {
 
         private static final long time = System.nanoTime();
     }
-
     private static final long SECOND_TO_NANO = 1_000_000_000L;
     private static final double NANO_TO_SECOND = 1. / SECOND_TO_NANO;
     private long elapsed = 0, virtualElapsed = 0;
@@ -45,7 +48,8 @@ public class GameTime {
     private Map<Integer, StepListenerManager> stepListener = new HashMap<>();
     private Collection<DeltaListener> timeListener = new LinkedList<>();
 
-    public void update() {
+    public void update()
+    {
         long start = Start.time;
 
         long now = System.nanoTime();
@@ -60,60 +64,57 @@ public class GameTime {
         elapsed += delta;
     }
 
-    private void updatedTimeListener(long nanoSeconds) {
+    private void updatedTimeListener(long nanoSeconds)
+    {
         double delta = nanoSeconds * NANO_TO_SECOND;
         for (DeltaListener listener : timeListener) {
             listener.update(delta);
         }
     }
 
-    private void updatedStepListener(long nanoSeconds) {
+    private void updatedStepListener(long nanoSeconds)
+    {
         for (StepListenerManager lm : stepListener.values()) {
             lm.update(elapsed, nanoSeconds);
         }
     }
 
-    public void addListener(int frequency, StepListener listener) {
-
-        getStepManager(frequency).addListener(listener);
-    }
-
-    private StepListenerManager getStepManager(int freq) {
-        StepListenerManager tlm = stepListener.get(freq);
-        if (tlm == null) {
-            tlm = new StepListenerManager(freq);
-            stepListener.put(freq, tlm);
+    public void addListener(int frequency, StepListener listener)
+    {
+        StepListenerManager manager = stepListener.get(frequency);
+        if (manager == null) {
+            manager = new StepListenerManager(frequency);
+            stepListener.put(frequency, manager);
         }
-        return tlm;
+        manager.addListener(listener);
     }
 
-    public void removeListener(StepListener listener) {
-        for (StepListenerManager lm : stepListener.values()) {
-            if (lm.removeListener(listener) && lm.isEmpty()) {
-                stepListener.remove(lm.getFrequency());
-                break;
+    public void removeListener(StepListener listener)
+    {
+        for (StepListenerManager manager : stepListener.values()) {
+            if (manager.removeListener(listener) && manager.isEmpty()) {
+                stepListener.remove(manager.getFrequency());
             }
         }
     }
 
-    public void addListener(DeltaListener listener) {
+    public void addListener(DeltaListener listener)
+    {
         timeListener.add(listener);
     }
 
-    public void removeListener(DeltaListener listener) {
+    public void removeListener(DeltaListener listener)
+    {
         timeListener.remove(listener);
     }
 
-    public double getElapsedTime() {
+    public double getElapsedTime()
+    {
         return virtualElapsed * NANO_TO_SECOND;
     }
-
-    /**
-     *
-     * @param frequency of ticks in herz
-     * @return
-     */
-    public long getElapsedSteps(int frequency) {
+    
+    public long getElapsedSteps(int frequency)
+    {
         return virtualElapsed / (frequency * SECOND_TO_NANO);
     }
 
