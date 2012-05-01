@@ -22,14 +22,45 @@ import java.io.Serializable;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class DataAttribut implements Serializable{
+public class DataAttribut implements Serializable
+{
+
+    private static final long serialVersionUID = -617738618017984776L;
     public final int stride, offset;
 //    private final Element element;
 
-    public DataAttribut(int stride, int offset) {
+    public DataAttribut(int stride, int offset)
+    {
         this.stride = stride;
         this.offset = offset;
 //        this.element = element;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DataAttribut other = (DataAttribut) obj;
+        if (this.stride != other.stride) {
+            return false;
+        }
+        if (this.offset != other.offset) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 3;
+        hash = 13 * hash + this.stride;
+        hash = 13 * hash + this.offset;
+        return hash;
+    }
 }

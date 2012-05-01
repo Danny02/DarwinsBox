@@ -54,16 +54,15 @@ public class CtmModelReader implements ModelReader
     public Model[] readModel(InputStream source) throws WrongFileTypeException, IOException
     {
         CtmFileReader cr = new CtmFileReader(source);
+
         try {
-            cr.decode();
+            return new Model[]{convertMesh(cr.decode())};
         } catch (BadFormatException ex) {
             throw new WrongFileTypeException("The model has some bad format: "
                     + ex.getMessage());
         } catch (InvalidDataException ex) {
             throw new IOException("The model has some invalide data: " + ex.getMessage());
         }
-
-        return new Model[]{convertMesh(cr.getMesh())};
     }
 
     @Override
@@ -102,7 +101,6 @@ public class CtmModelReader implements ModelReader
         }
 
         Element[] elar = new Element[elements.size()];
-
         elements.toArray(elar);
         DataLayout layout = new DataLayout(AUTO, elar);
         int vcount = mesh.getVertexCount();

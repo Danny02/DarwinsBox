@@ -61,7 +61,7 @@ public class BaseRepository implements ResourceRepository {
     }
 
     private void iniHandle(ResourceHandle handle, Map<ResourceState, Resource> resources) {
-        resources.put(new BaseResourceState(handle), handle);
+//        resources.put(new BaseResourceState(handle), handle);
     }
 
     @Override

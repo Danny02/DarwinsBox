@@ -18,8 +18,6 @@ package darwin.geometrie.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import lzma.sdk.lzma.Decoder;
-import lzma.streams.LzmaInputStream;
 import org.apache.log4j.Logger;
 
 /**
@@ -41,14 +39,9 @@ public class ResourcesLoader
 
     public static InputStream getRessource(String path) throws IOException
     {
-        InputStream is = getStream(path + ".lzma");
-        if (is != null) {
-            return new LzmaInputStream(is, new Decoder());
-        } else {
-            is = getStream(path);
-            if (is == null) {
-                throw new IOException("Resource couldn't be found: " + path);
-            }
+        InputStream is = getStream(path);
+        if (is == null) {
+            throw new IOException("Resource couldn't be found: " + path);
         }
 
         return is;

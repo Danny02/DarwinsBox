@@ -16,8 +16,8 @@
  */
 package darwin.geometrie.data;
 
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-
 
 /**
  * Proxy Klasse um ein einzelens Vertex aus einem VertexBuffer editieren zu
@@ -58,13 +58,17 @@ public final class Vertex
         int old = vb.buffer.position();
         {
             int id = ind * al.stride + al.offset;
-            vb.buffer.position(id * ele.getDataType().byteSize);
-            int oldl = values.limit();
+            vb.buffer.position(id);
+            int oldLim = values.limit();
             {
-                values.limit(values.position() + ele.getVectorType().getByteSize());
+                int newLim = values.position() + ele.getVectorType().getByteSize();
+                if (newLim > oldLim) {
+                    throw new BufferOverflowException();
+                }
+                values.limit(newLim);
                 vb.buffer.put(values);
             }
-            values.limit(oldl);
+            values.limit(oldLim);
         }
         vb.buffer.position(old);
     }

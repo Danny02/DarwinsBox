@@ -100,14 +100,18 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>BuildTools</artifactId>
+            <artifactId>ResourceHandling</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>darwin.</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>Geometrie</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>AnnotationsProcessing</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

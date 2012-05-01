@@ -17,7 +17,6 @@
 package darwin.geometrie.data;
 
 import com.jogamp.opengl.util.GLBuffers;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Objects;
@@ -138,39 +137,6 @@ public final class VertexBuffer implements Iterable<Vertex>
         return getSize() - getVcount();
     }
 
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final VertexBuffer other = (VertexBuffer) obj;
-        if (!Objects.equals(this.layout, other.layout)) {
-            return false;
-        }
-        if (this.size != other.size) {
-            return false;
-        }
-        if (this.vcount != other.vcount) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.buffer);
-        hash = 97 * hash + Objects.hashCode(this.layout);
-        hash = 97 * hash + this.size;
-        hash = 97 * hash + this.vcount;
-        return hash;
-    }
-
     /**
      * The remove method of the Iterator Interface is not supported and will
      * throw an UnsupportedOperationException
@@ -203,5 +169,41 @@ public final class VertexBuffer implements Iterable<Vertex>
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final VertexBuffer other = (VertexBuffer) obj;
+        if (this.buffer != other.buffer && (this.buffer == null || !this.buffer.equals(other.buffer))) {
+            return false;
+        }
+        if (this.layout != other.layout && (this.layout == null || !this.layout.equals(other.layout))) {
+            return false;
+        }
+        if (this.size != other.size) {
+            return false;
+        }
+        if (this.vcount != other.vcount) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 5;
+        hash = 53 * hash + Objects.hashCode(this.buffer);
+        hash = 53 * hash + Objects.hashCode(this.layout);
+        hash = 53 * hash + this.size;
+        hash = 53 * hash + this.vcount;
+        return hash;
     }
 }

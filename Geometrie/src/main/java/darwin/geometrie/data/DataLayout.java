@@ -17,8 +17,7 @@
 package darwin.geometrie.data;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  *
@@ -138,5 +137,43 @@ public class DataLayout implements Serializable
     public Collection<Element> getElements()
     {
         return alignments.keySet();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DataLayout other = (DataLayout) obj;
+        alignments.keySet().equals(other.alignments.keySet());
+        for (Element e : alignments.keySet()) {
+            DataAttribut d1 = alignments.get(e);
+            DataAttribut d2 = other.alignments.get(e);
+            if (d1 != d2 && (d1 == null || !d1.equals(d2))) {
+                return false;
+            }
+        }
+
+        if (this.bytesize != other.bytesize) {
+            return false;
+        }
+        if (this.format != other.format) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 19 * hash + Objects.hashCode(this.alignments);
+        hash = 19 * hash + this.bytesize;
+        hash = 19 * hash + (this.format != null ? this.format.hashCode() : 0);
+        return hash;
     }
 }
