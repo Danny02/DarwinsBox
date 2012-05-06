@@ -28,6 +28,7 @@ import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.opengl.FrameBuffer.*;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
+import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.util.memory.MemoryInfo;
 
 /**
@@ -51,6 +52,8 @@ public class RendererModul extends AbstractModule
         install(new FactoryModuleBuilder().build(BufferFactory.class));
 
         install(new FactoryModuleBuilder().build(RahmenFactory.class));
+        install(new FactoryModuleBuilder().build(SamplerFactory.class));
+
 
         bind(GLDrawable.class).to(GLAutoDrawable.class);
         bind(GLAutoDrawable.class).toProvider(DrawableProvider.class);
