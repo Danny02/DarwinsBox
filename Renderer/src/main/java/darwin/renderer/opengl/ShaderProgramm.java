@@ -16,16 +16,9 @@
  */
 package darwin.renderer.opengl;
 
-import java.util.List;
-import javax.media.opengl.GL2ES2;
+import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLProfile;
 import org.apache.log4j.Logger;
-
-import darwin.renderer.shader.BuildException;
-import darwin.renderer.shader.ShaderAttribute;
-
-import static darwin.renderer.GraphicContext.*;
-import static darwin.renderer.shader.BuildException.BuildError.*;
 
 /**
  * CPU seitige Repr�sentation eines OpenGL Shader Programmes
@@ -44,62 +37,17 @@ public class ShaderProgramm
     static {
         assert GLProfile.isAvailable(GLProfile.GL2ES2) : "This device doesn't support Shaders";
     }
-    static ShaderProgramm shaderinuse = null;
-    private int programObject;
+    private static ShaderProgramm shaderinuse = null;
 
-    /**
-     * Erstellt eines ShaderProgramm Object. <br>
-     * <p/>
-     * @param gl  <br> Der GL Context in dem das Programm erstellt werden soll.
-     *            <br>
-     * @param vs  <br> Vertex Shader Objekt das gelinked werden soll. <br> Falls
-     *            NULL wird kein Vertex Shader gelinked und die Fixed-Function
-     *            Pipeline wird verwendet. <br> Vorsicht!! Die Fixed-Function
-     *            Pipeline ist Depricated und ist ab OpenGL 3.2 nicht mehr
-     *            vorhanden. <br>
-     * @param fs  <br> Fragment Shader Objekt das gelinked werden soll. <br>
-     *            Falls NULL wird kein Fragment Shader gelinked und die
-     *            Fixed-Function Pipeline wird verwendet. <br> Vorsicht!! Die
-     *            Fixed-Function Pipeline ist Depricated und ist ab OpenGL 3.2
-     *            nicht mehr vorhanden. <br>
-     * @param uni <br> Eine Liste von Uniform variable der ShaderProgramm deren
-     *            positionen abgefragt werden sollen.
-     */
-    public ShaderProgramm(List<ShaderAttribute> attr, ShaderObjekt... sobject) throws BuildException
+    private final GLAutoDrawable drawable;
+    private final int programObject;
+
+    public ShaderProgramm(GLAutoDrawable drawable, int programObject)
     {
-        GL2ES2 gl = getGL().getGL2ES2();
-        programObject = gl.glCreateProgram();
-
-        for (ShaderObjekt so : sobject) {
-            if (so == null) {
-                continue;
-            }
-            gl.glAttachShader(programObject, so.getShaderobjekt());
-        }
-
-        //TODO GL Treiber Constanten in einen Globalen Constanten-Pool verfrachten
-        int[] max = new int[1];
-        gl.glGetIntegerv(GL2ES2.GL_MAX_VERTEX_ATTRIBS, max, 0);
-
-        //TODO buggy, anscheined werden manche attribute ned gefunden
-        for (ShaderAttribute sa : attr) {
-            int index = sa.getIndex();
-            if (index >= 0 && index < max[0]) {
-                gl.glBindAttribLocation(programObject, sa.getIndex(), sa.getName());
-            }
-        }
-
-        gl.glLinkProgram(programObject);
-        gl.glValidateProgram(programObject);
-        int[] error = new int[]{-1};
-        gl.glGetProgramiv(programObject, GL2ES2.GL_LINK_STATUS, error, 0);
-        if (error[0] == 0) {
-            int[] len = new int[]{512};
-            byte[] errormessage = new byte[512];
-            gl.glGetProgramInfoLog(programObject, 512, len, 0, errormessage, 0);
-            throw new BuildException(new String(errormessage, 0, len[0]), LinkTime);
-        }
+        this.drawable = drawable;
+        this.programObject = programObject;
     }
+
 
     /**
      * @return Gibt den Index des Programm Objekt im Grafikspeicher zur�ck.
@@ -111,7 +59,7 @@ public class ShaderProgramm
 
     public int getUniformLocation(String s)
     {
-        return getGL().getGL2GL3().glGetUniformLocation(getPObject(), s);
+        return drawable.getGL().getGL2GL3().glGetUniformLocation(getPObject(), s);
     }
 
     /**
@@ -122,7 +70,7 @@ public class ShaderProgramm
      */
     public int getAttrLocation(String name)
     {
-        return getGL().getGL2GL3().glGetAttribLocation(programObject, name);
+        return drawable.getGL().getGL2GL3().glGetAttribLocation(programObject, name);
     }
 
     /**
@@ -131,7 +79,7 @@ public class ShaderProgramm
     public void use()
     {
         if (shaderinuse != this) {
-            getGL().getGL2GL3().glUseProgram(getPObject());
+            drawable.getGL().getGL2GL3().glUseProgram(getPObject());
             shaderinuse = this;
         }
     }
@@ -141,13 +89,13 @@ public class ShaderProgramm
      */
     public void disable()
     {
-        getGL().getGL2GL3().glUseProgram(0);
+        drawable.getGL().getGL2GL3().glUseProgram(0);
         shaderinuse = null;
     }
 
     public void delete()
     {
-        getGL().getGL2GL3().glDeleteProgram(getPObject());
+        drawable.getGL().getGL2GL3().glDeleteProgram(getPObject());
         if (shaderinuse == this) {
             disable();
         }

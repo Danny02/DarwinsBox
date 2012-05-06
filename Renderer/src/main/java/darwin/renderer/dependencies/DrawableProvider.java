@@ -14,37 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.dependencies;
+
+import darwin.renderer.GraphicContext;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLDrawable;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+public class DrawableProvider implements Provider<GLAutoDrawable>
 {
+    private final GraphicContext gc;
 
-    @Override
-    public int getTotalMemory()
+    @Inject
+    public DrawableProvider(GraphicContext gc)
     {
-        return 0;
+        this.gc = gc;
     }
 
     @Override
-    public int getCurrentMemory()
+    public GLAutoDrawable get()
     {
-        return 0;
-    }
-
-    @Override
-    public String getStatus()
-    {
-        return "No information can be collected about the graphic device memory!";
-    }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
+        return gc.getGLWindow();
     }
 
 }

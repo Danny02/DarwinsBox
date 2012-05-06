@@ -14,37 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.opengl.buffer;
+
+import javax.media.opengl.GL2GL3;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+// <editor-fold defaultstate="collapsed" desc="OpenGL Enums">
+public enum Target
 {
 
-    @Override
-    public int getTotalMemory()
-    {
-        return 0;
-    }
+    ARRAY(GL2GL3.GL_ARRAY_BUFFER),
+    ELEMENT_ARRAY(GL2GL3.GL_ELEMENT_ARRAY_BUFFER),
+    PIXEL_PACK(GL2GL3.GL_PIXEL_PACK_BUFFER),
+    PIXEL_UNPACK(GL2GL3.GL_PIXEL_UNPACK_BUFFER);
+    final int glvalue;
 
-    @Override
-    public int getCurrentMemory()
+    private Target(int glvalue)
     {
-        return 0;
+        this.glvalue = glvalue;
     }
-
-    @Override
-    public String getStatus()
-    {
-        return "No information can be collected about the graphic device memory!";
-    }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
-    }
-
 }

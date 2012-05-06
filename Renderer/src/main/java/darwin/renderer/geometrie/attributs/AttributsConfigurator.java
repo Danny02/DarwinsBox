@@ -20,7 +20,7 @@ package darwin.renderer.geometrie.attributs;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-interface AttributsConfigurator {
+public interface AttributsConfigurator {
     public void prepare();
     public void disable();
 }

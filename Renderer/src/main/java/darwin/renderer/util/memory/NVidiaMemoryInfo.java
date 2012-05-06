@@ -16,27 +16,36 @@
  */
 package darwin.renderer.util.memory;
 
+import javax.inject.Inject;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLRunnable;
 
-import static darwin.renderer.GraphicContext.*;
+import darwin.renderer.GraphicContext;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-final class NVidiaMemoryInfo extends MemoryInfo
+public final class NVidiaMemoryInfo implements MemoryInfo
 {
 
     private static final int DEDICATED_VIDMEM_NVX = 0x9047;
     private static final int CURRENT_AVAILABLE_VIDMEM_NVX = 0x9049;
     private static final int TOTAL_AVAILABLE_MEMORY_NVX = 0x9048;
-    private static final int total_mem = getData(TOTAL_AVAILABLE_MEMORY_NVX);
+    private final GraphicContext gc;
+    private final int totalMem;
+
+    @Inject
+    public NVidiaMemoryInfo(GraphicContext gc)
+    {
+        this.gc = gc;
+        totalMem = getData(TOTAL_AVAILABLE_MEMORY_NVX);
+    }
 
     @Override
     public int getTotalMemory()
     {
-        return total_mem;
+        return totalMem;
     }
 
     @Override
@@ -48,7 +57,7 @@ final class NVidiaMemoryInfo extends MemoryInfo
     @Override
     public double getFreeRatio()
     {
-        return (double) getCurrentMemory() / total_mem;
+        return (double) getCurrentMemory() / totalMem;
     }
 
     @Override
@@ -73,17 +82,17 @@ final class NVidiaMemoryInfo extends MemoryInfo
         buffer.append(b / 1024.).append("MiByte\n");
     }
 
-    private static int getData(final int flag)
+    private int getData(final int flag)
     {
         final int[] result = new int[1];
 
-        getGLWindow().invoke(true, new GLRunnable()
+        gc.getGLWindow().invoke(true, new GLRunnable()
         {
 
             @Override
             public boolean run(GLAutoDrawable drawable)
             {
-                getGL().glGetIntegerv(flag, result, 0);
+                gc.getGL().glGetIntegerv(flag, result, 0);
                 return true;
             }
         });

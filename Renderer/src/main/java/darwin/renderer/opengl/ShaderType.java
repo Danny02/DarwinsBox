@@ -14,37 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.opengl;
+
+import javax.media.opengl.GL2;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+public enum ShaderType
 {
 
-    @Override
-    public int getTotalMemory()
-    {
-        return 0;
-    }
+    Fragment(GL2.GL_FRAGMENT_SHADER),
+    Vertex(GL2.GL_VERTEX_SHADER),
+    Geometrie(GL2.GL_GEOMETRY_SHADER_ARB);
+    public final int glConst;
 
-    @Override
-    public int getCurrentMemory()
+    private ShaderType(int glConst)
     {
-        return 0;
+        this.glConst = glConst;
     }
-
-    @Override
-    public String getStatus()
-    {
-        return "No information can be collected about the graphic device memory!";
-    }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
-    }
-
 }

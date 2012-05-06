@@ -18,13 +18,15 @@ package darwin.renderer.util.memory;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLRunnable;
+
+import darwin.renderer.GraphicContext;
 import static darwin.renderer.GraphicContext.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-final class ATIMemoryInfo extends MemoryInfo
+public final class ATIMemoryInfo implements MemoryInfo
 {
 
     private static final int VBO_FREE_MEMORY_ATI = 0x87FB;
@@ -33,12 +35,19 @@ final class ATIMemoryInfo extends MemoryInfo
 //    TODO man kann ned gscheit die echte Speichergröße abfragen
 //    nur freien speicher beim programmstart
 //    private static final int TOTAL_PHYSICAL_MEMORY_ATI = 0x87FE;
-    private static final int total_mem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
+    private final int totalMem;
+    private final GraphicContext gc;
+
+    public ATIMemoryInfo(GraphicContext gc)
+    {
+        totalMem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
+        this.gc = gc;
+    }
 
     @Override
     public int getTotalMemory()
     {
-        return total_mem;
+        return totalMem;
     }
 
     @Override
@@ -50,7 +59,7 @@ final class ATIMemoryInfo extends MemoryInfo
     @Override
     public double getFreeRatio()
     {
-        return (double) getCurrentMemory() / total_mem;
+        return (double) getCurrentMemory() / totalMem;
     }
 
     /**
@@ -62,16 +71,16 @@ final class ATIMemoryInfo extends MemoryInfo
      * <p/>
      * @return
      */
-    private static int[] getData(final int pool)
+    private int[] getData(final int pool)
     {
         final int[] result = new int[4];
-        getGLWindow().invoke(true, new GLRunnable()
+        gc.getGLWindow().invoke(true, new GLRunnable()
         {
 
             @Override
             public boolean run(GLAutoDrawable drawable)
             {
-                getGL().glGetIntegerv(pool, result, 0);
+                gc.getGL().glGetIntegerv(pool, result, 0);
                 return true;
             }
         });

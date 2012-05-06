@@ -16,19 +16,19 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import javax.inject.Inject;
+import javax.media.opengl.GL;
 import darwin.geometrie.data.*;
-import darwin.geometrie.data.DataLayout.Format;
-import darwin.geometrie.data.Element;
 import darwin.renderer.geometrie.packed.RenderMesh;
-import darwin.renderer.opengl.BufferObject.Target;
-import darwin.renderer.opengl.BufferObject.Type;
-import darwin.renderer.opengl.BufferObject.Usage;
-import darwin.renderer.opengl.*;
+import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
+import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
+
+import static darwin.geometrie.data.DataLayout.Format.*;
+import static darwin.renderer.opengl.GLSLType.*;
 
 /**
  *
@@ -36,63 +36,50 @@ import darwin.renderer.shader.Shader;
  */
 public class Rahmen implements GeometryFactory
 {
-    private static final Map<Float, GeometryFactory> instances =
-                                                     new HashMap<>();
 
-    public static GeometryFactory getInstance(float inset) {
-        GeometryFactory gf = instances.get(inset);
-        if (gf == null) {
-            gf = new Rahmen(inset);
-            instances.put(inset, gf);
-        }
-        return gf;
+    public interface RahmenFactory
+    {
+
+        public Rahmen create(float inset);
     }
-    private final VertexBO attr;
+    private final VertexBO vbo;
     private final BufferObject indice;
+    private final RenderMesh.RenderMeshFactory factory;
 
-    private Rahmen(float inset) {
-        Element pos = new Element(GLSLType.VEC2, "Position");
-        Element alpha = new Element(GLSLType.FLOAT, "Alpha");
-        DataLayout dl = new DataLayout(Format.INTERLEAVE, pos, alpha);
-        VertexBuffer vb = new VertexBuffer(dl, 8);
-        indice = new BufferObject(
-                Target.ELEMENT_ARRAY);
-        Vertex v;
-        for (int i = 0; i < 4; ++i) {
-            v = vb.newVertex();
-            float x = i > 1 ? 1f : -1f;
-            float y = i == 1 || i == 2 ? 1f : -1f;
-//                System.out.println("id:"+i+" x:"+x+" y:"+y);
-            v.setAttribute(pos, x, y);
-            v.setAttribute(alpha, 1f);// 0.7372549f);
-        }
-        for (int i = 0; i < 4; ++i) {
-            v = vb.getVertex(vb.addVertex());
-            float x = i > 1 ? 1f - inset : -1f + inset;
-            float y = i == 1 || i == 2 ? 1f - inset : -1f + inset;
-            v.setAttribute(pos, x, y);
-//                System.out.println("id:"+(4+i)+" x:"+x+" y:"+y);
-            v.setAttribute(alpha, 0f);
-        }
+    @AssistedInject
+    public Rahmen(RenderMeshFactory rmFactory, @Assisted float inset)
+    {
+        factory = rmFactory;
+        Element pos = new Element(VEC2, "Position");
+        Element alpha = new Element(FLOAT, "Alpha");
+        DataLayout dl = new DataLayout(INTERLEAVE, pos, alpha);
 
-        int[] ind = new int[]{0, 4, 1,
-                              4, 5, 1,//left
-                              5, 2, 1,
-                              5, 6, 2,//top
-                              6, 3, 2,
-                              6, 7, 3,//right
-                              7, 0, 3,
-                              7, 4, 0 //bottom
-        };
-        indice.bind();
-        {
-            indice.bufferData(IntBuffer.wrap(ind), Type.STATIC, Usage.DRAW);
-        }
-        indice.disable();
-        attr = new VertexBO(vb);
+        float posIns = 1f - inset;
+        float negIns = -1f + inset;
+        vbo = new VertexBO(new VertexBuffer(dl,
+                -1, -1, 1,
+                -1, 1, 1,
+                1, 1, 1,
+                1, -1, 1,
+                negIns, negIns, 0,
+                negIns, posIns, 0,
+                posIns, posIns, 0,
+                posIns, negIns, 0));
+
+        indice = BufferObject.buildIndiceBuffer(
+                0, 4, 1,
+                4, 5, 1,//left
+                5, 2, 1,
+                5, 6, 2,//top
+                6, 3, 2,
+                6, 7, 3,//right
+                7, 0, 3,
+                7, 4, 0);//bottom
     }
 
-    public RenderMesh buildRenderable(Shader shader) {
-        return new RenderMesh(shader, indice, attr);
+    @Override
+    public RenderMesh buildRenderable(Shader shader)
+    {
+        return factory.create(shader, indice, vbo);
     }
 }
