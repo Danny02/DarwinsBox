@@ -24,8 +24,8 @@ import javax.media.opengl.GL2ES2;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.geometrie.attributs.VertexAttributs;
 import darwin.renderer.geometrie.attributs.VertexAttributs.VAttributsFactory;
-import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
 
 /**

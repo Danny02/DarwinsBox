@@ -17,13 +17,11 @@
 package darwin.renderer.util;
 
 import com.jogamp.opengl.util.texture.Texture;
-import javax.inject.Inject;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
 
 import darwin.renderer.opengl.FrameBuffer.FrameBufferObject;
 import darwin.renderer.opengl.FrameBuffer.RenderBuffer;
-import darwin.renderer.opengl.FrameBuffer.RenderBuffer.RenderBufferFactory;
 import darwin.resourcehandling.io.TextureUtil;
 
 /**
@@ -32,49 +30,45 @@ import darwin.resourcehandling.io.TextureUtil;
  */
 public class FboUtil
 {
-
-    private final RenderBufferFactory factory;
-
-    @Inject
-    public FboUtil(RenderBufferFactory factory)
-    {
-        this.factory = factory;
-    }
-
     /**
-     * Ein Factory methode um ein Frambuffer Objekt(FBO) zu erstellen. Dem FBO
-     * wird Als Color Attachment eine standart R8G8B8A8 Textur zugewiesen und
-     * als Depth Attachment ein simpler Renderbuffer.
-     * <p/>
-     * @param gl      Der GL context in dem das FBO erstellt werden soll
-     * @param texsize Die seiten l�nge der dem FBO hinterlegten Attachments.
-     *                texsize muss eine potentz von 2 sein (2^n). Wichtig alle
-     *                Attachments m�ssen die selbe gr��e haben.
-     * <p/>
-     * @return das erstellte FBO wird zur�ckgegeben.
+     * Ein Factory methode um ein Frambuffer Objekt(FBO) zu erstellen.
+     * Dem FBO wird Als Color Attachment eine standart R8G8B8A8 Textur zugewiesen
+     * und als Depth Attachment ein simpler Renderbuffer.
+     *
+     * @param gl
+     * Der GL context in dem das FBO erstellt werden soll
+     * @param texsize
+     * Die seiten l�nge der dem FBO hinterlegten Attachments. texsize muss eine
+     * potentz von 2 sein (2^n). Wichtig alle Attachments m�ssen die selbe gr��e haben.
+     *
+     * @return
+     * das erstellte FBO wird zur�ckgegeben.
      */
-    public FrameBufferObject configureStandart(FrameBufferObject fbo, int width, int height)
+    public static FrameBufferObject newStandartFBO(int width, int height)
     {
+        FrameBufferObject fbo = new FrameBufferObject();
+
         Texture tex = TextureUtil.newTexture(GL.GL_RGBA8, width, height, 0,
-                GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
-                true);
+                                 GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
+                                 true);
         TextureUtil.setTexturePara(tex, GL.GL_NEAREST, GL.GL_CLAMP_TO_EDGE);
 
-        RenderBuffer rb = factory.create(width, height, GL2ES2.GL_DEPTH_COMPONENT);
+        RenderBuffer rb = new RenderBuffer(width, height, GL2ES2.GL_DEPTH_COMPONENT);
 
         fbo.setColor_Attachment(0, tex);
         fbo.setDepth_Attachment(rb);
         return fbo;
     }
 
-    public FrameBufferObject configureDefault(FrameBufferObject fbo,
-            int width, int height, int samples)
-    {
-        RenderBuffer col = factory.create(samples, width, height, GL2ES2.GL_RGBA8);
-        RenderBuffer dep = factory.create(samples, width, height, GL2ES2.GL_DEPTH_COMPONENT);
+    public static FrameBufferObject newDefaultFBO(int width, int height, int samples){
+        FrameBufferObject fbo = new FrameBufferObject();
+
+        RenderBuffer col = new RenderBuffer(samples, width, height, GL2ES2.GL_RGBA8);
+        RenderBuffer dep = new RenderBuffer(samples, width, height, GL2ES2.GL_DEPTH_COMPONENT);
 
         fbo.setColor_Attachment(0, col);
         fbo.setDepth_Attachment(dep);
         return fbo;
     }
+
 }

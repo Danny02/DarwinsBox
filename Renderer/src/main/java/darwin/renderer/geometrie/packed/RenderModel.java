@@ -18,14 +18,16 @@ package darwin.renderer.geometrie.packed;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import java.nio.IntBuffer;
 import java.util.*;
 
 import darwin.geometrie.unpacked.*;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
-import darwin.renderer.opengl.VertexBO;
-import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject;
-import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
+import darwin.renderer.opengl.buffer.Target;
+import darwin.renderer.opengl.buffer.Type;
+import darwin.renderer.opengl.buffer.Usage;
+import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.uniform.*;
 import darwin.resourcehandling.wrapper.TextureContainer;
@@ -58,23 +60,28 @@ public final class RenderModel implements Shaded, Cloneable
     }
 
     @AssistedInject
-    public RenderModel(RenderMeshFactory meshFactory,
-            VBOFactoy vboFactoy, BufferFactory bufferFactory,
-            @Assisted Model model, @Assisted Shader shader)
+    public RenderModel(RenderMeshFactory factory,
+            @Assisted Model model,
+            @Assisted Shader shader)
     {
         material = model.getMat();
         setShader(shader);
 
         Mesh m = model.getMesh();
 
-        VertexBO vbo = vboFactoy.create(m.getVertices());
+        VertexBO vbo = new VertexBO(m.getVertices());
         int[] i = m.getIndicies();
         BufferObject indice = null;
         if (i != null) {
-            indice = bufferFactory.buildIndiceBuffer(i);
+            indice = new BufferObject(Target.ELEMENT_ARRAY);
+            indice.bind();
+            {
+                indice.bufferData(IntBuffer.wrap(i), Type.STATIC, Usage.DRAW);
+            }
+            indice.disable();
         }
 
-        rbuffer = meshFactory.create(shader, m.getPrimitiv_typ(), indice, vbo);
+        rbuffer = factory.create(shader, m.getPrimitiv_typ(), indice, vbo);
     }
 
     @Override
