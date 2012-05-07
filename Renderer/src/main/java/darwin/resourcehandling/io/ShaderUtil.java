@@ -18,14 +18,16 @@ package darwin.resourcehandling.io;
 
 import java.io.*;
 import java.util.Arrays;
-import javax.inject.Inject;
+import javax.media.opengl.GL2;
+import javax.media.opengl.GLException;
 import org.apache.log4j.Logger;
 
-import darwin.renderer.opengl.*;
+import darwin.renderer.opengl.ShaderObjekt;
+import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.BuildException;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
-import static darwin.renderer.opengl.ShaderType.*;
+import static darwin.renderer.GraphicContext.*;
 import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
@@ -40,29 +42,43 @@ public class ShaderUtil
 
         private static Logger ger = Logger.getLogger(ShaderUtil.class);
     }
-    private static final String includePrefix = "#pragma include";
-    private static final String RES_PATH = "resources/shaders/";
-    private final ShaderObjektFactory soFactory;
-    private final GLClientConstants constants;
-    private final ShaderProgrammFactory spFactory;
 
-    @Inject
-    public ShaderUtil(ShaderProgrammFactory spfactory, ShaderObjektFactory sofactory, GLClientConstants constants)
+    private static class Static
     {
-        this.soFactory = sofactory;
-        this.spFactory = spfactory;
-        this.constants = constants;
+
+        private static final String GLSL_VERISON_STRING;
+        private static final String RES_PATH = "resources/shaders/";
+
+        static {
+            int v = 120;
+            try {
+                String ver = getGL().glGetString(GL2.GL_SHADING_LANGUAGE_VERSION);
+                String s = ver.split(" ")[0];
+                s = s.substring(0, 4);
+                double d = Double.parseDouble(s);
+                d *= 100;
+                v = (int) Math.round(d);
+            } catch (Throwable ex) {
+                Log.ger.warn(ex.getLocalizedMessage());
+            }
+
+            GLSL_VERISON_STRING = "#version " + v + '\n';
+        }
     }
+    private static final String includePrefix = "#pragma include";
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
-    public ShaderProgramm compileShader(ShaderFile sfile)
+    public static ShaderProgramm compileShader(ShaderFile sfile)
     {
         ShaderObjekt fso, vso, gso;
         try {
-            fso = createSObject(Fragment, sfile.fragment, sfile.mutations);
-            vso = createSObject(Vertex, sfile.vertex, sfile.mutations);
-            gso = createSObject(Geometrie, sfile.geometrie, sfile.mutations);
-            return spFactory.create(sfile.getAttributs(), fso, vso, gso);
+            fso = createSObject(GL2.GL_FRAGMENT_SHADER,
+                    sfile.fragment, sfile.mutations);
+            vso = createSObject(GL2.GL_VERTEX_SHADER,
+                    sfile.vertex, sfile.mutations);
+            gso = createSObject(GL2.GL_GEOMETRY_SHADER_ARB,
+                    sfile.geometrie, sfile.mutations);
+            return new ShaderProgramm(sfile.getAttributs(), fso, vso, gso);
         } catch (BuildException ex) {
             //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
             Log.ger.fatal("Shader " + ex.getErrorType() + " ERROR in : "
@@ -71,7 +87,7 @@ public class ShaderUtil
         }
     }
 
-    private ShaderObjekt createSObject(ShaderType target, String source,
+    private static ShaderObjekt createSObject(int target, String source,
             String... mut) throws BuildException
     {
         if (source == null) {
@@ -79,17 +95,17 @@ public class ShaderUtil
         }
         int len = mut != null ? mut.length : 0;
         String[] sources = new String[2 + len];
-        sources[0] = constants.getGlslVersion();
+        sources[0] = Static.GLSL_VERISON_STRING;
         for (int i = 0; i < len; ++i) {
             sources[i + 1] = "#define " + mut[i] + '\n';
         }
 
         sources[len + 1] = source;
 
-        return soFactory.create(target, sources);
+        return new ShaderObjekt(target, sources);
     }
 
-    public ShaderFile loadShader(ShaderDescription dscr) throws IOException
+    public static ShaderFile loadShader(ShaderDescription dscr) throws IOException
     {
         return loadShader(dscr.f, dscr.v, dscr.g, dscr.flags);
     }
@@ -106,18 +122,18 @@ public class ShaderUtil
      * @param uni <br> Eine Liste von Uniform variable der ShaderProgramm deren
      *            positionen abgefragt werden sollen.
      */
-    public ShaderFile loadShader(String fs, String vs, String gs,
+    public static ShaderFile loadShader(String fs, String vs, String gs,
             String... ms) throws IOException
     {
         InputStream fragis = null, vertis = null, geois = null;
         if (fs != null) {
-            fragis = getRessource(RES_PATH + fs);
+            fragis = getRessource(Static.RES_PATH + fs);
         }
         if (vs != null) {
-            vertis = getRessource(RES_PATH + vs);
+            vertis = getRessource(Static.RES_PATH + vs);
         }
         if (gs != null) {
-            geois = getRessource(RES_PATH + gs);
+            geois = getRessource(Static.RES_PATH + gs);
         }
 
         String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
@@ -144,7 +160,7 @@ public class ShaderUtil
         return ret;
     }
 
-    private ShaderFile loadShader(String name, InputStream fs,
+    private static ShaderFile loadShader(String name, InputStream fs,
             InputStream vs, InputStream gs,
             String... mutations)
     {
@@ -156,7 +172,7 @@ public class ShaderUtil
         return new ShaderFile(name, f, v, g, mutations);
     }
 
-    private String getData(InputStream file)
+    private static String getData(InputStream file)
     {
         if (file == null) {
             return null;
@@ -171,7 +187,7 @@ public class ShaderUtil
                 line = line.trim();
                 if (line.startsWith(includePrefix)) {
                     String path = line.substring(includePrefix.length()).trim();
-                    InputStream shader = getRessource(RES_PATH + path);
+                    InputStream shader = getRessource(Static.RES_PATH + path);
                     if (shader != null) {
                         String src = getData(shader);
                         sb.append(src);

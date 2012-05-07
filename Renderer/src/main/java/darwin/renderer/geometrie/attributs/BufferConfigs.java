@@ -16,13 +16,12 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import javax.media.opengl.GL2ES2;
 import javax.media.opengl.GLProfile;
 
-import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.BufferObject;
+
+import static darwin.renderer.GraphicContext.*;
 
 /**
  *
@@ -34,25 +33,21 @@ class BufferConfigs
     static {
         assert GLProfile.isAvailable(GLProfile.GL2ES2) : "This device doesn't support Generic Vertex Attributes";
     }
-    private final GraphicContext gc;
     private final BufferObject buffer;
     private final AttributConfig[] configs;
 
-    public BufferConfigs(GraphicContext gcontext,
-            BufferObject buffer,
-            AttributConfig[] configs)
+    public BufferConfigs(BufferObject buffer, AttributConfig[] configs)
     {
-        assert buffer != null && configs != null :
-                "Der Buffer sowie das Attribut Array darf nicht null sein";
-        gc = gcontext;
         this.buffer = buffer;
         this.configs = configs;
+        assert buffer != null && configs != null :
+                "Der Buffer sowie das Attribut Array darf nicht null sein";
     }
 
     public void prepare()
     {
         buffer.bind();
-        GL2ES2 gl = gc.getGL().getGL2ES2();
+        GL2ES2 gl = getGL().getGL2ES2();
         for (AttributConfig ac : configs) {
             gl.glEnableVertexAttribArray(ac.index);
             gl.glVertexAttribPointer(ac.index, ac.size, ac.glconst,
@@ -63,7 +58,7 @@ class BufferConfigs
 
     public void disable()
     {
-        GL2ES2 gl = gc.getGL().getGL2ES2();
+        GL2ES2 gl = getGL().getGL2ES2();
         for (AttributConfig ac : configs) {
             gl.glDisableVertexAttribArray(ac.index);
         }

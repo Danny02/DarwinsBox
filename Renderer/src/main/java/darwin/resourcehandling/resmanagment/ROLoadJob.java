@@ -16,8 +16,6 @@
  */
 package darwin.resourcehandling.resmanagment;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import java.io.*;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -38,14 +36,11 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
 {
 
     private static final Logger logger = Logger.getLogger(ROLoadJob.class);
-    private final ModelPacker packer;
     private final ObjConfig ljob;
     private List<RenderObjekt> mcontainer;
 
-    @AssistedInject
-    public ROLoadJob(ModelPacker packer, @Assisted ObjConfig ljob)
+    public ROLoadJob(ObjConfig ljob)
     {
-        this.packer = packer;
         this.ljob = ljob;
     }
 
@@ -79,7 +74,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
                     + path + "\"");
         }
 
-        RenderModel[] models = packer.packModel(mo, ljob.getShader());
+        RenderModel[] models = ModelPacker.packModel(mo, ljob.getShader());
 
         for (RenderObjekt ro2 : mcontainer) {
             ro2.setModels(models);

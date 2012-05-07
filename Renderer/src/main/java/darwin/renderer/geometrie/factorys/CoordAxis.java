@@ -16,18 +16,13 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import javax.inject.Inject;
 import javax.media.opengl.GL;
 
-import darwin.geometrie.data.Element;
+import darwin.geometrie.data.DataLayout;
 import darwin.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.packed.RenderMesh;
-import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
-import darwin.renderer.opengl.buffer.BufferObject;
-import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
-
-import static darwin.renderer.opengl.GLSLType.*;
 
 /**
  *
@@ -35,29 +30,29 @@ import static darwin.renderer.opengl.GLSLType.*;
  */
 public class CoordAxis implements GeometryFactory
 {
-    private static final VertexBO vbo;
-    private static final BufferObject indice;
+    public static final GeometryFactory instance = new CoordAxis();
+    private final VertexBO attr;
+    private final BufferObject indice;
 
-    static {
+    private CoordAxis() {
 
-        vbo = new VertexBO(new VertexBuffer(new Element(VEC3, "Position"),
-                0, 0, 0,
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1));
+        darwin.geometrie.data.Element pos = new darwin.geometrie.data.Element(GLSLType.VEC3, "Position");
+
+        DataLayout dl = new DataLayout(pos);
+
+        VertexBuffer vb = new VertexBuffer(dl, 4);
+
+        vb.newVertex().setAttribute(pos, 0f, 0f, 0f);
+        vb.newVertex().setAttribute(pos, 1f, 0f, 0f);
+        vb.newVertex().setAttribute(pos, 0f, 1f, 0f);
+        vb.newVertex().setAttribute(pos, 0f, 0f, 1f);
+
+        attr = new VertexBO(vb);
         indice = BufferObject.buildIndiceBuffer(1, 0, 2, 0, 3);
-    }
-    private final RenderMesh.RenderMeshFactory factory;
-
-    @Inject
-    public CoordAxis(RenderMeshFactory rmFactory)
-    {
-        factory = rmFactory;
     }
 
     @Override
-    public RenderMesh buildRenderable(Shader shader)
-    {
-        return factory.create(shader, GL.GL_LINE_STRIP, indice, vbo);
+    public RenderMesh buildRenderable(Shader shader) {
+        return new RenderMesh(shader, GL.GL_LINE_STRIP, indice, attr);
     }
 }

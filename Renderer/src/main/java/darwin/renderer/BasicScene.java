@@ -73,6 +73,8 @@ public class BasicScene implements GLEventListener
         renderObjects();
     }
 
+    ;
+
     protected void renderObjects()
     {
         Iterator<RenderObjekt> iter = needini.iterator();

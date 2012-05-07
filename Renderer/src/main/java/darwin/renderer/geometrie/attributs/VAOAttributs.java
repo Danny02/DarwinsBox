@@ -16,41 +16,34 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import javax.media.opengl.GLProfile;
 
-import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.BufferObject;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
+
+import static darwin.renderer.GraphicContext.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public final class VAOAttributs implements AttributsConfigurator
+final class VAOAttributs implements AttributsConfigurator
 {
 
     static {
-        assert GLProfile.isAvailable(GLProfile.GL2GL3) : "This device VertexAttributsdoesn't support VAOs";
+        assert GLProfile.isAvailable(GLProfile.GL2GL3) : "This device doesn't support VAOs";
     }
-    private final GraphicContext gc;
     private final int id;
 
-    @AssistedInject
-    public VAOAttributs(GraphicContext gcontext,
-            @Assisted Shader shader,
-            @Assisted VertexBO[] vbuffers,
-            @Assisted BufferObject indice)
+    public VAOAttributs(Shader shader, VertexBO[] vbuffers, BufferObject indice)
     {
-        gc = gcontext;
 
         int[] i = new int[1];
-        gc.getGL().getGL2GL3().glGenVertexArrays(1, i, 0);
+        getGL().getGL2GL3().glGenVertexArrays(1, i, 0);
         id = i[0];
 
-        StdAttributs sa = new StdAttributs(gc, shader, vbuffers, indice);
+        StdAttributs sa = new StdAttributs(shader, vbuffers, indice);
         prepare();
         sa.prepare();
         disable();
@@ -61,12 +54,12 @@ public final class VAOAttributs implements AttributsConfigurator
     @Override
     public void prepare()
     {
-        gc.getGL().getGL2GL3().glBindVertexArray(id);
+        getGL().getGL2GL3().glBindVertexArray(id);
     }
 
     @Override
     public void disable()
     {
-        gc.getGL().getGL2GL3().glBindVertexArray(0);
+        getGL().getGL2GL3().glBindVertexArray(0);
     }
 }

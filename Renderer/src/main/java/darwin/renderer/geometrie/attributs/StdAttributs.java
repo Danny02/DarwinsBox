@@ -16,16 +16,12 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import darwin.geometrie.data.Element;
 import java.util.LinkedList;
 import java.util.List;
 
 import darwin.geometrie.data.DataLayout;
-import darwin.geometrie.data.Element;
-import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.buffer.BufferObject;
-import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.ShaderAttribute;
 
@@ -33,18 +29,12 @@ import darwin.renderer.shader.ShaderAttribute;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class StdAttributs implements AttributsConfigurator
-{
+class StdAttributs implements AttributsConfigurator {
 
     private final BufferConfigs[] configs;
     private final BufferObject indice;
 
-    @AssistedInject
-    public StdAttributs(GraphicContext gcontext,
-            @Assisted Shader shader,
-            @Assisted VertexBO[] vbuffers,
-            @Assisted BufferObject indice)
-    {
+    public StdAttributs(Shader shader, VertexBO[] vbuffers, BufferObject indice) {
         assert shader.isInitialized() : "Shader is not initialized!";
 
         this.indice = indice;
@@ -62,13 +52,12 @@ public class StdAttributs implements AttributsConfigurator
             }
             AttributConfig[] c = new AttributConfig[cs.size()];
             cs.toArray(c);
-            configs[i] = new BufferConfigs(gcontext, vbuffers[i].buffer, c);
+            configs[i] = new BufferConfigs(vbuffers[i].buffer, c);
         }
     }
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         for (BufferConfigs bc : configs) {
             bc.prepare();
         }
@@ -78,8 +67,7 @@ public class StdAttributs implements AttributsConfigurator
     }
 
     @Override
-    public void disable()
-    {
+    public void disable() {
         for (BufferConfigs bc : configs) {
             bc.disable();
         }

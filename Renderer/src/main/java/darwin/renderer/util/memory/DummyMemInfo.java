@@ -20,7 +20,7 @@ package darwin.renderer.util.memory;
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+public class DummyMemInfo extends MemoryInfo
 {
 
     @Override

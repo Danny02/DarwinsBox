@@ -16,44 +16,38 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-
-import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.BufferObject;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
+
+import static darwin.renderer.GraphicContext.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-
 public class VertexAttributs
 {
-    public interface VAttributsFactory
-    {
-        public VertexAttributs create(Shader shader, VertexBO[] vbuffers, BufferObject indice);
-    }
 
-    private final GraphicContext gc;
-    private final ConfiguratorFactory factory;
+    private static class Static
+    {
+
+        private static final boolean vao_available = checkExtension();
+    }
     private final AttributsConfigurator configurator;
     private final int hash;
 
-    @AssistedInject
-    public VertexAttributs(GraphicContext gcontext,
-            ConfiguratorFactory factory,
-            @Assisted Shader shader,
-            @Assisted VertexBO[] vbuffers,
-            @Assisted BufferObject indice)
+    public VertexAttributs(Shader shader, VertexBO[] vbuffers,
+            BufferObject indice)
     {
-        gc = gcontext;
-        this.factory = factory;
-
         hash = shader.getAttributsHash();
 
-        configurator = factory.create(shader, vbuffers, indice);
+        //TODO indice werden im TerrainRenderer mit VAO nicht richtig gebunden
+        if (Static.vao_available) {
+            configurator = new VAOAttributs(shader, vbuffers, indice);
+        } else {
+            configurator = new StdAttributs(shader, vbuffers, indice);
+        }
     }
 
     public void bind()
@@ -69,5 +63,10 @@ public class VertexAttributs
     public boolean isCompatible(Shader shader)
     {
         return hash == shader.getAttributsHash();
+    }
+
+    private static boolean checkExtension()
+    {
+        return getGL().isExtensionAvailable("GL_ARB_vertex_array_object");
     }
 }

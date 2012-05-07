@@ -19,8 +19,8 @@ package darwin.renderer;
 import com.jogamp.opengl.util.texture.Texture;
 import javax.media.opengl.*;
 
-import darwin.renderer.opengl.FrameBuffer.FrameBufferObject;
-import darwin.renderer.opengl.FrameBuffer.RenderBuffer;
+import darwin.renderer.opengl.FrameBufferObject;
+import darwin.renderer.opengl.RenderBuffer;
 import darwin.resourcehandling.io.TextureUtil;
 
 import static darwin.renderer.GraphicContext.*;

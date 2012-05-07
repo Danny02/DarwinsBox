@@ -18,15 +18,13 @@ package darwin.renderer.util.memory;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLRunnable;
-
-import darwin.renderer.GraphicContext;
 import static darwin.renderer.GraphicContext.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public final class ATIMemoryInfo implements MemoryInfo
+final class ATIMemoryInfo extends MemoryInfo
 {
 
     private static final int VBO_FREE_MEMORY_ATI = 0x87FB;
@@ -35,19 +33,12 @@ public final class ATIMemoryInfo implements MemoryInfo
 //    TODO man kann ned gscheit die echte Speichergröße abfragen
 //    nur freien speicher beim programmstart
 //    private static final int TOTAL_PHYSICAL_MEMORY_ATI = 0x87FE;
-    private final int totalMem;
-    private final GraphicContext gc;
-
-    public ATIMemoryInfo(GraphicContext gc)
-    {
-        totalMem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
-        this.gc = gc;
-    }
+    private static final int total_mem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
 
     @Override
     public int getTotalMemory()
     {
-        return totalMem;
+        return total_mem;
     }
 
     @Override
@@ -59,7 +50,7 @@ public final class ATIMemoryInfo implements MemoryInfo
     @Override
     public double getFreeRatio()
     {
-        return (double) getCurrentMemory() / totalMem;
+        return (double) getCurrentMemory() / total_mem;
     }
 
     /**
@@ -71,16 +62,16 @@ public final class ATIMemoryInfo implements MemoryInfo
      * <p/>
      * @return
      */
-    private int[] getData(final int pool)
+    private static int[] getData(final int pool)
     {
         final int[] result = new int[4];
-        gc.getGLWindow().invoke(true, new GLRunnable()
+        getGLWindow().invoke(true, new GLRunnable()
         {
 
             @Override
             public boolean run(GLAutoDrawable drawable)
             {
-                gc.getGL().glGetIntegerv(pool, result, 0);
+                getGL().glGetIntegerv(pool, result, 0);
                 return true;
             }
         });

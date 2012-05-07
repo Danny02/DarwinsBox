@@ -16,17 +16,14 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import java.nio.IntBuffer;
 import java.util.*;
 
 import darwin.geometrie.unpacked.*;
-import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
-import darwin.renderer.opengl.buffer.BufferObject;
-import darwin.renderer.opengl.buffer.Target;
-import darwin.renderer.opengl.buffer.Type;
-import darwin.renderer.opengl.buffer.Usage;
+import darwin.renderer.opengl.BufferObject;
+import darwin.renderer.opengl.BufferObject.Target;
+import darwin.renderer.opengl.BufferObject.Type;
+import darwin.renderer.opengl.BufferObject.Usage;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.uniform.*;
@@ -41,15 +38,11 @@ import darwin.resourcehandling.wrapper.TextureContainer;
 public final class RenderModel implements Shaded, Cloneable
 {
 
-    public interface RenderModelFactory
-    {
-
-        public RenderModel create(Model model, Shader shader);
-    }
     private Material material;
     private RenderMesh rbuffer;
     private Shader shader;
     private final Set<UniformSetter> uniforms = new HashSet<>();
+    private AsyncIni initiator = null;
 
     public RenderModel(RenderMesh rbuffer, Shader shader,
             Material mat)
@@ -59,40 +52,52 @@ public final class RenderModel implements Shaded, Cloneable
         setShader(shader);
     }
 
-    @AssistedInject
-    public RenderModel(RenderMeshFactory factory,
-            @Assisted Model model,
-            @Assisted Shader shader)
+    public RenderModel(Model model, final Shader shader)
     {
         material = model.getMat();
-        setShader(shader);
 
-        Mesh m = model.getMesh();
+        final Mesh m = model.getMesh();
+        initiator = new AsyncIni()
+        {
 
-        VertexBO vbo = new VertexBO(m.getVertices());
-        int[] i = m.getIndicies();
-        BufferObject indice = null;
-        if (i != null) {
-            indice = new BufferObject(Target.ELEMENT_ARRAY);
-            indice.bind();
+            @Override
+            public void ini()
             {
-                indice.bufferData(IntBuffer.wrap(i), Type.STATIC, Usage.DRAW);
+                VertexBO vbo = new VertexBO(m.getVertices());
+                int[] i = m.getIndicies();
+                BufferObject indice = null;
+                if (i != null) {
+                    indice = new BufferObject(Target.ELEMENT_ARRAY);
+                    indice.bind();
+                    {
+                        indice.bufferData(IntBuffer.wrap(i), Type.STATIC, Usage.DRAW);
+                    }
+                    indice.disable();
+                }
+                rbuffer = new RenderMesh(shader, m.getPrimitiv_typ(), indice, vbo);
             }
-            indice.disable();
-        }
-
-        rbuffer = factory.create(shader, m.getPrimitiv_typ(), indice, vbo);
+        };
+        setShader(shader);
     }
 
     @Override
     public void render()
     {
         if (shader.isInitialized()) {
+            init();
             for (UniformSetter us : uniforms) {
                 us.set();
             }
             shader.updateUniformData();
             rbuffer.render();
+        }
+    }
+
+    private void init()
+    {
+        if (initiator != null) {
+            initiator.ini();
+            initiator = null;
         }
     }
 

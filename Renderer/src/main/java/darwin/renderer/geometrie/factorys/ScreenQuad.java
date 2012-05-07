@@ -16,17 +16,14 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import javax.inject.Inject;
 import javax.media.opengl.GL;
 
-import darwin.geometrie.data.Element;
-import darwin.geometrie.data.VertexBuffer;
+import darwin.geometrie.data.DataLayout.Format;
+import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh;
-import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
+import darwin.renderer.opengl.GLSLType;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
-
-import static darwin.renderer.opengl.GLSLType.*;
 
 /**
  * Initialisiert ein einzelnes Quad das als Screen Quad genutzt werden kann
@@ -36,28 +33,36 @@ import static darwin.renderer.opengl.GLSLType.*;
 public class ScreenQuad implements GeometryFactory
 {
 
-    private static final VertexBO vbo;
-
-    static {
-
-        Element pos = new Element(VEC2, "Position");
-        vbo = new VertexBO(new VertexBuffer(new Element(VEC2, "Position"),
-                -1, -1,
-                1, -1,
-                -1, 1,
-                1, 1));
-    }
-    private final RenderMeshFactory factory;
-
-    @Inject
-    public ScreenQuad(RenderMeshFactory rmFactory)
+    private static class Static
     {
-        factory = rmFactory;
+
+        public static GeometryFactory instance = new ScreenQuad();
+    }
+
+    public static GeometryFactory getInstance()
+    {
+        return Static.instance;
+    }
+    private VertexBO attr;
+
+    private ScreenQuad()
+    {
+        Element pos = new Element(GLSLType.VEC2, "Position");
+        VertexBuffer vb =
+                new VertexBuffer(new DataLayout(Format.INTERLEAVE, pos), 4);
+        vb.newVertex().setAttribute(pos, -1f, -1f);
+        vb.newVertex().setAttribute(pos, 1f, -1f);
+        vb.newVertex().setAttribute(pos, -1f, 1f);
+        vb.newVertex().setAttribute(pos, 1f, 1f);
+
+        attr = new VertexBO(vb);
     }
 
     @Override
     public RenderMesh buildRenderable(Shader shader)
     {
-        return factory.create(shader, GL.GL_TRIANGLE_STRIP, null, vbo);
+        RenderMesh rm = new RenderMesh(shader, GL.GL_TRIANGLE_STRIP, null,
+                attr);
+        return rm;
     }
 }

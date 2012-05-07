@@ -16,13 +16,11 @@
  */
 package darwin.renderer.opengl;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-
 import darwin.geometrie.data.DataLayout;
 import darwin.geometrie.data.VertexBuffer;
-import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
-import darwin.renderer.opengl.buffer.*;
+import darwin.renderer.opengl.BufferObject.Target;
+import darwin.renderer.opengl.BufferObject.Type;
+import darwin.renderer.opengl.BufferObject.Usage;
 
 /**
  *
@@ -31,16 +29,11 @@ import darwin.renderer.opengl.buffer.*;
 //TODO Sinn dieser Klasse ueberdenken
 public class VertexBO
 {
-    public interface VBOFactoy
-    {
-        public VertexBO create(VertexBuffer vb);
-    }
     public final DataLayout layout;
     public final BufferObject buffer;
 
-    @AssistedInject
-    public VertexBO(BufferFactory factory, @Assisted VertexBuffer vb) {
-        buffer = factory.create(Target.ARRAY);
+    public VertexBO(VertexBuffer vb) {
+        buffer = new BufferObject(Target.ARRAY);
         buffer.bind();
         {
             buffer.bufferData(vb.buffer, Type.STATIC, Usage.DRAW);

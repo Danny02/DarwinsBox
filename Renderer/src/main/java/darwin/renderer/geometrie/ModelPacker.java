@@ -18,13 +18,10 @@ package darwin.renderer.geometrie;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import darwin.geometrie.unpacked.Material;
 import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.packed.RenderModel;
-import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
@@ -34,18 +31,10 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-@Singleton
 public class ModelPacker
 {
-    private final RenderModelFactory factory;
 
-    @Inject
-    public ModelPacker(RenderModelFactory factory)
-    {
-        this.factory = factory;
-    }
-
-    public RenderModel[] packModel(Model[] models, ShaderDescription description)
+    public static RenderModel[] packModel(Model[] models, ShaderDescription description)
     {
         RenderModel[] out = new RenderModel[models.length];
 
@@ -77,7 +66,7 @@ public class ModelPacker
 
             Shader s = RESOURCES.getShader(description, mutations);
 
-            out[i] = factory.create(m, s);
+            out[i] = new RenderModel(m, s);
         }
 
         return out;

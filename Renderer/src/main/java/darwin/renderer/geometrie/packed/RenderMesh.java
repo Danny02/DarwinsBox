@@ -16,17 +16,15 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.geometrie.attributs.VertexAttributs;
-import darwin.renderer.geometrie.attributs.VertexAttributs.VAttributsFactory;
-import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.BufferObject;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.shader.Shader;
+
+import static darwin.renderer.GraphicContext.*;
 
 /**
  *
@@ -36,46 +34,26 @@ import darwin.renderer.shader.Shader;
 public class RenderMesh implements Cloneable
 {
 
-    public interface RenderMeshFactory
-    {
-
-        public RenderMesh create(Shader shader, int primitivtype,
-                BufferObject indice, VertexBO... vertexdata);
-
-        public RenderMesh create(Shader shader, BufferObject indice, VertexBO... vertexdata);
-    }
-    private final GraphicContext gc;
-    private final VertexAttributs attributs;
+    private VertexAttributs attributs;
     private final int indextype, vertexcount;
     private final BufferObject indice;
-    private final int primitivtype;
+    private int primitivtype;
     private final boolean asarray;
 
-    @AssistedInject
-    public RenderMesh(GraphicContext gcontex,
-            VAttributsFactory vfactory,
-            @Assisted Shader shader,
-            @Assisted int primitivtype,
-            @Assisted BufferObject indice,
-            @Assisted VertexBO... vertexdata)
+    public RenderMesh(Shader shader, int primitivtype,
+            BufferObject indice, VertexBO... vertexdata)
     {
-        gc = gcontex;
         this.primitivtype = primitivtype;
         asarray = indice == null;
         this.indice = indice;
         vertexcount = vertexdata[0].getVertexCount();
-        attributs = vfactory.create(shader, vertexdata, indice);
+        attributs = new VertexAttributs(shader, vertexdata, indice);
         indextype = GL2ES2.GL_UNSIGNED_INT;
     }
 
-    @AssistedInject
-    public RenderMesh(GraphicContext gcontex,
-            VAttributsFactory vfactory,
-            @Assisted Shader shader,
-            @Assisted BufferObject indice,
-            @Assisted VertexBO... vertexdata)
+    public RenderMesh(Shader shader, BufferObject indice, VertexBO... vertexdata)
     {
-        this(gcontex, vfactory, shader, GL.GL_TRIANGLES, indice, vertexdata);
+        this(shader, GL.GL_TRIANGLES, indice, vertexdata);
     }
 
     public int getIndexcount()
@@ -98,9 +76,9 @@ public class RenderMesh implements Cloneable
     {
         attributs.bind();
         if (asarray) {
-            gc.getGL().glDrawArrays(primitivtype, offset, length);
+            getGL().glDrawArrays(primitivtype, offset, length);
         } else {
-            gc.getGL().glDrawElements(primitivtype, length, indextype, offset * 4L);
+            getGL().glDrawElements(primitivtype, length, indextype, offset * 4L);
         }
         attributs.disable();
     }
