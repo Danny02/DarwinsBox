@@ -20,13 +20,15 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.io.IOException;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.io.ShaderFile;
 import darwin.resourcehandling.io.ShaderUtil;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -40,12 +42,8 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
 
         public ShaderLoadJob create(ShaderDescription description);
     }
-
-    private static class Log
-    {
-
-        public static final Logger ger = Logger.getLogger(ShaderLoadJob.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private final ShaderUtil util;
     private final ShaderDescription desc;
     private ShaderFile sfile;
@@ -82,7 +80,7 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
             }
         }
         t = System.currentTimeMillis() - t;
-        Log.ger.info("Shader(" + desc + ", [" + getMutantString() + "])  ...loaded(" + t + "ms)!");
+        logger.info("Shader(" + desc + ", [" + getMutantString() + "])  ...loaded(" + t + "ms)!");
         return sp;
     }
 

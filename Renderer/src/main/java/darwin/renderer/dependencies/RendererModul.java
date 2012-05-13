@@ -29,10 +29,10 @@ import darwin.renderer.geometrie.factorys.Rahmen.RahmenFactory;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.opengl.FrameBuffer.*;
+import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.Shader.ShaderFactory;
-import darwin.renderer.shader.uniform.ShaderMaterialFactory;
 import darwin.renderer.util.memory.MemoryInfo;
 import darwin.resourcehandling.resmanagment.ROLoadJob.ROJobFactory;
 import darwin.resourcehandling.resmanagment.ShaderLoadJob.ShaderJobFactory;
@@ -52,29 +52,35 @@ public class RendererModul extends AbstractModule
     @Override
     protected void configure()
     {
+        //TODO introduce annotation processor for automatic factory interface creation of @AssistedInject constructors
+        Class[] factoryClasses = new Class[]
+        {
+            ConfiguratorFactory.class,
+            VAttributsFactory.class,
+            RenderMeshFactory.class,
+            RenderModelFactory.class,
+            BufferFactory.class,
+            VBOFactoy.class,
+            RahmenFactory.class,
+            SamplerFactory.class,
+            ROJobFactory.class,
+            ShaderJobFactory.class,
+            ShaderFactory.class,
+            TextureJobFactory.class,
+            HeightMapFactory.class,
+            CubeMapFactory.class,
+            AtlasFactory.class,
+        };
+
+        for (Class factory : factoryClasses) {
+            install(new FactoryModuleBuilder().build(factory));
+        }
+
+        //needed for automatic Logger injection
+        bindListener(Matchers.any(), new Slf4jTypeListener());
+
         bind(AttributsConfigurator.class).to(StdAttributs.class);
 //        bind(AttributsConfigurator.class).to(VAOAttributs.class);
-        install(new FactoryModuleBuilder().build(ConfiguratorFactory.class));
-        install(new FactoryModuleBuilder().build(VAttributsFactory.class));
-
-        install(new FactoryModuleBuilder().build(RenderMeshFactory.class));
-        install(new FactoryModuleBuilder().build(RenderModelFactory.class));
-
-        install(new FactoryModuleBuilder().build(BufferFactory.class));
-
-        install(new FactoryModuleBuilder().build(RahmenFactory.class));
-        install(new FactoryModuleBuilder().build(SamplerFactory.class));
-
-        install(new FactoryModuleBuilder().build(ROJobFactory.class));
-        install(new FactoryModuleBuilder().build(ShaderJobFactory.class));
-        install(new FactoryModuleBuilder().build(ShaderFactory.class));
-        install(new FactoryModuleBuilder().build(TextureJobFactory.class));
-        install(new FactoryModuleBuilder().build(HeightMapFactory.class));
-        install(new FactoryModuleBuilder().build(CubeMapFactory.class));
-        install(new FactoryModuleBuilder().build(AtlasFactory.class));
-        
-
-        bindListener(Matchers.any(), new Slf4jTypeListener());
 
         bind(GLDrawable.class).to(GLAutoDrawable.class);
         bind(GLAutoDrawable.class).toProvider(DrawableProvider.class);

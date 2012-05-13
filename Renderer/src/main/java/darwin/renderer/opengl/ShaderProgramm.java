@@ -18,7 +18,10 @@ package darwin.renderer.opengl;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLProfile;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
+
+import darwin.util.logging.InjectLogger;
 
 /**
  * CPU seitige Repr�sentation eines OpenGL Shader Programmes
@@ -28,17 +31,13 @@ import org.apache.log4j.Logger;
 public class ShaderProgramm
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(ShaderProgramm.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
 
     static {
         assert GLProfile.isAvailable(GLProfile.GL2ES2) : "This device doesn't support Shaders";
     }
     private static ShaderProgramm shaderinuse = null;
-
     private final GLAutoDrawable drawable;
     private final int programObject;
 
@@ -47,7 +46,6 @@ public class ShaderProgramm
         this.drawable = drawable;
         this.programObject = programObject;
     }
-
 
     /**
      * @return Gibt den Index des Programm Objekt im Grafikspeicher zur�ck.

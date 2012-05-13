@@ -20,12 +20,14 @@ import java.io.*;
 import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException;
 import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.util.logging.InjectLogger;
 
 import static darwin.renderer.opengl.ShaderType.*;
 
@@ -37,11 +39,8 @@ import static darwin.renderer.opengl.ShaderType.*;
 public class ShaderUtil
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(ShaderUtil.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private static final String includePrefix = "#pragma include";
     private static final String RES_PATH = "resources/shaders/";
     private final ShaderObjektFactory soFactory;
@@ -70,7 +69,7 @@ public class ShaderUtil
             return spFactory.create(sfile.getAttributs(), fso, vso, gso);
         } catch (BuildException ex) {
             //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
-            Log.ger.fatal("Shader " + ex.getErrorType() + " ERROR in : "
+            logger.error("Shader " + ex.getErrorType() + " ERROR in : "
                     + sfile.name + "\n" + ex.getMessage());
             throw new Error("Shutting down!");
         }
@@ -192,8 +191,8 @@ public class ShaderUtil
                 sb.append(line).append("\n");
             }
         } catch (IOException ex) {
-            Log.ger.fatal("Fehler beim laden eines Shader Source Strings: "
-                    + ex.getLocalizedMessage(), null);
+            logger.error("Fehler beim laden eines Shader Source Strings: "
+                    + ex.getLocalizedMessage());
         }
         out = sb.toString();
         return out;

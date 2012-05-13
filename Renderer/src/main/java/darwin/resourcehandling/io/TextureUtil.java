@@ -22,11 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.resmanagment.ResourcesLoader;
-
+import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -35,11 +36,8 @@ import darwin.resourcehandling.resmanagment.ResourcesLoader;
 public class TextureUtil
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(TextureUtil.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private static final String[] postfixes = new String[]{"_RT", "_LT", "_UP", "_DN", "_FT", "_BK"};
     private final GraphicContext gc;
     private final ResourcesLoader loader;
@@ -76,13 +74,13 @@ public class TextureUtil
      *                       GL_RGBA12, GL_RGBA16, GL_SLUMINANCE, GL_SLUMINANCE8,
      *                       GL_SLUMINANCE_ALPHA, GL_SLUMINANCE8_ALPHA8, GL_SRGB,
      *                       GL_SRGB8, GL_SRGB_ALPHA oder GL_SRGB8_ALPHA8. <br>
-     * @param width <br> Breite = Anzahl der Pixel pro Zeile <br> muss
+     * @param width          <br> Breite = Anzahl der Pixel pro Zeile <br> muss
      *                       als Wert 2^n + 2 * border f�r n Integerwerte haben.
      *                       <br>
-     * @param height <br> H�he = Anzahl der Zeilen <br> muss als Wert
+     * @param height         <br> H�he = Anzahl der Zeilen <br> muss als Wert
      *                       2^n + 2 * border f�r n Integerwerte haben <br>
-     * @param border <br> Breite des Rahmens || 0 oder 1 <br>
-     * @param pixelFormat <br> Bestimmt das Format der Pixeldaten. <br>
+     * @param border         <br> Breite des Rahmens || 0 oder 1 <br>
+     * @param pixelFormat    <br> Bestimmt das Format der Pixeldaten. <br>
      *                       Folgende symbolische Werte werden akzeptiert: <br>
      *                       GL_COLOR_INDEX, GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA,
      *                       GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_LUMINANCE, und
@@ -102,7 +100,7 @@ public class TextureUtil
      *                       GL_UNSIGNED_INT_8_8_8_8_REV,
      *                       GL_UNSIGNED_INT_10_10_10_2 und
      *                       GL_UNSIGNED_INT_2_10_10_10_REV. <br>
-     * @param mipmap <br> Boolischer Wert ob Mipmaps der Textur mittel
+     * @param mipmap         <br> Boolischer Wert ob Mipmaps der Textur mittel
      *                       GLU erstellt werden sollen. <br>
      * <p/>
      * @return Die erstellte Textur wird zur�ckgegeben.
@@ -128,7 +126,7 @@ public class TextureUtil
      * Setzt die MIN und MAG Filterung der Textur sowie wie sie gewrapt werden
      * soll.
      * <p/>
-     * @param tex <br> Die Texture die bearbeitet werden soll. <br>
+     * @param tex       <br> Die Texture die bearbeitet werden soll. <br>
      * @param filtering <br> Es k�nnen nur folgende werte genutzt werden:
      *                  <br><br> GL_NEAREST <br> Liefert den Wert des
      *                  Texturelements, welches am n�chsten (in Manhattandistanz)
@@ -171,17 +169,17 @@ public class TextureUtil
     {
         try (InputStream is = loader.getRessource(path)) {
             if (is == null) {
-                Log.ger.warn(
+                logger.warn(
                         "Ressource \"" + path + "\" konnte nicht gefunden werden.");
                 throw new IOException("Error loading file " + path);
             }
             String[] suffix = path.split("\\.");
             Texture tex = TextureIO.newTexture(is, true,
                     suffix[suffix.length - 1]);
-            Log.ger.info("Texture: " + path + " ...loaded!");
+            logger.info("Texture: " + path + " ...loaded!");
             return tex;
         } catch (GLException ex) {
-            Log.ger.error("GL Fehler beim laden der Texture " + path + "\n(" + ex.getLocalizedMessage() + ")");
+            logger.error("GL Fehler beim laden der Texture " + path + "\n(" + ex.getLocalizedMessage() + ")");
             throw new IOException("Error loading file " + path);
         }
     }
