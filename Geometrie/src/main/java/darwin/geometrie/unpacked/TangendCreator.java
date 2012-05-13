@@ -17,9 +17,11 @@
 package darwin.geometrie.unpacked;
 
 import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.geometrie.data.*;
+import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.Vec3;
 import darwin.util.math.base.Vector;
 
@@ -29,10 +31,11 @@ import static darwin.geometrie.data.DataType.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class TangendCreator implements MeshModifier {
+public class TangendCreator implements MeshModifier
+{
 
-    private final Logger logger = Logger.getLogger(
-            TangendCreator.class.getName());
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private final Element tangent = new Element(new GenericVector(FLOAT, 3), "Tangent");
     private final Element position = new Element(new GenericVector(FLOAT, 4), "Position");
     private final Element texcoord = new Element(new GenericVector(FLOAT, 2), "TexCoord");

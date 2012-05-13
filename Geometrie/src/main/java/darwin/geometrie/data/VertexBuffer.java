@@ -18,10 +18,12 @@ package darwin.geometrie.data;
 
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Iterator;
 import java.util.Objects;
 
 import static java.lang.Math.*;
+import static darwin.geometrie.data.DataLayout.Format.*;
 
 /**
  * DatenModel um Vertex Attribute eines Modeles zu halten
@@ -36,12 +38,39 @@ public final class VertexBuffer implements Iterable<Vertex>
     private int size;
     private int vcount = 0;
 
+    public VertexBuffer(Element e, int size)
+    {
+        this(new DataLayout(INTERLEAVE, e), size);
+    }
+
     public VertexBuffer(DataLayout layout, int size)
     {
         this.size = size;
         this.layout = layout;
         buffer = GLBuffers.newDirectByteBuffer(size * layout.getBytesize());
         buffer.limit(0);
+    }
+
+    public VertexBuffer(Element e, float... data)
+    {
+        this(new DataLayout(INTERLEAVE, e), data);
+    }
+
+    public VertexBuffer(DataLayout layout, float... data)
+    {
+        this(layout, data.length / (layout.getBytesize() / 4));
+
+        for (Element e : layout.getElements()) {
+            if (e.getDataType() != DataType.FLOAT) {
+                throw new IllegalArgumentException("The layout must consist of only float tpye data elements!");
+            }
+        }
+        if (data.length % (layout.getBytesize() / 4) != 0) {
+            throw new IllegalArgumentException("The data size is not an excate multiple of the data layout size!");
+        }
+
+        setVCount(size);
+        buffer.asFloatBuffer().put(data);
     }
 
     public void fullyInitialize()

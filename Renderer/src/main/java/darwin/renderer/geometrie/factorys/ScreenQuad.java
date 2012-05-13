@@ -24,6 +24,7 @@ import darwin.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.shader.Shader;
 
 import static darwin.renderer.opengl.GLSLType.*;
@@ -36,23 +37,18 @@ import static darwin.renderer.opengl.GLSLType.*;
 public class ScreenQuad implements GeometryFactory
 {
 
-    private static final VertexBO vbo;
+    private final VertexBO vbo;
+    private final RenderMeshFactory factory;
 
-    static {
-
-        Element pos = new Element(VEC2, "Position");
-        vbo = new VertexBO(new VertexBuffer(new Element(VEC2, "Position"),
+    @Inject
+    public ScreenQuad(RenderMeshFactory rmFactory, VBOFactoy factoy)
+    {
+        factory = rmFactory;
+        vbo = factoy.create(new VertexBuffer(new Element(VEC2, "Position"),
                 -1, -1,
                 1, -1,
                 -1, 1,
                 1, 1));
-    }
-    private final RenderMeshFactory factory;
-
-    @Inject
-    public ScreenQuad(RenderMeshFactory rmFactory)
-    {
-        factory = rmFactory;
     }
 
     @Override

@@ -86,16 +86,4 @@ public class MemoryInfoProvider implements Provider<MemoryInfo>
 
         return result[0] == null ? Vendor.DUMMY : result[0];
     }
-
-    public static void main(String[] args)
-    {
-        Vendor v = null;
-
-        switch (v) {
-            case AMD:
-                break;
-            default:
-                System.out.println("test");
-        }
-    }
 }

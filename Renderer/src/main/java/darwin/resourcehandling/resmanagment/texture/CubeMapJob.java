@@ -16,16 +16,20 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.*;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
+import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.io.TextureUtil;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
+import darwin.util.logging.InjectLogger;
 
-import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *
@@ -33,42 +37,49 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  */
 public class CubeMapJob extends TextureLoadJob
 {
-    private static class Log
+    public interface CubeMapFactory
     {
-        private static Logger ger = Logger.getLogger(CubeMapJob.class);
+        public CubeMapJob create(String path);
     }
     private static final String texturepath = "resources/Textures/";
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
+    private final ResourcesLoader loader;
 
-    public CubeMapJob(String path) {
-        super(path, -1, -1);
+    @AssistedInject
+    public CubeMapJob(GraphicContext gc, TextureUtil util, ResourcesLoader loader,
+            @Assisted String path)
+    {
+        super(gc, util, path, -1, -1);
+        this.loader = loader;
     }
 
     @Override
-    public Texture load() {
+    public Texture load()
+    {
         Texture re = null;
         try {
-            re = TextureUtil.loadCubeMap(getPath());
+            re = util.loadCubeMap(getPath());
             tcontainer.setTexture(re);
         } catch (IOException ex) {
-            Log.ger.warn("CubeMap " + getPath() + " konnte nicht geladen werden.\n("
+            logger.warn("CubeMap " + getPath() + " konnte nicht geladen werden.\n("
                     + ex.getLocalizedMessage() + ")", ex);
 
-            GL gl = getGL();
             re = TextureIO.newTexture(GL.GL_TEXTURE_CUBE_MAP);
-            re.bind(gl);
+            re.bind(gc.getGL());
             try {
-                InputStream iss = getRessource(texturepath + "error.dds");
-                TextureData data = TextureIO.newTextureData(gl.getGLProfile(),
-                                                            iss, false,
-                                                            TextureIO.DDS);
-                for (int i = 0; i < 6; ++i)
-                    re.updateImage(gl, data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
+                InputStream iss = loader.getRessource(texturepath + "error.dds");
+                TextureData data = TextureIO.newTextureData(gc.getGL().getGLProfile(),
+                        iss, false, TextureIO.DDS);
+                for (int i = 0; i < 6; ++i) {
+                    re.updateImage(gc.getGL(), data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
+                }
             } catch (IOException ex1) {
-                Log.ger.error("Keine Error Texturen gefunden.", ex1);
+                logger.error("Keine Error Texturen gefunden.", ex1);
                 return null;
             }
 
-            TextureUtil.setTexturePara(re, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
+            util.setTexturePara(re, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
         }
 
         return re;

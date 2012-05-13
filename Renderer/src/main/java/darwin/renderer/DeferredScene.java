@@ -17,32 +17,44 @@
 package darwin.renderer;
 
 import com.jogamp.opengl.util.texture.Texture;
+import javax.inject.Inject;
 import javax.media.opengl.*;
 
-import darwin.renderer.opengl.FrameBuffer.FrameBufferObject;
-import darwin.renderer.opengl.FrameBuffer.RenderBuffer;
+import darwin.renderer.opengl.FrameBuffer.*;
+import darwin.renderer.opengl.FrameBuffer.RenderBuffer.RenderBufferFactory;
+import darwin.renderer.util.memory.MemoryInfo;
 import darwin.resourcehandling.io.TextureUtil;
-
-import static darwin.renderer.GraphicContext.*;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 
 /**
  * Scene manager which renders deferred
+ * <p/>
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public class DeferredScene extends BasicScene implements GLEventListener
 {
 
-    private FrameBufferObject fbo;
+    private final TextureUtil util;
+    private final RenderBufferFactory factory;
+    private final FrameBufferObject defaultFb, fbo;
 
-    public DeferredScene()
+    @Inject
+    public DeferredScene(GraphicContext gc, ResourcesLoader loader,
+            MemoryInfo info, TextureUtil util, RenderBufferFactory factory,
+            @Default FrameBufferObject def, FrameBufferObject fbo)
     {
+        super(gc, loader, info);
+        this.util = util;
+        this.factory = factory;
+        defaultFb = def;
+        this.fbo = fbo;
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void customRender()
     {
-        GL2GL3 gl = getGL().getGL2GL3();
+        GL2GL3 gl = gc.getGL().getGL2GL3();
 
         fbo.bind();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -55,7 +67,7 @@ public class DeferredScene extends BasicScene implements GLEventListener
 
         renderObjects();
 
-        FrameBufferObject.DEFAULT.bind();
+        defaultFb.bind();
 //
 //        gl.glDrawBuffer(GL2GL3.GL_FRONT);
 //        squad.bindTexture(fbo.getColor_AttachmentTexture(2));
@@ -77,26 +89,23 @@ public class DeferredScene extends BasicScene implements GLEventListener
     public void init(GLAutoDrawable drawable)
     {
         super.init(drawable);
-
-        fbo = new FrameBufferObject();
         int width = 800;
         int heigth = 600;
 
-        Texture mat = TextureUtil.newTexture(GL.GL_RGBA8, width, heigth, 0,
+        Texture mat = util.newTexture(GL.GL_RGBA8, width, heigth, 0,
                 GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
                 false);
 //        Texture depth = TextureUtil.newTexture(GL.GL_DEPTH_COMPONENT24, width, heigth, 0,
 //                                 GL2GL3.GL_RED, GL.GL_UNSIGNED_BYTE,
 //                                 false);
-        RenderBuffer depth = new RenderBuffer(width, heigth,
-                GL2GL3.GL_DEPTH_COMPONENT24);
-        Texture normalSpecEx = TextureUtil.newTexture(GL2GL3.GL_RGB16F, width,
+        RenderBuffer depth = factory.create(width, heigth, GL2GL3.GL_DEPTH_COMPONENT24);
+        Texture normalSpecEx = util.newTexture(GL2GL3.GL_RGB16F, width,
                 heigth, 0,
                 GL2GL3.GL_RGBA,
                 GL.GL_UNSIGNED_BYTE,
                 false);
 
-        Texture compostion = TextureUtil.newTexture(GL.GL_RGB8, width, heigth, 0,
+        Texture compostion = util.newTexture(GL.GL_RGB8, width, heigth, 0,
                 GL.GL_RGB,
                 GL.GL_UNSIGNED_BYTE,
                 false);

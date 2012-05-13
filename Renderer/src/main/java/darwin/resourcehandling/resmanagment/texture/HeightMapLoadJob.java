@@ -16,17 +16,20 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.*;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2GL3;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
+import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.io.TextureUtil;
-
-import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
+import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -34,33 +37,41 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
  */
 public class HeightMapLoadJob extends TextureLoadJob
 {
-    private static class Log
+    public interface HeightMapFactory
     {
-        private static Logger ger = Logger.getLogger(HeightMapLoadJob.class);
+        public HeightMapLoadJob create(String path);
     }
 
-    public HeightMapLoadJob(String path) {
-        super(path, -1, -1);
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
+    private final ResourcesLoader loader;
+
+    @AssistedInject
+    public HeightMapLoadJob(GraphicContext gc, ResourcesLoader loader,
+            TextureUtil util, @Assisted String path)
+    {
+        super(gc, util, path, -1, -1);
+        this.loader = loader;
     }
 
     @Override
-    public Texture load() {
+    public Texture load()
+    {
         Texture re = null;
-        try (InputStream is = getRessource(getPath());){
+        try (InputStream is = loader.getRessource(getPath());) {
             String[] suffix = getPath().split("\\.");
-            TextureData td = TextureIO.newTextureData(getGL().getGLProfile(), is,
-                                                 GL2GL3.GL_LUMINANCE_FLOAT32_ATI,
-                                                 GL2GL3.GL_LUMINANCE, true,
-                                                 suffix[suffix.length - 1]);
+            TextureData td = TextureIO.newTextureData(gc.getGL().getGLProfile(), is,
+                    GL2GL3.GL_LUMINANCE_FLOAT32_ATI,
+                    GL2GL3.GL_LUMINANCE, true,
+                    suffix[suffix.length - 1]);
 
 
             re = TextureIO.newTexture(td);
-            TextureUtil.setTexturePara(re, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
+            util.setTexturePara(re, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
             tcontainer.setTexture(re);
         } catch (IOException ex) {
-            Log.ger.fatal("Heigthmap " + getPath()
-                    + " konnte nicht geladen werden.\n("
-                    + ex.getLocalizedMessage() + ")", ex);
+            logger.error("Heigthmap {} konnte nicht geladen werden.\n({})",
+                    getPath(), ex.getLocalizedMessage());
         }
 
         return re;

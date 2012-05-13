@@ -24,7 +24,7 @@ import javax.media.opengl.GLException;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
-import darwin.core.logging.ExceptionHandler;
+import darwin.util.logging.ExceptionHandler;
 
 import static darwin.renderer.GraphicContext.*;
 

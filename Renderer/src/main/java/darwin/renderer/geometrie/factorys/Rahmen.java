@@ -18,13 +18,14 @@ package darwin.renderer.geometrie.factorys;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import javax.inject.Inject;
-import javax.media.opengl.GL;
+
 import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
-import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.VertexBO.VBOFactoy;
+import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Shader;
 
 import static darwin.geometrie.data.DataLayout.Format.*;
@@ -47,7 +48,8 @@ public class Rahmen implements GeometryFactory
     private final RenderMesh.RenderMeshFactory factory;
 
     @AssistedInject
-    public Rahmen(RenderMeshFactory rmFactory, @Assisted float inset)
+    public Rahmen(RenderMeshFactory rmFactory, VBOFactoy vFactoy,
+            BufferFactory bFactory, @Assisted float inset)
     {
         factory = rmFactory;
         Element pos = new Element(VEC2, "Position");
@@ -56,7 +58,7 @@ public class Rahmen implements GeometryFactory
 
         float posIns = 1f - inset;
         float negIns = -1f + inset;
-        vbo = new VertexBO(new VertexBuffer(dl,
+        vbo = vFactoy.create(new VertexBuffer(dl,
                 -1, -1, 1,
                 -1, 1, 1,
                 1, 1, 1,
@@ -66,7 +68,7 @@ public class Rahmen implements GeometryFactory
                 posIns, posIns, 0,
                 posIns, negIns, 0));
 
-        indice = BufferObject.buildIndiceBuffer(
+        indice = bFactory.buildIndiceBuffer(
                 0, 4, 1,
                 4, 5, 1,//left
                 5, 2, 1,

@@ -78,16 +78,6 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
 
     <dependencies>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>Util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt</artifactId>
             <version>2.0-b33-20111219</version>
@@ -128,6 +118,11 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
             <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>darwin</groupId>
+            <artifactId>Util</artifactId>
+            <version>2.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

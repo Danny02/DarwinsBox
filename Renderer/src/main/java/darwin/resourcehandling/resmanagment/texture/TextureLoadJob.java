@@ -16,17 +16,21 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
 import java.io.IOException;
 import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
+import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.io.TextureUtil;
 import darwin.resourcehandling.resmanagment.LoadJob;
 import darwin.resourcehandling.wrapper.TextureContainer;
-
-import static darwin.renderer.GraphicContext.*;
+import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -34,93 +38,119 @@ import static darwin.renderer.GraphicContext.*;
  */
 public class TextureLoadJob implements LoadJob<Texture>
 {
-    private static class Log
+
+    public interface TextureJobFactory
     {
-        private static Logger ger = Logger.getLogger(TextureLoadJob.class);
+
+        public TextureLoadJob create(String path, int filtering, int wrapping);
+
+        public TextureLoadJob create(File file, int filtering, int wrapping);
     }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private static final String texturepath = "resources/Textures/";
     private final String path;
     private final int filtering, wrapping;
     protected TextureContainer tcontainer;
+    protected final TextureUtil util;
+    protected final GraphicContext gc;
 
-    public TextureLoadJob(String path, int filtering, int wrapping) {
-        this.path = texturepath + path;
-        this.filtering = filtering;
-        this.wrapping = wrapping;
-//        testcopy();
+    @AssistedInject
+    public TextureLoadJob(GraphicContext gc, TextureUtil util,
+            @Assisted String path, @Assisted int filtering, @Assisted int wrapping)
+    {
+        this(texturepath + path, gc, util, filtering, wrapping);
     }
 
-    public TextureLoadJob(File file, int filtering, int wrapping) {
-        this.path = file.getAbsolutePath();
+    @AssistedInject
+    public TextureLoadJob(GraphicContext gc, TextureUtil util, @Assisted File file,
+            @Assisted int filtering, @Assisted int wrapping)
+    {
+        this(file.getAbsolutePath(), gc, util, filtering, wrapping);
+    }
+
+    private TextureLoadJob(String path, GraphicContext gc, TextureUtil util, int filtering, int wrapping)
+    {
+        this.path = path;
+        this.gc = gc;
+        this.util = util;
         this.filtering = filtering;
         this.wrapping = wrapping;
     }
 
-    public int getFiltering() {
+    public int getFiltering()
+    {
         return filtering;
     }
 
-    public String getPath() {
+    public String getPath()
+    {
         return path;
     }
 
-    public int getWrapping() {
+    public int getWrapping()
+    {
         return wrapping;
     }
 
-    public void setCon(TextureContainer tcontainer) {
+    public void setCon(TextureContainer tcontainer)
+    {
         this.tcontainer = tcontainer;
     }
 
     @Override
-    public Texture load(){
-        GL gl = getGL();
-        Texture re = tcontainer.getTexture();
-        if (re != null)
-            re.destroy(gl);
+    public Texture load()
+    {
+        Texture texture = tcontainer.getTexture();
+        if (texture != null) {
+            texture.destroy(gc.getGL());
+        }
         try {
-            re = TextureUtil.loadTexture(path, filtering,
-                                         wrapping);
+            texture = util.loadTexture(path, filtering, wrapping);
             if (filtering == GL.GL_LINEAR) {
-                re.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER,
-                                    GL.GL_LINEAR_MIPMAP_LINEAR);
-                re.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+                texture.setTexParameteri(gc.getGL(), GL.GL_TEXTURE_MIN_FILTER,
+                        GL.GL_LINEAR_MIPMAP_LINEAR);
             }
         } catch (IOException ex) {
-            Log.ger.warn("Texture " + path
-                    + " konnte nicht geladen werden.\n("
-                    + ex.getLocalizedMessage() + ")");
+            logger.warn("Texture {} konnte nicht geladen werden.\n({})", path, ex.getLocalizedMessage());
             try {
-                re = TextureUtil.loadTexture(texturepath + "error.dds",
-                                             GL.GL_NEAREST,
-                                             wrapping);
+                texture = util.loadTexture(texturepath + "error.dds",
+                        GL.GL_NEAREST,
+                        wrapping);
             } catch (IOException ex1) {
-                Log.ger.error("Keine Error Texturen gefunden.");
+                logger.error("Keine Error Texturen gefunden.", ex1);
             }
         }
-        tcontainer.setTexture(re);
-        return re;
+        tcontainer.setTexture(texture);
+        return texture;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final TextureLoadJob other = (TextureLoadJob) obj;
         if ((this.path == null) ? (other.path != null) : !this.path.equals(
-                other.path))
+                other.path)) {
             return false;
-        if (this.filtering != other.filtering)
+        }
+        if (this.filtering != other.filtering) {
             return false;
-        if (this.wrapping != other.wrapping)
+        }
+        if (this.wrapping != other.wrapping) {
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 7;
         hash = 53 * hash + (this.path != null ? this.path.hashCode() : 0);
         hash = 53 * hash + this.filtering;

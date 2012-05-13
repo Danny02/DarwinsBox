@@ -21,7 +21,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
@@ -32,6 +33,7 @@ import darwin.jopenctm.compression.MeshEncoder;
 import darwin.jopenctm.data.AttributeData;
 import darwin.jopenctm.errorhandling.InvalidDataException;
 import darwin.jopenctm.io.CtmFileWriter;
+import darwin.util.logging.InjectLogger;
 
 import static darwin.geometrie.data.DataType.*;
 import static darwin.jopenctm.data.Mesh.*;
@@ -44,7 +46,6 @@ import static darwin.jopenctm.data.Mesh.*;
 public class CtmModelWriter implements ModelWriter
 {
 
-    public static final Logger logger = Logger.getLogger(CtmModelWriter.class);
     public static final String FILE_EXTENSION = "ctm";
     private final static String DEFAULT_COMMENT = "Exported with Darwin Lib";
     private static final Element position, texcoord, normal;
@@ -54,6 +55,8 @@ public class CtmModelWriter implements ModelWriter
         texcoord = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), "TexCoord");
         normal = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), "Normal");
     }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private final MeshEncoder encoder;
     private final String fileComment;
 

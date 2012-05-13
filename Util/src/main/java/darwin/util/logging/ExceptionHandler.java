@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.core.logging;
+package darwin.util.logging;
 
-import org.apache.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *
@@ -25,13 +25,13 @@ import org.apache.log4j.Logger;
  */
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler
 {
-    private static class Log
-    {
-        private static Logger ger = Logger.getLogger(ExceptionHandler.class);
-    }
+
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
 
     @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        Log.ger.fatal("Es ist eine Ungefangene Exception aufgetreten!", e);
+    public void uncaughtException(Thread t, Throwable e)
+    {
+        logger.error("Es ist eine Ungefangene Exception aufgetreten!", e);
     }
 }

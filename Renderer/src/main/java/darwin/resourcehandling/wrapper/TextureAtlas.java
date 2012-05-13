@@ -16,18 +16,22 @@
  */
 package darwin.resourcehandling.wrapper;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.io.*;
 import java.util.Collection;
 import java.util.HashMap;
 import javax.media.opengl.GL;
 import javax.xml.parsers.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
-
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
+import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
+import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -36,17 +40,25 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 public class TextureAtlas
 {
 
-    private static class Log
+    public interface AtlasFactory
     {
 
-        private static Logger ger = Logger.getLogger(TextureAtlas.class);
+        public TextureAtlas create(String file);
     }
     private static final String path = "resources/Textures/";
-    transient private HashMap<String, TextureAtlasElement> elements;
-    transient private TextureContainer texture;
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
+    private HashMap<String, TextureAtlasElement> elements;
+    private TextureContainer texture;
+    private final ResourcesLoader loader;
+    private final TextureJobFactory factory;
 
-    public TextureAtlas(String file)
+    @AssistedInject
+    public TextureAtlas(ResourcesLoader loader, TextureJobFactory factory,
+            @Assisted String file)
     {
+        this.factory = factory;
+        this.loader = loader;
         if (file.substring(file.lastIndexOf(".") + 1).equals("xml")) {
             parseXML(file);
         } else {
@@ -58,7 +70,7 @@ public class TextureAtlas
     {
         elements = new HashMap<>();
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getRessource(path + file)))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(loader.getRessource(path + file)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.isEmpty()) {
@@ -78,8 +90,8 @@ public class TextureAtlas
         String[] eles = line.split(",");
         String[] name = eles[0].split("\\s+");
         if (texture == null) {
-            texture = RESOURCES.getTexture(new TextureLoadJob(
-                    name[1], GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE));
+            TextureLoadJob loadJob = factory.create(name[1], GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
+            texture = loader.getTexture(loadJob);
         }
 
         elements.put(name[0], new TextureAtlasElement(
@@ -100,7 +112,7 @@ public class TextureAtlas
         try {
             docBuilder = docFactory.newDocumentBuilder();
 
-            InputStream is = getRessource(path + file);
+            InputStream is = loader.getRessource(path + file);
             Document doc = docBuilder.parse(is);
             try {
                 is.close();
@@ -111,8 +123,8 @@ public class TextureAtlas
             NamedNodeMap nnm = main.getAttributes();
             String texname = main.getAttributes().getNamedItem("Name").
                     getNodeValue();
-            texture = RESOURCES.getTexture(new TextureLoadJob(
-                    texname, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE));
+            TextureLoadJob loadJob = factory.create(texname, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
+            texture = loader.getTexture(loadJob);
             int width = Integer.parseInt(
                     nnm.getNamedItem("Width").getNodeValue());
             int heigth = Integer.parseInt(nnm.getNamedItem("Height").
@@ -142,13 +154,10 @@ public class TextureAtlas
                 elements.put(name, tae);
             }
         } catch (SAXException ex) {
-            Log.ger.fatal("XML parse error beim laden des Texture Atlases",
+            logger.error("XML parse error beim laden des Texture Atlases",
                     ex);
-        } catch (IOException ex) {
-            Log.ger.fatal(ex.getLocalizedMessage(), ex);
-
-        } catch (ParserConfigurationException ex) {
-            Log.ger.fatal(ex.getLocalizedMessage(), ex);
+        } catch (IOException | ParserConfigurationException ex) {
+            logger.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -156,8 +165,7 @@ public class TextureAtlas
     {
         TextureAtlasElement e = elements.get(name);
         if (e == null) {
-            Log.ger.fatal("nicht existierendes TexAtlass Element angefordert.("
-                    + name + ")");
+            logger.error("nicht existierendes TexAtlass Element angefordert.({})", name);
         }
         return e;
     }

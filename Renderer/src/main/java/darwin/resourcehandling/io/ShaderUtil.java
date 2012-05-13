@@ -19,19 +19,21 @@ package darwin.resourcehandling.io;
 import java.io.*;
 import java.util.Arrays;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.apache.log4j.Logger;
 
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 
 import static darwin.renderer.opengl.ShaderType.*;
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *
  * @author Daniel Heinrich
  */
+@Singleton
 public class ShaderUtil
 {
 
@@ -45,13 +47,16 @@ public class ShaderUtil
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
     private final ShaderProgrammFactory spFactory;
+    private final ResourcesLoader resourceLoader;
 
     @Inject
-    public ShaderUtil(ShaderProgrammFactory spfactory, ShaderObjektFactory sofactory, GLClientConstants constants)
+    public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants,
+            ShaderProgrammFactory spFactory, ResourcesLoader resourceLoader)
     {
-        this.soFactory = sofactory;
-        this.spFactory = spfactory;
+        this.soFactory = soFactory;
         this.constants = constants;
+        this.spFactory = spFactory;
+        this.resourceLoader = resourceLoader;
     }
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
@@ -111,13 +116,13 @@ public class ShaderUtil
     {
         InputStream fragis = null, vertis = null, geois = null;
         if (fs != null) {
-            fragis = getRessource(RES_PATH + fs);
+            fragis = resourceLoader.getRessource(RES_PATH + fs);
         }
         if (vs != null) {
-            vertis = getRessource(RES_PATH + vs);
+            vertis = resourceLoader.getRessource(RES_PATH + vs);
         }
         if (gs != null) {
-            geois = getRessource(RES_PATH + gs);
+            geois = resourceLoader.getRessource(RES_PATH + gs);
         }
 
         String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
@@ -171,7 +176,7 @@ public class ShaderUtil
                 line = line.trim();
                 if (line.startsWith(includePrefix)) {
                     String path = line.substring(includePrefix.length()).trim();
-                    InputStream shader = getRessource(RES_PATH + path);
+                    InputStream shader = resourceLoader.getRessource(RES_PATH + path);
                     if (shader != null) {
                         String src = getData(shader);
                         sb.append(src);

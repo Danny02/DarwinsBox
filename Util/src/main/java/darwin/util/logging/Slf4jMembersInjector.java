@@ -14,37 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.shader.uniform;
+package darwin.util.logging;
 
+import java.lang.reflect.Field;
 
-import darwin.renderer.shader.Shader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.MembersInjector;
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author daniel
  */
-//TODO besseres Material System
-public class ShaderMaterial
+public class Slf4jMembersInjector<T> implements MembersInjector<T>
 {
 
-    private final Shader shader;
-    private final UniformSetter[] setter;
+    private final Field field;
+    private final Logger logger;
 
-    public ShaderMaterial(Shader shader, UniformSetter... setter)
+    public Slf4jMembersInjector(Field aField)
     {
-        this.shader = shader;
-        this.setter = setter;
+        field = aField;
+        logger = LoggerFactory.getLogger(field.getDeclaringClass());
+        field.setAccessible(true);
     }
 
-    public void prepareShader()
+    @Override
+    public void injectMembers(T anArg0)
     {
-        for (UniformSetter us : setter) {
-            us.set();
+        try {
+            field.set(anArg0, logger);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    public UniformSetter[] getSetter()
-    {
-        return setter;
     }
 }

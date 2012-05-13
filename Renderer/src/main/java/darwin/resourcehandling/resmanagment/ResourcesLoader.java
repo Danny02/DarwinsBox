@@ -20,32 +20,35 @@ import com.jogamp.opengl.util.texture.Texture;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lzma.sdk.lzma.Decoder;
 import lzma.streams.LzmaInputStream;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Shader;
+import darwin.renderer.shader.Shader.ShaderFactory;
 import darwin.resourcehandling.io.ShaderFile;
+import darwin.resourcehandling.resmanagment.ROLoadJob.ROJobFactory;
+import darwin.resourcehandling.resmanagment.ShaderLoadJob.ShaderJobFactory;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
 import darwin.resourcehandling.wrapper.TextureContainer;
+import darwin.util.logging.InjectLogger;
 
 /**
  *
  * @author dheinrich
  */
+@Singleton
 public class ResourcesLoader
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(ResourcesLoader.class);
-    }
-    public static final ResourcesLoader RESOURCES = new ResourcesLoader();
+    @InjectLogger
+    private Logger logger;
     private final Queue<LoadJob<?>> jobs = new LinkedList<>();
     private final Queue<LoadJob<?>> oldjobs = new LinkedList<>();
     private final HashMap<LoadJob<?>, Object> ressourcen = new HashMap<>();
@@ -58,9 +61,16 @@ public class ResourcesLoader
             new HashMap<>();
     //Mesh stuff
     private final HashMap<ROLoadJob, List<RenderObjekt>> meshmap = new HashMap<>();
+    private final ROJobFactory roFactory;
+    private final ShaderFactory shaderFactory;
+    private final ShaderJobFactory shaderJobFactory;
 
-    private ResourcesLoader()
+    @Inject
+    public ResourcesLoader(ROJobFactory roFactory, ShaderFactory shaderFactory, ShaderJobFactory shaderJobFactory)
     {
+        this.roFactory = roFactory;
+        this.shaderFactory = shaderFactory;
+        this.shaderJobFactory = shaderJobFactory;
     }
 
     public Shader getShader(String frag, String vertex, String geo,
@@ -77,18 +87,18 @@ public class ResourcesLoader
     synchronized public Shader getShader(ShaderDescription descr,
             String... mutations)
     {
-        ShaderLoadJob job = new ShaderLoadJob(descr.mergeFlags(mutations));
+        ShaderLoadJob job = shaderJobFactory.create(descr.mergeFlags(mutations));
         ShaderFile file = shaderfiles.get(job);
         if (file == null) {
             try {
                 file = job.getSfile();
             } catch (IOException ex) {
-                Log.ger.error(ex.getLocalizedMessage());
+                logger.error(ex.getLocalizedMessage());
                 throw new UnsupportedOperationException(ex);
             }
             shaderfiles.put(job, file);
         }
-        Shader shader = new Shader(file);
+        Shader shader = shaderFactory.create(file);
         ShaderProgramm prog = (ShaderProgramm) ressourcen.get(job);
         if (prog == null) {
             List<Shader> l = shadermap.get(job);
@@ -108,7 +118,7 @@ public class ResourcesLoader
 
     synchronized public void getRenderObjekt(RenderObjekt ro, ObjConfig oconf)
     {
-        ROLoadJob job = new ROLoadJob(oconf);
+        ROLoadJob job = roFactory.create(oconf);
         RenderModel[] models = (RenderModel[]) ressourcen.get(job);
         List<RenderObjekt> l = meshmap.get(job);
         if (models == null) {
@@ -152,7 +162,7 @@ public class ResourcesLoader
                 shadertoset.pop().load();
             }
         } catch (Throwable ex) {
-            Log.ger.fatal("Unresolved error in resource loading! Error: "+ex.getLocalizedMessage(), ex);
+            logger.error("Unresolved error in resource loading! Error: " + ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -163,7 +173,7 @@ public class ResourcesLoader
             ressourcen.put(j, r);
             oldjobs.add(j);
         } catch (IOException ex) {
-            Log.ger.warn("One resource failed to load: " + ex.getLocalizedMessage());
+            logger.warn("One resource failed to load: " + ex.getLocalizedMessage());
         }
     }
 
@@ -174,7 +184,7 @@ public class ResourcesLoader
         }
     }
 
-    public static InputStream getRessource(String path) throws IOException
+    public InputStream getRessource(String path) throws IOException
     {
         InputStream is = getStream(path + ".lzma");
         if (is != null) {
@@ -189,8 +199,8 @@ public class ResourcesLoader
         return is;
     }
 
-    private static InputStream getStream(String path)
+    private InputStream getStream(String path)
     {
-        return RESOURCES.getClass().getResourceAsStream('/' + path);
+        return ResourcesLoader.class.getResourceAsStream('/' + path);
     }
 }

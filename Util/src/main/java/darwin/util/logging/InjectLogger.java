@@ -14,37 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.shader.uniform;
+package darwin.util.logging;
 
+import java.lang.annotation.*;
 
-import darwin.renderer.shader.Shader;
+import static java.lang.annotation.ElementType.*;
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author daniel
  */
-//TODO besseres Material System
-public class ShaderMaterial
+@Target({FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InjectLogger
 {
-
-    private final Shader shader;
-    private final UniformSetter[] setter;
-
-    public ShaderMaterial(Shader shader, UniformSetter... setter)
-    {
-        this.shader = shader;
-        this.setter = setter;
-    }
-
-    public void prepareShader()
-    {
-        for (UniformSetter us : setter) {
-            us.set();
-        }
-    }
-
-    public UniformSetter[] getSetter()
-    {
-        return setter;
-    }
 }

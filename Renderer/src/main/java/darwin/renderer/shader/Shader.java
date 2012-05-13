@@ -39,6 +39,14 @@ import darwin.util.math.util.MatrixEvent;
 public class Shader implements GenListener<MatrixEvent>
 {
 
+    public interface ShaderFactory
+    {
+
+        public Shader create(ShaderFile sf);
+
+        public Shader create(List<ShaderAttribute> attributes,
+                List<ShaderUniform> uniforms, List<String> samplerNames);
+    }
     private final GraphicContext gc;
     private final Map<Element, ShaderAttribute> attributrMap;
     private final Map<String, ShaderUniform> uniformMap;
@@ -79,7 +87,7 @@ public class Shader implements GenListener<MatrixEvent>
 
         this.samplerMap = new HashMap<>(samplerNames.size());
         int nummber = 0;
-        for (String name: samplerNames) {
+        for (String name : samplerNames) {
             Sampler sampler = factory.create(name, GL.GL_TEXTURE0 + nummber++);
             samplerMap.put(name, sampler);
         }

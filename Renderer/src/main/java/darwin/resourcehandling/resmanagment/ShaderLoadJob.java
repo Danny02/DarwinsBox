@@ -16,6 +16,8 @@
  */
 package darwin.resourcehandling.resmanagment;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.io.IOException;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -33,11 +35,18 @@ import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 public class ShaderLoadJob implements LoadJob<ShaderProgramm>
 {
 
+    public interface ShaderJobFactory
+    {
+
+        public ShaderLoadJob create(ShaderDescription description);
+    }
+
     private static class Log
     {
 
         public static final Logger ger = Logger.getLogger(ShaderLoadJob.class);
     }
+    private final ShaderUtil util;
     private final ShaderDescription desc;
     private ShaderFile sfile;
     private List<Shader> scontainer;
@@ -45,8 +54,10 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
 //    public ShaderLoadJob(String f, String v, String g) {
 //        this(new ShaderDescription(f, v, g));
 //    }
-    public ShaderLoadJob(ShaderDescription dscr)
+    @AssistedInject
+    public ShaderLoadJob(ShaderUtil util, @Assisted ShaderDescription dscr)
     {
+        this.util = util;
         desc = dscr;
     }
 
@@ -61,7 +72,7 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
     public ShaderProgramm load() throws IOException
     {
         long t = System.currentTimeMillis();
-        ShaderProgramm sp = ShaderUtil.compileShader(getSfile());
+        ShaderProgramm sp = util.compileShader(getSfile());
         if (scontainer != null) {
             synchronized (scontainer) {
                 for (Shader sc : scontainer) //TODO selber shader wird mehrmals initialisiert
@@ -93,7 +104,7 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
     public ShaderFile getSfile() throws IOException
     {
         if (sfile == null) {
-            sfile = ShaderUtil.loadShader(desc);
+            sfile = util.loadShader(desc);
         }
         return sfile;
     }

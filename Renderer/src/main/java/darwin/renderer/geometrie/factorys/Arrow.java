@@ -24,6 +24,7 @@ import darwin.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.shader.Shader;
 
 import static darwin.renderer.opengl.GLSLType.*;
@@ -35,23 +36,19 @@ import static darwin.renderer.opengl.GLSLType.*;
 public final class Arrow implements GeometryFactory
 {
 
-    private static final VertexBO vbo;
+    private final VertexBO vbo;
+    private final RenderMeshFactory factory;
 
-    static {
-
-        vbo = new VertexBO(new VertexBuffer(new Element(VEC3, "Position"),
+    @Inject
+    public Arrow(RenderMeshFactory rmFactory, VBOFactoy factoy)
+    {
+        factory = rmFactory;
+        vbo = factoy.create(new VertexBuffer(new Element(VEC3, "Position"),
                 0, 0, 0,
                 1, 1, 0,
                 1, .75f, 0,
                 1, 1, 0,
                 .75f, 1, 0));
-    }
-    private final RenderMesh.RenderMeshFactory factory;
-
-    @Inject
-    public Arrow(RenderMeshFactory rmFactory)
-    {
-        factory = rmFactory;
     }
 
     @Override

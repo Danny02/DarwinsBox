@@ -24,7 +24,7 @@ import darwin.renderer.opengl.GLClientConstants;
 
 /**
  *
- * @author Daniel Heinrich
+ * @author Daniel HeinrichTextureUtil
  */
 public class RenderBuffer
 {

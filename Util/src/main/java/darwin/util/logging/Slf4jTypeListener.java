@@ -14,37 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.shader.uniform;
+package darwin.util.logging;
 
-
-import darwin.renderer.shader.Shader;
+import com.google.inject.TypeLiteral;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
+import java.lang.reflect.Field;
+import org.slf4j.Logger;
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author daniel
  */
-//TODO besseres Material System
-public class ShaderMaterial
+public class Slf4jTypeListener implements TypeListener
 {
 
-    private final Shader shader;
-    private final UniformSetter[] setter;
-
-    public ShaderMaterial(Shader shader, UniformSetter... setter)
+    @Override
+    public <I> void hear(TypeLiteral<I> aTypeLiteral, TypeEncounter<I> aTypeEncounter)
     {
-        this.shader = shader;
-        this.setter = setter;
-    }
-
-    public void prepareShader()
-    {
-        for (UniformSetter us : setter) {
-            us.set();
+        for (Field field : aTypeLiteral.getRawType().getDeclaredFields()) {
+            if (field.getType() == Logger.class
+                    && field.isAnnotationPresent(InjectLogger.class)) {
+                aTypeEncounter.register(new Slf4jMembersInjector<I>(field));
+            }
         }
-    }
-
-    public UniformSetter[] getSetter()
-    {
-        return setter;
     }
 }
