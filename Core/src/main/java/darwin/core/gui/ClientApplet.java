@@ -23,13 +23,13 @@ import com.jogamp.newt.awt.NewtCanvasAWT;
 import java.awt.BorderLayout;
 import javax.swing.JApplet;
 
-import static darwin.renderer.GraphicContext.*;
 
 //TODO JS funktionalitaet wiederherstellen, umstieg auf Rhino(OpenJDK7)
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@SuppressWarnings("serial")
 public class ClientApplet extends JApplet implements ShutdownListener
 {
 

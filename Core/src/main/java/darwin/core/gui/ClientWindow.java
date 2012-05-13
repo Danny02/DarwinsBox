@@ -24,7 +24,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import static darwin.renderer.GraphicContext.*;
 
 /**
  * Kein Fenster im eigentlichen Sinne, sondern mehr eine Ansammlung der Objekte,
