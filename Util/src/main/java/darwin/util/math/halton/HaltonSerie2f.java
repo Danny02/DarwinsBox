@@ -23,12 +23,12 @@ package darwin.util.math.halton;
  */
 public class HaltonSerie2f extends HaltonSerie
 {
-    private static final float kOneOverThree = 1f / 3f;
+    protected static final float kOneOverThree = 1f / 3f;
 
 
     //Current sample point.
-    private float x, y;
-    private long base2, base3;
+    protected float x, y;
+    protected long base2, base3;
 
     /**
      * Advance to next point in the sequence. Returns the index of this point.

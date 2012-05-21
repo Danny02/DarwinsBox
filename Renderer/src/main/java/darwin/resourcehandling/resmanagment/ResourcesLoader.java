@@ -16,15 +16,24 @@
  */
 package darwin.resourcehandling.resmanagment;
 
-import com.jogamp.opengl.util.texture.Texture;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import lzma.sdk.lzma.Decoder;
 import lzma.streams.LzmaInputStream;
+
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
+
+import com.jogamp.opengl.util.texture.Texture;
 
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
@@ -48,7 +57,7 @@ public class ResourcesLoader
 {
 
     @InjectLogger
-    private Logger logger;
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private final Queue<LoadJob<?>> jobs = new LinkedList<>();
     private final Queue<LoadJob<?>> oldjobs = new LinkedList<>();
     private final HashMap<LoadJob<?>, Object> ressourcen = new HashMap<>();

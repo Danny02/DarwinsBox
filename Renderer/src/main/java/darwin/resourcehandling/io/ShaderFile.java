@@ -138,7 +138,8 @@ public class ShaderFile implements Serializable
             return;
         }
         Matcher m = attribut.matcher(source);
-        Set<Integer> set = new HashSet<>();
+        BitSet set = new BitSet();
+        
         while (m.find()) {
 
             List<String> n = parseNames(m.group(2));
@@ -156,13 +157,13 @@ public class ShaderFile implements Serializable
 
                 GlElement ele = parseElement(gtype, bez);
                 if (ind != null) {
-                    if (!set.add(ind)) {
+                    if (set.get(ind)) {
                         logger.warn("Eine Attribut(" + n.get(i)
                                 + ") Location(" + ind
                                 + ") wurde mehr als einmal zugewiesen."
                                 + " Dies kann zu Link Fehler führen.");
-                        while (set.contains(++ind));
                     }
+                    set.set(set.nextClearBit(ind));
                 }
                 attributs.add(new ShaderAttribute(n.get(i), ele, ind));
             }

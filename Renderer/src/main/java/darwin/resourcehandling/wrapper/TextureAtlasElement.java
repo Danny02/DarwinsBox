@@ -22,7 +22,7 @@ package darwin.resourcehandling.wrapper;
  */
 public class TextureAtlasElement
 {
-    transient public final float woffset, hoffset, width, heigth;
+    public final float woffset, hoffset, width, heigth;
     private String name;
 
     public TextureAtlasElement(float woffset, float hoffset, float width,
@@ -71,6 +71,8 @@ public class TextureAtlasElement
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
+        if(obj == this)
+        	return true;
         if (getClass() != obj.getClass())
             return false;
         final TextureAtlasElement other = (TextureAtlasElement) obj;

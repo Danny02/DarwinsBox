@@ -167,8 +167,9 @@ public class CtmModelWriter implements ModelWriter
     {
         Number[] data = v.getAttribute(e);
         for (int j = 0; j < data.length; j++) {
-            buffer[offset + j] = (float) data[j];
+            buffer[offset + j] = (Float) data[j];
         }
+        //System.arraycopy(data, 0, buffer, offset, data.length);
     }
 
     @Override

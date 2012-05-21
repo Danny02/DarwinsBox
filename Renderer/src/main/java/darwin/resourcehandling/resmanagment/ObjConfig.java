@@ -58,6 +58,8 @@ public class ObjConfig
         if (obj == null) {
             return false;
         }
+        if(obj == this)
+        	return true;
         if (getClass() != obj.getClass()) {
             return false;
         }

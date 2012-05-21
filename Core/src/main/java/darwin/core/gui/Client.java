@@ -40,7 +40,7 @@ public class Client
     private AnimatorBase animator;
     private Logger log = Logger.getLogger("darwin");
     private final Collection<ShutdownListener> shutdownlistener = new LinkedList<>();
-    private final GraphicContext gc;
+    public final GraphicContext gc;
 
     @Inject
     public Client(GraphicContext gc)

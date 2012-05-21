@@ -22,8 +22,6 @@ package darwin.geometrie.data;
  */
 public class Element
 {
-
-    private static final long serialVersionUID = -8104245050243213668L;
     private final VectorType vectorType;
     private final String bezeichnung;
 

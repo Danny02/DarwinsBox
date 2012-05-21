@@ -16,11 +16,18 @@
  */
 package darwin.renderer.shader;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
+
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 
 import darwin.geometrie.data.Element;
 import darwin.renderer.GraphicContext;

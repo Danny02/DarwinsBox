@@ -188,7 +188,7 @@ public class ShaderUtil
                 } else if (line.startsWith("#version")) {
                     continue;
                 }
-                sb.append(line).append("\n");
+                sb.append(line).append('\n');
             }
         } catch (IOException ex) {
             logger.error("Fehler beim laden eines Shader Source Strings: "

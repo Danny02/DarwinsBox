@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-import sun.rmi.runtime.Log;
 
 import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.Vec3;

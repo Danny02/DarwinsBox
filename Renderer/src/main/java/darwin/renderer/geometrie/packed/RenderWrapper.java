@@ -16,12 +16,9 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.util.math.util.MatrixCache;
 
-/**
- *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+/** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public class RenderWrapper implements Renderable
 {
@@ -47,6 +44,8 @@ public class RenderWrapper implements Renderable
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
+        if(obj == this)
+        	return true;
         if (getClass() != obj.getClass())
             return false;
         final RenderWrapper other = (RenderWrapper) obj;

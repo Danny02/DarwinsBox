@@ -19,7 +19,6 @@ package darwin.resourcehandling.resmanagment.texture;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
 import java.io.IOException;
 import javax.media.opengl.GL;
@@ -131,6 +130,8 @@ public class TextureLoadJob implements LoadJob<Texture>
         if (obj == null) {
             return false;
         }
+        if(obj == this)
+        	return true;
         if (getClass() != obj.getClass()) {
             return false;
         }

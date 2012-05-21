@@ -110,7 +110,7 @@ public class MtlFormatReader
     {
         StringBuilder s = new StringBuilder(values[0]);
         for (int i = 1; i < values.length; i++) {
-            s.append(" ");
+            s.append(' ');
             s.append(values[i]);
         }
         return s.toString();

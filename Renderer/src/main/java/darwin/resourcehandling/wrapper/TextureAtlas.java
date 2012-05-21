@@ -76,7 +76,7 @@ public class TextureAtlas
                 if (line.isEmpty()) {
                     continue;
                 }
-                if (line.startsWith("#")) {
+                if (line.charAt(0) == '#') {
                     continue;
                 }
                 parseLine(line);

@@ -18,7 +18,6 @@ package darwin.geometrie.data;
 
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.util.Iterator;
 import java.util.Objects;
 

@@ -16,18 +16,26 @@
  */
 package darwin.renderer.geometrie.packed;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.*;
 
-import darwin.geometrie.unpacked.*;
+import darwin.geometrie.unpacked.Material;
+import darwin.geometrie.unpacked.Mesh;
+import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.uniform.*;
+import darwin.renderer.shader.uniform.SamplerSetter;
+import darwin.renderer.shader.uniform.ShaderMaterial;
+import darwin.renderer.shader.uniform.ShaderMaterialFactory;
+import darwin.renderer.shader.uniform.UniformSetter;
 import darwin.resourcehandling.wrapper.TextureContainer;
 
 /**
