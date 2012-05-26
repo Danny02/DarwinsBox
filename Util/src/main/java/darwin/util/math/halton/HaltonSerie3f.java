@@ -21,76 +21,27 @@ package darwin.util.math.halton;
  * <a href="http://www.andrewwillmott.com/s2007">http://www.andrewwillmott.com/s2007</a>
  * @author Daniel Heinrich
  */
-public class HaltonSerie3f extends HaltonSerie
+public class HaltonSerie3f extends HaltonSerie2f
 {
-    private static final float kOneOverThree = 1f / 3f;
     private static final float kOneOverFive = 1f / 5f;
     //Current sample point.
-    private float x, y, z;
-    private long base2, base3, base5;
+    private float z;
+    private long base5;
 
     /**
      * Advance to next point in the sequence. Returns the index of this point.
      */
     @Override
     public long inc() {
-        /////////////////////////////////////
-        // base 2
-
-        long oldBase2 = base2;
-        base2++;
-        long diff = base2 ^ oldBase2;
-
-        // bottom bit always changes, higher bits
-        // change less frequently.
-        float s = 0.5f;
-
-        // diff will be of the form 0*1+, i.e. one bits up until the last carry.
-        // expected iterations = 1 + 0.5 + 0.25 + ... = 2
-        do {
-            if ((oldBase2 & 1) != 0)
-                x -= s;
-            else
-                x += s;
-
-            s *= 0.5f;
-
-            diff = diff >> 1;
-            oldBase2 = oldBase2 >> 1;
-        } while (diff != 0);
-
-
-        /////////////////////////////////////
-        // base 3: use 2 bits for each base 3 digit.
-
-        long mask = 0x3;  // also the max base 3 digit
-        long add = 0x1;  // amount to add to force carry once digit==3
-        s = kOneOverThree;
-
-        base3++;
-
-        // expected iterations: 1.5
-        while (true)
-            if ((base3 & mask) == mask) {
-                base3 += add;          // force carry into next 2-bit digit
-                y -= 2 * s;
-
-                mask = mask << 2;
-                add = add << 2;
-
-                s *= kOneOverThree;
-            } else {
-                y += s;     // we know digit n has gone from a to a + 1
-                break;
-            }
+        super.inc();
 
         /////////////////////////////////////
         // base 5: use 3 bits for each base 5 digit.
-        mask = 0x7;
-        add = 0x3;  // amount to add to force carry once digit==dmax
+        long mask = 0x7;
+        long add = 0x3;  // amount to add to force carry once digit==dmax
         long dmax = 0x5;  // max digit
 
-        s = kOneOverFive;
+        float s = kOneOverFive;
 
         base5++;
 

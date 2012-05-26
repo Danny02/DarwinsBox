@@ -20,11 +20,14 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
-import darwin.renderer.opengl.*;
+import darwin.renderer.opengl.GLSLType;
+import darwin.renderer.opengl.GlElement;
 import darwin.renderer.shader.ShaderAttribute;
 import darwin.renderer.shader.ShaderUniform;
+import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -48,12 +51,8 @@ public class ShaderFile implements Serializable
             Pattern.compile(
             "([a-zA-Z]\\w*)(?::(\\d+))?(?=\\s*=|,|>)");
     private static int count = 0;
-
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(ShaderProgramm.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private static final long serialVersionUID = -5822433543998474334L;
     //
     public final String name, vertex, fragment, geometrie;
@@ -139,7 +138,8 @@ public class ShaderFile implements Serializable
             return;
         }
         Matcher m = attribut.matcher(source);
-        Set<Integer> set = new HashSet<>();
+        BitSet set = new BitSet();
+        
         while (m.find()) {
 
             List<String> n = parseNames(m.group(2));
@@ -157,13 +157,13 @@ public class ShaderFile implements Serializable
 
                 GlElement ele = parseElement(gtype, bez);
                 if (ind != null) {
-                    if (!set.add(ind)) {
-                        Log.ger.warn("Eine Attribut(" + n.get(i)
+                    if (set.get(ind)) {
+                        logger.warn("Eine Attribut(" + n.get(i)
                                 + ") Location(" + ind
                                 + ") wurde mehr als einmal zugewiesen."
                                 + " Dies kann zu Link Fehler führen.");
-                        while (set.contains(++ind));
                     }
+                    set.set(set.nextClearBit(ind));
                 }
                 attributs.add(new ShaderAttribute(n.get(i), ele, ind));
             }

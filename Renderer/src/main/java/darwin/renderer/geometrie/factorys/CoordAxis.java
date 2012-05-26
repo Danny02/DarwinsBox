@@ -16,15 +16,20 @@
  */
 package darwin.renderer.geometrie.factorys;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.Element;
 import darwin.geometrie.data.VertexBuffer;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
-import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.VertexBO.VBOFactoy;
+import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Shader;
 
 import static darwin.renderer.opengl.GLSLType.*;
@@ -33,26 +38,26 @@ import static darwin.renderer.opengl.GLSLType.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
+@Singleton
 public class CoordAxis implements GeometryFactory
 {
-    private static final VertexBO vbo;
-    private static final BufferObject indice;
 
-    static {
+    private final RenderMesh.RenderMeshFactory factory;
+    private final VertexBO vbo;
+    private final BufferObject indice;
 
-        vbo = new VertexBO(new VertexBuffer(new Element(VEC3, "Position"),
+    @Inject
+    @ParametersAreNonnullByDefault
+    public CoordAxis(RenderMeshFactory rmFactory, VBOFactoy vFactoy, BufferFactory bFactory)
+    {
+        factory = rmFactory;
+        vbo = vFactoy.create(new VertexBuffer(new Element(VEC3, "Position"),
                 0, 0, 0,
                 1, 0, 0,
                 0, 1, 0,
                 0, 0, 1));
-        indice = BufferObject.buildIndiceBuffer(1, 0, 2, 0, 3);
-    }
-    private final RenderMesh.RenderMeshFactory factory;
-
-    @Inject
-    public CoordAxis(RenderMeshFactory rmFactory)
-    {
-        factory = rmFactory;
+        indice = bFactory.buildIndiceBuffer(1, 0, 2, 0, 3);
     }
 
     @Override

@@ -14,39 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.dheinrich.darwin.util;
+package darwin.util.logging;
 
-import junit.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
- * Unit test for simple App.
+ *
+ * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class AppTest
-    extends TestCase
+public class ExceptionHandler implements Thread.UncaughtExceptionHandler
 {
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
+    @Override
+    public void uncaughtException(Thread t, Throwable e)
     {
-        assertTrue( true );
+        logger.error("Es ist eine Ungefangene Exception aufgetreten!", e);
     }
 }

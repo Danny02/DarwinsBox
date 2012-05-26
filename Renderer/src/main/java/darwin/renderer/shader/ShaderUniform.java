@@ -21,7 +21,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import javax.media.opengl.GLUniformData;
 
-import darwin.geometrie.data.Element;
 import darwin.renderer.opengl.GlElement;
 import darwin.renderer.opengl.ShaderProgramm;
 
@@ -34,8 +33,8 @@ public class ShaderUniform implements ShaderElement
 
     private final String name;
     private final GlElement element;
-    private transient final GLUniformData data;
-    private transient boolean changed = false;
+    private final GLUniformData data;
+    private boolean changed = false;
 
     public ShaderUniform(String name, GlElement element)
     {

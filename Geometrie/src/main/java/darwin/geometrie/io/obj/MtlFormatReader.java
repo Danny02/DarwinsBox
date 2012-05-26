@@ -19,9 +19,11 @@ package darwin.geometrie.io.obj;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.geometrie.io.ResourcesLoader;
+import darwin.util.logging.InjectLogger;
 
 /**
  * Parser f�r das MTL Material Format
@@ -31,12 +33,9 @@ import darwin.geometrie.io.ResourcesLoader;
 public class MtlFormatReader
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(MtlFormatReader.class);
-    }
     private static final String modelfolder = "resources/Models/";
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private Map<String, ObjMaterial> materials;
     private ObjMaterial accmat;
     private String path;
@@ -111,7 +110,7 @@ public class MtlFormatReader
     {
         StringBuilder s = new StringBuilder(values[0]);
         for (int i = 1; i < values.length; i++) {
-            s.append(" ");
+            s.append(' ');
             s.append(values[i]);
         }
         return s.toString();

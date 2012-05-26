@@ -20,7 +20,7 @@ import darwin.renderer.GraphicContext;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLDrawable;
+
 
 /**
  *

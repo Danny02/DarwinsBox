@@ -79,16 +79,9 @@ public class FrameBufferObject
      */
     public void setColor_Attachment(int nummber, RenderBuffer rb)
     {
-        assert (rb != null);
-        assert (currdraw == id);
-        assert (checkSize(rb.getWidth(), rb.getHeight()));
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
-        assert (id != 0);
-
-        drawable.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
-                GL.GL_COLOR_ATTACHMENT0 + nummber,
-                GL.GL_RENDERBUFFER,
-                rb.getRenderBufferID());
+        
+        bindRenderBuffer(rb, GL.GL_COLOR_ATTACHMENT0 + nummber);
         color_attachment[nummber] = rb;
     }
 
@@ -101,21 +94,9 @@ public class FrameBufferObject
      */
     public void setColor_Attachment(int nummber, Texture tex)
     {
-        assert (tex != null);
-        assert (currdraw == id);
-        assert (checkSize(tex.getWidth(), tex.getHeight()));
-        assert ((tex.getTarget() == GL2GL3.GL_TEXTURE_2D || tex.getTarget() == GL2GL3.GL_TEXTURE_RECTANGLE));
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
-        assert (id != 0);
-
-        if (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS) {
-            bind();
-            drawable.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
-                    GL.GL_COLOR_ATTACHMENT0 + nummber,
-                    GL.GL_TEXTURE_2D, tex.getTextureObject(null),
-                    0);
-            color_attachment[nummber] = tex;
-        }
+        bindTexture(tex, GL.GL_COLOR_ATTACHMENT0 + nummber);
+        color_attachment[nummber] = tex;
     }
 
     /**
@@ -154,7 +135,7 @@ public class FrameBufferObject
         return (RenderBuffer) color_attachment[nummber];
     }
 
-    public Class getColorAttachmentType(int nummber)
+    public Class<? extends Object> getColorAttachmentType(int nummber)
     {
         assert (id != 0);
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
@@ -170,13 +151,7 @@ public class FrameBufferObject
      */
     public void setDepth_Attachment(RenderBuffer rb)
     {
-        assert (rb != null);
-        assert (currdraw == id);
-        assert (checkSize(rb.getWidth(), rb.getHeight()));
-        assert (id != 0);
-        drawable.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
-                GL.GL_DEPTH_ATTACHMENT,
-                GL.GL_RENDERBUFFER, rb.getRenderBufferID());
+        bindRenderBuffer(rb, GL.GL_DEPTH_ATTACHMENT);
         depth_attachment = rb;
     }
 
@@ -187,15 +162,7 @@ public class FrameBufferObject
      */
     public void setDepth_Attachment(Texture tex)
     {
-        assert (tex != null);
-        assert (currdraw == id);
-        assert (checkSize(tex.getWidth(), tex.getHeight()));
-        assert ((tex.getTarget() == GL.GL_TEXTURE_2D || tex.getTarget() == GL2GL3.GL_TEXTURE_RECTANGLE));
-        assert (id != 0);
-        drawable.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
-                GL.GL_DEPTH_ATTACHMENT,
-                GL.GL_TEXTURE_2D, tex.getTextureObject(null),
-                0);
+        bindTexture(tex, GL.GL_DEPTH_ATTACHMENT);
         depth_attachment = tex;
     }
 
@@ -243,13 +210,7 @@ public class FrameBufferObject
      */
     public void setStencil_Attachment(RenderBuffer rb)
     {
-        assert (rb != null);
-        assert (currdraw == id);
-        assert (checkSize(rb.getWidth(), rb.getHeight()));
-        assert (id != 0);
-        drawable.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
-                GL.GL_STENCIL_ATTACHMENT,
-                GL.GL_RENDERBUFFER, rb.getRenderBufferID());
+        bindRenderBuffer(rb, GL.GL_STENCIL_ATTACHMENT);
         stencil_attachment = rb;
     }
 
@@ -260,15 +221,7 @@ public class FrameBufferObject
      */
     public void setStencil_Attachment(Texture tex)
     {
-        assert (tex != null);
-        assert (currdraw == id);
-        assert (checkSize(tex.getWidth(), tex.getHeight()));
-        assert ((tex.getTarget() == GL.GL_TEXTURE_2D || tex.getTarget() == GL2GL3.GL_TEXTURE_RECTANGLE));
-        assert (id != 0);
-        drawable.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
-                GL.GL_STENCIL_ATTACHMENT,
-                GL.GL_TEXTURE_2D, tex.getTextureObject(null),
-                0);
+        bindTexture(tex, GL.GL_STENCIL_ATTACHMENT);
         stencil_attachment = tex;
     }
 
@@ -319,7 +272,35 @@ public class FrameBufferObject
             return (T) stencil_attachment;
         }
         return null;
-    }// </editor-fold>
+    }
+    
+    private void bindTexture(Texture tex, int glType)
+    {
+    	assert (tex != null);
+        assert (currdraw == id);
+        assert (checkSize(tex.getWidth(), tex.getHeight()));
+        assert ((tex.getTarget() == GL.GL_TEXTURE_2D || tex.getTarget() == GL2GL3.GL_TEXTURE_RECTANGLE));
+        assert (id != 0);
+        drawable.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
+        		glType,
+                GL.GL_TEXTURE_2D, tex.getTextureObject(null),
+                0);
+    }
+    
+	private void bindRenderBuffer(RenderBuffer rb, int glType)
+	{
+		assert (rb != null);
+	    assert (currdraw == id);
+	    assert (checkSize(rb.getWidth(), rb.getHeight()));
+	    assert (id != 0);
+	
+	    drawable.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
+	    		glType,
+	            GL.GL_RENDERBUFFER,
+	            rb.getRenderBufferID());
+	}
+    
+    // </editor-fold>
 
     /**
      * bindet das FBO an den GL Context.

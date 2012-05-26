@@ -16,18 +16,26 @@
  */
 package darwin.renderer.geometrie.packed;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.*;
 
-import darwin.geometrie.unpacked.*;
+import darwin.geometrie.unpacked.Material;
+import darwin.geometrie.unpacked.Mesh;
+import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.uniform.*;
+import darwin.renderer.shader.uniform.SamplerSetter;
+import darwin.renderer.shader.uniform.ShaderMaterial;
+import darwin.renderer.shader.uniform.ShaderMaterialFactory;
+import darwin.renderer.shader.uniform.UniformSetter;
 import darwin.resourcehandling.wrapper.TextureContainer;
 
 /**
@@ -43,25 +51,31 @@ public final class RenderModel implements Shaded, Cloneable
     {
 
         public RenderModel create(Model model, Shader shader);
+
+        public RenderModel create(RenderMesh rbuffer, Shader shader, Material mat);
     }
+    private final ShaderMaterialFactory factory;
     private Material material;
     private RenderMesh rbuffer;
     private Shader shader;
     private final Set<UniformSetter> uniforms = new HashSet<>();
 
-    public RenderModel(RenderMesh rbuffer, Shader shader,
-            Material mat)
+    public RenderModel(ShaderMaterialFactory factory,
+            @Assisted RenderMesh rbuffer, @Assisted Shader shader,
+            @Assisted Material mat)
     {
+        this.factory = factory;
         this.rbuffer = rbuffer;
         material = mat;
         setShader(shader);
     }
 
     @AssistedInject
-    public RenderModel(RenderMeshFactory meshFactory,
+    public RenderModel(RenderMeshFactory meshFactory, ShaderMaterialFactory factory,
             VBOFactoy vboFactoy, BufferFactory bufferFactory,
             @Assisted Model model, @Assisted Shader shader)
     {
+        this.factory = factory;
         material = model.getMat();
         setShader(shader);
 
@@ -93,7 +107,7 @@ public final class RenderModel implements Shaded, Cloneable
     {
         this.shader = shader;
         if (material != null) {
-            ShaderMaterial smaterial = new ShaderMaterial(shader, material);
+            ShaderMaterial smaterial = factory.create(shader, material);
             uniforms.addAll(Arrays.asList(smaterial.getSetter()));
         }
     }
@@ -117,6 +131,6 @@ public final class RenderModel implements Shaded, Cloneable
     @Override
     public RenderModel clone()
     {
-        return new RenderModel(rbuffer.clone(), shader, material);
+        return new RenderModel(factory, rbuffer.clone(), shader, material);
     }
 }

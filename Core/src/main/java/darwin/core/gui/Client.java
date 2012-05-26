@@ -20,13 +20,15 @@ import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.AnimatorBase;
 import java.util.Collection;
 import java.util.LinkedList;
+import javax.inject.Inject;
 import javax.media.opengl.GLException;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
-import darwin.core.logging.ExceptionHandler;
+import darwin.renderer.GraphicContext;
+import darwin.util.logging.ExceptionHandler;
 
-import static darwin.renderer.GraphicContext.*;
+
 
 /**
  *
@@ -38,9 +40,12 @@ public class Client
     private AnimatorBase animator;
     private Logger log = Logger.getLogger("darwin");
     private final Collection<ShutdownListener> shutdownlistener = new LinkedList<>();
+    public final GraphicContext gc;
 
-    public Client()
+    @Inject
+    public Client(GraphicContext gc)
     {
+        this.gc = gc;
         final ExceptionHandler el = new ExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(el);
     }
@@ -48,14 +53,14 @@ public class Client
     public void iniClient() throws InstantiationException
     {
         try {
-            iniDefault();
+            gc.iniContext();
         } catch (GLException ex) {
             log.fatal("Couldn't Initialize a graphic context!", ex);
             shutdown();
             throw new InstantiationException("Couldn't create an OpenGL Context");
         }
 
-        animator = new Animator(getGLWindow());
+        animator = new Animator(gc.getGLWindow());
         animator.start();
     }
 

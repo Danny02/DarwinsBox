@@ -26,9 +26,8 @@ import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.shader.Shader;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
-
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *
@@ -37,12 +36,15 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 @Singleton
 public class ModelPacker
 {
+
     private final RenderModelFactory factory;
+    private final ResourcesLoader loader;
 
     @Inject
-    public ModelPacker(RenderModelFactory factory)
+    public ModelPacker(RenderModelFactory factory, ResourcesLoader loader)
     {
         this.factory = factory;
+        this.loader = loader;
     }
 
     public RenderModel[] packModel(Model[] models, ShaderDescription description)
@@ -75,7 +77,7 @@ public class ModelPacker
             String[] mutations = new String[mut.size()];
             mut.toArray(mutations);
 
-            Shader s = RESOURCES.getShader(description, mutations);
+            Shader s = loader.getShader(description, mutations);
 
             out[i] = factory.create(m, s);
         }

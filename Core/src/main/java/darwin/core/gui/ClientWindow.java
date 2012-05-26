@@ -16,6 +16,8 @@
  */
 package darwin.core.gui;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -24,7 +26,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import static darwin.renderer.GraphicContext.*;
 
 /**
  * Kein Fenster im eigentlichen Sinne, sondern mehr eine Ansammlung der Objekte,
@@ -47,7 +48,8 @@ public class ClientWindow implements ShutdownListener
         height = ySize;
         this.fullscreen = fullscreen;
 
-        client = new Client();
+        Injector in = Guice.createInjector();
+        client = in.getInstance(Client.class);
         client.addShutdownListener(this);
         client.addLogAppender(new AppenderSkeleton()
         {
@@ -80,7 +82,7 @@ public class ClientWindow implements ShutdownListener
     public void startUp() throws InstantiationException
     {
         client.iniClient();
-        GLWindow win = getGLWindow();
+        GLWindow win = client.gc.getGLWindow();
         win.setSize(width, height);
         win.setVisible(true);
 

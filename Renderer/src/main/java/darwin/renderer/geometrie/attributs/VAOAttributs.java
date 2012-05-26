@@ -18,17 +18,21 @@ package darwin.renderer.geometrie.attributs;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.media.opengl.GLProfile;
 
 import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
 public final class VAOAttributs implements AttributsConfigurator
 {
 
@@ -39,10 +43,11 @@ public final class VAOAttributs implements AttributsConfigurator
     private final int id;
 
     @AssistedInject
+    @ParametersAreNonnullByDefault
     public VAOAttributs(GraphicContext gcontext,
             @Assisted Shader shader,
             @Assisted VertexBO[] vbuffers,
-            @Assisted BufferObject indice)
+            @Assisted @Nullable BufferObject indice)
     {
         gc = gcontext;
 

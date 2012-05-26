@@ -19,7 +19,8 @@ package darwin.renderer.opengl;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.media.opengl.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import darwin.renderer.GraphicContext;
 
@@ -30,12 +31,6 @@ import darwin.renderer.GraphicContext;
 @Singleton
 public class GLClientConstants
 {
-
-    private static class Log
-    {
-
-        private final static Logger ger = Logger.getLogger(GLClientConstants.class);
-    }
     private String glslVersion;
     private int maxSamples;
     private int maxColorAttachments;
@@ -47,9 +42,9 @@ public class GLClientConstants
         gc.getGLWindow().invoke(true, retriver);
     }
 
-    private static class Retriver implements GLRunnable
+    private class Retriver implements GLRunnable
     {
-
+        private final Logger logger = LoggerFactory.getLogger(GLRunnable.class);
         GLClientConstants cons;
 
         public Retriver(GLClientConstants cons)
@@ -95,7 +90,7 @@ public class GLClientConstants
                 d *= 100;
                 v = (int) Math.round(d);
             } catch (Throwable ex) {
-                Log.ger.warn(ex.getLocalizedMessage());
+                logger.warn(ex.getLocalizedMessage());
             }
 
             return "#version " + v + '\n';

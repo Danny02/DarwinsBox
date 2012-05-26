@@ -20,8 +20,10 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
+import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.Vec3;
 import darwin.util.math.base.Vector;
 
@@ -32,11 +34,8 @@ import darwin.util.math.base.Vector;
 public class ObjFileParser
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(ObjFileParser.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private Pattern leer, slash;
     private Map<String, ObjMaterial> materials;
 
@@ -135,7 +134,7 @@ public class ObjFileParser
             MtlFormatReader mtl = new MtlFormatReader(mtllib[0]);
             materials = mtl.loadMaterials();
         } catch (IOException ex) {
-            Log.ger.error("Eine Material Bibilothek konnte nicht geladen werde.\n\t"
+            logger.error("Eine Material Bibilothek konnte nicht geladen werde.\n\t"
                     + ex.getLocalizedMessage());
             //TODO import womoeglich abbrechen
         }

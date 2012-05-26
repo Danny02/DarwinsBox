@@ -16,8 +16,8 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.media.opengl.GL2ES2;
 import javax.media.opengl.GLProfile;
 
@@ -28,6 +28,7 @@ import darwin.renderer.opengl.buffer.BufferObject;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
 class BufferConfigs
 {
 
@@ -38,12 +39,10 @@ class BufferConfigs
     private final BufferObject buffer;
     private final AttributConfig[] configs;
 
-    public BufferConfigs(GraphicContext gcontext,
-            BufferObject buffer,
+    @ParametersAreNonnullByDefault
+    public BufferConfigs(GraphicContext gcontext, BufferObject buffer,
             AttributConfig[] configs)
     {
-        assert buffer != null && configs != null :
-                "Der Buffer sowie das Attribut Array darf nicht null sein";
         gc = gcontext;
         this.buffer = buffer;
         this.configs = configs;

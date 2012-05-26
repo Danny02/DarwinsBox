@@ -14,37 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.shader.uniform;
-
-
-import darwin.renderer.shader.Shader;
+package darwin.util.math.base;
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author daniel
  */
-//TODO besseres Material System
-public class ShaderMaterial
+public class LineSegment
 {
 
-    private final Shader shader;
-    private final UniformSetter[] setter;
+    private final Vector start, end;
 
-    public ShaderMaterial(Shader shader, UniformSetter... setter)
+    public LineSegment(Vector start, Vector end)
     {
-        this.shader = shader;
-        this.setter = setter;
+        this.start = start;
+        this.end = end;
     }
 
-    public void prepareShader()
+    public Line getLine()
     {
-        for (UniformSetter us : setter) {
-            us.set();
-        }
+        return Line.fromPoints(start, end);
     }
 
-    public UniformSetter[] getSetter()
+    public Vector getEnd()
     {
-        return setter;
+        return end;
+    }
+
+    public Vector getStart()
+    {
+        return start;
     }
 }

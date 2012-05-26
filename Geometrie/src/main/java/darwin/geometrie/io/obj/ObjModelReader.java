@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.DataLayout.Format;
@@ -28,6 +29,7 @@ import darwin.geometrie.data.*;
 import darwin.geometrie.io.ModelReader;
 import darwin.geometrie.unpacked.Mesh;
 import darwin.geometrie.unpacked.Model;
+import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.Vec3;
 
 import static darwin.geometrie.data.DataType.*;
@@ -42,13 +44,10 @@ import static darwin.geometrie.data.DataType.*;
 public class ObjModelReader implements ModelReader
 {
 
-    private static class Log
-    {
-
-        public static Logger ger = Logger.getLogger(ObjModelReader.class);
-    }// </editor-fold>
     private static final Element[] elements;
     private static final Element position, texcoord, normal;
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
 
     static {
         position = new Element(new GenericVector(FLOAT, 3), "Position");

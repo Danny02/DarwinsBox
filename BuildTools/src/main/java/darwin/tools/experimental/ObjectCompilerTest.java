@@ -17,8 +17,6 @@
 package darwin.tools.experimental;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import darwin.geometrie.io.*;
 import darwin.geometrie.io.obj.*;

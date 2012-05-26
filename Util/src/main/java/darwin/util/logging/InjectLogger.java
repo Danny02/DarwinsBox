@@ -14,24 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.core.logging;
+package darwin.util.logging;
 
-import org.apache.log4j.Logger;
+import java.lang.annotation.*;
 
+import static java.lang.annotation.ElementType.*;
 
 /**
  *
- * @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author daniel
  */
-public class ExceptionHandler implements Thread.UncaughtExceptionHandler
+@Target({FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InjectLogger
 {
-    private static class Log
-    {
-        private static Logger ger = Logger.getLogger(ExceptionHandler.class);
-    }
-
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        Log.ger.fatal("Es ist eine Ungefangene Exception aufgetreten!", e);
-    }
 }

@@ -21,7 +21,8 @@ import com.google.inject.assistedinject.AssistedInject;
 import java.io.*;
 import java.util.List;
 import java.util.ServiceLoader;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.geometrie.io.ModelReader;
 import darwin.geometrie.io.WrongFileTypeException;
@@ -37,15 +38,22 @@ import darwin.renderer.geometrie.packed.RenderObjekt;
 public class ROLoadJob implements LoadJob<RenderModel[]>
 {
 
-    private static final Logger logger = Logger.getLogger(ROLoadJob.class);
+    public interface ROJobFactory
+    {
+
+        public ROLoadJob create(ObjConfig ljob);
+    }
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private final ModelPacker packer;
+    private final ResourcesLoader loader;
     private final ObjConfig ljob;
     private List<RenderObjekt> mcontainer;
 
     @AssistedInject
-    public ROLoadJob(ModelPacker packer, @Assisted ObjConfig ljob)
+    public ROLoadJob(ModelPacker packer, ResourcesLoader loader, @Assisted ObjConfig ljob)
     {
         this.packer = packer;
+        this.loader = loader;
         this.ljob = ljob;
     }
 
@@ -55,7 +63,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
         String path = ljob.getPath();
         String ext = path.substring(path.lastIndexOf('.') + 1);
 
-        InputStream in = new BufferedInputStream(ResourcesLoader.getRessource(path));
+        InputStream in = new BufferedInputStream(loader.getRessource(path));
         in.mark(1024);//one kilobyte should be enough to check if the file is of the right type
 
         Model[] mo = null;
@@ -89,9 +97,8 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
 
     public synchronized void setConList(List<RenderObjekt> mcontainer)
     {
-        synchronized (mcontainer) {
-            this.mcontainer = mcontainer;
-        }
+        this.mcontainer = mcontainer;
+
     }
 
     @Override
@@ -100,6 +107,8 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
         if (obj == null) {
             return false;
         }
+        if(obj == this)
+        	return true;
         if (getClass() != obj.getClass()) {
             return false;
         }

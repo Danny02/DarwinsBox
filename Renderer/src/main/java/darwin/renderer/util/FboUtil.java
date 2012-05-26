@@ -34,11 +34,13 @@ public class FboUtil
 {
 
     private final RenderBufferFactory factory;
+    private final TextureUtil util;
 
     @Inject
-    public FboUtil(RenderBufferFactory factory)
+    public FboUtil(RenderBufferFactory factory, TextureUtil util)
     {
         this.factory = factory;
+        this.util = util;
     }
 
     /**
@@ -55,10 +57,10 @@ public class FboUtil
      */
     public FrameBufferObject configureStandart(FrameBufferObject fbo, int width, int height)
     {
-        Texture tex = TextureUtil.newTexture(GL.GL_RGBA8, width, height, 0,
+        Texture tex = util.newTexture(GL.GL_RGBA8, width, height, 0,
                 GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
                 true);
-        TextureUtil.setTexturePara(tex, GL.GL_NEAREST, GL.GL_CLAMP_TO_EDGE);
+        util.setTexturePara(tex, GL.GL_NEAREST, GL.GL_CLAMP_TO_EDGE);
 
         RenderBuffer rb = factory.create(width, height, GL2ES2.GL_DEPTH_COMPONENT);
 

@@ -18,23 +18,24 @@ package darwin.renderer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import javax.inject.Inject;
 import javax.media.opengl.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.geometrie.packed.*;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.ShaderUniform;
 import darwin.renderer.util.memory.MemoryInfo;
 import darwin.renderer.util.memory.PerformanceView;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
+import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.Matrix;
 import darwin.util.math.base.Vec3;
 import darwin.util.math.composits.ProjectionMatrix;
 import darwin.util.math.composits.ViewMatrix;
 import darwin.util.math.util.MatType;
 import darwin.util.math.util.MatrixCache;
-
-import static darwin.renderer.GraphicContext.*;
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  * Basic scene manager
@@ -44,11 +45,10 @@ import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 public class BasicScene implements GLEventListener
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(BasicScene.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
+    protected final GraphicContext gc;
+    protected final ResourcesLoader loader;
 //    private final List<GenListener<Dimension>> dimlistener =
 //                                               new LinkedList<GenListener<Dimension>>();
     private final Queue<Renderable> robjekts = new ConcurrentLinkedQueue<>();
@@ -60,8 +60,12 @@ public class BasicScene implements GLEventListener
     private PerformanceView info;
     private MemoryInfo meminfo;
 
-    public BasicScene()
+    @Inject
+    public BasicScene(GraphicContext gc, ResourcesLoader loader, MemoryInfo info)
     {
+        this.gc = gc;
+        this.loader = loader;
+        meminfo = info;
         matrices = new MatrixCache(new ProjectionMatrix());
         half = new LinkedList<>();
         lightdir = new LinkedList<>();
@@ -94,8 +98,8 @@ public class BasicScene implements GLEventListener
     public void init(GLAutoDrawable drawable)
     {
         //TODO Debug und Trace GL einbauen
-        GL gl = getGL();
-        Log.ger.info("INIT GL IS: " + gl.getClass().getName());
+        GL gl = gc.getGL();
+        logger.info("INIT GL IS: " + gl.getClass().getName());
 
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glDepthFunc(GL.GL_LEQUAL);
@@ -103,8 +107,6 @@ public class BasicScene implements GLEventListener
         gl.setSwapInterval(1);
         // Setup the drawing area and shading mode
         gl.glClearColor(0.0f, 1.0f, 1.0f, 0f);
-
-        meminfo = MemoryInfo.INSTANCE;
     }
 
     @Override
@@ -113,16 +115,16 @@ public class BasicScene implements GLEventListener
         if (!drawable.getContext().isCurrent()) {
             return;
         }
-        RESOURCES.workAllJobs();
+        loader.workAllJobs();
         try {
             customRender();
         } catch (Throwable ex) {
-            Log.ger.fatal("Error in custom code!", ex);
+            logger.error("Error in custom code!", ex);
         }
 
         GLAnimatorControl ani = drawable.getAnimator();
 //TODO GameTime updates einbaun
-        Log.ger.trace(String.format("%d Objects took %dms  to render; fps:%f",
+        logger.trace(String.format("%d Objects took %dms  to render; fps:%f",
                 robjekts.size(), ani.getLastFPSPeriod(), ani.getLastFPS()));
         if (info != null) {
             info.setFPS(ani.getTotalFPS());

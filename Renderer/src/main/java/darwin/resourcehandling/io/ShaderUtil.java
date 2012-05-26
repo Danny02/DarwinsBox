@@ -19,39 +19,43 @@ package darwin.resourcehandling.io;
 import java.io.*;
 import java.util.Arrays;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import javax.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.util.logging.InjectLogger;
 
 import static darwin.renderer.opengl.ShaderType.*;
-import static darwin.resourcehandling.resmanagment.ResourcesLoader.*;
 
 /**
  *
  * @author Daniel Heinrich
  */
+@Singleton
 public class ShaderUtil
 {
 
-    private static class Log
-    {
-
-        private static Logger ger = Logger.getLogger(ShaderUtil.class);
-    }
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private static final String includePrefix = "#pragma include";
     private static final String RES_PATH = "resources/shaders/";
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
     private final ShaderProgrammFactory spFactory;
+    private final ResourcesLoader resourceLoader;
 
     @Inject
-    public ShaderUtil(ShaderProgrammFactory spfactory, ShaderObjektFactory sofactory, GLClientConstants constants)
+    public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants,
+            ShaderProgrammFactory spFactory, ResourcesLoader resourceLoader)
     {
-        this.soFactory = sofactory;
-        this.spFactory = spfactory;
+        this.soFactory = soFactory;
         this.constants = constants;
+        this.spFactory = spFactory;
+        this.resourceLoader = resourceLoader;
     }
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
@@ -65,7 +69,7 @@ public class ShaderUtil
             return spFactory.create(sfile.getAttributs(), fso, vso, gso);
         } catch (BuildException ex) {
             //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
-            Log.ger.fatal("Shader " + ex.getErrorType() + " ERROR in : "
+            logger.error("Shader " + ex.getErrorType() + " ERROR in : "
                     + sfile.name + "\n" + ex.getMessage());
             throw new Error("Shutting down!");
         }
@@ -111,13 +115,13 @@ public class ShaderUtil
     {
         InputStream fragis = null, vertis = null, geois = null;
         if (fs != null) {
-            fragis = getRessource(RES_PATH + fs);
+            fragis = resourceLoader.getRessource(RES_PATH + fs);
         }
         if (vs != null) {
-            vertis = getRessource(RES_PATH + vs);
+            vertis = resourceLoader.getRessource(RES_PATH + vs);
         }
         if (gs != null) {
-            geois = getRessource(RES_PATH + gs);
+            geois = resourceLoader.getRessource(RES_PATH + gs);
         }
 
         String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
@@ -171,7 +175,7 @@ public class ShaderUtil
                 line = line.trim();
                 if (line.startsWith(includePrefix)) {
                     String path = line.substring(includePrefix.length()).trim();
-                    InputStream shader = getRessource(RES_PATH + path);
+                    InputStream shader = resourceLoader.getRessource(RES_PATH + path);
                     if (shader != null) {
                         String src = getData(shader);
                         sb.append(src);
@@ -184,11 +188,11 @@ public class ShaderUtil
                 } else if (line.startsWith("#version")) {
                     continue;
                 }
-                sb.append(line).append("\n");
+                sb.append(line).append('\n');
             }
         } catch (IOException ex) {
-            Log.ger.fatal("Fehler beim laden eines Shader Source Strings: "
-                    + ex.getLocalizedMessage(), null);
+            logger.error("Fehler beim laden eines Shader Source Strings: "
+                    + ex.getLocalizedMessage());
         }
         out = sb.toString();
         return out;

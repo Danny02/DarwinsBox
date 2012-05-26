@@ -36,6 +36,10 @@ import java.util.*;
 public class GameTime
 {
 
+    static {
+        HighPerformanceTimingFix.fix();
+    }
+
     private static class Start
     {
 
@@ -112,7 +116,7 @@ public class GameTime
     {
         return virtualElapsed * NANO_TO_SECOND;
     }
-    
+
     public long getElapsedSteps(int frequency)
     {
         return virtualElapsed / (frequency * SECOND_TO_NANO);

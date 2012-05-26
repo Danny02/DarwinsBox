@@ -19,17 +19,19 @@ package darwin.core.gui;
 //import netscape.javascript.JSException;
 //import netscape.javascript.JSObject;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.jogamp.newt.awt.NewtCanvasAWT;
 import java.awt.BorderLayout;
 import javax.swing.JApplet;
 
-import static darwin.renderer.GraphicContext.*;
 
 //TODO JS funktionalitaet wiederherstellen, umstieg auf Rhino(OpenJDK7)
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@SuppressWarnings("serial")
 public class ClientApplet extends JApplet implements ShutdownListener
 {
 
@@ -38,7 +40,8 @@ public class ClientApplet extends JApplet implements ShutdownListener
     @Override
     public void init()
     {
-        client = new Client();
+        Injector in = Guice.createInjector();
+        client = in.getInstance(Client.class);
         client.addShutdownListener(this);
         setLayout(new BorderLayout());
     }
@@ -48,7 +51,7 @@ public class ClientApplet extends JApplet implements ShutdownListener
     {
         try {
             client.iniClient();
-            NewtCanvasAWT canvas = new NewtCanvasAWT(getGLWindow());
+            NewtCanvasAWT canvas = new NewtCanvasAWT(client.gc.getGLWindow());
             add(canvas, BorderLayout.CENTER);
         } catch (InstantiationException ex) {
             doShutDown();

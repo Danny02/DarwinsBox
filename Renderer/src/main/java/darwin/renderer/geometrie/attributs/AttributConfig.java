@@ -16,6 +16,9 @@
  */
 package darwin.renderer.geometrie.attributs;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
+
 import darwin.geometrie.data.DataAttribut;
 import darwin.renderer.shader.ShaderAttribute;
 
@@ -23,11 +26,13 @@ import darwin.renderer.shader.ShaderAttribute;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
 class AttributConfig
 {
 
     public final int index, stride, offset, glconst, size;
 
+    @ParametersAreNonnullByDefault
     AttributConfig(ShaderAttribute sa, DataAttribut dattr)
     {
         this.index = sa.getIndex();

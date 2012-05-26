@@ -85,9 +85,7 @@ public class DataLayout implements Serializable
     {
         Element[] re = new Element[ele.size() + elements.length];
         ele.toArray(re);
-        for (int i = ele.size(); i < re.length; ++i) {
-            re[i] = elements[i - ele.size()];
-        }
+        System.arraycopy(elements, 0, re, ele.size(), elements.length);
         return re;
     }
 

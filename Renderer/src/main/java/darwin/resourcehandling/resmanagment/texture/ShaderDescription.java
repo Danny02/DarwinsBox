@@ -65,6 +65,8 @@ public class ShaderDescription implements Serializable
             return false;
         if (getClass() != obj.getClass())
             return false;
+        if(obj == this)
+        	return true;
         final ShaderDescription other = (ShaderDescription) obj;
         if ((this.v == null) ? (other.v != null) : !this.v.equals(other.v))
             return false;

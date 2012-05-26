@@ -72,6 +72,8 @@ public class GLSLType implements VectorType
         if (obj == null) {
             return false;
         }
+        if(obj == this)
+        	return true;
         if (!(obj instanceof VectorType)) {
             return false;
         }

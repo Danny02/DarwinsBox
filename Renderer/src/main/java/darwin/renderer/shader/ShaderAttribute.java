@@ -27,7 +27,7 @@ public class ShaderAttribute implements ShaderElement {
 
     public final String name;
     public final Element element;
-    transient private int index = -1;
+    private int index = -1;
 
     public ShaderAttribute(String name, Element element) {
         this.name = name;
@@ -67,6 +67,8 @@ public class ShaderAttribute implements ShaderElement {
         if (obj == null) {
             return false;
         }
+        if(obj == this)
+        	return true;
         if (getClass() != obj.getClass()) {
             return false;
         }

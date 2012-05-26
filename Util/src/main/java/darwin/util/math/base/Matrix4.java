@@ -96,8 +96,7 @@ public class Matrix4 extends Matrix
         if (a.length < 4) {
             b = new double[4];
             b[3] = 1;
-            for (int i = 0; i < a.length; ++i)
-                b[i] = a[i];
+            System.arraycopy(a, 0, b, 0, a.length);
         } else
             b = a;
 
