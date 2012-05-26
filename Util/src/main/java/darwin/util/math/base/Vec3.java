@@ -43,9 +43,16 @@ public class Vec3 extends Vector implements Cloneable
     }
 
     public Vec3(Vector v) {
-        this(v.getCoords());
+        this();
+        double[] c = getCoords();
+        double[] cv = v.getCoords();
+        System.arraycopy(cv, 0, c, 0, Math.min(3, cv.length));
     }
 
+    public Vec3 cross(Vector a) {
+        return cross(new Vec3(a), new Vec3());
+    }
+    
     public Vec3 cross(Vec3 a) {
         return cross(a, new Vec3());
     }
