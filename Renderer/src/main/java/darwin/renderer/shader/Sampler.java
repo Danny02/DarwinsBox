@@ -25,12 +25,13 @@ package darwin.renderer.shader;
  * <http://www.gnu.org/licenses/>.
  */
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.Texture;
 import javax.media.opengl.GL;
 
+import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
-
-import static darwin.renderer.GraphicContext.*;
 
 /**
  *
@@ -39,16 +40,27 @@ import static darwin.renderer.GraphicContext.*;
 public final class Sampler
 {
 
-    private boolean active;
-    private int uniform_pos, texture_unit;
-    private String uniname;
-
-    public Sampler(String uniform, int texture_unit)
+    public interface SamplerFactory
     {
-        setActive(true);
-        this.uniform_pos = -1;
+
+        public Sampler create(String uniform, int textureUnit);
+    }
+    private final GraphicContext gc;
+    private final int textureUInit;
+    private final String uniname;
+    private boolean active;
+    private int uniform_pos;
+
+    @AssistedInject
+    public Sampler(GraphicContext gcont,
+            @Assisted String uniform, @Assisted int textureUInit)
+    {
+        gc = gcont;
+        this.textureUInit = textureUInit;
         uniname = uniform;
-        this.texture_unit = texture_unit;
+
+        setActive(true);
+        uniform_pos = -1;
     }
 
     protected void setActive(boolean active)
@@ -58,10 +70,10 @@ public final class Sampler
 
     public void bindTexture(Texture tex)
     {
-        GL gl = getGL();
-        gl.glActiveTexture(texture_unit);
+        GL gl = gc.getGL();
+        gl.glActiveTexture(textureUInit);
         if (!isActive() || tex == null) {
-            getGL().glBindTexture(GL.GL_TEXTURE_2D, 0);
+            gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
         } else {
             tex.bind(gl);
         }
@@ -77,6 +89,6 @@ public final class Sampler
         uniform_pos = s.getUniformLocation(uniname);
         assert uniform_pos != -1;
         s.use();
-        getGL().getGL2GL3().glUniform1i(uniform_pos, texture_unit - GL.GL_TEXTURE0);
+        gc.getGL().getGL2GL3().glUniform1i(uniform_pos, textureUInit - GL.GL_TEXTURE0);
     }
 }

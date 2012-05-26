@@ -16,19 +16,21 @@
  */
 package darwin.renderer.shader;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.*;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
 
 import darwin.geometrie.data.Element;
+import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
+import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.uniform.MatrixSetter;
 import darwin.renderer.shader.uniform.UniformSetter;
 import darwin.resourcehandling.io.ShaderFile;
 import darwin.util.math.util.GenListener;
 import darwin.util.math.util.MatrixEvent;
-
-import static darwin.renderer.GraphicContext.*;
 
 /**
  *
@@ -37,47 +39,49 @@ import static darwin.renderer.GraphicContext.*;
 public class Shader implements GenListener<MatrixEvent>
 {
 
-    private final Map<Element, ShaderAttribute> attribute;
-    private final Map<String, ShaderUniform> uniforms;
-    private final Map<String, Sampler> sampler;
+    private final GraphicContext gc;
+    private final Map<Element, ShaderAttribute> attributrMap;
+    private final Map<String, ShaderUniform> uniformMap;
+    private final Map<String, Sampler> samplerMap;
     private final MatrixSetter matricen;
     private ShaderProgramm programm;
     private int attrhash;
     private List<UniformSetter> usetter = new LinkedList<>();
 
-    public Shader(ShaderFile sf)
+    @AssistedInject
+    public Shader(GraphicContext gcont, SamplerFactory factory,
+            @Assisted ShaderFile sf)
     {
-        this(sf.getAttributs(), sf.getUniforms(), sf.getSampler());
+        this(gcont, factory, sf.getAttributs(), sf.getUniforms(), sf.getSampler());
     }
 
-    public Shader(ShaderAttribute[] attr, ShaderUniform[] uni, String[] sampler)
+    @AssistedInject
+    public Shader(GraphicContext gcont, SamplerFactory factory,
+            @Assisted List<ShaderAttribute> attributes,
+            @Assisted List<ShaderUniform> uniforms,
+            @Assisted List<String> samplerNames)
     {
-        this(Arrays.asList(attr), Arrays.asList(uni), Arrays.asList(sampler));
-    }
-
-    public Shader(List<ShaderAttribute> attr, List<ShaderUniform> uni,
-            List<String> sampler)
-    {
+        gc = gcont;
         matricen = new MatrixSetter();
-        attribute = new HashMap<>(4);
-        for (ShaderAttribute sa : attr) {
-            attribute.put(sa.element, sa);
+        attributrMap = new HashMap<>(attributes.size());
+        for (ShaderAttribute sa : attributes) {
+            attributrMap.put(sa.element, sa);
         }
 
-        uniforms = new HashMap<>(15);
-        for (ShaderUniform su : uni) {
-            uniforms.put(su.getName(), su);
+        uniformMap = new HashMap<>(uniforms.size());
+        for (ShaderUniform su : uniforms) {
+            uniformMap.put(su.getName(), su);
             String b = su.getElement().getBezeichnung();
             if (b != null && b.startsWith("MAT_")) {
                 matricen.addUniform(su);
             }
         }
 
-        this.sampler = new HashMap<>(4);
-
-        for (int i = 0; i < sampler.size(); ++i) {
-            this.sampler.put(sampler.get(i),
-                    new Sampler(sampler.get(i), GL.GL_TEXTURE0 + i));
+        this.samplerMap = new HashMap<>(samplerNames.size());
+        int nummber = 0;
+        for (String name: samplerNames) {
+            Sampler sampler = factory.create(name, GL.GL_TEXTURE0 + nummber++);
+            samplerMap.put(name, sampler);
         }
     }
 
@@ -85,11 +89,11 @@ public class Shader implements GenListener<MatrixEvent>
     {
         programm = prog;
 
-        ini(attribute);
-        ini(uniforms);
+        ini(attributrMap);
+        ini(uniformMap);
         attrhash = buildAttrHash();
 
-        for (Sampler s : sampler.values()) {
+        for (Sampler s : samplerMap.values()) {
             s.setShader(prog);
         }
 
@@ -111,7 +115,7 @@ public class Shader implements GenListener<MatrixEvent>
     private int buildAttrHash()
     {
         int hash = 9;
-        for (ShaderAttribute sa : attribute.values()) {
+        for (ShaderAttribute sa : attributrMap.values()) {
             if (sa.getIndex() != -1) {
                 hash = 97 * hash + sa.hashCode();
             }
@@ -128,8 +132,8 @@ public class Shader implements GenListener<MatrixEvent>
         }
 
         programm.use();
-        GL2ES2 gl = getGL().getGL2ES2();
-        for (ShaderUniform su : uniforms.values()) {
+        GL2ES2 gl = gc.getGL().getGL2ES2();
+        for (ShaderUniform su : uniformMap.values()) {
             if (su.wasChanged()) {
                 gl.glUniform(su.getData());
             }
@@ -153,23 +157,23 @@ public class Shader implements GenListener<MatrixEvent>
 
     public ShaderUniform getUniform(String name)
     {
-        ShaderUniform s = uniforms.get(name);
+        ShaderUniform s = uniformMap.get(name);
         return s;
     }
 
     public ShaderAttribute getAttribut(Element ele)
     {
-        return attribute.get(ele);
+        return attributrMap.get(ele);
     }
 
     public Collection<Element> getAttributElements()
     {
-        return attribute.keySet();
+        return attributrMap.keySet();
     }
 
     public Sampler getSampler(String name)
     {
-        return sampler.get(name);
+        return samplerMap.get(name);
     }
 
     public int getAttributsHash()
