@@ -18,38 +18,41 @@ package darwin.renderer.geometrie.attributs;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 
 import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-
+@Immutable
 public class VertexAttributs
 {
     public interface VAttributsFactory
     {
-        public VertexAttributs create(Shader shader, VertexBO[] vbuffers, BufferObject indice);
+        @ParametersAreNonnullByDefault
+        public VertexAttributs create(Shader shader, VertexBO[] vbuffers, @Nullable BufferObject indice);
     }
 
     private final GraphicContext gc;
-    private final ConfiguratorFactory factory;
     private final AttributsConfigurator configurator;
     private final int hash;
 
     @AssistedInject
+    @ParametersAreNonnullByDefault
     public VertexAttributs(GraphicContext gcontext,
             ConfiguratorFactory factory,
             @Assisted Shader shader,
             @Assisted VertexBO[] vbuffers,
-            @Assisted BufferObject indice)
+            @Assisted @Nullable BufferObject indice)
     {
         gc = gcontext;
-        this.factory = factory;
 
         hash = shader.getAttributsHash();
 

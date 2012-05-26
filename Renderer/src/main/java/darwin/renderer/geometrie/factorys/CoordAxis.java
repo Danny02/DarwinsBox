@@ -16,7 +16,10 @@
  */
 package darwin.renderer.geometrie.factorys;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.Element;
@@ -35,6 +38,8 @@ import static darwin.renderer.opengl.GLSLType.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
+@Singleton
 public class CoordAxis implements GeometryFactory
 {
 
@@ -43,6 +48,7 @@ public class CoordAxis implements GeometryFactory
     private final BufferObject indice;
 
     @Inject
+    @ParametersAreNonnullByDefault
     public CoordAxis(RenderMeshFactory rmFactory, VBOFactoy vFactoy, BufferFactory bFactory)
     {
         factory = rmFactory;

@@ -18,6 +18,8 @@ package darwin.renderer.geometrie.factorys;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 
 import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh;
@@ -35,6 +37,7 @@ import static darwin.renderer.opengl.GLSLType.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
 public class Rahmen implements GeometryFactory
 {
 
@@ -48,6 +51,7 @@ public class Rahmen implements GeometryFactory
     private final RenderMesh.RenderMeshFactory factory;
 
     @AssistedInject
+    @ParametersAreNonnullByDefault
     public Rahmen(RenderMeshFactory rmFactory, VBOFactoy vFactoy,
             BufferFactory bFactory, @Assisted float inset)
     {

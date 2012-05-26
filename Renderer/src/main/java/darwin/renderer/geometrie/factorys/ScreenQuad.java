@@ -16,7 +16,10 @@
  */
 package darwin.renderer.geometrie.factorys;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.Element;
@@ -34,6 +37,8 @@ import static darwin.renderer.opengl.GLSLType.*;
  * <p/>
  * @author Daniel Heinrich
  */
+@Immutable
+@Singleton
 public class ScreenQuad implements GeometryFactory
 {
 
@@ -41,6 +46,7 @@ public class ScreenQuad implements GeometryFactory
     private final RenderMeshFactory factory;
 
     @Inject
+    @ParametersAreNonnullByDefault
     public ScreenQuad(RenderMeshFactory rmFactory, VBOFactoy factoy)
     {
         factory = rmFactory;

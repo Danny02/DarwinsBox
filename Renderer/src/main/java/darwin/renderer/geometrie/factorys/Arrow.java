@@ -16,7 +16,10 @@
  */
 package darwin.renderer.geometrie.factorys;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.media.opengl.GLES2;
 
 import darwin.geometrie.data.Element;
@@ -33,6 +36,8 @@ import static darwin.renderer.opengl.GLSLType.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+@Immutable
+@Singleton
 public final class Arrow implements GeometryFactory
 {
 
@@ -40,6 +45,7 @@ public final class Arrow implements GeometryFactory
     private final RenderMeshFactory factory;
 
     @Inject
+    @ParametersAreNonnullByDefault
     public Arrow(RenderMeshFactory rmFactory, VBOFactoy factoy)
     {
         factory = rmFactory;

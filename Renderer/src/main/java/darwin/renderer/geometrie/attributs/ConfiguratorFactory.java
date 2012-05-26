@@ -16,8 +16,11 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import darwin.renderer.opengl.buffer.BufferObject;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
 
 /**
@@ -27,5 +30,6 @@ import darwin.renderer.shader.Shader;
 public interface ConfiguratorFactory
 {
 
-    public AttributsConfigurator create(Shader shader, VertexBO[] vbuffers, BufferObject indice);
+    @ParametersAreNonnullByDefault
+    public AttributsConfigurator create(Shader shader, VertexBO[] vbuffers, @Nullable BufferObject indice);
 }

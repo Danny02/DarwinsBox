@@ -18,6 +18,7 @@ package darwin.renderer.geometrie.packed;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import javax.annotation.concurrent.Immutable;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
 
@@ -33,6 +34,7 @@ import darwin.renderer.shader.Shader;
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO Mesh organisation verbessern das verschiedenen shader genutzt werden können
+@Immutable
 public class RenderMesh implements Cloneable
 {
 
