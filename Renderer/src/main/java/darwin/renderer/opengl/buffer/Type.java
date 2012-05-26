@@ -14,37 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.opengl.buffer;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+/**
+ * The Access Type tells OpenGL how often you intend to modify the data. These
+ * types are only optimization hints for the driver.
+ */
+public enum Type
 {
+    //The ordering of the elements must not be changed
 
-    @Override
-    public int getTotalMemory()
-    {
-        return 0;
-    }
-
-    @Override
-    public int getCurrentMemory()
-    {
-        return 0;
-    }
-
-    @Override
-    public String getStatus()
-    {
-        return "No information can be collected about the graphic device memory!";
-    }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
-    }
-
+    /**
+     * You will modify the data once, then use it once, and repeat this process
+     * many times.
+     */
+    STREAM, /**
+     * You will specify the data only once, then use it many times without
+     * modifying it.
+     */
+    STATIC, /**
+     * You will specify or modify the data repeatedly, and use it repeatedly
+     * after each time you do this.
+     */
+    DYNAMIC;
+    final int glconst = 35040 + 4 * ordinal();
 }

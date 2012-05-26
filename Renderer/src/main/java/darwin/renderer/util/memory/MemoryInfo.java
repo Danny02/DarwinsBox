@@ -16,74 +16,40 @@
  */
 package darwin.renderer.util.memory;
 
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLRunnable;
-
-import static darwin.renderer.GraphicContext.*;
+import javax.inject.Singleton;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public abstract class MemoryInfo
+@Singleton
+public interface MemoryInfo
 {
-
-    public static final MemoryInfo INSTANCE;
-
-    static {
-        if (checkExtension("GL_ATI_meminfo")) {
-            INSTANCE = new ATIMemoryInfo();
-        } else if (checkExtension("GL_NVX_gpu_memory_info")) {
-            INSTANCE = new NVidiaMemoryInfo();
-        } else {
-            INSTANCE = new DummyMemInfo();
-        }
-    }
-
     /**
      * total available video memory of the GPU
      * <p/>
      * @return Memory in KiByte
      */
-    public abstract int getTotalMemory();
+    public int getTotalMemory();
 
     /**
      * Memory which is currently available
      * <p/>
      * @return Memory in KiByte
      */
-    public abstract int getCurrentMemory();
+    public int getCurrentMemory();
 
     /**
      * Vendor specific memory Info
      * <p/>
      * @return
      */
-    public abstract String getStatus();
+    public String getStatus();
 
     /**
      * Percentage of free video memory
      * <p/>
      * @return
      */
-    public abstract double getFreeRatio();
-
-    public static boolean canCollectData()
-    {
-        return !(INSTANCE instanceof DummyMemInfo);
-    }
-
-    private static boolean checkExtension(final String ex)
-    {
-        final boolean[] result = new boolean[1];
-        getGLWindow().invoke(true, new GLRunnable() {
-            @Override
-            public boolean run(GLAutoDrawable drawable)
-            {
-                result[0] = drawable.getGL().isExtensionAvailable(ex);
-                return true;
-            }
-        });
-        return result[0];
-    }
+    public double getFreeRatio();
 }

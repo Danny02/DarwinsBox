@@ -20,8 +20,8 @@ import com.jogamp.opengl.util.texture.Texture;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2ES2;
 
-import darwin.renderer.opengl.FrameBufferObject;
-import darwin.renderer.opengl.RenderBuffer;
+import darwin.renderer.opengl.FrameBuffer.FrameBufferObject;
+import darwin.renderer.opengl.FrameBuffer.RenderBuffer;
 import darwin.resourcehandling.io.TextureUtil;
 
 /**

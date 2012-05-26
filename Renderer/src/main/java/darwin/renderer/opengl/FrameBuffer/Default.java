@@ -14,37 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.opengl.FrameBuffer;
+
+import com.google.inject.BindingAnnotation;
+import java.lang.annotation.*;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@BindingAnnotation
+public @interface Default
 {
-
-    @Override
-    public int getTotalMemory()
-    {
-        return 0;
-    }
-
-    @Override
-    public int getCurrentMemory()
-    {
-        return 0;
-    }
-
-    @Override
-    public String getStatus()
-    {
-        return "No information can be collected about the graphic device memory!";
-    }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
-    }
-
 }

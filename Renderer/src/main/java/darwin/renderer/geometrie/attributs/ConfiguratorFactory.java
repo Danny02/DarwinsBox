@@ -14,37 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.geometrie.attributs;
+
+import darwin.renderer.opengl.buffer.BufferObject;
+import darwin.renderer.opengl.VertexBO;
+import darwin.renderer.shader.Shader;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+public interface ConfiguratorFactory
 {
 
-    @Override
-    public int getTotalMemory()
-    {
-        return 0;
-    }
-
-    @Override
-    public int getCurrentMemory()
-    {
-        return 0;
-    }
-
-    @Override
-    public String getStatus()
-    {
-        return "No information can be collected about the graphic device memory!";
-    }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
-    }
-
+    public AttributsConfigurator create(Shader shader, VertexBO[] vbuffers, BufferObject indice);
 }

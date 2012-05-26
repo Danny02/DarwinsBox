@@ -14,37 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.util.memory;
+package darwin.renderer.opengl.FrameBuffer;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.media.opengl.GLAutoDrawable;
 
 /**
  *
  * @author daniel
  */
-public class DummyMemInfo implements MemoryInfo
+@Singleton
+public class DefaultFrameBuffer extends FrameBufferObject
 {
 
-    @Override
-    public int getTotalMemory()
+    @Inject
+    public DefaultFrameBuffer(GLAutoDrawable drawable)
     {
-        return 0;
+        super(drawable, 0);
     }
 
     @Override
-    public int getCurrentMemory()
+    public int getWidth()
     {
-        return 0;
+        return drawable.getWidth();
     }
 
     @Override
-    public String getStatus()
+    public int getHeight()
     {
-        return "No information can be collected about the graphic device memory!";
+        return drawable.getHeight();
     }
-
-    @Override
-    public double getFreeRatio()
-    {
-        return 1;
-    }
-
 }

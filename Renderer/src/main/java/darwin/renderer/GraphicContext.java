@@ -17,38 +17,78 @@
 package darwin.renderer;
 
 import com.jogamp.newt.opengl.GLWindow;
+import javax.inject.*;
 import javax.media.opengl.*;
 
 /**
- * Class which manages the creation of a OpenGL Context.
- * A GLWindow is used for holding the Context, which have to get
- * initialized before using.
- * A DEFAULT Instance is provided which uses the latest OpenGL Profile
- * available. This instance can be accessed over the static accessors.
+ * Class which manages the creation of a OpenGL Context. A GLWindow is used for
+ * holding the Context, which have to get initialized before using. A DEFAULT
+ * Instance is provided which uses the latest OpenGL Profile available. This
+ * instance can be accessed over the static accessors.
+ * <p/>
  * @author daniel
  */
+@Singleton
 public final class GraphicContext
 {
-    private static final GraphicContext DEFAULT = new GraphicContext();
-    private final String glprofil;
+
+    private final String glProfil;
     private GLWindow window;
 
-    private GraphicContext()
+    @Inject
+    public GraphicContext(@Named("GL_Profile") String profil)
     {
-        glprofil = null;
+        glProfil = profil;
     }
 
     /**
-     * Creates a Graphic Context with the named OpenGL profile
-     * @param profil
-     * OpenGL profile String as in GLProfile specified.
+     * Tries to create a OpenGL Context.
+     * <p/>
+     * @throws GLException when anything prevents the creation, the exception
+     *                     holds the underlying problem in its "Throwable" field.
      */
-    public GraphicContext(String profil)
+    synchronized public void iniContext() throws GLException
     {
-        glprofil = profil;
+        assert window == null : "The Context is already initialized!";
+
+        GLProfile.initSingleton();
+        GLProfile profile = null;
+        try {
+            if (glProfil == null) {
+                profile = GLProfile.getMaximum();
+            } else {
+                profile = GLProfile.get(glProfil);
+            }
+        } catch (Throwable t) {
+            throw new GLException("Couldn't initialize OpenGL!", t);
+        }
+
+        window = GLWindow.create(getCapabilities(profile));
     }
 
-    private GLCapabilitiesImmutable getCapabilities(GLProfile profile)
+    /**
+     * gets the GL object of the context
+     * <p/>
+     * @return
+     */
+    public GL getGL()
+    {
+        assert window != null : "Context is not initialized";
+        return window.getGL();
+    }
+
+    /**
+     * gets the GLWindow object, which holds the context
+     * <p/>
+     * @return
+     */
+    public GLWindow getGLWindow()
+    {
+        assert window != null : "Context is not initialized";
+        return window;
+    }
+
+    private static GLCapabilitiesImmutable getCapabilities(GLProfile profile)
     {
         GLCapabilities capabilitys = new GLCapabilities(profile);
 //        c.setSampleBuffers(true);
@@ -58,91 +98,5 @@ public final class GraphicContext
 //        capabilitys.setBackgroundOpaque(false);
 
         return capabilitys;
-    }
-
-    /**
-     * Tries to create a OpenGL Context.
-     * @throws GLException
-     * when anything prevents the creation, the exception holds the underlying
-     * problem in its "Throwable" field.
-     */
-    synchronized public void iniContext() throws GLException
-    {
-        assert window == null : "The Context is already initialized!";
-
-        GLProfile.initSingleton();
-        GLProfile profile = null;
-        try {
-            if (glprofil == null) {
-                profile = GLProfile.getMaximum();
-            } else {
-                profile = GLProfile.get(glprofil);
-            }
-        } catch (Throwable t) {
-            throw new GLException("Couldn't initialize OpenGL!", t);
-        }
-
-        window = GLWindow.create(getCapabilities(profile));
-    }
-
-    private static boolean currentThread(GLWindow w)
-    {
-        assert initialization(w);
-        assert w.getContext().isCurrent() : "No OpenGL context current on this thread";
-        return true;
-    }
-
-    private static boolean initialization(GLWindow w)
-    {
-        assert w != null : "Context is not initialized";
-        return true;
-    }
-
-    /**
-     * gets the GL object of the context
-     * @return
-     */
-    public GL getInstantGL()
-    {
-        assert currentThread(window);
-        return window.getGL();
-    }
-
-    /**
-     * gets the GLWindow object, which holds the context
-     * @return
-     */
-    public GLWindow getInstantGLWindow()
-    {
-        assert initialization(window);
-        return window;
-    }
-
-    /**
-     * @return
-     * the GL object of the default context
-     */
-    public static GL getGL()
-    {
-        return DEFAULT.getInstantGL();
-    }
-
-    /**
-     *
-     * @return
-     * the GLWindow which holds the default context
-     */
-    public static GLWindow getGLWindow()
-    {
-        return DEFAULT.getInstantGLWindow();
-    }
-
-    /**
-     * initialize the default context
-     * @throws GLException
-     */
-    public static void iniDefault() throws GLException
-    {
-        DEFAULT.iniContext();
     }
 }
