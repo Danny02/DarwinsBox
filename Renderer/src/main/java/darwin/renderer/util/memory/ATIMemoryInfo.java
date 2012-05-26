@@ -32,7 +32,7 @@ public final class ATIMemoryInfo implements MemoryInfo
     private static final int TEXTURE_FREE_MEMORY_ATI = 0x87FC;
     private static final int RENDERBUFFER_FREE_MEMORY_ATI = 0x87FD;
 //    TODO man kann ned gscheit die echte Speichergröße abfragen
-//    nur freien speicher beim programmstart
+//    nur freien speicherDependencie-Injection_Experiment beim programmstart
 //    private static final int TOTAL_PHYSICAL_MEMORY_ATI = 0x87FE;
     private final int totalMem;
     private final GraphicContext gc;
