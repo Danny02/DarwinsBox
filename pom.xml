@@ -34,7 +34,7 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/Danny02/DarwinsBox</url>
+        <url>${project.url}</url>
         <connection>scm:git:git://github.com/Danny02/DarwinsBox.git</connection>
         <developerConnection>scm:git:git@github.com:Danny02/DarwinsBox.git</developerConnection>
     </scm>
