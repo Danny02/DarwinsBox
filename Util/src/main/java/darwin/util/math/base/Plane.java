@@ -65,7 +65,7 @@ public class Plane
         return Math.abs(e.getNormal().dot(normal)) == 1;
     }
 
-    public Line getSchnittKante(Plane e)
+    public Line getIntersectionLine(Plane e)
     {
         Vec3 dir = normal.cross(e.normal);
 
