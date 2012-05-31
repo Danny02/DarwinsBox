@@ -14,34 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base;
+package darwin.util.math.base.newstructures;
+
 
 /**
  *
  * @author daniel
  */
-public class LineSegment
+public class LineSegment<E extends Vector<E>>
 {
 
-    private final Vector start, end;
+    private final ImmutableVector<E> start, end;
 
-    public LineSegment(Vector start, Vector end)
+    public LineSegment(ImmutableVector<E> start, ImmutableVector<E> end)
     {
-        this.start = start;
-        this.end = end;
+        this.start = start.copy();
+        this.end = end.copy();
     }
 
-    public Line getLine()
+    public Line<E> getLine()
     {
         return Line.fromPoints(start, end);
     }
 
-    public Vector getEnd()
+    public ImmutableVector<E> getEnd()
     {
         return end;
     }
 
-    public Vector getStart()
+    public ImmutableVector<E> getStart()
     {
         return start;
     }

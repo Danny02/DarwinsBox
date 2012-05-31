@@ -16,7 +16,9 @@
  */
 package darwin.util.math.base;
 
+import darwin.util.math.base.newstructures.Vector3;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static java.lang.Math.*;
@@ -26,9 +28,9 @@ import static java.lang.Math.*;
  * <p/>
  * @author Daniel Heinrich
  */
+@Deprecated
 public class Vector implements Serializable, Cloneable
 {
-
     private static final long serialVersionUID = -5086769268702369258L;
     private final double[] coords;
 

@@ -14,49 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base;
+package darwin.util.math.base.newstructures;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Line
+public final class Line<E extends Vector<E>>
 {
-
     public enum Relationship
     {
-
         EQUAL, PARALLEL,
         SKEW, //Windschief
         INTERSECTING
     }
-    private final Vector a;
-    private final Vector dir;
+    private final ImmutableVector<E> a;
+    private final ImmutableVector<E> dir;
 
-    public Line(Vector a, Vector dir)
+    public  Line(ImmutableVector<E> a, ImmutableVector<E> dir)
     {
-        this.a = a;
-        this.dir = dir.normalize();
-
-        if (a.getDimension() != dir.getDimension()) {
-            throw new IllegalArgumentException("the direction vector has not the same dimension as the starting point");
-        }
-        if (dir.lenquad() == 0) {
+        if (dir.lengthQuad() == 0.) {
             throw new IllegalArgumentException("The direction vector must not have a length of null!");
         }
+        this.a = a.copy();
+        this.dir = dir.copy().normalize();
     }
 
-    public static Line fromPoints(Vector a, Vector b)
+    public static <E extends Vector<E>> Line<E> fromPoints(ImmutableVector<E> a, ImmutableVector<E> b)
     {
-        return new Line(a, a.sub(b));
+        return new Line<>(a, a.copy().sub(b));
     }
 
-    public Line transform(Matrix4 mat)
-    {
-        return new Line(mat.mult(a), mat.mult(dir));
-    }
-
-    public Relationship getRelationship(Line g)
+    public Relationship getRelationship(Line<E> g)
     {
         if (isParallelTo(g)) {
             if (contains(g.a)) {
@@ -71,66 +60,65 @@ public class Line
         }
     }
 
-    public boolean isParallelTo(Line g)
+    public boolean isParallelTo(Line<E> g)
     {
         return g.dir.isParrallelTo(dir);
     }
 
-    public boolean isEqualTo(Line g)
+    public boolean isEqualTo(Line<E> g)
     {
         return isParallelTo(g) && contains(g.a);
     }
 
-    public boolean intersectsWith(Line g)
+    public boolean intersectsWith(Line<E> g)
     {
         return !isSkewTo(g);
     }
 
-    public boolean isSkewTo(Line g)
+    public boolean isSkewTo(Line<E> g)
     {
-        Vector tmp = a.sub(g.a);
+        Vector<E> tmp = a.copy().sub(g.a);
         return !tmp.cross(dir).isParrallelTo(tmp.cross(g.dir));
     }
 
-    public boolean contains(Vector p)
+    public boolean contains(ImmutableVector<E> p)
     {
-        if (p.getDimension() != a.getDimension()) {
-            throw new IllegalArgumentException("The vector has to have the same dimension as the " + Line.class.getSimpleName());
-        }
-
-        return p.sub(a).isParrallelTo(dir);
+        return p.copy().sub(a).isParrallelTo(dir);
     }
 
-    public Vector getIntersection(Line g)
+    public Vector3 getIntersection(Line<E> g)
     {
         //TODO speed up this method
-        Plane e = Plane.fromLineAndDirection(this, new Vec3(dir).cross(g.dir));
-        return e.getIntersection(g);
+        Line<Vector3> t = new Line<>(a.toVector3(), dir.toVector3());
+        Line<Vector3> o = new Line<>(g.a.toVector3(), g.dir.toVector3());
+
+        Plane e = Plane.fromLineAndDirection(t, dir.cross(g.dir));
+        return e.getIntersection(o);
     }
 
-    public double distanceTo(Vector p)
+    public double distanceTo(ImmutableVector<E> p)
     {
-        Vector tmp = a.sub(p);
-        double lenquad = dir.cross(tmp).lenquad() / dir.lenquad();
+        Vector tmp = a.copy().sub(p);
+        double lenquad = dir.cross(tmp).lengthQuad() / dir.lengthQuad();
         return Math.sqrt(lenquad);
     }
 
-    public double distanceTo(Line g)
+    public double distanceTo(Line<E> g)
     {
         if (isParallelTo(g)) {
             return distanceTo(g.a);
         } else {
-            Vec3 n = dir.cross(g.dir).normalize();
-            return Math.abs(a.sub(g.a).dot(n));
+            Vector3 n = dir.cross(g.dir).normalize();
+            return Math.abs(a.copy().sub(g.a).toVector3().dot(n));
         }
     }
 
-    public Vector getAufpunkt()
+    public ImmutableVector<E> getAufpunkt()
     {
         return a;
     }
 
-    public Vector getDirection()
+    public ImmutableVector<E> getDirection()
     {
         return dir;
     }

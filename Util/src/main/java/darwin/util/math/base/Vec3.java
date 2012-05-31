@@ -20,6 +20,7 @@ package darwin.util.math.base;
  * Repr�sentation eines 3 Dimensionalen Vektors
  * @author Daniel Heinrich
  */
+@Deprecated
 public class Vec3 extends Vector implements Cloneable
 {
     private static final long serialVersionUID = -7042039518932804461L;
@@ -52,7 +53,7 @@ public class Vec3 extends Vector implements Cloneable
     public Vec3 cross(Vector a) {
         return cross(new Vec3(a), new Vec3());
     }
-    
+
     public Vec3 cross(Vec3 a) {
         return cross(a, new Vec3());
     }
