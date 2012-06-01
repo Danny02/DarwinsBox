@@ -16,8 +16,7 @@
  */
 package darwin.geometrie.io.obj;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import javax.media.opengl.GL;
 import org.slf4j.Logger;
@@ -25,14 +24,14 @@ import org.slf4j.helpers.NOPLogger;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.DataLayout.Format;
+import darwin.geometrie.data.GenericVector;
 import darwin.geometrie.data.*;
 import darwin.geometrie.io.ModelReader;
-import darwin.geometrie.unpacked.Mesh;
-import darwin.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.Vec3;
+import darwin.util.math.base.vector.*;
 
-import static darwin.geometrie.data.DataType.*;
+import static darwin.geometrie.data.DataType.FLOAT;
 
 /**
  * Parser fuer das OBJ Modell Format
@@ -43,7 +42,6 @@ import static darwin.geometrie.data.DataType.*;
 @ServiceProvider(ModelReader.class)
 public class ObjModelReader implements ModelReader
 {
-
     private static final Element[] elements;
     private static final Element position, texcoord, normal;
     @InjectLogger
@@ -119,7 +117,7 @@ public class ObjModelReader implements ModelReader
     }
 
     private int getVertex(VertexBuffer vb, VertexIDs ids, ObjFile obj,
-            Map<Integer, Integer> vmap)
+                          Map<Integer, Integer> vmap)
     {
         int hs = ids.hashCode();
         Integer vi = vmap.get(hs);
@@ -131,8 +129,8 @@ public class ObjModelReader implements ModelReader
                 if (p < 0) {
                     p = obj.getVerticies().size() + p + 1;
                 }
-                Vec3 vec = obj.getVerticies().get(p - 1);
-                v.setAttribute(position, double2Float(vec.getCoords()));
+                Vector3 vec = obj.getVerticies().get(p - 1);
+                v.setAttribute(position, float2Float(vec.getCoords()));
             }
 
             int t = ids.getTexcoord();
@@ -140,8 +138,8 @@ public class ObjModelReader implements ModelReader
                 if (t < 0) {
                     t = obj.getTexcoords().size() + t + 1;
                 }
-                darwin.util.math.base.Vector vec = obj.getTexcoords().get(t - 1);
-                v.setAttribute(texcoord, double2Float(vec.getCoords()));
+                Vector2 vec = obj.getTexcoords().get(t - 1);
+                v.setAttribute(texcoord, float2Float(vec.getCoords()));
             }
 
             int n = ids.getNormal();
@@ -149,8 +147,8 @@ public class ObjModelReader implements ModelReader
                 if (n < 0) {
                     n = obj.getNormals().size() + n + 1;
                 }
-                Vec3 vec = obj.getNormals().get(n - 1);
-                v.setAttribute(normal, double2Float(vec.getCoords()));
+                Vector3 vec = obj.getNormals().get(n - 1);
+                v.setAttribute(normal, float2Float(vec.getCoords()));
             }
             vi = v.ind;
             vmap.put(hs, vi);
@@ -159,11 +157,11 @@ public class ObjModelReader implements ModelReader
         return vi;
     }
 
-    private Float[] double2Float(double[] fs)
+    private Float[] float2Float(float[] fs)
     {
         Float[] i = new Float[fs.length];
         for (int j = 0; j < i.length; j++) {
-            i[j] = (float) fs[j];
+            i[j] = fs[j];
         }
         return i;
     }// </editor-fold>

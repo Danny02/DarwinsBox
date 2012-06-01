@@ -16,11 +16,10 @@
  */
 package darwin.util.math.util;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 
-import darwin.util.math.base.Matrix;
-import darwin.util.math.base.Vec3;
+import darwin.util.math.base.*;
+import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.*;
 
 import static darwin.util.math.util.MatType.*;
@@ -37,9 +36,10 @@ public class MatrixCache {
     private int mhash;
     private ViewMatrix view;
     private final ProjectionMatrix projektion;
-    private Vec3 light = new Vec3();
+    private ImmutableVector<Vector3> light = new Vector3();
     private ShadowUtil sutil;
-    private Matrix vn, n, vm, pv, pvi, pvm, s;
+    private Matrix4 vm, pv, pvi, pvm, s;
+    private Matrix vn, n;
     private final Collection<GenListener<MatrixEvent>> listener;
     //TODO boeser boeser schneller umschalter für schatten umbedigt besser loesen
     private boolean normal = true;
@@ -51,7 +51,7 @@ public class MatrixCache {
     public MatrixCache()
     {
         this(new ProjectionMatrix());
-    }   
+    }
 
     public MatrixCache(ProjectionMatrix pro) {
         view = new ViewMatrix();
@@ -59,7 +59,7 @@ public class MatrixCache {
         projektion = pro;
         listener = new LinkedList<>();
 
-        AABB scene = new AABB(new Vec3(), new Vec3());
+        AABB scene = new AABB(new Vector3(), new Vector3());
         sutil = new ShadowUtil(scene);
         addListener(sutil);
         sutil.changeOccured(new MatrixEvent(this, VIEW));
@@ -109,8 +109,8 @@ public class MatrixCache {
         return model;
     }
 
-    public void setLight(Vec3 light) {
-        this.light = light;
+    public void setLight(ImmutableVector<Vector3> light) {
+        this.light = light.copy();
         fireChange(LIGHT);
     }
 
@@ -121,7 +121,7 @@ public class MatrixCache {
         sutil.changeOccured(new MatrixEvent(this, VIEW));
     }
 
-    public Matrix getShadowProjection() {
+    public Matrix4 getShadowProjection() {
         if (s == null) {
             s = sutil.calcShadowProjection(light);
         }
@@ -132,21 +132,21 @@ public class MatrixCache {
         return projektion;
     }
 
-    public Matrix getModelViewProjection() {
+    public Matrix4 getModelViewProjection() {
         if (pvm == null) {
             pvm = getViewProjection().mult(model);
         }
         return pvm;
     }
 
-    public Matrix getViewProjection() {
+    public Matrix4 getViewProjection() {
         if (pv == null) {
             pv = projektion.mult(view);
         }
         return normal ? pv : getShadowProjection();
     }
 
-    public Matrix getViewProjectionInverse() {
+    public Matrix4 getViewProjectionInverse() {
         if (pvi == null) {
             pvi = getViewProjection().inverse();
         }

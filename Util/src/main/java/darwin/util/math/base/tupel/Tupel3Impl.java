@@ -14,36 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base.newstructures;
+package darwin.util.math.base.tupel;
 
-
-/**
- *
- * @author daniel
- */
-public class LineSegment<E extends Vector<E>>
+public class Tupel3Impl implements Tupel3
 {
+    private final float x, y, z;
 
-    private final ImmutableVector<E> start, end;
-
-    public LineSegment(ImmutableVector<E> start, ImmutableVector<E> end)
+    public Tupel3Impl(float x, float y, float z)
     {
-        this.start = start.copy();
-        this.end = end.copy();
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    public Line<E> getLine()
+    public Tupel3Impl()
     {
-        return Line.fromPoints(start, end);
+        x = y = z = 0;
     }
 
-    public ImmutableVector<E> getEnd()
+    @Override
+    public float getX()
     {
-        return end;
+        return x;
     }
 
-    public ImmutableVector<E> getStart()
+    @Override
+    public float getZ()
     {
-        return start;
+        return z;
+    }
+
+    @Override
+    public float getY()
+    {
+        return y;
+    }
+
+    @Override
+    public float[] getCoords()
+    {
+        return new float[]{x, y, z};
     }
 }

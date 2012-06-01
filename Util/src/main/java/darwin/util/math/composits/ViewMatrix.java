@@ -17,7 +17,7 @@
 package darwin.util.math.composits;
 
 import darwin.util.math.base.Matrix4;
-import darwin.util.math.base.Vec3;
+import darwin.util.math.base.vector.*;
 
 /**
  *
@@ -27,38 +27,39 @@ public class ViewMatrix extends Matrix4
 {
     private static final long serialVersionUID = -7461026157857152643L;
 
-    public Vec3 getViewDirection() {
-        return new Vec3(inverse().getColumn(2));
+    public Vector3 getViewDirection()
+    {
+        float[] f = inverse().getColumn(2).getCoords();
+        return new Vector3(f[0], f[1], f[2]);
     }
 
     /**
      * Implementation der aus GLUT bekannten lookAt funktion
      */
-    public void lookAt(Vec3 eye, Vec3 center, Vec3 up) {
-        Vec3 forward, side, up2;
+    public void lookAt(ImmutableVector<Vector3> eye,
+                       ImmutableVector<Vector3> center,
+                       ImmutableVector<Vector3> up)
+    {
+        Vector3 forward, side, up2;
         Matrix4 matrix = new Matrix4();
 
-        forward = center.sub(eye);
-        forward.normalize(forward);
-
-        side = forward.cross(up);
-        side.normalize(side);
-
-        up2 = side.cross(forward);
+        forward = center.copy().sub(eye).normalize();
+        side = forward.copy().cross(up).normalize();
+        up2 = side.copy().cross(forward);
 
         float[] mat = matrix.getArray();
 
-        mat[0] = (float) side.getX();
-        mat[1] = (float) up2.getX();
-        mat[2] = (float) -forward.getX();
+        mat[0] = side.getX();
+        mat[1] = up2.getX();
+        mat[2] = -forward.getX();
         mat[3] = 0.0f;
-        mat[4] = (float) side.getY();
-        mat[5] = (float) up2.getY();
-        mat[6] = (float) -forward.getY();
+        mat[4] = side.getY();
+        mat[5] = up2.getY();
+        mat[6] = -forward.getY();
         mat[7] = 0.0f;
-        mat[8] = (float) side.getZ();
-        mat[9] = (float) up2.getZ();
-        mat[10] = (float) -forward.getZ();
+        mat[8] = side.getZ();
+        mat[9] = up2.getZ();
+        mat[10] = -forward.getZ();
         mat[11] = 0.0f;
         mat[12] = 0.0f;
         mat[13] = 0.0f;
@@ -71,7 +72,8 @@ public class ViewMatrix extends Matrix4
     }
 
     @Override
-    public ViewMatrix clone() {
+    public ViewMatrix clone()
+    {
         ViewMatrix m = new ViewMatrix();
         m.setMat(getArray().clone());
         return m;

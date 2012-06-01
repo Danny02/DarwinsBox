@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base.newstructures;
+package darwin.util.math.base.vector;
+
+import darwin.util.math.base.tupel.Tupel2;
 
 /**
  *
  * @author daniel
  */
-public final class Vector2 extends Vector<Vector2>
+public final class Vector2 extends Vector<Vector2> implements Tupel2
 {
     private float x, y;
 
@@ -54,6 +56,7 @@ public final class Vector2 extends Vector<Vector2>
     }
 
     //special util methods
+    @Override
     public Vector3 cross(ImmutableVector<Vector2> b)
     {
         Vector2 mul = b.copy();
@@ -151,5 +154,17 @@ public final class Vector2 extends Vector<Vector2>
     {
         Vector2 sum = b.copy();
         return x * sum.x + y * sum.y;
+    }
+
+    @Override
+    public float getX()
+    {
+        return x;
+    }
+
+    @Override
+    public float getY()
+    {
+        return y;
     }
 }

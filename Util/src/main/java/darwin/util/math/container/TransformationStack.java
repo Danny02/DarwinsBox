@@ -17,32 +17,31 @@
 package darwin.util.math.container;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-import darwin.util.math.base.*;
+import darwin.util.math.base.Matrix4;
 import darwin.util.math.composits.ModelMatrix;
 
 /**
  *
  * @author dheinrich
  */
-public final class TransformationStack implements TransformationContainer
+public final class TransformationStack extends SimpleTransformation
 {
     private static final long serialVersionUID = 6968947336110621695L;
     private List<ModelMatrix> transform;
     private int listsize = 0;
     private long matrizenhash = 0;
-    private ModelMatrix packed, main;
+    private ModelMatrix packed;
 
     public TransformationStack() {
         packed = new ModelMatrix();
-        transform = new LinkedList<>();
-        main = addTLayer2Beginning();
+        transform = new ArrayList<>();
+        matrix = addTLayer2Beginning();
     }
 
     public ModelMatrix getMainMatrix() {
-        return main;
+        return matrix;
     }
 
     public ModelMatrix addTLayer2Beginning() {
@@ -61,67 +60,6 @@ public final class TransformationStack implements TransformationContainer
     public ModelMatrix addTLayer2End(ModelMatrix m) {
         transform.add(m);
         return m;
-    }
-
-    @Override
-    public Vec3 getPosition() {
-        return main.getTranslation();
-    }
-
-    @Override
-    public void setPosition(Vec3 newpos) {
-        newpos.sub(getPosition(), newpos);
-        main.worldTranslate(newpos);
-    }
-
-    @Override
-    public void shiftWorldPosition(Vec3 delta) {
-        main.worldTranslate(delta);
-    }
-
-    @Override
-    public void setWorldPosition(Vec3 pos) {
-        main.setWorldTranslate(pos);
-    }
-
-    @Override
-    public void shiftRelativePosition(Vec3 delta) {
-        main.translate(delta);
-    }
-
-    @Override
-    public void rotateEuler(Vec3 delta) {
-        main.rotateEuler(delta);
-    }
-
-    @Override
-    public void rotate(Matrix4 rotmat) {
-        main.rotateEuler(rotmat.getEularAngles());
-    }
-
-    @Override
-    public void rotate(Quaternion rotation) {
-        main.rotate(rotation);
-    }
-
-    @Override
-    public Quaternion getRotation() {
-        return main.getRotation();
-    }
-
-    @Override
-    public void setRotation(Quaternion rot) {
-        setRotation(rot.getRotationMatrix());
-    }
-
-    @Override
-    public void setRotation(Matrix4 rot) {
-        main.setRotation(rot);
-    }
-
-    @Override
-    public void scale(Vec3 delta) {
-        main.scale(delta);
     }
 
     @Override
@@ -151,7 +89,7 @@ public final class TransformationStack implements TransformationContainer
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         transform = (List<ModelMatrix>) in.readObject();
-        main = (ModelMatrix) in.readObject();
+        matrix = (ModelMatrix) in.readObject();
         packed = new ModelMatrix();
         listsize = 0;
         matrizenhash = 0;
@@ -160,17 +98,6 @@ public final class TransformationStack implements TransformationContainer
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
         out.writeObject(transform);
-        out.writeObject(main);
-    }
-
-    @Override
-    public void reset() {
-        main.loadIdentity();
-        matrizenhash = 0;
-    }
-
-    @Override
-    public void scale(float delta) {
-        main.scale(delta);
+        out.writeObject(matrix);
     }
 }

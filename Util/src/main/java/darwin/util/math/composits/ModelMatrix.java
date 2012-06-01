@@ -17,6 +17,7 @@
 package darwin.util.math.composits;
 
 import darwin.util.math.base.*;
+import darwin.util.math.base.vector.*;
 
 /**
  * 4x4 Matrix mit ModelView speziellen Funktionen
@@ -32,13 +33,13 @@ public class ModelMatrix extends Matrix4
     }
 
     @Override
-    public ModelMatrix scale(Vec3 scale) {
+    public ModelMatrix scale(ImmutableVector<Vector3> scale) {
         homogeneous = false;
         return (ModelMatrix) super.scale(scale);
     }
 
     @Override
-    public ModelMatrix scale(double scalex, double scaley, double scalez) {
+    public ModelMatrix scale(float scalex, float scaley, float scalez) {
         homogeneous = false;
         return (ModelMatrix) super.scale(scalex, scaley, scalez);
     }

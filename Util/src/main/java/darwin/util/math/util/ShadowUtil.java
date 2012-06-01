@@ -17,8 +17,8 @@
 package darwin.util.math.util;
 
 import darwin.util.math.base.*;
-import darwin.util.math.composits.AABB;
-import darwin.util.math.composits.ProjectionMatrix;
+import darwin.util.math.base.vector.*;
+import darwin.util.math.composits.*;
 
 /**
  *
@@ -26,64 +26,67 @@ import darwin.util.math.composits.ProjectionMatrix;
  */
 public class ShadowUtil implements GenListener<MatrixEvent>
 {
-    private static final Vector[] pcorners = new Vector[8];
+    private static final ImmutableVector<Vector3>[] pcorners = new ImmutableVector[8];
     private static final Matrix4 bias = new Matrix4();
+
     static {
         for (int i = 0; i < 8; i++) {
             int ii = i % 4;
-            pcorners[i] = new Vector(
+            pcorners[i] = new Vector3(
                     (ii == 1 || ii == 2) ? 1 : -1,
                     ii < 2 ? -1 : 1,
-                    i < 4 ? -1 : 1,
-                    1.);
+                    i < 4 ? -1 : 1);
         }
 
         bias.loadIdentity();
-        bias.scale(0.5);
+        bias.scale(0.5f);
     }
-    private final Vector[] scene;
-    private Vector[] uncor = new Vector[8];
+    private final ImmutableVector<Vector3>[] scene;
+    private ImmutableVector<Vector3>[] uncor = new ImmutableVector[8];
 
-    public ShadowUtil(AABB scene) {
+    public ShadowUtil(AABB scene)
+    {
         assert scene != null;
         this.scene = scene.getCorners();
     }
 //TODO auf Szenen ausmasse und sonnen rotation optimieren
-    public Matrix calcShadowProjection(Vec3 dir) {
+
+    public Matrix4 calcShadowProjection(ImmutableVector<Vector3> dir)
+    {
         Matrix4 light = new Matrix4();
         light.loadIdentity();
 
         Quaternion q = new Quaternion();
-        q.mapVector(new Vec3(0, 0, 1), dir);
+        q.mapVector(new Vector3(0, 0, 1), dir);
         light.rotate(q);
 //        light.rotateEuler(0, 0, -45);
 
         light.inverse(light);
 
-        Vector[] view = new Vector[8];
-        Vector[] lscene = new Vector[8];
-        for (int i = 0; i < 8; i++){
-            view[i] = light.mult(uncor[i]);
-            lscene[i] = light.mult(scene[i]);
+        Vector3[] view = new Vector3[8];
+        Vector3[] lscene = new Vector3[8];
+        for (int i = 0; i < 8; i++) {
+            view[i] = light.fastMult(uncor[i].copy());
+            lscene[i] = light.fastMult(scene[i].copy());
         }
 
-        Vector vmax = view[0].max(view[1]);
-        Vector vmin = view[0].min(view[1]);
-        Vector smax = lscene[0].max(lscene[1]);
-        Vector smin = lscene[0].min(lscene[1]);
+        Vector3 vmax = view[0].copy().max(view[1]);
+        Vector3 vmin = view[0].copy().min(view[1]);
+        Vector3 smax = lscene[0].copy().max(lscene[1]);
+        Vector3 smin = lscene[0].copy().min(lscene[1]);
 
         for (int i = 2; i < 8; ++i) {
-            vmax.max(view[i], vmax);
-            vmin.min(view[i], vmin);
-            smax.max(lscene[i], smax);
-            smin.min(lscene[i], smin);
+            vmax.max(view[i]);
+            vmin.min(view[i]);
+            smax.max(lscene[i]);
+            smin.min(lscene[i]);
         }
 
-        vmax.min(smax, vmax);
-        vmin.max(smin, vmin);
+        vmax.min(smax);
+        vmin.max(smin);
 
-        double[] mi = vmin.getCoords();
-        double[] ma = vmax.getCoords();
+        float[] mi = vmin.getCoords();
+        float[] ma = vmax.getCoords();
         ProjectionMatrix lightp = new ProjectionMatrix();
         lightp.ortho(mi[0], mi[1], mi[2], ma[0], ma[1], ma[2]);
 //        System.out.println("width:" + (ma[0] - mi[0])
@@ -96,24 +99,29 @@ public class ShadowUtil implements GenListener<MatrixEvent>
     }
 
     @Override
-    public void changeOccured(MatrixEvent t) {
+    public void changeOccured(MatrixEvent t)
+    {
         switch (t.getType()) {
             case PROJECTION:
             case VIEW:
-                Matrix inv = t.getSource().getViewProjectionInverse();
+                Matrix4 inv = t.getSource().getViewProjectionInverse();
                 unproject(inv, uncor, pcorners);
         }
     }
 
-    private void unproject(Matrix inverse, Vector[] dst, Vector[] src) {
-        for (int i = 0; i < 8; i++)
-            dst[i] = inverse.mult(src[i]);
+    private void unproject(Matrix4 inverse, ImmutableVector<Vector3>[] dst,
+                           ImmutableVector<Vector3>[] src)
+    {
+        for (int i = 0; i < 8; i++) {
+            dst[i] = inverse.fastMult(src[i].copy());
+        }
 
-        double d = dst[0].getCoords()[3];
+        float d = dst[0].getCoords()[3];
         assert d != 0;
-        d = 1. / d;
+        d = 1f / d;
 
-        for (int i = 0; i < 8; i++)
-            dst[i].mult(d, dst[i]);
+        for (int i = 0; i < 8; i++) {
+            dst[i] = dst[i].copy().mul(d);
+        }
     }
 }

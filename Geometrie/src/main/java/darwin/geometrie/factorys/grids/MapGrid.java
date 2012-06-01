@@ -16,12 +16,13 @@
  */
 package darwin.geometrie.factorys.grids;
 
+import java.util.Vector;
 import darwin.geometrie.data.DataLayout.Format;
 import darwin.geometrie.data.*;
-import darwin.geometrie.factorys.PerCellFiller;
-import darwin.geometrie.factorys.PerVertexFiller;
+import darwin.geometrie.factorys.*;
 import darwin.util.math.base.Matrix4;
-import darwin.util.math.base.Vector;
+import darwin.util.math.base.tupel.*;
+import darwin.util.math.base.vector.Vector2;
 
 /**
  *
@@ -29,7 +30,6 @@ import darwin.util.math.base.Vector;
  */
 public class MapGrid
 {
-
     private final int width, height;
     private final Cell[] cells;
     private final VertexBuffer vertice;  // Vertexold Data
@@ -45,12 +45,12 @@ public class MapGrid
         CellFactory factory = new CellFactory(tessfactor);
 
         int tmp = height * width;
-        Vector[] cellpos = new Vector[tmp + (height - 1) * (width - 1)];
+        Vector2[] cellpos = new Vector2[tmp + (height - 1) * (width - 1)];
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 int x = i + j;
                 int y = -i + j;
-                cellpos[j + i * height] = new Vector(x, y);
+                cellpos[j + i * height] = new Vector2(x, y);
             }
         }
 
@@ -58,7 +58,7 @@ public class MapGrid
             for (int j = 0; j < width - 1; ++j) {
                 int x = i + j + 1;
                 int y = -i + j;
-                cellpos[tmp + j + i * (height - 1)] = new Vector(x, y);
+                cellpos[tmp + j + i * (height - 1)] = new Vector2(x, y);
             }
         }
 
@@ -72,28 +72,25 @@ public class MapGrid
         final Element tex2 = new Element(float2, "TexCoordLocal");
 
         vertice = new VertexBuffer(new DataLayout(Format.AUTO, pos, tex, tex2),
-                factory.getVertexCount());
+                                   factory.getVertexCount());
 
         final float w2 = (float) Math.sqrt(2);
         final Matrix4 m = new Matrix4();
         m.loadIdentity();
-        double scale = 1. / ((width - 1) * w2);
+        float scale = 1f / ((width - 1) * w2);
         m.scale(scale, scale, 0);
-        m.translate(0, (height - 0.5) * w2, 0);
+        m.translate(0, (height - 0.5f) * w2, 0);
         m.rotateEuler(0, 0, -45);
 
         factory.fillVBufferPerVertex(vertice, new PerVertexFiller()
         {
-
             @Override
-            public void fill(Vertex vertex, Vector position)
+            public void fill(Vertex vertex, Tupel2 position)
             {
-                double[] p = position.getCoords();
-                vertex.setAttribute(pos, (float) p[0], (float) p[1]);
+                vertex.setAttribute(pos, position.getX(), position.getY());
 
-                Vector t = m.mult(position);
-                vertex.setAttribute(tex, (float) t.getCoords()[0],
-                        (float) t.getCoords()[1]);
+                Tupel t = m.mult(position);
+                vertex.setAttribute(tex, t.getCoords()[0], t.getCoords()[1]);
             }
         });
 
@@ -102,7 +99,6 @@ public class MapGrid
         final float[][] left = new float[][]{{1, 1}, {0, 1}, {0, 0}, {1, 0}};
         factory.fillVBufferPerCell(vertice, new PerCellFiller()
         {
-
             @Override
             public void fill(Vertex vertex, int cellid, int corner)
             {

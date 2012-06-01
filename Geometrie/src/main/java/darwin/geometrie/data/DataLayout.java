@@ -25,12 +25,10 @@ import java.util.*;
  */
 public class DataLayout implements Serializable
 {
-
     private static final long serialVersionUID = 8468234920530037630L;
 
     public enum Format
     {
-
         /**
          * Erweitert die größe eines Vertex auf ein vielfaches von 2bit
          */
@@ -55,7 +53,11 @@ public class DataLayout implements Serializable
 
     public DataLayout(Format format, Element... elements)
     {
-        this.format = format;
+        if (elements.length == 1) {
+            this.format = Format.INTERLEAVE;
+        } else {
+            this.format = format;
+        }
         int[] offsets = new int[elements.length];
         for (int i = 0; i < elements.length - 1; ++i) {
             offsets[i + 1] = offsets[i] + elements[i].getVectorType().getByteSize();
@@ -81,7 +83,7 @@ public class DataLayout implements Serializable
     }
 
     private static Element[] collect(Collection<Element> ele,
-            Element... elements)
+                                     Element... elements)
     {
         Element[] re = new Element[ele.size() + elements.length];
         ele.toArray(re);

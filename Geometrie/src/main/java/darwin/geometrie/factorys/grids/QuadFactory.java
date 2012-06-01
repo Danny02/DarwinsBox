@@ -19,7 +19,7 @@ package darwin.geometrie.factorys.grids;
 import java.util.*;
 
 import darwin.geometrie.factorys.Quad;
-import darwin.util.math.base.Vector;
+import darwin.util.math.base.vector.*;
 
 /**
  *
@@ -27,31 +27,35 @@ import darwin.util.math.base.Vector;
  */
 public class QuadFactory
 {
-    private Map<Vector, Integer> vertice = new LinkedHashMap<>();
+    private Map<ImmutableVector<Vector2>, Integer> vertice = new LinkedHashMap<>();
     private List<Quad> quads = new LinkedList<>();
-    private Vector[] points;
+    private ImmutableVector<Vector2>[] points;
 
-    public QuadFactory(double size) {
-        points = new Vector[3];
-        points[0] = new Vector(0., -size);
-        points[1] = new Vector(size, -size);
-        points[2] = new Vector(size, 0.);
+    public QuadFactory(float size)
+    {
+        points = new ImmutableVector[3];
+        points[0] = new Vector2(0, -size);
+        points[1] = new Vector2(size, -size);
+        points[2] = new Vector2(size, 0);
     }
 
-    public Quad createQuad(Vector pos) {
-        Quad q = new Quad(getVertIndex(pos.add(points[0])),
-                          getVertIndex(pos.add(points[1])),
-                          getVertIndex(pos.add(points[2])),
-                          getVertIndex(pos));
+    public Quad createQuad(ImmutableVector<Vector2> pos)
+    {
+        Quad q = new Quad(getVertIndex(pos.copy().add(points[0])),
+                          getVertIndex(pos.copy().add(points[1])),
+                          getVertIndex(pos.copy().add(points[2])),
+                          getVertIndex(pos.copy()));
         quads.add(q);
         return q;
     }
 
-    public void precachePosition(Vector pos) {
+    public void precachePosition(ImmutableVector<Vector2> pos)
+    {
         getVertIndex(pos);
     }
 
-    private int getVertIndex(Vector v) {
+    private int getVertIndex(ImmutableVector<Vector2> v)
+    {
         Integer i = vertice.get(v);
         if (i == null) {
             i = vertice.size();
@@ -60,22 +64,26 @@ public class QuadFactory
         return i;
     }
 
-    public Vector[] getPositions() {
-        Set<Vector> v = vertice.keySet();
-        Vector[] vs = new Vector[v.size()];
+    public ImmutableVector<Vector2>[] getPositions()
+    {
+        Set<ImmutableVector<Vector2>> v = vertice.keySet();
+        ImmutableVector<Vector2>[] vs = new ImmutableVector[v.size()];
         return v.toArray(vs);
     }
 
-    public int getVertexCount() {
+    public int getVertexCount()
+    {
         return vertice.size();
     }
 
-    public Quad[] getQuads() {
+    public Quad[] getQuads()
+    {
         Quad[] q = new Quad[quads.size()];
         return quads.toArray(q);
     }
 
-    public int getQuadCount() {
+    public int getQuadCount()
+    {
         return quads.size();
     }
 }

@@ -14,7 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base.newstructures;
+package darwin.util.math.base;
+
+import darwin.util.math.base.vector.ImmutableVector;
+import darwin.util.math.base.vector.Vector;
+import darwin.util.math.base.vector.Vector3;
 
 /**
  *

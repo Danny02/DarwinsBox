@@ -16,13 +16,15 @@
  */
 package darwin.util.math.base;
 
-import java.io.IOException;
-import java.io.Serializable;
+import darwin.util.math.base.tupel.Tupel;
+import darwin.util.math.base.vector.Vector;
+import java.io.*;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 /**
  * Quadratische Matrix beliebiger Dimension
+ * <p/>
  * @author Daniel Heinrich
  */
 public class Matrix implements Serializable, Cloneable
@@ -35,7 +37,8 @@ public class Matrix implements Serializable, Cloneable
     private transient final FloatBuffer buffer;
     private transient final int dimension;
 
-    public Matrix(int dim) {
+    public Matrix(int dim)
+    {
         dimension = dim;
         data = new float[dim * dim];
         buffer = FloatBuffer.wrap(data);
@@ -44,99 +47,125 @@ public class Matrix implements Serializable, Cloneable
     /**
      * Laed die Einheits Matrix
      */
-    public Matrix loadIdentity() {
+    public Matrix loadIdentity()
+    {
         int mod = dimension + 1;
-        for (int i = 0; i < data.length; ++i)
+        for (int i = 0; i < data.length; ++i) {
             data[i] = i % mod == 0 ? 1f : 0f;
+        }
         return this;
     }
 
     /**
      * Multipliziert die Matrix mit einem Scalaren Faktor
      */
-    public Matrix mult(float v) {
+    public Matrix mult(float v)
+    {
         return mult(v, new Matrix(dimension));
     }
 
     /**
      * Multipliziert die Matrix mit einem Scalaren Faktor
      */
-    public Matrix mult(float v, Matrix result) {
+    public Matrix mult(float v, Matrix result)
+    {
         final int qdim = dimension * dimension;
 
-        for (int i = 0; i < qdim; i++)
+        for (int i = 0; i < qdim; i++) {
             result.data[i] = data[i] * v;
+        }
 
         return result;
     }
 
-    public Vector mult(Vector mul) {
-        return mult(mul.getCoords());
+    public Tupel mult(Vector mul)
+    {
+        return mult(mul);
     }
 
-    public Vector mult(double[] a) {
-        final double[] result = new double[dimension];
+    public Tupel mult(Tupel tupel)
+    {
+        float[] a = tupel.getCoords();
+        if (a.length < dimension) {
+            throw new IllegalArgumentException("The Tupel you want to multiply "
+                    + "with a Matrix has to have at a minimum the size of the matrix dimension");
+        }
 
-        for (int i = 0; i < dimension; ++i)
-            for (int j = 0; j < dimension; ++j)
+        final float[] result = new float[dimension];
+
+        for (int i = 0; i < dimension; ++i) {
+            for (int j = 0; j < dimension; ++j) {
                 result[i] += a[j] * data[i + j * dimension];
+            }
+        }
 
-        return new Vector(result);
+        return new GenericTupel(result);
     }
 
-    public Matrix mult(Matrix multi) {
+    public Matrix mult(Matrix multi)
+    {
         return mult(multi, new Matrix(dimension));
     }
 
     /**
      * Einfache Matrizen Multiplikation
      */
-    public Matrix mult(Matrix multi, Matrix result) {
+    public Matrix mult(Matrix multi, Matrix result)
+    {
         final float[] temp = new float[dimension * dimension];
         final float[] mult = multi.data;
 
-        for (int i = 0; i < dimension; i++)
+        for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 int jd = j * dimension;
                 int ijd = i + jd;
-                for (int k = 0; k < dimension; k++)
+                for (int k = 0; k < dimension; k++) {
                     temp[ijd] += data[i + k * dimension] * mult[k + jd];
+                }
             }
+        }
 
         result.setMat(temp);
 
         return result;
     }
 
-    public Matrix add(Matrix sum) {
+    public Matrix add(Matrix sum)
+    {
         return add(sum, new Matrix(dimension));
     }
 
-    public Matrix add(Matrix sum, Matrix result) {
+    public Matrix add(Matrix sum, Matrix result)
+    {
         final float[] res = result.data;
         final float[] su = sum.data;
 
-        for (int i = 0; i < dimension; ++i)
+        for (int i = 0; i < dimension; ++i) {
             res[i] = data[i] + su[i];
+        }
 
         return result;
     }
 
-    public Matrix sub(Matrix subt) {
+    public Matrix sub(Matrix subt)
+    {
         return sub(subt, new Matrix(dimension));
     }
 
-    public Matrix sub(Matrix subt, Matrix result) {
+    public Matrix sub(Matrix subt, Matrix result)
+    {
         final float[] res = result.data;
         final float[] su = subt.data;
 
-        for (int i = 0; i < dimension; ++i)
+        for (int i = 0; i < dimension; ++i) {
             res[i] = data[i] - su[i];
+        }
 
         return result;
     }
 
-    public Matrix pow(int power) {
+    public Matrix pow(int power)
+    {
         Matrix res = new Matrix(power);
         res.loadIdentity();
         Matrix m;
@@ -144,50 +173,61 @@ public class Matrix implements Serializable, Cloneable
         if (power < 0) {
             power *= -1;
             m = this.inverse();
-        } else
+        } else {
             m = this.clone();
+        }
 
         while (power > 0) {
-            if ((power & 1) == 1)
+            if ((power & 1) == 1) {
                 res.mult(m, res);
+            }
             power /= 2;
-            if (power == 0)
+            if (power == 0) {
                 break;
+            }
             m.mult(m, m);
         }
 
         return res;
     }
 
-    public Matrix transpose() {
+    public Matrix transpose()
+    {
         return transpose(new Matrix(dimension));
     }
 
     /**
      * Transponiert die Matrix
      */
-    public Matrix transpose(Matrix result) {
+    public Matrix transpose(Matrix result)
+    {
         final float[] f = new float[dimension * dimension];
-        for (int i = 0; i < dimension; i++)
-            for (int j = 0; j < dimension; j++)
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
                 f[i + j * dimension] = data[j + i * dimension];
+            }
+        }
 
         result.setMat(f);
 
         return result;
     }
 
-    public Matrix adjunkt() {
+    public Matrix adjunkt()
+    {
         return adjunkt(new Matrix(dimension));
     }
 
-    public Matrix adjunkt(Matrix result) {
+    public Matrix adjunkt(Matrix result)
+    {
         final float[] f = new float[dimension * dimension];
         for (int i = 0, n = 1; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++, n *= -1)
+            for (int j = 0; j < dimension; j++, n *= -1) {
                 f[j + i * dimension] = getMinor(i, j).getDeterminate() * n;
-            if (dimension % 2 == 0)
+            }
+            if (dimension % 2 == 0) {
                 n *= -1;
+            }
         }
 
         result.setMat(f);
@@ -196,7 +236,8 @@ public class Matrix implements Serializable, Cloneable
         return result;
     }
 
-    public Matrix inverse() {
+    public Matrix inverse()
+    {
         return inverse(new Matrix(dimension));
     }
 
@@ -204,7 +245,8 @@ public class Matrix implements Serializable, Cloneable
      * Ersetzt die Matrix mit ihrer Inversen
      */
     //TODO durch womoeglich schneller version ersetzten(unten auskommentierte)
-    public Matrix inverse(Matrix result) {
+    public Matrix inverse(Matrix result)
+    {
 //        var inv = [];
 //
 //        inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] +
@@ -258,21 +300,25 @@ public class Matrix implements Serializable, Cloneable
         return result;
     }
 
-    public float getDeterminate() {
+    public float getDeterminate()
+    {
         if (dimension > 1) {
             float det = 0;
-            for (int j = 0, n = 1; j < dimension; j++, n *= -1)
+            for (int j = 0, n = 1; j < dimension; j++, n *= -1) {
                 det += getMinor(0, j).getDeterminate() * data[j] * n;
+            }
             return det;
-        } else
+        } else {
             return data[0];
+        }
     }
 
     /**
      * Der Matrix wird jeweils eine Spalte und Zeile gestrichen und die
      * resultierende Matrix zur�ckgegeben
      */
-    public Matrix getMinor(int skipx, int skipy) {
+    public Matrix getMinor(int skipx, int skipy)
+    {
         final int dim = dimension - 1;
         final Matrix ret = new Matrix(dim);
         float[] minor = ret.data;
@@ -288,89 +334,90 @@ public class Matrix implements Serializable, Cloneable
         return ret;
     }
 
-    public final float[] getArray() {
+    public final float[] getArray()
+    {
         return data;
     }
 
-    public FloatBuffer getFloatBuffer() {
+    public FloatBuffer getFloatBuffer()
+    {
         return buffer;
     }
 
-    public Vector[] getRows() {
-        final Vector[] rows = new Vector[dimension];
-        for (int i = 0; i < dimension; ++i)
-            rows[i] = getRow(i);
-        return rows;
-    }
-
-    public Vector[] getColumns() {
-        final Vector[] columns = new Vector[dimension];
-        for (int i = 0; i < dimension; ++i)
-            columns[i] = getColumn(i);
-        return columns;
-    }
-
-    public Vector getRow(int index) {
-        final Vector res = new Vector(dimension);
-        double[] coor = res.getCoords();
-        for (int i = 0; i < dimension; ++i)
+    public Tupel getRow(int index)
+    {
+        float[] coor = new float[dimension];
+        for (int i = 0; i < dimension; ++i) {
             coor[i] = data[index + dimension * i];
-        return res;
+        }
+        return new GenericTupel(coor);
     }
 
-    public Vector getColumn(int index) {
+    public Tupel getColumn(int index)
+    {
         final float[] coor = new float[dimension];
         System.arraycopy(data, dimension * index, coor, 0, dimension);
-        return new Vector(coor);
+        return new GenericTupel(coor);
     }
 
-    public void setMat(float[] mat) {
+    public void setMat(float[] mat)
+    {
         assert (mat.length == dimension * dimension) :
                 "Die Matrize kann nur mit einem Array mit der selben Elementen anzahl gesetzt werden!";
         initArray(mat);
     }
 
-    private void initArray(float[] mat) {
+    private void initArray(float[] mat)
+    {
         assert mat.length >= data.length;
         System.arraycopy(mat, 0, data, 0, data.length);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         StringBuffer buf = new StringBuffer();
         for (int j = 0; j < dimension; j++) {
-            for (int i = 0; i < dimension; i++)
+            for (int i = 0; i < dimension; i++) {
                 buf.append(data[j + dimension * i] + '\t');
+            }
             buf.append('\n');
         }
         return buf.toString();
     }
 
-    public int getDimension() {
+    public int getDimension()
+    {
         return dimension;
     }
 
     @Override
-    public Matrix clone() {
+    public Matrix clone()
+    {
         Matrix ret = new Matrix(dimension);
         ret.initArray(data.clone());
         return ret;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final Matrix other = (Matrix) obj;
-        if (!Arrays.equals(this.data, other.data))
+        if (!Arrays.equals(this.data, other.data)) {
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 3;
         hash = 73 * hash + Arrays.hashCode(this.data);
         return hash;
@@ -378,7 +425,8 @@ public class Matrix implements Serializable, Cloneable
 
     //Hack
     private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException
+    {
         try {
             in.readFields();
             Class<Matrix> c = Matrix.class;

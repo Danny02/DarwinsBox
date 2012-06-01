@@ -14,22 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base.newstructures;
+package darwin.util.math.base.vector;
 
+import darwin.util.math.base.tupel.Tupel;
+
+import static darwin.util.math.util.MathUtil.almostEqual;
 import static java.lang.Math.*;
-import static darwin.util.math.util.MathUtil.*;
 
 /**
  *
  * @author daniel
  */
-public abstract class ImmutableVector<E extends Vector<E>>
+public abstract class ImmutableVector<E extends Vector<E>> implements Tupel
 {
     public abstract E copy();
 
     public abstract Vector3 toVector3();
-
-    public abstract float[] getCoords();
 
     public abstract float dot(ImmutableVector<E> b);
 

@@ -17,30 +17,33 @@
 package darwin.util.math.composits;
 
 import darwin.util.math.base.Matrix4;
-import darwin.util.math.base.Vec3;
+import darwin.util.math.base.vector.*;
 
 import static java.lang.Math.*;
 
 /**
  * Axis Aligned Bounding Box
+ * <p/>
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO add functions
 public class AABB
 {
-    private final Vec3 start, dimension;
+    private final Vector3 start, dimension;
 
-    public AABB(Vec3 start, Vec3 dimension) {
-        this.start = start;
-        this.dimension = dimension;
+    public AABB(ImmutableVector<Vector3> start, ImmutableVector<Vector3> dimension)
+    {
+        this.start = start.copy();
+        this.dimension = dimension.copy();
     }
 
-    public Vec3[] getCorners() {
-        double[] c = dimension.getCoords();
-        Vec3[] corners = new Vec3[8];
+    public Vector3[] getCorners()
+    {
+        float[] c = dimension.getCoords();
+        Vector3[] corners = new Vector3[8];
         for (int i = 0; i < 8; i++) {
             int ii = i % 4;
-            corners[i] = start.add(new Vec3(
+            corners[i] = start.copy().add(new Vector3(
                     (ii == 1 || ii == 2) ? c[0] : 0,
                     ii < 2 ? 0 : c[1],
                     i < 4 ? 0 : c[2]));
@@ -49,38 +52,43 @@ public class AABB
         return corners;
     }
 
-    public AABB tranform(Matrix4 mat) {
-        return new AABB(new Vec3(mat.mult(start)),
-                        new Vec3(mat.mult(dimension)));
+    public AABB tranform(Matrix4 mat)
+    {
+        return new AABB(mat.fastMult(start), mat.fastMult(dimension));
     }
 
-    public Vec3 clamp(Vec3 point) {
-        Vec3 rel = point.sub(start);
-        double[] r = rel.getCoords();
-        double[] d = dimension.getCoords();
+    public Vector3 clamp(ImmutableVector<Vector3> point)
+    {
+        Vector3 rel = point.copy().sub(start);
+        float[] r = rel.getCoords();
+        float[] d = dimension.getCoords();
 
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 3; ++i) {
             if (!insideIntervall(r[i], d[i])) {
-                if (r[i] - d[i] > 0)
+                if (r[i] - d[i] > 0) {
                     r[i] = max(d[i], 0);
-                else
+                } else {
                     r[i] = min(d[i], 0);
+                }
             }
-        rel.add(start, rel);
+        }
+        rel.add(start);
         return rel;
     }
 
-    public boolean isInside(Vec3 point) {
-        Vec3 rel = point.sub(start);
-        double[] r = rel.getCoords();
-        double[] d = dimension.getCoords();
+    public boolean isInside(ImmutableVector<Vector3> point)
+    {
+        Vector3 rel = point.copy().sub(start);
+        float[] r = rel.getCoords();
+        float[] d = dimension.getCoords();
 
         return insideIntervall(r[0], d[0])
                 && insideIntervall(r[1], d[1])
                 && insideIntervall(r[2], d[2]);
     }
 
-    private static final boolean insideIntervall(double value, double end) {
+    private boolean insideIntervall(double value, double end)
+    {
         double len = abs(value - end);
         return abs(value) <= end && len <= end;
     }

@@ -14,39 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.container;
+package darwin.util.math.base;
 
-import darwin.util.math.base.vector.*;
+import darwin.util.math.base.tupel.Tupel;
 
 /**
  *
- * @author dheinrich
+ * @author daniel
  */
-public interface PhysicContainer extends TransformationContainer{
-    /**
-     * @return
-     * velocity vector in world space
-     */
-    public ImmutableVector<Vector3> getVelocity();
+public class GenericTupel implements Tupel
+{
+    private final float[] data;
 
-    /**
-     * sets
-     * @param newvel
-     */
-    public void setVelocity(ImmutableVector<Vector3> newvel);
+    public GenericTupel(float[] data)
+    {
+        this.data = data;
+    }
 
-//    public Vec3f getRotVelocity();
-//    public void setRotVelocity(Vec3f newvel);
-
-    /**
-     * @return
-     * physical radius of object
-     */
-    public float getRadius();
-
-    /**
-     * @return
-     * weigth/mass of object
-     */
-    public float getMass();
+    @Override
+    public float[] getCoords()
+    {
+        return data;
+    }
 }

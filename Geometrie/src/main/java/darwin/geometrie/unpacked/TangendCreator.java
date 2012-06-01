@@ -21,9 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
 import darwin.geometrie.data.*;
+import darwin.geometrie.data.GenericVector;
 import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.Vec3;
-import darwin.util.math.base.Vector;
+import darwin.util.math.base.vector.*;
 
 import static darwin.geometrie.data.DataType.*;
 
@@ -73,48 +73,49 @@ public class TangendCreator implements MeshModifier
 
     private Float[] calculateTangent(Vertex v0, Vertex v1, Vertex v2) {
 
-        Vec3 pos1 = getPosition(v0);
-        Vec3 pos2 = getPosition(v1);
-        Vec3 pos3 = getPosition(v2);
+        Vector3 pos1 = getPosition(v0);
+        Vector3 pos2 = getPosition(v1);
+        Vector3 pos3 = getPosition(v2);
 
-        Vector uv1 = getTexCoord(v0);
-        Vector uv2 = getTexCoord(v1);
-        Vector uv3 = getTexCoord(v2);
+        Vector2 uv1 = getTexCoord(v0);
+        Vector2 uv2 = getTexCoord(v1);
+        Vector2 uv3 = getTexCoord(v2);
 
-        Vec3 v2v1 = pos2.sub(pos1);
-        Vec3 v3v1 = pos3.sub(pos1);
+        Vector3 v2v1 = pos2.copy().sub(pos1);
+        Vector3 v3v1 = pos3.copy().sub(pos1);
 
-        double c2c1b = uv2.getCoords()[1] - uv1.getCoords()[1];
-        double c3c1b = uv3.getCoords()[1] - uv1.getCoords()[1];
+        float c2c1b = uv2.getY() - uv1.getY();
+        float c3c1b = uv3.getY() - uv1.getY();
 
-        Vec3 n = getNormal(v0);
+        Vector3 n = getNormal(v0);
 
-        Vec3 t = new Vec3(c3c1b * v2v1.getX() - c2c1b * v3v1.getX(),
+        Vector3 t = new Vector3(c3c1b * v2v1.getX() - c2c1b * v3v1.getX(),
                 c3c1b * v2v1.getY() - c2c1b * v3v1.getY(),
                 c3c1b * v2v1.getZ() - c2c1b * v3v1.getZ());
 
-        Vec3 b = n.cross(t);
-        Vec3 smoothTangent = b.cross(n);
-        smoothTangent.normalize(smoothTangent);
+        Vector3 b = n.cross(t);
+        Vector3 smoothTangent = b.cross(n).normalize();
 
-        return float2Float(smoothTangent.getCoordsF());
+        return float2Float(smoothTangent.getCoords());
     }
 
-    private Vec3 getNormal(Vertex v) {
-        return new Vec3(getDouble(v.getAttribute(normal)));
+    private Vector3 getNormal(Vertex v) {
+        float[] pos = getFloat(v.getAttribute(normal));
+        return new Vector3(pos[0], pos[1], pos[2]);
     }
 
-    private Vec3 getPosition(Vertex v) {
-        double[] pos = getDouble(v.getAttribute(position));
-        return new Vec3(pos[0], pos[1], pos[2]);
+    private Vector3 getPosition(Vertex v) {
+        float[] pos = getFloat(v.getAttribute(position));
+        return new Vector3(pos[0], pos[1], pos[2]);
     }
 
-    private Vector getTexCoord(Vertex v) {
-        return new Vector(getDouble(v.getAttribute(texcoord)));
+    private Vector2 getTexCoord(Vertex v) {
+        float[] pos = getFloat(v.getAttribute(texcoord));
+        return new Vector2(pos[0], pos[1]);
     }
 
-    private double[] getDouble(Number[] nb) {
-        double[] ret = new double[nb.length];
+    private float[] getFloat(Number[] nb) {
+        float[] ret = new float[nb.length];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = nb[i].floatValue();
         }

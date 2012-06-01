@@ -16,44 +16,30 @@
  */
 package darwin.geometrie.io.obj;
 
-import java.io.*;
 import java.util.*;
 
-import darwin.util.math.base.Vec3;
-import darwin.util.math.base.Vector;
+import darwin.util.math.base.vector.*;
 
 /**
  * DatenModell einer OBJ Datei
  * <p/>
  * @author Daniel Heinrich
  */
-public class ObjFile implements Externalizable
+public class ObjFile
 {
-
-    private List<Vec3> verticies = new ArrayList<>();
-    private List<Vec3> normals = new ArrayList<>();
-    private List<Vector> texcoords = new ArrayList<>();
-    transient private Vec3 min = new Vec3(), max = new Vec3();
+    private List<Vector3> verticies = new ArrayList<>();
+    private List<Vector3> normals = new ArrayList<>();
+    private List<Vector2> texcoords = new ArrayList<>();
+    transient private Vector3 min = new Vector3(), max = new Vector3();
     private Map<ObjMaterial, List<Face>> subobjekts = new HashMap<>();
     transient private List<Face> accfaces;
 
-    public void addVertex(Vec3 pos)
+    public void addVertex(ImmutableVector<Vector3> pos)
     {
-        if (verticies.isEmpty()) {
-            min = pos.clone();
-            max = pos.clone();
-        } else {
-            for (int i = 0; i < 3; i++) {
-                double[] p = pos.getCoords();
-                if (p[i] < min.getCoords()[i]) {
-                    min.getCoords()[i] = p[i];
-                } else if (p[i] > max.getCoords()[i]) {
-                    max.getCoords()[i] = p[i];
-                }
-            }
-        }
+        min.min(pos);
+        max.max(pos);
 
-        verticies.add(pos);
+        verticies.add(pos.copy());
     }
 
     public void addFace(Face face)
@@ -81,30 +67,29 @@ public class ObjFile implements Externalizable
             return;
         }
 
-        Vec3 shift = min.add(max);
-        shift.mult(-0.5f, shift);
+        Vector3 shift = min.copy().add(max).mul(-0.5f);
 
-        for (Vec3 v : verticies) {
-            v.add(shift, v);
+        for (Vector3 v : verticies) {
+            v.add(shift);
         }
 
-        min.add(shift, min);
-        max.add(shift, max);
+        min.add(shift);
+        max.add(shift);
     }
 
-    public void rescale(double scale)
+    public void rescale(float scale)
     {
         if (scale == 1) {
             return;
         }
 
-        for (Vec3 v : verticies) {
-            v.mult(scale, v);
+        for (Vector3 v : verticies) {
+            v.mul(scale);
         }
 
 
-        max.mult(scale, max);
-        min.mult(scale, min);
+        max.mul(scale);
+        min.mul(scale);
     }
 
     public List<Face> getFaces(ObjMaterial mat)
@@ -117,17 +102,17 @@ public class ObjFile implements Externalizable
         return subobjekts.keySet();
     }
 
-    public List<Vec3> getNormals()
+    public List<Vector3> getNormals()
     {
         return normals;
     }
 
-    public List<Vector> getTexcoords()
+    public List<Vector2> getTexcoords()
     {
         return texcoords;
     }
 
-    public List<Vec3> getVerticies()
+    public List<Vector3> getVerticies()
     {
         return verticies;
     }
@@ -147,12 +132,12 @@ public class ObjFile implements Externalizable
         return max.getZ() - min.getZ();
     }
 
-    public Vec3 getMin()
+    public Vector3 getMin()
     {
         return min;
     }
 
-    public Vec3 getMax()
+    public Vector3 getMax()
     {
         return max;
     }
@@ -203,107 +188,5 @@ public class ObjFile implements Externalizable
             index = max + index + 1;
         }
         return index <= max;
-    }
-
-    private void writeObject(ObjectOutputStream out)
-            throws IOException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException
-    {
-        writeVec3List(out, verticies);
-        writeVec3List(out, normals);
-        writeVecList(out, texcoords);
-        out.writeObject(subobjekts);
-    }
-
-    private void writeVec3List(ObjectOutput out, List<Vec3> l)
-            throws IOException
-    {
-        out.writeInt(l.size());
-        for (Vec3 v : l) {
-            double[] d = v.getCoords();
-            out.writeFloat((float) d[0]);
-            out.writeFloat((float) d[1]);
-            out.writeFloat((float) d[2]);
-        }
-    }
-
-    private void writeVecList(ObjectOutput out, List<Vector> l)
-            throws IOException
-    {
-        int dim = l.get(0).getDimension();
-        out.writeInt(l.size());
-        out.writeInt(dim);
-        for (Vector v : l) {
-            for (double dd : v.getCoords()) {
-                out.writeFloat((float) dd);
-            }
-        }
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
-    {
-        verticies = readVec3List(in);
-        buildMinMax();
-        normals = readVec3List(in);
-        texcoords = readVecList(in);
-        subobjekts = (Map<ObjMaterial, List<Face>>) in.readObject();
-    }
-
-    private List<Vec3> readVec3List(ObjectInput in) throws IOException
-    {
-        List<Vec3> ret = new ArrayList<>();
-        int len = in.readInt();
-        for (int i = 0; i < len; ++i) {
-            ret.add(new Vec3(in.readFloat(),
-                    in.readFloat(),
-                    in.readFloat()));
-        }
-        return ret;
-    }
-
-    private List<Vector> readVecList(ObjectInput in)
-            throws IOException
-    {
-        List<Vector> ret = new ArrayList<>();
-        int len = in.readInt();
-        int dim = in.readInt();
-        for (int i = 0; i < len; ++i) {
-            double[] d = new double[dim];
-            for (int j = 0; j < dim; ++j) {
-                d[j] = in.readFloat();
-            }
-            ret.add(new Vector(d));
-        }
-
-        return ret;
-    }
-
-    private void buildMinMax()
-    {
-        if (verticies.isEmpty()) {
-            return;
-        }
-
-        min = verticies.get(0).clone();
-        max = verticies.get(0).clone();
-
-        for (int j = 1; j < verticies.size(); j++) {
-            Vec3 vec3 = verticies.get(j);
-            for (int i = 0; i < 3; i++) {
-                double[] p = vec3.getCoords();
-                if (p[i] < min.getCoords()[i]) {
-                    min.getCoords()[i] = p[i];
-                } else if (p[i] > max.getCoords()[i]) {
-                    max.getCoords()[i] = p[i];
-                }
-            }
-
-        }
     }
 }

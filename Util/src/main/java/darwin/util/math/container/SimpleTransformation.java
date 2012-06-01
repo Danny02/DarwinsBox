@@ -17,6 +17,7 @@
 package darwin.util.math.container;
 
 import darwin.util.math.base.*;
+import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.ModelMatrix;
 
 /**
@@ -25,7 +26,7 @@ import darwin.util.math.composits.ModelMatrix;
  */
 public class SimpleTransformation implements TransformationContainer
 {
-    private ModelMatrix matrix;
+    protected ModelMatrix matrix;
 
     public SimpleTransformation() {
         matrix = new ModelMatrix();
@@ -36,28 +37,28 @@ public class SimpleTransformation implements TransformationContainer
     }
 
     @Override
-    public Vec3 getPosition() {
+    public Vector3 getPosition() {
         return matrix.getTranslation();
     }
 
     @Override
-    public void setPosition(Vec3 newpos) {
-        newpos.sub(getPosition(), newpos);
+    public void setPosition(ImmutableVector<Vector3> newpos) {
+        newpos.copy().sub(getPosition());
         matrix.worldTranslate(newpos);
     }
 
     @Override
-    public void shiftWorldPosition(Vec3 delta) {
+    public void shiftWorldPosition(ImmutableVector<Vector3> delta) {
         matrix.worldTranslate(delta);
     }
 
     @Override
-    public void shiftRelativePosition(Vec3 delta) {
+    public void shiftRelativePosition(ImmutableVector<Vector3> delta) {
         matrix.translate(delta);
     }
 
     @Override
-    public void rotateEuler(Vec3 delta) {
+    public void rotateEuler(ImmutableVector<Vector3> delta) {
         matrix.rotateEuler(delta);
     }
 
@@ -67,7 +68,7 @@ public class SimpleTransformation implements TransformationContainer
     }
 
     @Override
-    public void scale(Vec3 delta) {
+    public void scale(ImmutableVector<Vector3> delta) {
         matrix.scale(delta);
     }
 
@@ -83,7 +84,7 @@ public class SimpleTransformation implements TransformationContainer
     }
 
     @Override
-    public void setWorldPosition(Vec3 pos) {
+    public void setWorldPosition(ImmutableVector<Vector3> pos) {
         matrix.setWorldTranslate(pos);
     }
 

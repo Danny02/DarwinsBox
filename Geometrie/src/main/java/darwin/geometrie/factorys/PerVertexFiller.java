@@ -17,12 +17,12 @@
 package darwin.geometrie.factorys;
 
 import darwin.geometrie.data.Vertex;
-import darwin.util.math.base.Vector;
+import darwin.util.math.base.tupel.Tupel2;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public interface PerVertexFiller {
-    public void fill(Vertex vertex, Vector position);
+    public void fill(Vertex vertex, Tupel2 position);
 }

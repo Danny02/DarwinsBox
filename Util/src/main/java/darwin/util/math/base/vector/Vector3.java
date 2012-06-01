@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base.newstructures;
+package darwin.util.math.base.vector;
+
+import darwin.util.math.base.tupel.Tupel3;
 
 /**
  *
  * @author daniel
  */
-public final class Vector3 extends Vector<Vector3>
+public final class Vector3 extends Vector<Vector3> implements Tupel3
 {
     private float x, y, z;
 
@@ -161,5 +163,23 @@ public final class Vector3 extends Vector<Vector3>
     {
         Vector3 sum = b.copy();
         return x * sum.x + y * sum.y + z * sum.z;
+    }
+
+    @Override
+    public float getX()
+    {
+        return x;
+    }
+
+    @Override
+    public float getY()
+    {
+        return y;
+    }
+
+    @Override
+    public float getZ()
+    {
+        return z;
     }
 }

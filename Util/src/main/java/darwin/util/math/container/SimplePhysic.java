@@ -16,7 +16,8 @@
  */
 package darwin.util.math.container;
 
-import darwin.util.math.base.Vec3;
+import darwin.util.math.base.vector.*;
+
 
 /**
  *
@@ -25,26 +26,26 @@ import darwin.util.math.base.Vec3;
 public class SimplePhysic extends SimpleTransformation implements PhysicContainer{
 
     private final float radius, mass;
-    private Vec3 vel;
+    private ImmutableVector<Vector3> vel;
 
     public SimplePhysic(float radius, float mass) {
-        this(radius, mass, new Vec3());
+        this(radius, mass, new Vector3());
     }
 
-    public SimplePhysic(float radius, float mass, Vec3 v) {
+    public SimplePhysic(float radius, float mass, ImmutableVector<Vector3> v) {
         this.radius = radius;
         this.mass = mass;
-        vel = v;
+        vel = v.copy();
     }
 
     @Override
-    public Vec3 getVelocity() {
+    public ImmutableVector<Vector3> getVelocity() {
         return vel;
     }
 
     @Override
-    public void setVelocity(Vec3 newvel) {
-        vel = newvel;
+    public void setVelocity(ImmutableVector<Vector3> newvel) {
+        vel = newvel.copy();
     }
 
     @Override

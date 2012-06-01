@@ -17,15 +17,13 @@
 package darwin.geometrie.io.obj;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
 import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.Vec3;
-import darwin.util.math.base.Vector;
+import darwin.util.math.base.vector.*;
 
 /**
  *
@@ -33,7 +31,6 @@ import darwin.util.math.base.Vector;
  */
 public class ObjFileParser
 {
-
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private Pattern leer, slash;
@@ -66,17 +63,25 @@ public class ObjFileParser
     {
         switch (type) {
             case "v":
-                obj.addVertex(new Vec3(parseDoubless(values)));
+                float[] d = parseFloats(values);
+                if (d.length != 3) {
+                    throw new IOException("The vertex positions of the OBJ file must be of 3 elements!");
+                }
+                obj.addVertex(new Vector3(d[0], d[1], d[2]));
                 break;
             case "vn":
-                obj.getNormals().add(new Vec3(parseDoubless(values)));
+                d = parseFloats(values);
+                if (d.length != 3) {
+                    throw new IOException("The vertex normals of the OBJ file must be of 3 elements!");
+                }
+                obj.getNormals().add(new Vector3(d[0], d[1], d[2]));
                 break;
             case "vt":
-                double[] vals = parseDoubless(values);
+                float[] vals = parseFloats(values);
                 if (vals.length != 2) {
                     throw new IOException("The Texture Coordinats of the OBJ file must be of only 2 elements!");
                 }
-                obj.getTexcoords().add(new Vector(vals));
+                obj.getTexcoords().add(new Vector2(vals[0], vals[1]));
                 break;
             case "f":
                 obj.addFace(parseFace(values));
@@ -90,13 +95,13 @@ public class ObjFileParser
         }
     }
 
-    private double[] parseDoubless(String[] values) throws IOException
+    private float[] parseFloats(String[] values) throws IOException
     {
-        double[] vals = new double[values.length];
+        float[] vals = new float[values.length];
         for (int i = 0; i < values.length; i++) {
             if (!values[i].isEmpty()) {
                 try {
-                    vals[i] = Double.parseDouble(values[i]);
+                    vals[i] = Float.parseFloat(values[i]);
                 } catch (NumberFormatException ex) {
                     throw new IOException("Exception while trying to parse nummber values!", ex);
                 }

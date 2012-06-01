@@ -19,6 +19,7 @@ package darwin.util.math.container;
 import java.io.Serializable;
 
 import darwin.util.math.base.*;
+import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.ModelMatrix;
 
 /**
@@ -30,41 +31,41 @@ public interface TransformationContainer extends Serializable{
      * @return
      * position-vector in world coordinates
      */
-    public Vec3 getPosition();
+    public ImmutableVector<Vector3> getPosition();
 
     /**
      * sets world-position
      * @param newpos
      * new position-vector
      */
-    public void setPosition(Vec3 newpos);
+    public void setPosition(ImmutableVector<Vector3> newpos);
 
     /**
      * shifts position in world space
      * @param p
      * shift vector
      */
-    public void shiftWorldPosition(Vec3 delta);
+    public void shiftWorldPosition(ImmutableVector<Vector3> delta);
 
     /**
      * sets the position in world space
      * @param pos
      */
-    public void setWorldPosition(Vec3 pos);
+    public void setWorldPosition(ImmutableVector<Vector3> pos);
 
     /**
      * shifts position in object space
      * @param p
      * shift vector
      */
-    public void shiftRelativePosition(Vec3 delta);
+    public void shiftRelativePosition(ImmutableVector<Vector3> delta);
 
     /**
      * rotate Object
      * @param delta
      * vector which discribes rotation for each axis
      */
-    public void rotateEuler(Vec3 delta);
+    public void rotateEuler(ImmutableVector<Vector3> delta);
 
     /**
      * rotate Object
@@ -86,7 +87,7 @@ public interface TransformationContainer extends Serializable{
      * @param delta
      * vector which discribes scale factor for each axis
      */
-    public void scale(Vec3 delta);
+    public void scale(ImmutableVector<Vector3> delta);
     public void scale(float delta);
 
     /**

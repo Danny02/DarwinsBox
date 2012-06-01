@@ -14,39 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.container;
+package darwin.util.math.base;
 
-import darwin.util.math.base.vector.*;
+import darwin.util.math.base.vector.ImmutableVector;
+import darwin.util.math.base.vector.Vector;
+
 
 /**
  *
- * @author dheinrich
+ * @author daniel
  */
-public interface PhysicContainer extends TransformationContainer{
-    /**
-     * @return
-     * velocity vector in world space
-     */
-    public ImmutableVector<Vector3> getVelocity();
+public class LineSegment<E extends Vector<E>>
+{
 
-    /**
-     * sets
-     * @param newvel
-     */
-    public void setVelocity(ImmutableVector<Vector3> newvel);
+    private final ImmutableVector<E> start, end;
 
-//    public Vec3f getRotVelocity();
-//    public void setRotVelocity(Vec3f newvel);
+    public LineSegment(ImmutableVector<E> start, ImmutableVector<E> end)
+    {
+        this.start = start.copy();
+        this.end = end.copy();
+    }
 
-    /**
-     * @return
-     * physical radius of object
-     */
-    public float getRadius();
+    public Line<E> getLine()
+    {
+        return Line.fromPoints(start, end);
+    }
 
-    /**
-     * @return
-     * weigth/mass of object
-     */
-    public float getMass();
+    public ImmutableVector<E> getEnd()
+    {
+        return end;
+    }
+
+    public ImmutableVector<E> getStart()
+    {
+        return start;
+    }
 }

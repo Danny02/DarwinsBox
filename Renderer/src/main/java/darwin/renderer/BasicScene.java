@@ -31,7 +31,8 @@ import darwin.renderer.util.memory.PerformanceView;
 import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.Matrix;
-import darwin.util.math.base.Vec3;
+import darwin.util.math.base.vector.ImmutableVector;
+import darwin.util.math.base.vector.Vector3;
 import darwin.util.math.composits.ProjectionMatrix;
 import darwin.util.math.composits.ViewMatrix;
 import darwin.util.math.util.MatType;
@@ -202,28 +203,25 @@ public class BasicScene implements GLEventListener
         robjekts.remove(new RenderWrapper(ro, null));
     }
 
-    public void setLigthDir(Vec3 lightdir)
+    public void setLigthDir(ImmutableVector<Vector3> lightdir)
     {
-        getMatrices().setLight(lightdir.mult(-1));
-        Matrix view3 = matrices.getView().getMinor(3, 3);
-        Vec3 light = new Vec3(view3.mult(lightdir));
-        light.normalize(light);
+        getMatrices().setLight(lightdir.copy().mul(-1));
+        Vector3 light = matrices.getView().fastMult(lightdir.copy());
+        light.normalize();
 
-        Vec3 halfvector = new Vec3(0, 0, 1);
-        halfvector.add(light, halfvector);
-        halfvector.normalize(halfvector);
+        Vector3 halfvector = new Vector3(0, 0, 1).add(light).normalize();
 
         setLightUniforms(light, halfvector);
     }
 
-    protected void setLightUniforms(Vec3 ldir, Vec3 half)
+    protected void setLightUniforms(Vector3 ldir, Vector3 half)
     {
         for (ShaderUniform su : this.lightdir) {
-            su.setData(ldir.getCoordsF());
+            su.setData(ldir.getCoords());
         }
 
         for (ShaderUniform su : this.half) {
-            su.setData(half.getCoordsF());
+            su.setData(half.getCoords());
         }
     }
 

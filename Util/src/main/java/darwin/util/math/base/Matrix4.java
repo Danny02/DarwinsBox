@@ -16,10 +16,14 @@
  */
 package darwin.util.math.base;
 
+import darwin.util.math.base.tupel.Tupel3;
+import darwin.util.math.base.vector.*;
+
 import static java.lang.Math.*;
 
 /**
  * Konfiguriert eine 4x4 Matrix
+ * <p/>
  * @author Daniel Heinrich
  */
 public class Matrix4 extends Matrix
@@ -29,37 +33,38 @@ public class Matrix4 extends Matrix
         X(0), Y(4), Z(8);
         private int offset;
 
-        private Axis(int offset) {
+        private Axis(int offset)
+        {
             this.offset = offset;
         }
     }
     private static final long serialVersionUID = -5557326075977567526L;
-    public static final double GRAD2RAD = 0.01745329251994329;//PI / 180;
-    public static final double RAD2GRAD = 57.29577951308232;// 180 / PI;
+    public static final float GRAD2RAD = (float) (PI / 180.);
+    public static final float RAD2GRAD = (float) (180. / PI);
 
-    public Matrix4() {
+    public Matrix4()
+    {
         super(4);
     }
 
     /**
-     * Builds a orthogonal Coordinate System, where the given Vector
-     * represents the given Axis. Both other Axis are generated in a way that
-     * no gurantee can be given how their orientation are.
-     * @param dir
-     * direction Vector of the given Axis
-     * @param a
-     * Axis of the given Vektor
+     * Builds a orthogonal Coordinate System, where the given Vector represents
+     * the given Axis. Both other Axis are generated in a way that no gurantee
+     * can be given how their orientation are.
+     * <p/>
+     * @param dir direction Vector of the given Axis
+     * @param a   Axis of the given Vektor
      */
-    public Matrix4(Vec3 dir, Axis a) {
+    public Matrix4(ImmutableVector<Vector3> dir, Axis a)
+    {
         this();
         loadIdentity();
 
-        Vec3 di = dir.normalize();
+        Vector3 di = dir.copy().normalize();
         setAxis(di, a);
 
-        double[] d = di.getCoords();
-        Vec3 dir2 = new Vec3(d[1], d[2], -d[0]);
-        Vec3 dir3 = dir.cross(dir2);
+        Vector3 dir2 = new Vector3(di.getY(), di.getZ(), -di.getX());
+        Vector3 dir3 = dir.copy().cross(dir2);
 
         Axis[] vals = Axis.values();
         int a2 = a.ordinal();
@@ -70,63 +75,82 @@ public class Matrix4 extends Matrix
     }
 
     /**
-     * Initialize a Matrix which will transform a Source Space to a
-     * Destination Space.
-     * @param src
-     * Matrix which describes the Source Coordinate Space
-     * @param dst
-     * Matrix which describes the Destination Coordinate Space
+     * Initialize a Matrix which will transform a Source Space to a Destination
+     * Space.
+     * <p/>
+     * @param src Matrix which describes the Source Coordinate Space
+     * @param dst Matrix which describes the Destination Coordinate Space
      */
-    public Matrix4(Matrix4 src, Matrix4 dst) {
+    public Matrix4(Matrix4 src, Matrix4 dst)
+    {
         this();
         Matrix4 tmp = new Matrix4();
         src.inverse(tmp);
         tmp.mult(dst, this);
     }
 
-    public void setAxis(Vec3 x, Vec3 y, Vec3 z) {
-        setAxis(x, Axis.X);
-        setAxis(y, Axis.Y);
-        setAxis(z, Axis.Z);
+    public Vector3 fastMult(Tupel3 vec)
+    {
+        float[] data = getArray();
+        float x, y, z;
+
+        x = data[0];
+        x += data[1];
+        x += data[2];
+        x += data[3];
+
+        y = data[4];
+        y += data[5];
+        y += data[6];
+        y += data[7];
+
+        z = data[8];
+        z += data[9];
+        z += data[10];
+        z += data[11];
+
+//        x = y = z = 0;
+//        for (int i = 0; i < 4; ++i) {
+//            x += data[i];
+//            y += data[i + 4];
+//            z += data[i + 8];
+//        }
+
+        return new Vector3(x * vec.getX(), y * vec.getY(), z * vec.getZ());
     }
 
     @Override
-    public Vector mult(double[] a) {
-        double[] b;
-        if (a.length < 4) {
-            b = new double[4];
-            b[3] = 1;
-            System.arraycopy(a, 0, b, 0, a.length);
-        } else
-            b = a;
-
-        return super.mult(b);
+    public Matrix4 mult(Matrix multi)
+    {
+        Matrix4 r = new Matrix4();
+        super.mult(multi, r);
+        return r;
     }
 
     /**
      * translate the matrix in world space
-     * @param vec
-     * translation vector
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param vec translation vector
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 worldTranslate(Vec3 vec) {
-        double[] coords = vec.getCoords();
-        return worldTranslate(coords[0], coords[1], coords[2]);
+    public Matrix4 worldTranslate(ImmutableVector<Vector3> vec)
+    {
+        Vector3 t = vec.copy();
+        return worldTranslate(t.getX(), t.getY(), t.getZ());
     }
 
     /**
      * translate the matrix in world space
-     * @param x
-     * x-axis translation
-     * @param y
-     * y-axis translation
-     * @param z
-     * z-axis translation
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param x x-axis translation
+     * @param y y-axis translation
+     * @param z z-axis translation
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 worldTranslate(double x, double y, double z) {
+    public Matrix4 worldTranslate(double x, double y, double z)
+    {
         float[] m = getArray();
         m[12] += x * m[15];
         m[13] += y * m[15];
@@ -135,44 +159,46 @@ public class Matrix4 extends Matrix
         return this;
     }
 
-    public Matrix4 setWorldTranslate(Vec3 vec) {
-        double[] coords = vec.getCoords();
-        return setWorldTranslate(coords[0], coords[1], coords[2]);
+    public Matrix4 setWorldTranslate(ImmutableVector<Vector3> vec)
+    {
+        Vector3 t = vec.copy();
+        return setWorldTranslate(t.getX(), t.getY(), t.getZ());
     }
 
-    public Matrix4 setWorldTranslate(double x, double y, double z) {
+    public Matrix4 setWorldTranslate(float x, float y, float z)
+    {
         float[] m = getArray();
-        m[12] = (float) x;
-        m[13] = (float) y;
-        m[14] = (float) z;
+        m[12] = x;
+        m[13] = y;
+        m[14] = z;
 
         return this;
     }
 
     /**
      * translate the matrix in matrix space
-     * @param vec
-     * translation vector
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param vec translation vector
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 translate(Vec3 vec) {
-        double[] coords = vec.getCoords();
-        return translate(coords[0], coords[1], coords[2]);
+    public Matrix4 translate(ImmutableVector<Vector3> vec)
+    {
+        Vector3 t = vec.copy();
+        return translate(t.getX(), t.getY(), t.getZ());
     }
 
     /**
      * translate the matrix in matrix space
-     * @param x
-     * x-axis translation
-     * @param y
-     * y-axis translation
-     * @param z
-     * z-axis translation
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param x x-axis translation
+     * @param y y-axis translation
+     * @param z z-axis translation
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 translate(double x, double y, double z) {
+    public Matrix4 translate(float x, float y, float z)
+    {
         float[] m = getArray();
         m[12] += m[0] * x + m[4] * y + m[8] * z;
         m[13] += m[1] * x + m[5] * y + m[9] * z;
@@ -182,26 +208,29 @@ public class Matrix4 extends Matrix
     }
 
     /**
-     * Rotates the Matrix with the given Eular Angles.
-     * Rotation order is x,y,z.
-     * @param angles
-     * 3D Vector which holds the rotation angles for each axis
+     * Rotates the Matrix with the given Eular Angles. Rotation order is x,y,z.
+     * <p/>
+     * @param angles 3D Vector which holds the rotation angles for each axis
+     * <p/>
      * @return the same Matrix
      */
-    public Matrix4 rotateEuler(Vec3 angles) {
-        double[] c = angles.getCoords();
-        return rotateEuler(c[0], c[1], c[2]);
+    public Matrix4 rotateEuler(ImmutableVector<Vector3> vec)
+    {
+        Vector3 t = vec.copy();
+        return rotateEuler(t.getX(), t.getY(), t.getZ());
     }
 
     /**
-     * Rotates the Matrix with the given Eular Angles.
-     * Rotation order is x,y,z.
+     * Rotates the Matrix with the given Eular Angles. Rotation order is x,y,z.
+     * <p/>
      * @param x
      * @param y
-     * @param z
+     * @param z < p/>
+     * <p/>
      * @return the same Matrix
      */
-    public Matrix4 rotateEuler(double x, double y, double z) {
+    public Matrix4 rotateEuler(float x, float y, float z)
+    {
         double xx = x * GRAD2RAD;
         double yy = y * GRAD2RAD;
         double zz = z * GRAD2RAD;
@@ -236,10 +265,13 @@ public class Matrix4 extends Matrix
 
     /**
      * Rotates the Matrix with the rotationen the given Quaternion describes
-     * @param quat
+     * <p/>
+     * @param quat < p/>
+     * <p/>
      * @return the same Matrix
      */
-    public Matrix4 rotate(Quaternion quat) {
+    public Matrix4 rotate(Quaternion quat)
+    {
         Matrix4 rot = quat.getRotationMatrix();
         this.mult(rot, this);
         return this;
@@ -247,57 +279,66 @@ public class Matrix4 extends Matrix
 
     /**
      * scales the matrix space
-     * @param scale
-     * scale factor vector
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param scale scale factor vector
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 scale(Vec3 scale) {
-        double[] coords = scale.getCoords();
-        return scale(coords[0], coords[1], coords[2]);
+    public Matrix4 scale(ImmutableVector<Vector3> vec)
+    {
+        Vector3 t = vec.copy();
+        return scale(t.getX(), t.getY(), t.getZ());
     }
 
     /**
      * scales the matrix space
-     * @param scalex
-     * x-axis scale factor
-     * @param scaley
-     * y-axis scale factor
-     * @param scalez
-     * z-axis scale factor
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param scalex x-axis scale factor
+     * @param scaley y-axis scale factor
+     * @param scalez z-axis scale factor
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 scale(double scalex, double scaley, double scalez) {
+    public Matrix4 scale(float scalex, float scaley, float scalez)
+    {
 
-        if (scalex == scaley && scalex == scalez)
+        if (scalex == scaley && scalex == scalez) {
             return scale(scalex);
+        }
 
         float[] m = getArray();
 
-        if (scalex != 1)
-            for (int i = 0; i < 3; ++i)
+        if (scalex != 1) {
+            for (int i = 0; i < 3; ++i) {
                 m[i] *= scalex;
-        if (scaley != 1)
-            for (int i = 4; i < 7; ++i)
+            }
+        }
+        if (scaley != 1) {
+            for (int i = 4; i < 7; ++i) {
                 m[i] *= scaley;
-        if (scalez != 1)
-            for (int i = 8; i < 11; ++i)
+            }
+        }
+        if (scalez != 1) {
+            for (int i = 8; i < 11; ++i) {
                 m[i] *= scalez;
+            }
+        }
 
         return this;
     }
 
     /**
      * scales the matrix space evenly
-     * @param scale
-     * scale factor
-     * @return
-     * the manipulated matrix
+     * <p/>
+     * @param scale scale factor
+     * <p/>
+     * @return the manipulated matrix
      */
-    public Matrix4 scale(double scale) {
-        if (scale == 1)
+    public Matrix4 scale(float scale)
+    {
+        if (scale == 1) {
             return this;
+        }
 
         float[] m = getArray();
         float s = (float) (1. / scale);
@@ -310,60 +351,74 @@ public class Matrix4 extends Matrix
     }
 
     /**
-     * @return total translation of matrix space relativ to world space.
-     * Can be used as position of the matrix in world space.
+     * @return total translation of matrix space relativ to world space. Can be
+     *         used as position of the matrix in world space.
      */
-    public Vec3 getTranslation() {
+    public Vector3 getTranslation()
+    {
         float[] mat = getArray();
-        return new Vec3(mat[12], mat[13], mat[14]);
+        return new Vector3(mat[12], mat[13], mat[14]);
     }
 
-    /**
-     * @return a axis vector of the object space represented by this matrix (not normalized).
-     */
-    public Vec3 getAxis(Axis a) {
-        float[] mat = getArray();
-        float[] vec = new float[3];
-        System.arraycopy(mat, a.offset, vec, 0, 3);
-        return new Vec3(vec);
+    public void setAxis(ImmutableVector<Vector3> x, ImmutableVector<Vector3> y, ImmutableVector<Vector3> z)
+    {
+        setAxis(x, Axis.X);
+        setAxis(y, Axis.Y);
+        setAxis(z, Axis.Z);
     }
 
-    public void setAxis(Vec3 axis, Axis a) {
+    public void setAxis(ImmutableVector<Vector3> axis, Axis a)
+    {
         System.arraycopy(axis.getCoords(), 0, getArray(), a.offset, 3);
     }
 
-    public Vec3 getEularAngles() {
+    /**
+     * @return a axis vector of the object space represented by this matrix (not
+     *         normalized).
+     */
+    public Vector3 getAxis(Axis a)
+    {
         float[] mat = getArray();
-        double[] angles = new double[3];
+        float[] vec = new float[3];
+        System.arraycopy(mat, a.offset, vec, 0, 3);
+        return new Vector3(mat[a.offset], mat[a.offset + 1], mat[a.offset + 2]);
+    }
 
-        angles[1] = asin(mat[8]);        /* Calculate Y-axis angle */
+    public Vector3 getEularAngles()
+    {
+        float[] mat = getArray();
+        float[] angles = new float[3];
+
+        angles[1] = (float) asin(mat[8]);        /* Calculate Y-axis angle */
 
         double C = cos(angles[1]);
         if (abs(C) > 0.005) /* Gimball lock? */ {
             double trx = mat[10] / C;           /* No, so get X-axis angle */
             double tryy = -mat[9] / C;
-            angles[0] = atan2(tryy, trx);
+            angles[0] = (float) atan2(tryy, trx);
             trx = mat[0] / C;            /* Get Z-axis angle */
             tryy = -mat[4] / C;
-            angles[2] = atan2(tryy, trx);
+            angles[2] = (float) atan2(tryy, trx);
         } else /* Gimball lock has occurred */ {
             angles[0] = 0;                      /* Set X-axis angle to zero */
             double trx = mat[5];                 /* And calculate Z-axis angle */
             double tryy = mat[1];
-            angles[2] = atan2(tryy, trx);
+            angles[2] = (float) atan2(tryy, trx);
         }
 
         /* return only positive angles in [0,360] */
         for (int i = 0; i < 3; ++i) {
             angles[i] *= RAD2GRAD;
-            if (angles[i] < 0)
+            if (angles[i] < 0) {
                 angles[i] += 360;
+            }
         }
 
-        return new Vec3(angles);
+        return new Vector3(angles[0], angles[1], angles[2]);
     }
 
-    public Quaternion getRotation() {
+    public Quaternion getRotation()
+    {
         // from http://www.euclideanspace.com/maths/geometry/rotations
         //           /conversions/matrixToQuaternion/index.htm
 
@@ -392,39 +447,48 @@ public class Matrix4 extends Matrix
 //        z = Math.copySign(z, mat[1] - mat[4]);
 //
 
-        double tr = mat[0] + mat[5] + mat[10];
-        double w, x, y, z;
+        float tr = mat[0] + mat[5] + mat[10];
+        float w, x, y, z;
 
         if (tr > 0) {
-            double S = sqrt(tr + 1.0) * 2; // S=4*w
-            w = 0.25 * S;
+            float S = (float) (sqrt(tr + 1.0) * 2); // S=4*w
+            w = 0.25f * S;
             x = (mat[9] - mat[6]) / S;
             y = (mat[8] - mat[2]) / S;
             z = (mat[1] - mat[4]) / S;
         } else if ((mat[0] > mat[5]) && (mat[0] > mat[10])) {
-            double S = sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2; // S=4*x
+            float S = (float) (sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2); // S=4*x
             w = (mat[9] - mat[6]) / S;
-            x = 0.25 * S;
+            x = 0.25f * S;
             y = (mat[4] + mat[1]) / S;
             z = (mat[8] + mat[2]) / S;
         } else if (mat[5] > mat[10]) {
-            double S = sqrt(1.0 + mat[5] - mat[0] - mat[10]) * 2; // S=4*y
+            float S = (float) (sqrt(1.0 + mat[5] - mat[0] - mat[10]) * 2); // S=4*y
             w = (mat[8] - mat[2]) / S;
             x = (mat[4] + mat[1]) / S;
-            y = 0.25 * S;
+            y = 0.25f * S;
             z = (mat[6] + mat[9]) / S;
         } else {
-            double S = sqrt(1.0 + mat[10] - mat[0] - mat[5]) * 2; // S=4*z
+            float S = (float) (sqrt(1.0 + mat[10] - mat[0] - mat[5]) * 2); // S=4*z
             w = (mat[1] - mat[4]) / S;
             x = (mat[8] + mat[2]) / S;
             y = (mat[6] + mat[9]) / S;
-            z = 0.25 * S;
+            z = 0.25f * S;
         }
 
-        return new Quaternion(w, new Vec3(x, y, z));
+        return new Quaternion(w, new Vector3(x, y, z));
     }
 
-    public void setRotation(Matrix4 rot) {
+    @Override
+    public Matrix4 inverse()
+    {
+        Matrix4 r = new Matrix4();
+        inverse(r);
+        return r;
+    }
+
+    public void setRotation(Matrix4 rot)
+    {
         float[] r = rot.getArray();
         float[] m = getArray();
 
