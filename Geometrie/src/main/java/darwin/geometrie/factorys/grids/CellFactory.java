@@ -20,8 +20,7 @@ import java.util.*;
 
 import darwin.geometrie.data.VertexBuffer;
 import darwin.geometrie.factorys.*;
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector2;
+import darwin.util.math.base.vector.*;
 
 /**
  *

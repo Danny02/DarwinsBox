@@ -18,6 +18,7 @@ package darwin.util.math.base;
 
 import darwin.util.math.base.vector.ImmutableVector;
 import darwin.util.math.base.vector.Vector;
+import darwin.util.math.base.vector.Vector2;
 import darwin.util.math.base.vector.Vector3;
 
 /**
@@ -98,7 +99,7 @@ public final class Line<E extends Vector<E>>
 
         Plane e = Plane.fromLineAndDirection(t, dir.cross(g.dir));
         return e.getIntersection(o);
-    }
+    }    
 
     public double distanceTo(ImmutableVector<E> p)
     {

@@ -26,8 +26,7 @@ import org.slf4j.helpers.NOPLogger;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
-import darwin.geometrie.unpacked.Mesh;
-import darwin.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.jopenctm.compression.MG1Encoder;
 import darwin.jopenctm.compression.MeshEncoder;
 import darwin.jopenctm.data.AttributeData;
@@ -45,7 +44,6 @@ import static darwin.jopenctm.data.Mesh.*;
 @ServiceProvider(ModelWriter.class)
 public class CtmModelWriter implements ModelWriter
 {
-
     public static final String FILE_EXTENSION = "ctm";
     private final static String DEFAULT_COMMENT = "Exported with Darwin Lib";
     private static final Element position, texcoord, normal;
@@ -84,8 +82,12 @@ public class CtmModelWriter implements ModelWriter
     {
         CtmFileWriter writer = new CtmFileWriter(out, encoder);
         for (Model m : models) {
+            String matName = null;
+            if (m.getMat() != null) {
+                matName = m.getMat().name;
+            }
             try {
-                writer.encode(convertMesh(m.getMesh(), m.getMat().name), fileComment);
+                writer.encode(convertMesh(m.getMesh(), matName), fileComment);
             } catch (InvalidDataException ex) {
                 throw new IOException("The model has some invalid data: " + ex.getMessage());
             }
@@ -126,7 +128,7 @@ public class CtmModelWriter implements ModelWriter
                 k += CTM_ATTR_ELEMENT_COUNT;
             }
             attribute.add(new AttributeData(el.getBezeichnung(), null,
-                    AttributeData.STANDART_PRECISION, values));
+                                            AttributeData.STANDART_PRECISION, values));
         }
 
         System.arraycopy(mesh.getIndicies(), 0, indices, 0, indices.length);
@@ -153,14 +155,14 @@ public class CtmModelWriter implements ModelWriter
                 k += CTM_UV_ELEMENT_COUNT;
             }
             texcoords = new AttributeData("TexCoord", matName,
-                    AttributeData.STANDART_UV_PRECISION, values);
+                                          AttributeData.STANDART_UV_PRECISION, values);
         }
 
         AttributeData[] atts = new AttributeData[attribute.size()];
         attribute.toArray(atts);
         return new darwin.jopenctm.data.Mesh(vertices, normals, indices,
-                texcoords == null ? new AttributeData[0] : new AttributeData[]{texcoords},
-                atts);
+                                             texcoords == null ? new AttributeData[0] : new AttributeData[]{texcoords},
+                                             atts);
     }
 
     private void copyToBuffer(float[] buffer, int offset, Vertex v, Element e)

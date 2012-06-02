@@ -32,6 +32,13 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
         this.y = y;
     }
 
+    public Vector2(ImmutableVector<Vector3> v3)
+    {
+        float[] c = v3.getCoords();
+        x = c[0];
+        y = c[1];
+    }
+
     public Vector2()
     {
     }
