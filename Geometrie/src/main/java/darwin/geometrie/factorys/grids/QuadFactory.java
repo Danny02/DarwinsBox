@@ -34,9 +34,9 @@ public class QuadFactory
     public QuadFactory(float size)
     {
         points = new ImmutableVector[3];
-        points[0] = new Vector2(0, -size);
-        points[1] = new Vector2(size, -size);
-        points[2] = new Vector2(size, 0);
+        points[0] = new Vector2(size, 0);
+        points[1] = new Vector2(size, size);
+        points[2] = new Vector2(0, size);
     }
 
     public Quad createQuad(ImmutableVector<Vector2> pos)
