@@ -45,7 +45,7 @@ public class CellFactory
         for (int x = 0; x < tessfactor; x++) {
             for (int y = 0; y < tessfactor; y++) {
                 quads[tessfactor * x + y] = qfactory.createQuad(position.copy().add(
-                        new Vector2(size * x, -size * y)));
+                        new Vector2(size * x, size * y)));
             }
         }
         cells.add(new Cell(quads, tessfactor));

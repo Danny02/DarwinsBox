@@ -25,40 +25,44 @@ import darwin.geometrie.factorys.Quad;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Cell {
-
+public class Cell
+{
     private final Quad[] quads;
     private final int[] corners;
     private final int[] midpoints;
     private final int tf;
 
-    Cell(Quad[] quads, int tessfactor) {
+    Cell(Quad[] quads, int tessfactor)
+    {
         tf = tessfactor;
         this.quads = quads;
         int t1 = tf - 1;
         int t2 = tf * t1;
         corners = new int[]{quads[0].getVertice(3),
-            quads[t2].getVertice(2),
-            quads[tf * tf - 1].getVertice(1),
-            quads[t1].getVertice(0)};
+                            quads[t2].getVertice(2),
+                            quads[tf * tf - 1].getVertice(1),
+                            quads[t1].getVertice(0)};
 
         int half = tessfactor / 2 - 1;
         midpoints = new int[]{quads[half].getVertice(0),
-            quads[tf * half + t1].getVertice(1),
-            quads[t2 + half].getVertice(1),
-            quads[tf * half].getVertice(2),
-            quads[tf * half + half].getVertice(1)};
+                              quads[tf * half + t1].getVertice(1),
+                              quads[t2 + half].getVertice(1),
+                              quads[tf * half].getVertice(2),
+                              quads[tf * half + half].getVertice(1)};
     }
 
-    public int[] getCorners() {
+    public int[] getCorners()
+    {
         return corners;
     }
 
-    public int[] getMidpoints() {
+    public int[] getMidpoints()
+    {
         return midpoints;
     }
 
-    public int[] getVertice() {
+    public int[] getVertice()
+    {
         int[] vertice = new int[quads.length * 4];
         for (int i = 0; i < quads.length; i++) {
             for (int j = 0; j < 4; j++) {
@@ -69,20 +73,22 @@ public class Cell {
         return vertice;
     }
 
-    public int[] getTriangles() {
+    public int[] getTriangles()
+    {
         int[] tris = new int[quads.length * 6];
         for (int i = 0; i < quads.length; i++) {
-            int[] t = quads[i].getTriangles();
-            System.arraycopy(t, 0, tris, i * 6, t.length);
+            quads[i].copyTriangles(tris, i * 6);
         }
         return tris;
     }
 
-    public int getTriCount() {
+    public int getTriCount()
+    {
         return quads.length * 2;
     }
 
-    public void interpolate(VertexBuffer vb) {
+    public void interpolate(VertexBuffer vb)
+    {
         for (Element a : vb.layout.getElements()) {
             Set<Integer> ids = new HashSet<>();
             for (int i : corners) {
@@ -120,14 +126,16 @@ public class Cell {
         }
     }
 
-    public Number[] lerp(DataType t, Number[] a, Number[] b, double v) {
+    public Number[] lerp(DataType t, Number[] a, Number[] b, double v)
+    {
         Number[] c = t.mul(v, a);
         c = t.add(c, t.mul(1 - v, b));
         return c;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (obj == null) {
             return false;
         }
@@ -145,7 +153,8 @@ public class Cell {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 5;
         hash = 17 * hash + Arrays.hashCode(this.corners);
         hash = 17 * hash + this.tf;
