@@ -26,7 +26,7 @@ const float weight[FILTER_RADIUS];  //<generate GausConstants.Weights>
 #ifdef X
     #define DIRECTION(a) a.x
 #elif defined Y
-    #define DIRECTION(a) a.x
+    #define DIRECTION(a) a.y
 #endif
 
 vec4 addSamples(int i) {
