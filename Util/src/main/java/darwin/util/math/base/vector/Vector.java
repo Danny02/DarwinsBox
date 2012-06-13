@@ -54,7 +54,7 @@ public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
     {
         float len = (float) length();
         if (len != 0) {
-            mul(len);
+            mul(1f/len);
         }
         return (E)this;
     }
