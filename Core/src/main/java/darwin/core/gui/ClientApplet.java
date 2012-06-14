@@ -51,7 +51,7 @@ public class ClientApplet extends JApplet implements ShutdownListener
     {
         try {
             client.iniClient();
-            NewtCanvasAWT canvas = new NewtCanvasAWT(client.gc.getGLWindow());
+            NewtCanvasAWT canvas = new NewtCanvasAWT(client.getWindow());
             add(canvas, BorderLayout.CENTER);
         } catch (InstantiationException ex) {
             doShutDown();

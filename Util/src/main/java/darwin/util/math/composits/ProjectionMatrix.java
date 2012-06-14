@@ -16,7 +16,7 @@
  */
 package darwin.util.math.composits;
 
-import darwin.util.math.base.Matrix4;
+import darwin.util.math.base.matrix.Matrix4;
 
 import static java.lang.Math.*;
 

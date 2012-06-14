@@ -11,12 +11,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.composits;
 
-import darwin.util.math.base.Matrix4;
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.vector.*;
 
 /**
@@ -43,9 +43,9 @@ public class ViewMatrix extends Matrix4
         Vector3 forward, side, up2;
         Matrix4 matrix = new Matrix4();
 
-        forward = center.copy().sub(eye).normalize();
-        side = forward.copy().cross(up).normalize();
-        up2 = side.copy().cross(forward);
+        forward = center.clone().sub(eye).normalize();
+        side = forward.clone().cross(up).normalize();
+        up2 = side.clone().cross(forward);
 
         float[] mat = matrix.getArray();
 
@@ -67,7 +67,7 @@ public class ViewMatrix extends Matrix4
         mat[15] = 1.0f;
 
         loadIdentity();
-        mult(matrix, this);
+        mult(matrix);
         translate(eye);
     }
 

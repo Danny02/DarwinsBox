@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base.vector;
@@ -44,7 +44,7 @@ public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
 
     public E reflect(ImmutableVector<E> normal)
     {
-        E n = normal.copy();
+        E n = normal.clone();
         n.mul(dot(n) * 2);
         sub(n);
         return (E)this;

@@ -20,7 +20,7 @@ import java.util.Vector;
 import darwin.geometrie.data.DataLayout.Format;
 import darwin.geometrie.data.*;
 import darwin.geometrie.factorys.*;
-import darwin.util.math.base.Matrix4;
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.tupel.*;
 import darwin.util.math.base.vector.Vector2;
 

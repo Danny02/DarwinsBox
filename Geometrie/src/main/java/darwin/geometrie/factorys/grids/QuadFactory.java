@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.geometrie.factorys.grids;
@@ -41,10 +41,10 @@ public class QuadFactory
 
     public Quad createQuad(ImmutableVector<Vector2> pos)
     {
-        Quad q = new Quad(getVertIndex(pos.copy().add(points[0])),
-                          getVertIndex(pos.copy().add(points[1])),
-                          getVertIndex(pos.copy().add(points[2])),
-                          getVertIndex(pos.copy()));
+        Quad q = new Quad(getVertIndex(pos.clone().add(points[0])),
+                          getVertIndex(pos.clone().add(points[1])),
+                          getVertIndex(pos.clone().add(points[2])),
+                          getVertIndex(pos.clone()));
         quads.add(q);
         return q;
     }

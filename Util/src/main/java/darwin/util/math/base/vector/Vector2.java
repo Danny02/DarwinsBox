@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base.vector;
@@ -44,11 +44,11 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     //converter methods
-    @Override
-    public Vector2 copy()
-    {
-        return new Vector2(x, y);
-    }
+//    @Override
+//    public Vector2 clone()
+//    {
+//        return new Vector2(x, y);
+//    }
 
     @Override
     public Vector3 toVector3()
@@ -66,7 +66,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public Vector3 cross(ImmutableVector<Vector2> b)
     {
-        Vector2 mul = b.copy();
+        Vector2 mul = b.clone();
         return new Vector3(0, 0, x * mul.y - y * mul.x);
     }
 
@@ -74,7 +74,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public Vector2 add(ImmutableVector<Vector2> b)
     {
-        Vector2 sum = b.copy();
+        Vector2 sum = b.clone();
         x += sum.x;
         y += sum.y;
         return this;
@@ -91,7 +91,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public Vector2 sub(ImmutableVector<Vector2> b)
     {
-        Vector2 sum = b.copy();
+        Vector2 sum = b.clone();
         x -= sum.x;
         y -= sum.y;
         return this;
@@ -108,7 +108,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public Vector2 mul(ImmutableVector<Vector2> b)
     {
-        Vector2 sum = b.copy();
+        Vector2 sum = b.clone();
         x *= sum.x;
         y *= sum.y;
         return this;
@@ -125,7 +125,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public Vector2 min(ImmutableVector<Vector2> b)
     {
-        Vector2 sum = b.copy();
+        Vector2 sum = b.clone();
         x = Math.min(x, sum.x);
         y = Math.min(y, sum.y);
         return this;
@@ -142,7 +142,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public Vector2 max(ImmutableVector<Vector2> b)
     {
-        Vector2 sum = b.copy();
+        Vector2 sum = b.clone();
         x = Math.max(x, sum.x);
         y = Math.max(y, sum.y);
         return this;
@@ -159,7 +159,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     @Override
     public float dot(ImmutableVector<Vector2> b)
     {
-        Vector2 sum = b.copy();
+        Vector2 sum = b.clone();
         return x * sum.x + y * sum.y;
     }
 

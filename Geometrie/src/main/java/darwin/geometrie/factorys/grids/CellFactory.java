@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.geometrie.factorys.grids;
@@ -44,7 +44,7 @@ public class CellFactory
         float size = 1f / tessfactor;
         for (int x = 0; x < tessfactor; x++) {
             for (int y = 0; y < tessfactor; y++) {
-                quads[tessfactor * x + y] = qfactory.createQuad(position.copy().add(
+                quads[tessfactor * x + y] = qfactory.createQuad(position.clone().add(
                         new Vector2(size * x, size * y)));
             }
         }
@@ -54,7 +54,7 @@ public class CellFactory
     public int createCells(ImmutableVector<Vector2>[] positions)
     {
         for (ImmutableVector<Vector2> v : positions) {
-            qfactory.precachePosition(v.copy());
+            qfactory.precachePosition(v.clone());
             qfactory.precachePosition(new Vector2(tessfactor, 0).add(v));
             qfactory.precachePosition(new Vector2(tessfactor, tessfactor).add(v));
             qfactory.precachePosition(new Vector2(0, tessfactor).add(v));
@@ -85,7 +85,7 @@ public class CellFactory
 
         ImmutableVector<Vector2>[] pos = qfactory.getPositions();
         for (int i = 0; i < pos.length; ++i) {
-            pvf.fill(vb.getVertex(i), pos[i].copy());
+            pvf.fill(vb.getVertex(i), pos[i].clone());
         }
     }
 

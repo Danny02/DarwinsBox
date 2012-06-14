@@ -11,14 +11,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.util;
 
 import java.util.*;
 
-import darwin.util.math.base.*;
+import darwin.util.math.base.matrix.*;
 import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.*;
 
@@ -110,7 +110,7 @@ public class MatrixCache {
     }
 
     public void setLight(ImmutableVector<Vector3> light) {
-        this.light = light.copy();
+        this.light = light.clone();
         fireChange(LIGHT);
     }
 
@@ -162,7 +162,7 @@ public class MatrixCache {
         fireChange(VIEW);
     }
 
-    public Matrix getModelView() {
+    public Matrix4 getModelView() {
         if (vm == null) {
             vm = view.mult(model);
         }

@@ -16,16 +16,11 @@
  */
 package darwin.core.gui;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.jogamp.newt.event.WindowAdapter;
-import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.newt.opengl.GLWindow;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
-
+import com.google.inject.*;
+import com.jogamp.newt.Window;
+import com.jogamp.newt.event.*;
+import org.apache.log4j.*;
+import org.apache.log4j.spi.*;
 
 /**
  * Kein Fenster im eigentlichen Sinne, sondern mehr eine Ansammlung der Objekte,
@@ -37,23 +32,19 @@ import org.apache.log4j.spi.ThrowableInformation;
  */
 public class ClientWindow implements ShutdownListener
 {
-
     private final Client client;
     private final int width, height;
     private final boolean fullscreen;
 
-    public ClientWindow(int xSize, int ySize, boolean fullscreen)
+    public ClientWindow(int xSize, int ySize, boolean fullscreen, Client c)
     {
         width = xSize;
         height = ySize;
         this.fullscreen = fullscreen;
-
-        Injector in = Guice.createInjector();
-        client = in.getInstance(Client.class);
+        client = c;
         client.addShutdownListener(this);
         client.addLogAppender(new AppenderSkeleton()
         {
-
             @Override
             protected void append(LoggingEvent event)
             {
@@ -82,13 +73,12 @@ public class ClientWindow implements ShutdownListener
     public void startUp() throws InstantiationException
     {
         client.iniClient();
-        GLWindow win = client.gc.getGLWindow();
+        Window win = client.getWindow();
         win.setSize(width, height);
         win.setVisible(true);
 
         win.addWindowListener(new WindowAdapter()
         {
-
             @Override
             public void windowDestroyed(WindowEvent arg0)
             {
@@ -106,7 +96,6 @@ public class ClientWindow implements ShutdownListener
          */
         new Thread(new Runnable()
         {
-
             @Override
             public void run()
             {

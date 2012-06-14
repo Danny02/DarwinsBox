@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base.vector;
@@ -37,16 +37,16 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     {
     }
 
-    @Override
-    public Vector3 copy()
-    {
-        return new Vector3(x, y, z);
-    }
+//    @Override
+//    public Vector3 clone()
+//    {
+//        return new Vector3(x, y, z);
+//    }
 
     @Override
     public Vector3 toVector3()
     {
-        return copy();
+        return clone();
     }
 
     @Override
@@ -55,9 +55,10 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
         return new float[]{x, y, z};
     }
 
+    @Override
     public Vector3 cross(ImmutableVector<Vector3> b)
     {
-        Vector3 mul = b.copy();
+        Vector3 mul = b.clone();
         return new Vector3(y * mul.z - z * mul.y,
                            z * mul.x - x * mul.z,
                            x * mul.y - y * mul.x);
@@ -66,7 +67,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     @Override
     public Vector3 add(ImmutableVector<Vector3> b)
     {
-        Vector3 sum = b.copy();
+        Vector3 sum = b.clone();
         x += sum.x;
         y += sum.y;
         z += sum.z;
@@ -85,7 +86,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     @Override
     public Vector3 sub(ImmutableVector<Vector3> b)
     {
-        Vector3 sum = b.copy();
+        Vector3 sum = b.clone();
         x -= sum.x;
         y -= sum.y;
         z -= sum.z;
@@ -104,7 +105,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     @Override
     public Vector3 mul(ImmutableVector<Vector3> b)
     {
-        Vector3 sum = b.copy();
+        Vector3 sum = b.clone();
         x *= sum.x;
         y *= sum.y;
         z *= sum.z;
@@ -123,7 +124,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     @Override
     public Vector3 min(ImmutableVector<Vector3> b)
     {
-        Vector3 sum = b.copy();
+        Vector3 sum = b.clone();
         x = Math.min(x, sum.x);
         y = Math.min(y, sum.y);
         z = Math.min(z, sum.z);
@@ -142,7 +143,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     @Override
     public Vector3 max(ImmutableVector<Vector3> b)
     {
-        Vector3 sum = b.copy();
+        Vector3 sum = b.clone();
         x = Math.max(x, sum.x);
         y = Math.max(y, sum.y);
         z = Math.max(z, sum.z);
@@ -161,7 +162,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     @Override
     public float dot(ImmutableVector<Vector3> b)
     {
-        Vector3 sum = b.copy();
+        Vector3 sum = b.clone();
         return x * sum.x + y * sum.y + z * sum.z;
     }
 

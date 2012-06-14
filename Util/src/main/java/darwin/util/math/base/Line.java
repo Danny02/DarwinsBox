@@ -11,15 +11,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base;
 
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector;
-import darwin.util.math.base.vector.Vector2;
-import darwin.util.math.base.vector.Vector3;
+import darwin.util.math.base.vector.*;
 
 /**
  *
@@ -41,13 +38,13 @@ public final class Line<E extends Vector<E>>
         if (dir.lengthQuad() == 0.) {
             throw new IllegalArgumentException("The direction vector must not have a length of null!");
         }
-        this.a = a.copy();
-        this.dir = dir.copy().normalize();
+        this.a = a.clone();
+        this.dir = dir.clone().normalize();
     }
 
     public static <E extends Vector<E>> Line<E> fromPoints(ImmutableVector<E> a, ImmutableVector<E> b)
     {
-        return new Line<>(a, a.copy().sub(b));
+        return new Line<>(a, a.clone().sub(b));
     }
 
     public Relationship getRelationship(Line<E> g)
@@ -82,13 +79,13 @@ public final class Line<E extends Vector<E>>
 
     public boolean isSkewTo(Line<E> g)
     {
-        Vector<E> tmp = a.copy().sub(g.a);
+        Vector<E> tmp = a.clone().sub(g.a);
         return !tmp.cross(dir).isParrallelTo(tmp.cross(g.dir));
     }
 
     public boolean contains(ImmutableVector<E> p)
     {
-        return p.copy().sub(a).isParrallelTo(dir);
+        return p.clone().sub(a).isParrallelTo(dir);
     }
 
     public Vector3 getIntersection(Line<E> g)
@@ -99,11 +96,11 @@ public final class Line<E extends Vector<E>>
 
         Plane e = Plane.fromLineAndDirection(t, dir.cross(g.dir));
         return e.getIntersection(o);
-    }    
+    }
 
     public double distanceTo(ImmutableVector<E> p)
     {
-        Vector tmp = a.copy().sub(p);
+        Vector tmp = a.clone().sub(p);
         double lenquad = dir.cross(tmp).lengthQuad() / dir.lengthQuad();
         return Math.sqrt(lenquad);
     }
@@ -114,7 +111,7 @@ public final class Line<E extends Vector<E>>
             return distanceTo(g.a);
         } else {
             Vector3 n = dir.cross(g.dir).normalize();
-            return Math.abs(a.copy().sub(g.a).toVector3().dot(n));
+            return Math.abs(a.clone().sub(g.a).toVector3().dot(n));
         }
     }
 

@@ -16,11 +16,11 @@
  */
 package darwin.util.math.composits;
 
-import darwin.util.math.base.*;
+import darwin.util.math.base.matrix.*;
 import darwin.util.math.base.vector.*;
 
 /**
- * 4x4 Matrix mit ModelView speziellen Funktionen
+ * 4x4 GenericMatrix mit ModelView speziellen Funktionen
  * @author Daniel Heinrich
  */
 public class ModelMatrix extends Matrix4
@@ -50,7 +50,7 @@ public class ModelMatrix extends Matrix4
     public Matrix getNormalMatrix(){
         Matrix m = getMinor(3, 3);
         if(!homogeneous)
-            m.transpose(m).inverse(m);
+            m.transpose().inverse();
         return m;
     }
 

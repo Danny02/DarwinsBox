@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.container;
@@ -35,7 +35,7 @@ public class SimplePhysic extends SimpleTransformation implements PhysicContaine
     public SimplePhysic(float radius, float mass, ImmutableVector<Vector3> v) {
         this.radius = radius;
         this.mass = mass;
-        vel = v.copy();
+        vel = v.clone();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SimplePhysic extends SimpleTransformation implements PhysicContaine
 
     @Override
     public void setVelocity(ImmutableVector<Vector3> newvel) {
-        vel = newvel.copy();
+        vel = newvel.clone();
     }
 
     @Override

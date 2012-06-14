@@ -32,7 +32,7 @@ public class LinkedTransformation extends SimpleTransformation{
     @Override
     public ModelMatrix getModelMatrix() {
         ModelMatrix m = trans.getModelMatrix();
-        return (ModelMatrix) m.mult(getMatrix(), m);
+        return (ModelMatrix) m.mult(getMatrix());
     }
 
 }

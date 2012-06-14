@@ -11,13 +11,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base;
 
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector;
+import darwin.util.math.base.vector.*;
 
 
 /**
@@ -31,8 +30,8 @@ public class LineSegment<E extends Vector<E>>
 
     public LineSegment(ImmutableVector<E> start, ImmutableVector<E> end)
     {
-        this.start = start.copy();
-        this.end = end.copy();
+        this.start = start.clone();
+        this.end = end.clone();
     }
 
     public Line<E> getLine()

@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.renderer;
@@ -24,19 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.geometrie.packed.*;
-import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.ShaderUniform;
-import darwin.renderer.util.memory.MemoryInfo;
-import darwin.renderer.util.memory.PerformanceView;
+import darwin.renderer.shader.*;
+import darwin.renderer.util.memory.*;
 import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.Matrix;
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector3;
-import darwin.util.math.composits.ProjectionMatrix;
-import darwin.util.math.composits.ViewMatrix;
-import darwin.util.math.util.MatType;
-import darwin.util.math.util.MatrixCache;
+import darwin.util.math.base.vector.*;
+import darwin.util.math.composits.*;
+import darwin.util.math.util.*;
 
 /**
  * Basic scene manager
@@ -205,8 +199,8 @@ public class BasicScene implements GLEventListener
 
     public void setLigthDir(ImmutableVector<Vector3> lightdir)
     {
-        getMatrices().setLight(lightdir.copy().mul(-1));
-        Vector3 light = matrices.getView().fastMult(lightdir.copy());
+        getMatrices().setLight(lightdir.clone().mul(-1));
+        Vector3 light = matrices.getView().fastMult(lightdir.clone());
         light.normalize();
 
         Vector3 halfvector = new Vector3(0, 0, 1).add(light).normalize();
@@ -243,11 +237,6 @@ public class BasicScene implements GLEventListener
     protected Iterator<Shader> getShaders()
     {
         return shaders.iterator();
-    }
-
-    public boolean append2Initiation(RenderObjekt e)
-    {
-        return needini.add(e);
     }
 
     public void setInfoDisplay(PerformanceView info)

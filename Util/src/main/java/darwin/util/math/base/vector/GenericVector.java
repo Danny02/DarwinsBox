@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base.vector;
@@ -19,13 +19,11 @@ package darwin.util.math.base.vector;
 import java.util.Arrays;
 
 /**
- * Repr�sentation eines 3 Dimensionalen Vektors
  * <p/>
  * @author Daniel Heinrich
  */
 public class GenericVector extends Vector<GenericVector>
 {
-    private static final long serialVersionUID = -5086769268702369258L;
     private final float[] coords;
 
     public GenericVector(int dimension)
@@ -221,15 +219,9 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
-    public GenericVector copy()
-    {
-        return new GenericVector(getCoords());
-    }
-
-    @Override
     public Vector3 toVector3()
     {
-        int d = getDimension();;
+        int d = getDimension();
         return new Vector3(coords[0], coords[1], getDimension() > 2 ? coords[2] : 0);
     }
 
@@ -237,5 +229,11 @@ public class GenericVector extends Vector<GenericVector>
     public Vector3 cross(ImmutableVector<GenericVector> b)
     {
         return toVector3().cross(b.toVector3());
+    }
+
+    @Override
+    public GenericVector clone()
+    {
+        return new GenericVector(coords.clone());
     }
 }

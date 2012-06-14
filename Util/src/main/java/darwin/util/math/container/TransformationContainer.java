@@ -16,6 +16,7 @@
  */
 package darwin.util.math.container;
 
+import darwin.util.math.base.matrix.Matrix4;
 import java.io.Serializable;
 
 import darwin.util.math.base.*;

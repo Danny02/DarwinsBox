@@ -16,19 +16,15 @@
  */
 package darwin.core.gui;
 
-import com.jogamp.opengl.util.Animator;
-import com.jogamp.opengl.util.AnimatorBase;
-import java.util.Collection;
-import java.util.LinkedList;
+import com.jogamp.newt.Window;
+import com.jogamp.opengl.util.*;
+import java.util.*;
 import javax.inject.Inject;
-import javax.media.opengl.GLException;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
+import javax.media.opengl.*;
+import org.apache.log4j.*;
 
 import darwin.renderer.GraphicContext;
 import darwin.util.logging.ExceptionHandler;
-
-
 
 /**
  *
@@ -36,11 +32,10 @@ import darwin.util.logging.ExceptionHandler;
  */
 public class Client
 {
-
     private AnimatorBase animator;
-    private Logger log = Logger.getLogger("darwin");
+    private final Logger log = Logger.getLogger("darwin");
     private final Collection<ShutdownListener> shutdownlistener = new LinkedList<>();
-    public final GraphicContext gc;
+    private final GraphicContext gc;
 
     @Inject
     public Client(GraphicContext gc)
@@ -88,5 +83,20 @@ public class Client
     public synchronized void addLogAppender(Appender newAppender)
     {
         log.addAppender(newAppender);
+    }
+
+    public void addGLEventListener(GLEventListener listener)
+    {
+        gc.getGLWindow().addGLEventListener(listener);
+    }
+
+    public void removeGLEventListener(GLEventListener listener)
+    {
+        gc.getGLWindow().removeGLEventListener(listener);
+    }
+
+    public Window getWindow()
+    {
+        return gc.getGLWindow();
     }
 }

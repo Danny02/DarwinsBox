@@ -11,11 +11,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base;
 
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.vector.*;
 
 import static java.lang.Math.*;
@@ -38,7 +39,7 @@ public class Quaternion implements Cloneable
     public Quaternion(float w, ImmutableVector<Vector3> vec)
     {
         this.w = w;
-        this.vec = vec.copy().normalize();
+        this.vec = vec.clone().normalize();
     }
 
     /**
@@ -117,8 +118,8 @@ public class Quaternion implements Cloneable
      */
     public void mapVector(ImmutableVector<Vector3> old, ImmutableVector<Vector3> map2)
     {
-        Vector3 o = old.copy().normalize();
-        Vector3 m = map2.copy().normalize();
+        Vector3 o = old.clone().normalize();
+        Vector3 m = map2.clone().normalize();
 
         float p = (float) acos(o.dot(m));
         ini(o.cross(m), p);
@@ -127,7 +128,7 @@ public class Quaternion implements Cloneable
     private void ini(ImmutableVector<Vector3> axis, float angle)
     {
 
-        float[] c = axis.copy().normalize().getCoords();
+        float[] c = axis.clone().normalize().getCoords();
 
         float half = angle * 0.5f;
         float sin_a = (float) sin(half);
@@ -142,7 +143,7 @@ public class Quaternion implements Cloneable
 
     public Quaternion conjugate()
     {
-        return new Quaternion(w, vec.copy().mul(-1));
+        return new Quaternion(w, vec.clone().mul(-1));
     }
 
     public float magnitute()
@@ -169,7 +170,7 @@ public class Quaternion implements Cloneable
 
     public Quaternion mult(float a)
     {
-        return new Quaternion(w * a, vec.copy().mul(a));
+        return new Quaternion(w * a, vec.clone().mul(a));
     }
 
     public Quaternion mult(Quaternion q)
@@ -188,7 +189,7 @@ public class Quaternion implements Cloneable
     public Vector3 mult(Vector3 a)
     {
         Quaternion b = new Quaternion(0, a);
-        return mult(b).mult(inverse()).vec.copy();
+        return mult(b).mult(inverse()).vec.clone();
     }
 
     public Quaternion getInterpolated(float delta)
@@ -214,7 +215,7 @@ public class Quaternion implements Cloneable
             sin_a = 1;
         }
 
-        return q.vec.copy().mul((float) (1. / sin_a));
+        return q.vec.clone().mul((float) (1. / sin_a));
     }
 
     public Matrix4 getRotationMatrix()

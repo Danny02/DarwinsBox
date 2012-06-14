@@ -11,22 +11,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.util.math.base;
+package darwin.util.math.base.matrix;
 
+import java.nio.FloatBuffer;
+
+import darwin.util.math.base.Quaternion;
 import darwin.util.math.base.tupel.Tupel3;
 import darwin.util.math.base.vector.*;
 
 import static java.lang.Math.*;
 
 /**
- * Konfiguriert eine 4x4 Matrix
+ * Konfiguriert eine 4x4 GenericMatrix
  * <p/>
  * @author Daniel Heinrich
  */
-public class Matrix4 extends Matrix
+public class Matrix4 extends Matrix<Matrix4>
 {
     public enum Axis
     {
@@ -38,13 +41,50 @@ public class Matrix4 extends Matrix
             this.offset = offset;
         }
     }
-    private static final long serialVersionUID = -5557326075977567526L;
     public static final float GRAD2RAD = (float) (PI / 180.);
     public static final float RAD2GRAD = (float) (180. / PI);
+    //
+    private final float[] data;
+    private transient final FloatBuffer buffer;
 
     public Matrix4()
     {
-        super(4);
+        data = new float[16];
+        buffer = FloatBuffer.wrap(data);
+    }
+
+    @Override
+    public final float[] getArray()
+    {
+        return data;
+    }
+
+    @Override
+    public FloatBuffer getFloatBuffer()
+    {
+        return buffer;
+    }
+
+    @Override
+    public void setMat(float[] mat)
+    {
+        assert (mat.length == 16) :
+                "Die Matrize kann nur mit einem Array mit der selben Elementen anzahl gesetzt werden!";
+        System.arraycopy(mat, 0, data, 0, 16);
+    }
+
+    @Override
+    public int getDimension()
+    {
+        return 4;
+    }
+
+    @Override
+    public Matrix4 clone()
+    {
+        Matrix4 a = new Matrix4();
+        a.setMat(data);
+        return a;
     }
 
     /**
@@ -55,38 +95,36 @@ public class Matrix4 extends Matrix
      * @param dir direction Vector of the given Axis
      * @param a   Axis of the given Vektor
      */
-    public Matrix4(ImmutableVector<Vector3> dir, Axis a)
+    public static Matrix4 createCoordinateSystem(ImmutableVector<Vector3> dir, Axis a)
     {
-        this();
-        loadIdentity();
+        Matrix4 res = new Matrix4();
+        res.loadIdentity();
 
-        Vector3 di = dir.copy().normalize();
-        setAxis(di, a);
+        Vector3 di = dir.clone().normalize();
+        res.setAxis(di, a);
 
         Vector3 dir2 = new Vector3(di.getY(), di.getZ(), -di.getX());
-        Vector3 dir3 = dir.copy().cross(dir2);
+        Vector3 dir3 = dir.clone().cross(dir2);
 
         Axis[] vals = Axis.values();
         int a2 = a.ordinal();
         a2 = (1 << a2) & 3; //(ordinal+1)%3
         int a3 = (1 << a2) & 3;//(ordinal+2)%3
-        setAxis(dir2, vals[a2]);
-        setAxis(dir3, vals[a3]);
+        res.setAxis(dir2, vals[a2]);
+        res.setAxis(dir3, vals[a3]);
+        return res;
     }
 
     /**
-     * Initialize a Matrix which will transform a Source Space to a Destination
-     * Space.
+     * Initialize a GenericMatrix which will transform a Source Space to a
+     * Destination Space.
      * <p/>
-     * @param src Matrix which describes the Source Coordinate Space
-     * @param dst Matrix which describes the Destination Coordinate Space
+     * @param src GenericMatrix which describes the Source Coordinate Space
+     * @param dst GenericMatrix which describes the Destination Coordinate Space
      */
-    public Matrix4(Matrix4 src, Matrix4 dst)
+    public static Matrix4 createDeltaMatrix(Matrix4 src, Matrix4 dst)
     {
-        this();
-        Matrix4 tmp = new Matrix4();
-        src.inverse(tmp);
-        tmp.mult(dst, this);
+        return src.clone().inverse().mult(dst);
     }
 
     public Vector3 fastMult(Tupel3 vec)
@@ -109,22 +147,7 @@ public class Matrix4 extends Matrix
         z += data[10];
         z += data[11];
 
-//        x = y = z = 0;
-//        for (int i = 0; i < 4; ++i) {
-//            x += data[i];
-//            y += data[i + 4];
-//            z += data[i + 8];
-//        }
-
         return new Vector3(x * vec.getX(), y * vec.getY(), z * vec.getZ());
-    }
-
-    @Override
-    public Matrix4 mult(Matrix multi)
-    {
-        Matrix4 r = new Matrix4();
-        super.mult(multi, r);
-        return r;
     }
 
     /**
@@ -136,7 +159,7 @@ public class Matrix4 extends Matrix
      */
     public Matrix4 worldTranslate(ImmutableVector<Vector3> vec)
     {
-        Vector3 t = vec.copy();
+        Vector3 t = vec.clone();
         return worldTranslate(t.getX(), t.getY(), t.getZ());
     }
 
@@ -161,7 +184,7 @@ public class Matrix4 extends Matrix
 
     public Matrix4 setWorldTranslate(ImmutableVector<Vector3> vec)
     {
-        Vector3 t = vec.copy();
+        Vector3 t = vec.clone();
         return setWorldTranslate(t.getX(), t.getY(), t.getZ());
     }
 
@@ -184,7 +207,7 @@ public class Matrix4 extends Matrix
      */
     public Matrix4 translate(ImmutableVector<Vector3> vec)
     {
-        Vector3 t = vec.copy();
+        Vector3 t = vec.clone();
         return translate(t.getX(), t.getY(), t.getZ());
     }
 
@@ -208,26 +231,28 @@ public class Matrix4 extends Matrix
     }
 
     /**
-     * Rotates the Matrix with the given Eular Angles. Rotation order is x,y,z.
+     * Rotates the GenericMatrix with the given Eular Angles. Rotation order is
+     * x,y,z.
      * <p/>
      * @param angles 3D Vector which holds the rotation angles for each axis
      * <p/>
-     * @return the same Matrix
+     * @return the same GenericMatrix
      */
     public Matrix4 rotateEuler(ImmutableVector<Vector3> vec)
     {
-        Vector3 t = vec.copy();
+        Vector3 t = vec.clone();
         return rotateEuler(t.getX(), t.getY(), t.getZ());
     }
 
     /**
-     * Rotates the Matrix with the given Eular Angles. Rotation order is x,y,z.
+     * Rotates the GenericMatrix with the given Eular Angles. Rotation order is
+     * x,y,z.
      * <p/>
      * @param x
      * @param y
      * @param z < p/>
      * <p/>
-     * @return the same Matrix
+     * @return the same GenericMatrix
      */
     public Matrix4 rotateEuler(float x, float y, float z)
     {
@@ -258,22 +283,23 @@ public class Matrix4 extends Matrix
         mat[10] = A * C;
         mat[15] = 1;
 
-        this.mult(res, this);
+        mult(res);
 
         return this;
     }
 
     /**
-     * Rotates the Matrix with the rotationen the given Quaternion describes
+     * Rotates the GenericMatrix with the rotationen the given Quaternion
+     * describes
      * <p/>
      * @param quat < p/>
      * <p/>
-     * @return the same Matrix
+     * @return the same GenericMatrix
      */
     public Matrix4 rotate(Quaternion quat)
     {
         Matrix4 rot = quat.getRotationMatrix();
-        this.mult(rot, this);
+        mult(rot);
         return this;
     }
 
@@ -286,7 +312,7 @@ public class Matrix4 extends Matrix
      */
     public Matrix4 scale(ImmutableVector<Vector3> vec)
     {
-        Vector3 t = vec.copy();
+        Vector3 t = vec.clone();
         return scale(t.getX(), t.getY(), t.getZ());
     }
 
@@ -360,7 +386,8 @@ public class Matrix4 extends Matrix
         return new Vector3(mat[12], mat[13], mat[14]);
     }
 
-    public void setAxis(ImmutableVector<Vector3> x, ImmutableVector<Vector3> y, ImmutableVector<Vector3> z)
+    public void setAxis(ImmutableVector<Vector3> x, ImmutableVector<Vector3> y,
+                        ImmutableVector<Vector3> z)
     {
         setAxis(x, Axis.X);
         setAxis(y, Axis.Y);
@@ -477,14 +504,6 @@ public class Matrix4 extends Matrix
         }
 
         return new Quaternion(w, new Vector3(x, y, z));
-    }
-
-    @Override
-    public Matrix4 inverse()
-    {
-        Matrix4 r = new Matrix4();
-        inverse(r);
-        return r;
     }
 
     public void setRotation(Matrix4 rot)

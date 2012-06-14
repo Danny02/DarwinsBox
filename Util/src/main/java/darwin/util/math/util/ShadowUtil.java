@@ -11,12 +11,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.util;
 
-import darwin.util.math.base.*;
+import darwin.util.math.base.Quaternion;
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.*;
 
@@ -61,19 +62,19 @@ public class ShadowUtil implements GenListener<MatrixEvent>
         light.rotate(q);
 //        light.rotateEuler(0, 0, -45);
 
-        light.inverse(light);
+        light.inverse();
 
         Vector3[] view = new Vector3[8];
         Vector3[] lscene = new Vector3[8];
         for (int i = 0; i < 8; i++) {
-            view[i] = light.fastMult(uncor[i].copy());
-            lscene[i] = light.fastMult(scene[i].copy());
+            view[i] = light.fastMult(uncor[i].clone());
+            lscene[i] = light.fastMult(scene[i].clone());
         }
 
-        Vector3 vmax = view[0].copy().max(view[1]);
-        Vector3 vmin = view[0].copy().min(view[1]);
-        Vector3 smax = lscene[0].copy().max(lscene[1]);
-        Vector3 smin = lscene[0].copy().min(lscene[1]);
+        Vector3 vmax = view[0].clone().max(view[1]);
+        Vector3 vmin = view[0].clone().min(view[1]);
+        Vector3 smax = lscene[0].clone().max(lscene[1]);
+        Vector3 smin = lscene[0].clone().min(lscene[1]);
 
         for (int i = 2; i < 8; ++i) {
             vmax.max(view[i]);
@@ -92,7 +93,7 @@ public class ShadowUtil implements GenListener<MatrixEvent>
 //        System.out.println("width:" + (ma[0] - mi[0])
 //                + " height:" + (ma[1] - mi[1])
 //                + " depth:" + (ma[2] - mi[2]));
-        lightp.mult(light, lightp);
+        lightp.mult(light);
 //        lightp.mult(bias, lightp);
 
         return lightp;
@@ -113,7 +114,7 @@ public class ShadowUtil implements GenListener<MatrixEvent>
                            ImmutableVector<Vector3>[] src)
     {
         for (int i = 0; i < 8; i++) {
-            dst[i] = inverse.fastMult(src[i].copy());
+            dst[i] = inverse.fastMult(src[i].clone());
         }
 
         float d = dst[0].getCoords()[3];
@@ -121,7 +122,7 @@ public class ShadowUtil implements GenListener<MatrixEvent>
         d = 1f / d;
 
         for (int i = 0; i < 8; i++) {
-            dst[i] = dst[i].copy().mul(d);
+            dst[i] = dst[i].clone().mul(d);
         }
     }
 }

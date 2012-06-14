@@ -11,11 +11,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.container;
 
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.*;
 import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.ModelMatrix;
@@ -43,7 +44,7 @@ public class SimpleTransformation implements TransformationContainer
 
     @Override
     public void setPosition(ImmutableVector<Vector3> newpos) {
-        newpos.copy().sub(getPosition());
+        newpos.clone().sub(getPosition());
         matrix.worldTranslate(newpos);
     }
 

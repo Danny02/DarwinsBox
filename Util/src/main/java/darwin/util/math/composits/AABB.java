@@ -11,12 +11,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.composits;
 
-import darwin.util.math.base.Matrix4;
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.vector.*;
 
 import static java.lang.Math.*;
@@ -33,8 +33,8 @@ public class AABB
 
     public AABB(ImmutableVector<Vector3> start, ImmutableVector<Vector3> dimension)
     {
-        this.start = start.copy();
-        this.dimension = dimension.copy();
+        this.start = start.clone();
+        this.dimension = dimension.clone();
     }
 
     public Vector3[] getCorners()
@@ -43,7 +43,7 @@ public class AABB
         Vector3[] corners = new Vector3[8];
         for (int i = 0; i < 8; i++) {
             int ii = i % 4;
-            corners[i] = start.copy().add(new Vector3(
+            corners[i] = start.clone().add(new Vector3(
                     (ii == 1 || ii == 2) ? c[0] : 0,
                     ii < 2 ? 0 : c[1],
                     i < 4 ? 0 : c[2]));
@@ -59,7 +59,7 @@ public class AABB
 
     public Vector3 clamp(ImmutableVector<Vector3> point)
     {
-        Vector3 rel = point.copy().sub(start);
+        Vector3 rel = point.clone().sub(start);
         float[] r = rel.getCoords();
         float[] d = dimension.getCoords();
 
@@ -78,7 +78,7 @@ public class AABB
 
     public boolean isInside(ImmutableVector<Vector3> point)
     {
-        Vector3 rel = point.copy().sub(start);
+        Vector3 rel = point.clone().sub(start);
         float[] r = rel.getCoords();
         float[] d = dimension.getCoords();
 

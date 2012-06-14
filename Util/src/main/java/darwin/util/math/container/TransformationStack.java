@@ -19,7 +19,7 @@ package darwin.util.math.container;
 import java.io.IOException;
 import java.util.*;
 
-import darwin.util.math.base.Matrix4;
+import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.composits.ModelMatrix;
 
 /**
@@ -77,7 +77,7 @@ public final class TransformationStack extends SimpleTransformation
         packed.loadIdentity();
         boolean h = true;
         for (ModelMatrix m : transform) {
-            packed.mult(m, packed);
+            packed.mult(m);
             h &= m.isHomogeneous();
         }
         packed.setHomogeneous(h);

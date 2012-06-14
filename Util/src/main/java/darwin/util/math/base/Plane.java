@@ -11,14 +11,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base;
 
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector;
-import darwin.util.math.base.vector.Vector3;
+import darwin.util.math.base.vector.*;
+
 import static darwin.util.math.util.MathUtil.almostEqual;
 
 /**
@@ -46,15 +45,15 @@ public class Plane
     public static <E extends Vector<E>> Plane fromPointAndLine(
             ImmutableVector<E> start, Line<E> g)
     {
-        return new Plane(start, start.copy().sub(g.getAufpunkt()).cross(g.getDirection()));
+        return new Plane(start, start.clone().sub(g.getAufpunkt()).cross(g.getDirection()));
     }
 
     public static <E extends Vector<E>> Plane fromPoints(ImmutableVector<E> p1,
                                                          ImmutableVector<E> p2,
                                                          ImmutableVector<E> p3)
     {
-        Vector<E> tmp = p2.copy().sub(p1);
-        return new Plane(p1, tmp.cross(p3.copy().sub(p1)));
+        Vector<E> tmp = p2.clone().sub(p1);
+        return new Plane(p1, tmp.cross(p3.clone().sub(p1)));
     }
 
     public static <E extends Vector<E>> Plane fromPointAndDirection(
@@ -84,8 +83,8 @@ public class Plane
         float c1 = (e.nDot * dot - nDot) * tmp;
         float c2 = (nDot * dot - e.nDot) * tmp;
 
-        Vector3 a = normal.copy().mul(c1);
-        a.add(e.normal.copy().mul(c2));
+        Vector3 a = normal.clone().mul(c1);
+        a.add(e.normal.clone().mul(c2));
 
         return new Line(a, dir);
     }
@@ -98,7 +97,7 @@ public class Plane
             throw new IllegalArgumentException("There is no intersecting point when a line is parallel to a plane");
         }
         float delta = (-nDot - g.getAufpunkt().dot(normal)) / NdotD;
-        return g.getAufpunkt().copy().add(g.getDirection().copy().mul(delta));
+        return g.getAufpunkt().clone().add(g.getDirection().clone().mul(delta));
     }
 
     public float distanceTo(ImmutableVector<Vector3> p)

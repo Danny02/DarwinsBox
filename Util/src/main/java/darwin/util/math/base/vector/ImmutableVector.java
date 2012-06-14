@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.util.math.base.vector;
@@ -25,10 +25,8 @@ import static java.lang.Math.*;
  *
  * @author daniel
  */
-public abstract class ImmutableVector<E extends Vector<E>> implements Tupel
+public abstract class ImmutableVector<E extends Vector<E>> implements Tupel, Cloneable
 {
-    public abstract E copy();
-
     public abstract Vector3 toVector3();
 
     public abstract float dot(ImmutableVector<E> b);
@@ -39,6 +37,16 @@ public abstract class ImmutableVector<E extends Vector<E>> implements Tupel
     {
         double normalizer = length() * b.length();
         return acos(dot(b) / normalizer);
+    }
+
+    @Override
+    public E clone()
+    {
+        try {
+            return (E)super.clone();
+        } catch (CloneNotSupportedException ex) {
+            return null;
+        }
     }
 
     public double getAngleBothNormalized(ImmutableVector<E> b)
@@ -70,5 +78,17 @@ public abstract class ImmutableVector<E extends Vector<E>> implements Tupel
     public boolean isZero()
     {
         return lengthQuad() == 0.;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder("Vector(");
+        for(float v:getCoords())
+        {
+            builder.append(v).append(',');
+        }
+        builder.deleteCharAt(builder.length()-1);
+        return builder.append(')').toString();
     }
 }

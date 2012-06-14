@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.geometrie.unpacked;
@@ -81,8 +81,8 @@ public class TangendCreator implements MeshModifier
         Vector2 uv2 = getTexCoord(v1);
         Vector2 uv3 = getTexCoord(v2);
 
-        Vector3 v2v1 = pos2.copy().sub(pos1);
-        Vector3 v3v1 = pos3.copy().sub(pos1);
+        Vector3 v2v1 = pos2.clone().sub(pos1);
+        Vector3 v3v1 = pos3.clone().sub(pos1);
 
         float c2c1b = uv2.getY() - uv1.getY();
         float c3c1b = uv3.getY() - uv1.getY();

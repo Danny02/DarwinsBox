@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a clone of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package darwin.geometrie.io.obj;
@@ -39,7 +39,7 @@ public class ObjFile
         min.min(pos);
         max.max(pos);
 
-        verticies.add(pos.copy());
+        verticies.add(pos.clone());
     }
 
     public void addFace(Face face)
@@ -67,7 +67,7 @@ public class ObjFile
             return;
         }
 
-        Vector3 shift = min.copy().add(max).mul(-0.5f);
+        Vector3 shift = min.clone().add(max).mul(-0.5f);
 
         for (Vector3 v : verticies) {
             v.add(shift);
