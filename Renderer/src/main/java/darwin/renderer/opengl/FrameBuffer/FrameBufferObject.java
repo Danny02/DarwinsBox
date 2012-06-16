@@ -20,6 +20,7 @@ import com.jogamp.opengl.util.texture.Texture;
 import javax.inject.Inject;
 import javax.media.opengl.*;
 
+import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.GLClientConstants;
 
 /**
@@ -41,7 +42,7 @@ public class FrameBufferObject
     private final int[] viewport = new int[4];
     private int prevdraw;
     private int prevread;
-    protected final GLAutoDrawable drawable;
+    protected final GraphicContext gc;
 
     /**
      * erstellt ein neues FrameBufferObjekt.
@@ -49,19 +50,19 @@ public class FrameBufferObject
      * @param gl der GL Context in dem das FBO erstellt werden soll.
      */
     @Inject
-    public FrameBufferObject(GLAutoDrawable drawable, GLClientConstants constants)
+    public FrameBufferObject(GraphicContext gc, GLClientConstants constants)
     {
-        this.drawable = drawable;
+        this.gc = gc;
         color_attachment = new Object[constants.getMaxColorAttachments()];
         int[] ids = new int[1];
-        drawable.getGL().glGenFramebuffers(1, ids, 0);
+        gc.getGL().glGenFramebuffers(1, ids, 0);
         id = ids[0];
     }
 
-    FrameBufferObject(GLAutoDrawable drawable, int a)
+    FrameBufferObject(GraphicContext gc, int a)
     {
-        this.drawable = drawable;
-        color_attachment = null; 
+        this.gc = gc;
+        color_attachment = null;
         id = a;
         if (id != 0) {
             throw new UnsupportedOperationException("Other framebuffer then the Default(id=0) arn't supported yet!");
@@ -80,7 +81,7 @@ public class FrameBufferObject
     public void setColor_Attachment(int nummber, RenderBuffer rb)
     {
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
-        
+
         bindRenderBuffer(rb, GL.GL_COLOR_ATTACHMENT0 + nummber);
         color_attachment[nummber] = rb;
     }
@@ -260,7 +261,7 @@ public class FrameBufferObject
     public void detach(int target)
     {
         assert (id != 0);
-        drawable.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER, target,
+        gc.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER, target,
                 GL.GL_RENDERBUFFER, 0);
     }
 
@@ -273,7 +274,7 @@ public class FrameBufferObject
         }
         return null;
     }
-    
+
     private void bindTexture(Texture tex, int glType)
     {
     	assert (tex != null);
@@ -281,25 +282,25 @@ public class FrameBufferObject
         assert (checkSize(tex.getWidth(), tex.getHeight()));
         assert ((tex.getTarget() == GL.GL_TEXTURE_2D || tex.getTarget() == GL2GL3.GL_TEXTURE_RECTANGLE));
         assert (id != 0);
-        drawable.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
+        gc.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
         		glType,
                 GL.GL_TEXTURE_2D, tex.getTextureObject(null),
                 0);
     }
-    
+
 	private void bindRenderBuffer(RenderBuffer rb, int glType)
 	{
 		assert (rb != null);
 	    assert (currdraw == id);
 	    assert (checkSize(rb.getWidth(), rb.getHeight()));
 	    assert (id != 0);
-	
-	    drawable.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
+
+	    gc.getGL().glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
 	    		glType,
 	            GL.GL_RENDERBUFFER,
 	            rb.getRenderBufferID());
 	}
-    
+
     // </editor-fold>
 
     /**
@@ -307,7 +308,7 @@ public class FrameBufferObject
      */
     public void bind()
     {
-        drawable.getGL().glBindFramebuffer(GL.GL_FRAMEBUFFER, id);
+        gc.getGL().glBindFramebuffer(GL.GL_FRAMEBUFFER, id);
         currdraw = id;
         currread = id;
     }
@@ -331,7 +332,7 @@ public class FrameBufferObject
 
     private void bindDrawBuffer(int id)
     {
-        drawable.getGL().glBindFramebuffer(GL2GL3.GL_DRAW_FRAMEBUFFER, id);
+        gc.getGL().glBindFramebuffer(GL2GL3.GL_DRAW_FRAMEBUFFER, id);
         currdraw = id;
     }
 
@@ -342,7 +343,7 @@ public class FrameBufferObject
 
     private void bindReadBuffer(int id)
     {
-        drawable.getGL().glBindFramebuffer(GL2GL3.GL_READ_FRAMEBUFFER, id);
+        gc.getGL().glBindFramebuffer(GL2GL3.GL_READ_FRAMEBUFFER, id);
         currread = id;
     }
 
@@ -350,7 +351,7 @@ public class FrameBufferObject
     {
         bindAsReadBuffer();
         dst.bindAsDrawBuffer();
-        drawable.getGL().getGL2GL3().glBlitFramebuffer(0, 0, width, height,
+        gc.getGL().getGL2GL3().glBlitFramebuffer(0, 0, width, height,
                 0, 0, dst.getWidth(), dst.getHeight(),
                 GL.GL_COLOR_BUFFER_BIT, GL.GL_LINEAR);
     }
@@ -374,7 +375,7 @@ public class FrameBufferObject
     public void delete()
     {
         assert (id != 0);
-        drawable.getGL().glDeleteFramebuffers(1, new int[]{id}, 0);
+        gc.getGL().glDeleteFramebuffers(1, new int[]{id}, 0);
     }
 
     /**
@@ -396,7 +397,7 @@ public class FrameBufferObject
     public int getStatus()
     {
         assert (currdraw == id);
-        return drawable.getGL().glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
+        return gc.getGL().glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
     }
 
     public boolean isComplete()
@@ -466,10 +467,10 @@ public class FrameBufferObject
     public void pushViewPort()
     {
         //TODO get rid of any glGet call
-        drawable.getGL().glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
+        gc.getGL().glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
         //TODO why the assert?
 //        assert (viewport[2] != 0 && viewport[3] != 0);
-        drawable.getGL().glViewport(0, 0, getWidth(), getHeight());
+        gc.getGL().glViewport(0, 0, getWidth(), getHeight());
     }
 
     /**
@@ -477,7 +478,7 @@ public class FrameBufferObject
      */
     public void popViewPort()
     {
-        drawable.getGL().glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        gc.getGL().glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
     }
 
     /**

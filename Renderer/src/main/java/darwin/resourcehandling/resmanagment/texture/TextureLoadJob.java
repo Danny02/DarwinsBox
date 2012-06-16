@@ -21,6 +21,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.Texture;
 import java.io.File;
 import java.io.IOException;
+import javax.inject.Named;
 import javax.media.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
@@ -37,13 +38,15 @@ import darwin.util.logging.InjectLogger;
  */
 public class TextureLoadJob implements LoadJob<Texture>
 {
-
     public interface TextureJobFactory
     {
+        public TextureLoadJob create(String path,
+                                      @Assisted("FILTERING") int filtering,
+                                      @Assisted("WRAPPING") int wrapping);
 
-        public TextureLoadJob create(String path, int filtering, int wrapping);
-
-        public TextureLoadJob create(File file, int filtering, int wrapping);
+        public TextureLoadJob create(File file,
+                                      @Assisted("FILTERING") int filtering,
+                                      @Assisted("WRAPPING") int wrapping);
     }
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -56,19 +59,24 @@ public class TextureLoadJob implements LoadJob<Texture>
 
     @AssistedInject
     public TextureLoadJob(GraphicContext gc, TextureUtil util,
-            @Assisted String path, @Assisted int filtering, @Assisted int wrapping)
+                          @Assisted String path,
+                          @Assisted("FILTERING") int filtering,
+                          @Assisted("WRAPPING") int wrapping)
     {
         this(texturepath + path, gc, util, filtering, wrapping);
     }
 
     @AssistedInject
-    public TextureLoadJob(GraphicContext gc, TextureUtil util, @Assisted File file,
-            @Assisted int filtering, @Assisted int wrapping)
+    public TextureLoadJob(GraphicContext gc, TextureUtil util,
+                          @Assisted File file,
+                          @Assisted("FILTERING") int filtering,
+                          @Assisted("WRAPPING") int wrapping)
     {
         this(file.getAbsolutePath(), gc, util, filtering, wrapping);
     }
 
-    private TextureLoadJob(String path, GraphicContext gc, TextureUtil util, int filtering, int wrapping)
+    private TextureLoadJob(String path, GraphicContext gc, TextureUtil util,
+                           int filtering, int wrapping)
     {
         this.path = path;
         this.gc = gc;
@@ -108,14 +116,14 @@ public class TextureLoadJob implements LoadJob<Texture>
             texture = util.loadTexture(path, filtering, wrapping);
             if (filtering == GL.GL_LINEAR) {
                 texture.setTexParameteri(gc.getGL(), GL.GL_TEXTURE_MIN_FILTER,
-                        GL.GL_LINEAR_MIPMAP_LINEAR);
+                                         GL.GL_LINEAR_MIPMAP_LINEAR);
             }
         } catch (IOException ex) {
             logger.warn("Texture {} konnte nicht geladen werden.\n({})", path, ex.getLocalizedMessage());
             try {
                 texture = util.loadTexture(texturepath + "error.dds",
-                        GL.GL_NEAREST,
-                        wrapping);
+                                           GL.GL_NEAREST,
+                                           wrapping);
             } catch (IOException ex1) {
                 logger.error("Keine Error Texturen gefunden.", ex1);
             }
@@ -130,8 +138,9 @@ public class TextureLoadJob implements LoadJob<Texture>
         if (obj == null) {
             return false;
         }
-        if(obj == this)
-        	return true;
+        if (obj == this) {
+            return true;
+        }
         if (getClass() != obj.getClass()) {
             return false;
         }

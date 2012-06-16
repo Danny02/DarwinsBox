@@ -23,6 +23,7 @@ import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
+import darwin.renderer.dependencies.MemoryInfoProvider;
 import darwin.renderer.geometrie.packed.*;
 import darwin.renderer.shader.*;
 import darwin.renderer.util.memory.*;
@@ -56,11 +57,10 @@ public class BasicScene implements GLEventListener
     private MemoryInfo meminfo;
 
     @Inject
-    public BasicScene(GraphicContext gc, ResourcesLoader loader, MemoryInfo info)
+    public BasicScene(GraphicContext gc, ResourcesLoader loader)
     {
         this.gc = gc;
         this.loader = loader;
-        meminfo = info;
         matrices = new MatrixCache(new ProjectionMatrix());
         half = new LinkedList<>();
         lightdir = new LinkedList<>();
@@ -102,6 +102,8 @@ public class BasicScene implements GLEventListener
         gl.setSwapInterval(1);
         // Setup the drawing area and shading mode
         gl.glClearColor(0.0f, 1.0f, 1.0f, 0f);
+
+        meminfo = new MemoryInfoProvider(gc).get();
     }
 
     @Override

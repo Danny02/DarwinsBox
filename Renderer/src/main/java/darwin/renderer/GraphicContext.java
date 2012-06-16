@@ -17,6 +17,7 @@
 package darwin.renderer;
 
 import com.jogamp.newt.opengl.GLWindow;
+import javax.annotation.Nullable;
 import javax.inject.*;
 import javax.media.opengl.*;
 
@@ -31,12 +32,12 @@ import javax.media.opengl.*;
 @Singleton
 public final class GraphicContext
 {
-
     private final String glProfil;
     private GLWindow window;
+    private boolean initialized = false;
 
     @Inject
-    public GraphicContext(@Named("GL_Profile") String profil)
+    public GraphicContext(@Nullable @Named("GL_Profile") String profil)
     {
         glProfil = profil;
     }
@@ -49,7 +50,7 @@ public final class GraphicContext
      */
     synchronized public void iniContext() throws GLException
     {
-        assert window == null : "The Context is already initialized!";
+        assert initialized == false : "The Context is already initialized!";
 
         GLProfile.initSingleton();
         GLProfile profile = null;
@@ -64,6 +65,7 @@ public final class GraphicContext
         }
 
         window = GLWindow.create(getCapabilities(profile));
+        initialized = true;
     }
 
     /**
@@ -86,6 +88,11 @@ public final class GraphicContext
     {
         assert window != null : "Context is not initialized";
         return window;
+    }
+
+    public boolean isInitialized()
+    {
+        return initialized;
     }
 
     private static GLCapabilitiesImmutable getCapabilities(GLProfile profile)

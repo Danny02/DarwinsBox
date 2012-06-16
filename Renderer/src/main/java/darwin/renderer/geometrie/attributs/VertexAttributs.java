@@ -23,6 +23,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 
 import darwin.renderer.GraphicContext;
+import darwin.renderer.geometrie.attributs.StdAttributs.StdAttributsFactory;
+import darwin.renderer.geometrie.attributs.VAOAttributs.VAOAttributsFactory;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
@@ -37,9 +39,9 @@ public class VertexAttributs
     public interface VAttributsFactory
     {
         @ParametersAreNonnullByDefault
-        public VertexAttributs create(Shader shader, VertexBO[] vbuffers, @Nullable BufferObject indice);
+        public VertexAttributs create(Shader shader, VertexBO[] vbuffers,
+                                      @Nullable BufferObject indice);
     }
-
     private final GraphicContext gc;
     private final AttributsConfigurator configurator;
     private final int hash;
@@ -47,16 +49,18 @@ public class VertexAttributs
     @AssistedInject
     @ParametersAreNonnullByDefault
     public VertexAttributs(GraphicContext gcontext,
-            ConfiguratorFactory factory,
-            @Assisted Shader shader,
-            @Assisted VertexBO[] vbuffers,
-            @Assisted @Nullable BufferObject indice)
+                           StdAttributsFactory stdFactory,
+                           VAOAttributsFactory vaoFactory,
+                           @Assisted Shader shader,
+                           @Assisted VertexBO[] vbuffers,
+                           @Assisted @Nullable BufferObject indice)
     {
         gc = gcontext;
 
         hash = shader.getAttributsHash();
 
-        configurator = factory.create(shader, vbuffers, indice);
+        configurator = stdFactory.create(shader, vbuffers, indice);
+        //TODO VAO switch
     }
 
     public void bind()

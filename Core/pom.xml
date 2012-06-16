@@ -32,11 +32,6 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
 
     <dependencies>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>Renderer</artifactId>
             <version>${project.version}</version>

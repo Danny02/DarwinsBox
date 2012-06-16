@@ -16,28 +16,17 @@
  */
 package darwin.renderer.shader;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2ES2;
-
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import com.google.inject.assistedinject.*;
+import java.util.*;
+import javax.media.opengl.*;
 
 import darwin.geometrie.data.Element;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Sampler.SamplerFactory;
-import darwin.renderer.shader.uniform.MatrixSetter;
-import darwin.renderer.shader.uniform.UniformSetter;
+import darwin.renderer.shader.uniform.*;
 import darwin.resourcehandling.io.ShaderFile;
-import darwin.util.math.util.GenListener;
-import darwin.util.math.util.MatrixEvent;
+import darwin.util.math.util.*;
 
 /**
  *

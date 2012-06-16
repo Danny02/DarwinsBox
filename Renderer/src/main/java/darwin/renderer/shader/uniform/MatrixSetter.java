@@ -16,8 +16,7 @@
  */
 package darwin.renderer.shader.uniform;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 
 import darwin.renderer.shader.ShaderUniform;
 import darwin.util.math.util.*;
@@ -133,18 +132,19 @@ public class MatrixSetter implements UniformSetter,
                     }
                 });
                 break;
-            case "S":
-                setter.add(new UniformSetter() {
-
-                    @Override
-                    public void set() {
-                        if (v || p || l) {
-                            uni.setData(matricen.getShadowProjection().
-                                    getFloatBuffer());
-                        }
-                    }
-                });
-                break;
+                //TODO reactivate shadow stuff
+//            case "S":
+//                setter.add(new UniformSetter() {
+//
+//                    @Override
+//                    public void set() {
+//                        if (v || p || l) {
+//                            uni.setData(matricen.getShadowProjection().
+//                                    getFloatBuffer());
+//                        }
+//                    }
+//                });
+//                break;
         }
     }
 

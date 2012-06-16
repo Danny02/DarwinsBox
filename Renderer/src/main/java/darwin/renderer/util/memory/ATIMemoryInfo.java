@@ -16,8 +16,7 @@
  */
 package darwin.renderer.util.memory;
 
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLRunnable;
+import javax.media.opengl.*;
 
 import darwin.renderer.GraphicContext;
 

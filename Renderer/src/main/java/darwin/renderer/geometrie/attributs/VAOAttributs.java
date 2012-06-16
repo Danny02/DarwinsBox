@@ -16,10 +16,8 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.inject.assistedinject.*;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 import javax.media.opengl.GLProfile;
 
@@ -35,6 +33,12 @@ import darwin.renderer.shader.Shader;
 @Immutable
 public final class VAOAttributs implements AttributsConfigurator
 {
+    public interface VAOAttributsFactory
+    {
+        @ParametersAreNonnullByDefault
+        public VAOAttributs create(Shader shader, VertexBO[] vbuffers,
+                                   @Nullable BufferObject indice);
+    }
 
     static {
         assert GLProfile.isAvailable(GLProfile.GL2GL3) : "This device VertexAttributsdoesn't support VAOs";
@@ -45,9 +49,9 @@ public final class VAOAttributs implements AttributsConfigurator
     @AssistedInject
     @ParametersAreNonnullByDefault
     public VAOAttributs(GraphicContext gcontext,
-            @Assisted Shader shader,
-            @Assisted VertexBO[] vbuffers,
-            @Assisted @Nullable BufferObject indice)
+                        @Assisted Shader shader,
+                        @Assisted VertexBO[] vbuffers,
+                        @Assisted @Nullable BufferObject indice)
     {
         gc = gcontext;
 

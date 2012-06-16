@@ -16,11 +16,8 @@
  */
 package darwin.core.gui;
 
-import com.google.inject.*;
 import com.jogamp.newt.Window;
 import com.jogamp.newt.event.*;
-import org.apache.log4j.*;
-import org.apache.log4j.spi.*;
 
 /**
  * Kein Fenster im eigentlichen Sinne, sondern mehr eine Ansammlung der Objekte,
@@ -43,31 +40,32 @@ public class ClientWindow implements ShutdownListener
         this.fullscreen = fullscreen;
         client = c;
         client.addShutdownListener(this);
-        client.addLogAppender(new AppenderSkeleton()
-        {
-            @Override
-            protected void append(LoggingEvent event)
-            {
-                if (event.getLevel() == Level.FATAL) {
-                    ThrowableInformation ti = event.getThrowableInformation();
-                    if (ti != null) {
-                        ti.getThrowable().printStackTrace();
-                    }
-                    doShutDown();
-                }
-            }
-
-            @Override
-            public void close()
-            {
-            }
-
-            @Override
-            public boolean requiresLayout()
-            {
-                return false;
-            }
-        });
+        //TODO logging
+//        client.addLogAppender(new AppenderSkeleton()
+//        {
+//            @Override
+//            protected void append(LoggingEvent event)
+//            {
+//                if (event.getLevel() == Level.FATAL) {
+//                    ThrowableInformation ti = event.getThrowableInformation();
+//                    if (ti != null) {
+//                        ti.getThrowable().printStackTrace();
+//                    }
+//                    doShutDown();
+//                }
+//            }
+//
+//            @Override
+//            public void close()
+//            {
+//            }
+//
+//            @Override
+//            public boolean requiresLayout()
+//            {
+//                return false;
+//            }
+//        });
     }
 
     public void startUp() throws InstantiationException

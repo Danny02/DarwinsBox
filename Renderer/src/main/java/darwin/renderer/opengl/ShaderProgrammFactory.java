@@ -19,12 +19,11 @@ package darwin.renderer.opengl;
 import java.util.List;
 import javax.inject.Inject;
 import javax.media.opengl.GL2ES2;
-import javax.media.opengl.GLAutoDrawable;
 
-import darwin.renderer.shader.BuildException;
-import darwin.renderer.shader.ShaderAttribute;
+import darwin.renderer.GraphicContext;
+import darwin.renderer.shader.*;
 
-import static darwin.renderer.shader.BuildException.BuildError.*;
+import static darwin.renderer.shader.BuildException.BuildError.LinkTime;
 
 /**
  *
@@ -32,17 +31,17 @@ import static darwin.renderer.shader.BuildException.BuildError.*;
  */
 public class ShaderProgrammFactory
 {
-    private final GLAutoDrawable drawable;
+    private final GraphicContext gc;
 
     @Inject
-    public ShaderProgrammFactory(GLAutoDrawable drawable)
+    public ShaderProgrammFactory(GraphicContext gc)
     {
-        this.drawable = drawable;
+        this.gc = gc;
     }
 
     public ShaderProgramm create(List<ShaderAttribute> attr, ShaderObjekt... sobject) throws BuildException
     {
-        GL2ES2 gl = drawable.getGL().getGL2ES2();
+        GL2ES2 gl = gc.getGL().getGL2ES2();
         int programObject = gl.glCreateProgram();
 
         for (ShaderObjekt so : sobject) {
@@ -75,6 +74,6 @@ public class ShaderProgrammFactory
             throw new BuildException(new String(errormessage, 0, len[0]), LinkTime);
         }
 
-        return new ShaderProgramm(drawable, programObject);
+        return new ShaderProgramm(gc.getGLWindow(), programObject);
     }
 }

@@ -22,7 +22,6 @@ import javax.inject.Singleton;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-@Singleton
 public interface MemoryInfo
 {
     /**

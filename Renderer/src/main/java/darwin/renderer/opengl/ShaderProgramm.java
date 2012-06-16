@@ -16,8 +16,7 @@
  */
 package darwin.renderer.opengl;
 
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLProfile;
+import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 

@@ -60,6 +60,7 @@ public final class RenderModel implements Shaded, Cloneable
     private Shader shader;
     private final Set<UniformSetter> uniforms = new HashSet<>();
 
+    @AssistedInject
     public RenderModel(ShaderMaterialFactory factory,
             @Assisted RenderMesh rbuffer, @Assisted Shader shader,
             @Assisted Material mat)

@@ -16,21 +16,16 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import java.util.LinkedList;
-import java.util.List;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.inject.assistedinject.*;
+import java.util.*;
+import javax.annotation.*;
 import javax.annotation.concurrent.Immutable;
 
-import darwin.geometrie.data.DataLayout;
-import darwin.geometrie.data.Element;
+import darwin.geometrie.data.*;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
-import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.ShaderAttribute;
+import darwin.renderer.shader.*;
 
 /**
  *
@@ -39,16 +34,21 @@ import darwin.renderer.shader.ShaderAttribute;
 @Immutable
 public class StdAttributs implements AttributsConfigurator
 {
-
+    public interface StdAttributsFactory
+    {
+        @ParametersAreNonnullByDefault
+        public StdAttributs create(Shader shader, VertexBO[] vbuffers,
+                                   @Nullable BufferObject indice);
+    }
     private final BufferConfigs[] configs;
     private final BufferObject indice;
 
     @AssistedInject
     @ParametersAreNonnullByDefault
     public StdAttributs(GraphicContext gcontext,
-            @Assisted Shader shader,
-            @Assisted VertexBO[] vbuffers,
-            @Assisted @Nullable BufferObject indice)
+                        @Assisted Shader shader,
+                        @Assisted VertexBO[] vbuffers,
+                        @Assisted @Nullable BufferObject indice)
     {
         assert shader.isInitialized() : "Shader is not initialized!";
 

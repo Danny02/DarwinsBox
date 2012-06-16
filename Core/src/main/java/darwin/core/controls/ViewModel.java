@@ -30,7 +30,7 @@ public interface ViewModel
      */
     public ViewMatrix getView();
 
-    public void dragged(double dx, double dy);
+    public void dragged(float dx, float dy);
 
     public void steps(int steps, boolean ctrl, boolean shift);
 

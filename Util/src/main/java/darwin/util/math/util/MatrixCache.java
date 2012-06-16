@@ -37,16 +37,16 @@ public class MatrixCache {
     private ViewMatrix view;
     private final ProjectionMatrix projektion;
     private ImmutableVector<Vector3> light = new Vector3();
-    private ShadowUtil sutil;
+//    private ShadowUtil sutil;
     private Matrix4 vm, pv, pvi, pvm, s;
     private Matrix vn, n;
     private final Collection<GenListener<MatrixEvent>> listener;
     //TODO boeser boeser schneller umschalter für schatten umbedigt besser loesen
-    private boolean normal = true;
+//    private boolean normal = true;
 
-    public void setNormal(boolean normal) {
-        this.normal = normal;
-    }
+//    public void setNormal(boolean normal) {
+//        this.normal = normal;
+//    }
 
     public MatrixCache()
     {
@@ -60,9 +60,9 @@ public class MatrixCache {
         listener = new LinkedList<>();
 
         AABB scene = new AABB(new Vector3(), new Vector3());
-        sutil = new ShadowUtil(scene);
-        addListener(sutil);
-        sutil.changeOccured(new MatrixEvent(this, VIEW));
+//        sutil = new ShadowUtil(scene);
+//        addListener(sutil);
+//        sutil.changeOccured(new MatrixEvent(this, VIEW));
     }
 
     @SuppressWarnings("fallthrough")
@@ -114,19 +114,19 @@ public class MatrixCache {
         fireChange(LIGHT);
     }
 
-    public void setSceneAABB(AABB scene) {
-        removeListener(sutil);
-        sutil = new ShadowUtil(scene);
-        addListener(sutil);
-        sutil.changeOccured(new MatrixEvent(this, VIEW));
-    }
-
-    public Matrix4 getShadowProjection() {
-        if (s == null) {
-            s = sutil.calcShadowProjection(light);
-        }
-        return s;
-    }
+//    public void setSceneAABB(AABB scene) {
+//        removeListener(sutil);
+//        sutil = new ShadowUtil(scene);
+//        addListener(sutil);
+//        sutil.changeOccured(new MatrixEvent(this, VIEW));
+//    }
+//
+//    public Matrix4 getShadowProjection() {
+//        if (s == null) {
+//            s = sutil.calcShadowProjection(light);
+//        }
+//        return s;
+//    }
 
     public ProjectionMatrix getProjektion() {
         return projektion;
@@ -143,7 +143,8 @@ public class MatrixCache {
         if (pv == null) {
             pv = projektion.mult(view);
         }
-        return normal ? pv : getShadowProjection();
+        return pv;
+//        return normal ? pv : getShadowProjection();
     }
 
     public Matrix4 getViewProjectionInverse() {

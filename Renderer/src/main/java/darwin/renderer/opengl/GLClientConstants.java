@@ -16,11 +16,9 @@
  */
 package darwin.renderer.opengl;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.inject.*;
 import javax.media.opengl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import darwin.renderer.GraphicContext;
 
@@ -31,15 +29,23 @@ import darwin.renderer.GraphicContext;
 @Singleton
 public class GLClientConstants
 {
+    private final GraphicContext gc;
     private String glslVersion;
     private int maxSamples;
     private int maxColorAttachments;
+    private boolean initialize;
 
     @Inject
     public GLClientConstants(GraphicContext gc)
     {
+        this.gc = gc;
+    }
+
+    private void initialize()
+    {
         Retriver retriver = new Retriver(this);
         gc.getGLWindow().invoke(true, retriver);
+        initialize = true;
     }
 
     private class Retriver implements GLRunnable
@@ -99,16 +105,25 @@ public class GLClientConstants
 
     public String getGlslVersion()
     {
+        if (!initialize) {
+            initialize();
+        }
         return glslVersion;
     }
 
     public int getMaxColorAttachments()
     {
+        if (!initialize) {
+            initialize();
+        }
         return maxColorAttachments;
     }
 
     public int getMaxSamples()
     {
+        if (!initialize) {
+            initialize();
+        }
         return maxSamples;
     }
 }

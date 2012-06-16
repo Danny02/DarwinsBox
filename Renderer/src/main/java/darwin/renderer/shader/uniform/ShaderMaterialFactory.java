@@ -17,10 +17,8 @@
 package darwin.renderer.shader.uniform;
 
 import com.jogamp.opengl.util.texture.Texture;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.util.*;
+import javax.inject.*;
 import javax.media.opengl.GL;
 
 import darwin.geometrie.unpacked.Material;
@@ -38,7 +36,7 @@ import darwin.resourcehandling.wrapper.TextureContainer;
 public class ShaderMaterialFactory
 {
 
-    private final TextureLoadJob.TextureJobFactory factory;
+    private final TextureJobFactory factory;
     private final ResourcesLoader loader;
 
     @Inject

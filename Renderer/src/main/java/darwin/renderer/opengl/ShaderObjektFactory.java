@@ -20,9 +20,10 @@ import java.io.*;
 import javax.inject.Inject;
 import javax.media.opengl.*;
 
+import darwin.renderer.GraphicContext;
 import darwin.renderer.shader.BuildException;
 
-import static java.lang.Integer.*;
+import static java.lang.Integer.parseInt;
 
 /**
  *
@@ -31,18 +32,18 @@ import static java.lang.Integer.*;
 public class ShaderObjektFactory
 {
 
-    private final GLAutoDrawable drawable;
+    private final GraphicContext gc;
 
     @Inject
-    public ShaderObjektFactory(GLAutoDrawable drawable)
+    public ShaderObjektFactory(GraphicContext gcont)
     {
-        this.drawable = drawable;
+        gc = gcont;
     }
 
     public ShaderObjekt create(ShaderType type, String[] shadertext) throws BuildException
     {
-        int glObjectID = compileShaderObject(drawable.getGL().getGL2GL3(), type, shadertext);
-        return new ShaderObjekt(drawable, type, glObjectID);
+        int glObjectID = compileShaderObject(gc.getGL().getGL2GL3(), type, shadertext);
+        return new ShaderObjekt(gc.getGL().getGL2GL3(), type, glObjectID);
     }
 
     public static int compileShaderObject(GL2GL3 gl, ShaderType type,

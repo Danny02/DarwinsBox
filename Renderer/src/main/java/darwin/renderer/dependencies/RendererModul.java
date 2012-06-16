@@ -20,10 +20,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLDrawable;
+import com.google.inject.util.Providers;
+import javax.inject.*;
+import javax.media.opengl.*;
 
 import darwin.renderer.geometrie.attributs.*;
+import darwin.renderer.geometrie.attributs.StdAttributs.StdAttributsFactory;
+import darwin.renderer.geometrie.attributs.VAOAttributs.VAOAttributsFactory;
 import darwin.renderer.geometrie.attributs.VertexAttributs.VAttributsFactory;
 import darwin.renderer.geometrie.factorys.Rahmen.RahmenFactory;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
@@ -55,7 +58,8 @@ public class RendererModul extends AbstractModule
         //TODO introduce annotation processor for automatic factory interface creation of @AssistedInject constructors
         Class[] factoryClasses = new Class[]
         {
-            ConfiguratorFactory.class,
+            StdAttributsFactory.class,
+            VAOAttributsFactory.class,
             VAttributsFactory.class,
             RenderMeshFactory.class,
             RenderModelFactory.class,
@@ -79,14 +83,13 @@ public class RendererModul extends AbstractModule
         //needed for automatic Logger injection
         bindListener(Matchers.any(), new Slf4jTypeListener());
 
-        bind(AttributsConfigurator.class).to(StdAttributs.class);
-//        bind(AttributsConfigurator.class).to(VAOAttributs.class);
+//        bind(ConfiguratorFactory.class).to(VAOAttributsFactory.class);
 
-        bind(GLDrawable.class).to(GLAutoDrawable.class);
-        bind(GLAutoDrawable.class).toProvider(DrawableProvider.class);
-        bind(String.class).annotatedWith(Names.named("GL_Profile")).toInstance(null);//null is highest available
+        bind(String.class).annotatedWith(Names.named("GL_Profile")).
+                toProvider(Providers.of((String)null));//null is highest available
 
-        bind(MemoryInfo.class).toProvider(MemoryInfoProvider.class);
+        //TODO wieder verfuegbar machen, geht nicht da der Provider ausgefuehrt wird bevor der Graphic Context initialisiert wurde
+//        bind(MemoryInfo.class).toProvider(MemoryInfoProvider.class).in(Singleton.class);
 
         bind(FrameBufferObject.class).annotatedWith(Default.class).to(DefaultFrameBuffer.class);
     }

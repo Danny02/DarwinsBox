@@ -16,7 +16,7 @@
  */
 package darwin.renderer.opengl;
 
-import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GL2GL3;
 
 import darwin.renderer.shader.BuildException;
 
@@ -29,18 +29,18 @@ public class ShaderObjekt
 {
     private ShaderType type;
     private final int globject;
-    private final GLAutoDrawable drawable;
+    private final GL2GL3 gl;
 
-    public ShaderObjekt(GLAutoDrawable drawable, ShaderType type, int glObjectID) throws BuildException
+    public ShaderObjekt(GL2GL3 gl, ShaderType type, int glObjectID) throws BuildException
     {
         this.type = type;
-        this.drawable = drawable;
+        this.gl = gl;
         globject = glObjectID;
     }
 
     public void delete()
     {
-        drawable.getGL().getGL2GL3().glDeleteShader(getShaderobjekt());
+        gl.glDeleteShader(getShaderobjekt());
     }
 
     public int getShaderobjekt()

@@ -17,14 +17,17 @@
 package darwin.core.gui;
 
 import com.jogamp.newt.Window;
+import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.util.*;
 import java.util.*;
 import javax.inject.Inject;
 import javax.media.opengl.*;
-import org.apache.log4j.*;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
+import darwin.core.controls.InputController;
 import darwin.renderer.GraphicContext;
-import darwin.util.logging.ExceptionHandler;
+import darwin.util.logging.*;
 
 /**
  *
@@ -33,24 +36,31 @@ import darwin.util.logging.ExceptionHandler;
 public class Client
 {
     private AnimatorBase animator;
-    private final Logger log = Logger.getLogger("darwin");
+    @InjectLogger
+    private Logger logger = NOPLogger.NOP_LOGGER;
     private final Collection<ShutdownListener> shutdownlistener = new LinkedList<>();
     private final GraphicContext gc;
+    private final List<GLEventListener> glListeners = new ArrayList<>();
+    private final List<MouseListener> mouseListeners = new ArrayList<>();
 
     @Inject
     public Client(GraphicContext gc)
     {
         this.gc = gc;
-        final ExceptionHandler el = new ExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(el);
     }
 
     public void iniClient() throws InstantiationException
     {
         try {
             gc.iniContext();
+            for (GLEventListener l : glListeners) {
+                gc.getGLWindow().addGLEventListener(l);
+            }
+            for (MouseListener l : mouseListeners) {
+                gc.getGLWindow().addMouseListener(l);
+            }
         } catch (GLException ex) {
-            log.fatal("Couldn't Initialize a graphic context!", ex);
+            logger.error("Couldn't Initialize a graphic context!", ex);
             shutdown();
             throw new InstantiationException("Couldn't create an OpenGL Context");
         }
@@ -80,22 +90,31 @@ public class Client
         shutdownlistener.remove(lister);
     }
 
-    public synchronized void addLogAppender(Appender newAppender)
-    {
-        log.addAppender(newAppender);
-    }
-
     public void addGLEventListener(GLEventListener listener)
     {
-        gc.getGLWindow().addGLEventListener(listener);
+        if(gc.isInitialized())
+            gc.getGLWindow().addGLEventListener(listener);
+        else
+            glListeners.add(listener);
     }
 
     public void removeGLEventListener(GLEventListener listener)
     {
-        gc.getGLWindow().removeGLEventListener(listener);
+        if(gc.isInitialized())
+            gc.getGLWindow().removeGLEventListener(listener);
+        else
+            glListeners.remove(listener);
     }
 
-    public Window getWindow()
+    public void addMouseListener(InputController controller)
+    {
+        if(gc.isInitialized())
+            gc.getGLWindow().addMouseListener(controller);
+        else
+            mouseListeners.add(controller);
+    }
+
+    Window getWindow()
     {
         return gc.getGLWindow();
     }

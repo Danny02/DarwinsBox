@@ -16,9 +16,9 @@
  */
 package darwin.renderer.opengl.FrameBuffer;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.media.opengl.GLAutoDrawable;
+import javax.inject.*;
+
+import darwin.renderer.GraphicContext;
 
 /**
  *
@@ -29,20 +29,20 @@ public class DefaultFrameBuffer extends FrameBufferObject
 {
 
     @Inject
-    public DefaultFrameBuffer(GLAutoDrawable drawable)
+    public DefaultFrameBuffer(GraphicContext gc)
     {
-        super(drawable, 0);
+        super(gc, 0);
     }
 
     @Override
     public int getWidth()
     {
-        return drawable.getWidth();
+        return gc.getGLWindow().getWidth();
     }
 
     @Override
     public int getHeight()
     {
-        return drawable.getHeight();
+        return gc.getGLWindow().getHeight();
     }
 }

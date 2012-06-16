@@ -113,16 +113,18 @@ public class ShadowUtil implements GenListener<MatrixEvent>
     private void unproject(Matrix4 inverse, ImmutableVector<Vector3>[] dst,
                            ImmutableVector<Vector3>[] src)
     {
-        for (int i = 0; i < 8; i++) {
-            dst[i] = inverse.fastMult(src[i].clone());
-        }
-
-        float d = dst[0].getCoords()[3];
-        assert d != 0;
-        d = 1f / d;
-
-        for (int i = 0; i < 8; i++) {
-            dst[i] = dst[i].clone().mul(d);
-        }
+        //TODO an neue vector klassen anpassen
+        throw new UnsupportedOperationException();
+//        for (int i = 0; i < 8; i++) {
+//            dst[i] = inverse.mult(src[i].clone());
+//        }
+//
+//        float d = dst[0].getCoords()[3];
+//        assert d != 0;
+//        d = 1f / d;
+//
+//        for (int i = 0; i < 8; i++) {
+//            dst[i] = dst[i].clone().mul(d);
+//        }
     }
 }

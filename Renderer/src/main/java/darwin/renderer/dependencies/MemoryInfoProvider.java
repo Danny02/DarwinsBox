@@ -16,9 +16,9 @@
  */
 package darwin.renderer.dependencies;
 
-import javax.inject.Provider;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLRunnable;
+import javax.inject.*;
+import javax.media.opengl.*;
+
 import darwin.renderer.GraphicContext;
 import darwin.renderer.util.memory.*;
 
@@ -43,18 +43,18 @@ public class MemoryInfoProvider implements Provider<MemoryInfo>
         }
     }
     private final GraphicContext gc;
-    private final Vendor vendor;
+    private Vendor vendor;
 
+    @Inject
     public MemoryInfoProvider(GraphicContext gc)
     {
         this.gc = gc;
-        vendor = getVendor();
     }
 
     @Override
     public MemoryInfo get()
     {
-        switch (vendor) {
+        switch (getVendor()) {
             case AMD:
                 return new ATIMemoryInfo(gc);
             case NVIDIA:
