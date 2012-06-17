@@ -34,6 +34,7 @@ public class FloatSetter implements UniformSetter{
         this.value = FloatBuffer.wrap(value);
     }
 
+    @Override
     public void set() {
         uni.setData(value);
     }

@@ -1,3 +1,4 @@
+#pragma include includes/misc.h
 #ifndef GAMMA_VAL
     #define GAMMA_VAL 2.2
 #endif

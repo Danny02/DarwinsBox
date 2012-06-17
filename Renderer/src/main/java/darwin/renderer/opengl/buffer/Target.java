@@ -16,7 +16,7 @@
  */
 package darwin.renderer.opengl.buffer;
 
-import javax.media.opengl.GL2GL3;
+import javax.media.opengl.*;
 
 /**
  *
@@ -26,8 +26,8 @@ import javax.media.opengl.GL2GL3;
 public enum Target
 {
 
-    ARRAY(GL2GL3.GL_ARRAY_BUFFER),
-    ELEMENT_ARRAY(GL2GL3.GL_ELEMENT_ARRAY_BUFFER),
+    ARRAY(GL.GL_ARRAY_BUFFER),
+    ELEMENT_ARRAY(GL.GL_ELEMENT_ARRAY_BUFFER),
     PIXEL_PACK(GL2GL3.GL_PIXEL_PACK_BUFFER),
     PIXEL_UNPACK(GL2GL3.GL_PIXEL_UNPACK_BUFFER);
     final int glvalue;

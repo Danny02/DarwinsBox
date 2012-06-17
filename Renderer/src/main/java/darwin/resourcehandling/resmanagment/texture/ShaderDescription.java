@@ -16,38 +16,42 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ShaderDescription implements Serializable
+public class ShaderDescription
 {
     public final String v, f, g;
     public final String[] flags;
 
-    public ShaderDescription(String s) {
-        this(s, null);
+    public ShaderDescription(String s, boolean hasGeoShader)
+    {
+        this(s, hasGeoShader, null);
     }
 
-    public ShaderDescription(String s, String[] flags) {
-        this(s + ".frag", s + ".vert", s + ".geom", flags);
+    public ShaderDescription(String s, boolean hasGeoShader, String[] flags)
+    {
+        this(s + ".frag", s + ".vert", hasGeoShader ? s + ".geom" : null, flags);
     }
 
-    public ShaderDescription(String f, String v, String g) {
+    public ShaderDescription(String f, String v, String g)
+    {
         this(f, v, g, null);
     }
 
-    public ShaderDescription(String f, String v, String g, String[] flags) {
+    public ShaderDescription(String f, String v, String g, String[] flags)
+    {
         this.f = f;
         this.v = v;
         this.g = g;
         this.flags = flags != null ? flags : new String[0];
     }
 
-    public ShaderDescription mergeFlags(String[] fl) {
+    public ShaderDescription mergeFlags(String[] fl)
+    {
         String[] newflags = new String[flags.length + fl.length];
         System.arraycopy(flags, 0, newflags, 0, flags.length);
         System.arraycopy(fl, 0, newflags, flags.length, fl.length);
@@ -55,32 +59,42 @@ public class ShaderDescription implements Serializable
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return f + ", " + v + ", " + g;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        if(obj == this)
-        	return true;
+        }
+        if (obj == this) {
+            return true;
+        }
         final ShaderDescription other = (ShaderDescription) obj;
-        if ((this.v == null) ? (other.v != null) : !this.v.equals(other.v))
+        if ((this.v == null) ? (other.v != null) : !this.v.equals(other.v)) {
             return false;
-        if ((this.f == null) ? (other.f != null) : !this.f.equals(other.f))
+        }
+        if ((this.f == null) ? (other.f != null) : !this.f.equals(other.f)) {
             return false;
-        if ((this.g == null) ? (other.g != null) : !this.g.equals(other.g))
+        }
+        if ((this.g == null) ? (other.g != null) : !this.g.equals(other.g)) {
             return false;
-        if (!Arrays.deepEquals(this.flags, other.flags))
+        }
+        if (!Arrays.deepEquals(this.flags, other.flags)) {
             return false;
+        }
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 5;
         hash = 79 * hash + (this.v != null ? this.v.hashCode() : 0);
         hash = 79 * hash + (this.f != null ? this.f.hashCode() : 0);

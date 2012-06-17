@@ -88,9 +88,9 @@ public class ResourcesLoader
         return getShader(new ShaderDescription(frag, vertex, geo, mutations));
     }
 
-    public Shader getShader(String name)
+    public Shader getShader(String name, boolean hasGeoShader)
     {
-        return getShader(new ShaderDescription(name));
+        return getShader(new ShaderDescription(name, hasGeoShader));
     }
 
     synchronized public Shader getShader(ShaderDescription descr,

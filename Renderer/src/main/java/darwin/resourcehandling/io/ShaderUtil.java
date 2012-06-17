@@ -38,7 +38,6 @@ import static darwin.renderer.opengl.ShaderType.*;
 @Singleton
 public class ShaderUtil
 {
-
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private static final String includePrefix = "#pragma include";
@@ -50,7 +49,8 @@ public class ShaderUtil
 
     @Inject
     public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants,
-            ShaderProgrammFactory spFactory, ResourcesLoader resourceLoader)
+                      ShaderProgrammFactory spFactory,
+                      ResourcesLoader resourceLoader)
     {
         this.soFactory = soFactory;
         this.constants = constants;
@@ -61,22 +61,52 @@ public class ShaderUtil
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
     public ShaderProgramm compileShader(ShaderFile sfile)
     {
+//        boolean error = false;
+//        StringBuilder errorText = new StringBuilder("Shader ");
+        String errorMessage = null;
+        BuildException exception = null;
         ShaderObjekt fso, vso, gso;
+        fso = gso = vso = null;
+
         try {
             fso = createSObject(Fragment, sfile.fragment, sfile.mutations);
-            vso = createSObject(Vertex, sfile.vertex, sfile.mutations);
-            gso = createSObject(Geometrie, sfile.geometrie, sfile.mutations);
-            return spFactory.create(sfile.getAttributs(), fso, vso, gso);
         } catch (BuildException ex) {
-            //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
-            logger.error("Shader " + ex.getErrorType() + " ERROR in : "
-                    + sfile.name + "\n" + ex.getMessage());
-            throw new Error("Shutting down!");
+            exception = ex;
+            errorMessage = "in:Fragment of";
         }
+        try {
+
+            vso = createSObject(Vertex, sfile.vertex, sfile.mutations);
+        } catch (BuildException ex) {
+            exception = ex;
+            errorMessage = "in: Vertex of";
+        }
+
+        try {
+            gso = createSObject(Geometrie, sfile.geometrie, sfile.mutations);
+        } catch (BuildException ex) {
+            exception = ex;
+            errorMessage = "in: Geometrie of";
+//            error = true;
+//            errorText.append(ex.getErrorType().toString()).append(" ERROR in : ").append("Geometrie of ");
+        }
+
+        if (exception == null) {
+            try {
+                return spFactory.create(sfile.getAttributs(), fso, vso, gso);
+            } catch (BuildException ex) {
+                exception = ex;
+                errorMessage = "while linking";
+            }
+        }
+        logger.error("Shader " + exception.getErrorType() + "ERROR " + errorMessage
+                + " {" + sfile.name + "}\n" + exception.getMessage());
+        //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
+        throw new Error("Shutting down!");
     }
 
     private ShaderObjekt createSObject(ShaderType target, String source,
-            String... mut) throws BuildException
+                                       String... mut) throws BuildException
     {
         if (source == null) {
             return null;
@@ -111,7 +141,7 @@ public class ShaderUtil
      *            positionen abgefragt werden sollen.
      */
     public ShaderFile loadShader(String fs, String vs, String gs,
-            String... ms) throws IOException
+                                 String... ms) throws IOException
     {
         InputStream fragis = null, vertis = null, geois = null;
         if (fs != null) {
@@ -149,8 +179,8 @@ public class ShaderUtil
     }
 
     private ShaderFile loadShader(String name, InputStream fs,
-            InputStream vs, InputStream gs,
-            String... mutations)
+                                  InputStream vs, InputStream gs,
+                                  String... mutations)
     {
         //TODO ueberlegen defines nicht der src hinzuzufügen
         //sondern als weiteren src string uebergeben

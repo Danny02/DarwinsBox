@@ -31,7 +31,7 @@ import static java.lang.Integer.parseInt;
  */
 public class ShaderObjektFactory
 {
-
+    private final static int ERROR_BUFFER_SIZE = 4096;
     private final GraphicContext gc;
 
     @Inject
@@ -47,7 +47,7 @@ public class ShaderObjektFactory
     }
 
     public static int compileShaderObject(GL2GL3 gl, ShaderType type,
-            String[] shadertext) throws BuildException
+                                          String[] shadertext) throws BuildException
     {
         int globject = gl.glCreateShader(type.glConst);
         gl.glShaderSource(globject, shadertext.length, shadertext, null);
@@ -55,28 +55,32 @@ public class ShaderObjektFactory
         int[] error = new int[1];
         gl.glGetShaderiv(globject, GL2ES2.GL_COMPILE_STATUS, error, 0);
         if (error[0] == GL.GL_FALSE) {
-            int[] len = new int[]{512};
-            byte[] errormessage = new byte[512];
-            gl.glGetShaderInfoLog(globject, 512, len, 0, errormessage, 0);
+            int[] len = new int[]{ERROR_BUFFER_SIZE};
+            byte[] errormessage = new byte[ERROR_BUFFER_SIZE];
+            gl.glGetShaderInfoLog(globject, ERROR_BUFFER_SIZE, len, 0, errormessage, 0);
             String tmp = new String(errormessage, 0, len[0]);
             BufferedReader errors = new BufferedReader(new StringReader(tmp));
 
+            //TODO build a Shader error parser for all graphic cards and so on
             StringBuilder sb = new StringBuilder();
             try {
-                sb.append('\t').append(errors.readLine()).append('\n');
                 String[][] texts = new String[shadertext.length][];
                 for (int i = 0; i < shadertext.length; i++) {
                     texts[i] = shadertext[i].split("\n");
                 }
                 String line;
                 while ((line = errors.readLine()) != null) {
-                    String[] er = line.split(":");
-                    if (er.length < 4) {
-                        break;
-                    }
-                    String sline = texts[parseInt(er[1].trim())][parseInt(er[2]) - 1];
                     sb.append('\t').append(line).append('\n');
-                    sb.append("\t\t").append(sline).append('\n');
+                    String[] er = line.split(":");
+                    if (er.length >= 4) {
+                        try {
+                            int file = parseInt(er[0].trim())+1;//because we add the version tag infont of everything
+                            int fLine = parseInt(er[1].split("\\(")[0]) - 2;//don'T know why
+                            String sline = texts[file][fLine];
+                            sb.append("\t\t").append(sline).append('\n');
+                        } catch (Throwable t) {
+                        }
+                    }
                 }
             } catch (IOException ex) {
             }

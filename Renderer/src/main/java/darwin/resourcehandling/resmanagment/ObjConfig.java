@@ -33,7 +33,7 @@ public class ObjConfig
 
     public ObjConfig(String path, String descr)
     {
-        this(path, new ShaderDescription(descr));
+        this(path, new ShaderDescription(descr, false));
     }
 
     public ObjConfig(String path, ShaderDescription descr)

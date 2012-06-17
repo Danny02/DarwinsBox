@@ -55,6 +55,7 @@ public class BasicScene implements GLEventListener
     //test
     private PerformanceView info;
     private MemoryInfo meminfo;
+    private ImmutableVector<Vector3> lightDir = new Vector3(0, -1, 0);
 
     @Inject
     public BasicScene(GraphicContext gc, ResourcesLoader loader)
@@ -199,9 +200,15 @@ public class BasicScene implements GLEventListener
         robjekts.remove(new RenderWrapper(ro, null));
     }
 
-    public void setLigthDir(ImmutableVector<Vector3> lightdir)
+    public void setLightDir(ImmutableVector<Vector3> lightDir)
     {
-        getMatrices().setLight(lightdir.clone().mul(-1));
+        this.lightDir = lightDir.clone();
+        updateLight(lightDir);
+    }
+
+    private void updateLight(ImmutableVector<Vector3> lightdir)
+    {
+        getMatrices().setLight(lightdir.clone());
         Vector3 light = matrices.getView().fastMult(lightdir.clone());
         light.normalize();
 
@@ -210,7 +217,7 @@ public class BasicScene implements GLEventListener
         setLightUniforms(light, halfvector);
     }
 
-    protected void setLightUniforms(Vector3 ldir, Vector3 half)
+    private void setLightUniforms(Vector3 ldir, Vector3 half)
     {
         for (ShaderUniform su : this.lightdir) {
             su.setData(ldir.getCoords());
@@ -229,6 +236,7 @@ public class BasicScene implements GLEventListener
     public void viewChanged()
     {
         matrices.fireChange(MatType.VIEW);
+        updateLight(lightDir);
     }
 
     public MatrixCache getMatrices()
