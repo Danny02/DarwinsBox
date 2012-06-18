@@ -99,7 +99,7 @@ public class ShaderUtil
                 errorMessage = "while linking";
             }
         }
-        logger.error("Shader " + exception.getErrorType() + "ERROR " + errorMessage
+        logger.error("Shader " + exception.getErrorType() + " ERROR " + errorMessage
                 + " {" + sfile.name + "}\n" + exception.getMessage());
         //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
         throw new Error("Shutting down!");
@@ -119,7 +119,6 @@ public class ShaderUtil
         }
 
         sources[len + 1] = source;
-
         return soFactory.create(target, sources);
     }
 
