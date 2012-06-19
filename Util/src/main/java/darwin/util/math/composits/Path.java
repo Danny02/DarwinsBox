@@ -22,10 +22,9 @@ public class Path<E extends Vector<E>> implements Iterable<LineSegment<E>> {
     public void addPathElement(ImmutableVector<E> position) {
         positions.add(position.clone());
     }
-    
-    public int size()
-    {
-        return positions.size();                
+
+    public int size() {
+        return positions.size();
     }
 
     @Override
@@ -51,5 +50,9 @@ public class Path<E extends Vector<E>> implements Iterable<LineSegment<E>> {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
+    }
+
+    public Iterator<ImmutableVector<E>> getVectorIterator() {
+        return positions.iterator();
     }
 }
