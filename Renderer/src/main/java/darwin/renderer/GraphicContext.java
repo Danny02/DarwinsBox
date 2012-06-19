@@ -56,7 +56,7 @@ public final class GraphicContext
         GLProfile profile = null;
         try {
             if (glProfil == null) {
-                profile = GLProfile.getMaximum();
+                profile = GLProfile.getMaximum(true);
             } else {
                 profile = GLProfile.get(glProfil);
             }

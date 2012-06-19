@@ -87,8 +87,6 @@ public class ShaderUtil
         } catch (BuildException ex) {
             exception = ex;
             errorMessage = "in: Geometrie of";
-//            error = true;
-//            errorText.append(ex.getErrorType().toString()).append(" ERROR in : ").append("Geometrie of ");
         }
 
         if (exception == null) {

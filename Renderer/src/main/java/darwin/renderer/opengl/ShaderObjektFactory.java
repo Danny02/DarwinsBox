@@ -87,7 +87,7 @@ public class ShaderObjektFactory
                     String[] er = line.split(":");
                     if (er.length >= 4) {
                         try {
-                            int file = parseInt(er[0].trim()) + 1;//because we add the version tag infont of everything
+                            int file = parseInt(er[0].trim());//because we add the version tag infont of everything
                             int fLine = parseInt(er[1].split("\\(")[0]) - 2;//don'T know why
                             String sline = texts[file][fLine];
                             sb.append("\t\t").append(sline).append('\n');

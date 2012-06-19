@@ -43,7 +43,6 @@ public class MemoryInfoProvider implements Provider<MemoryInfo>
         }
     }
     private final GraphicContext gc;
-    private Vendor vendor;
 
     @Inject
     public MemoryInfoProvider(GraphicContext gc)
@@ -54,7 +53,8 @@ public class MemoryInfoProvider implements Provider<MemoryInfo>
     @Override
     public MemoryInfo get()
     {
-        switch (getVendor()) {
+        Vendor v = getVendor();
+        switch (v) {
             case AMD:
                 return new ATIMemoryInfo(gc);
             case NVIDIA:

@@ -17,7 +17,6 @@
 package darwin.util.math.base;
 
 import darwin.util.math.base.vector.*;
-
 import static darwin.util.math.util.MathUtil.almostEqual;
 
 /**

@@ -38,8 +38,8 @@ public final class ATIMemoryInfo implements MemoryInfo
 
     public ATIMemoryInfo(GraphicContext gc)
     {
-        totalMem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
         this.gc = gc;
+        totalMem = getData(TEXTURE_FREE_MEMORY_ATI)[0];
     }
 
     @Override

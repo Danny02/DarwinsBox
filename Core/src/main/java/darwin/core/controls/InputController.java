@@ -16,8 +16,8 @@
  */
 package darwin.core.controls;
 
+import com.jogamp.newt.Window;
 import com.jogamp.newt.event.*;
-import java.awt.Window;
 
 import darwin.util.math.base.Line;
 import darwin.util.math.base.matrix.Matrix4;
