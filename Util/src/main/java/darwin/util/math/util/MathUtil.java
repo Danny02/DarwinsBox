@@ -95,7 +95,7 @@ public class MathUtil
             aLong = 0x8000_0000_0000_0000L - aLong;
         }
         // Make bInt lexicographically ordered as a twos-complement int
-        long bLong = Double.doubleToRawLongBits(a);
+        long bLong = Double.doubleToRawLongBits(b);
         if (bLong < 0) {
             bLong = 0x8000_0000_0000_0000L - bLong;
         }
