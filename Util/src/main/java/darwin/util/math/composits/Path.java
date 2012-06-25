@@ -52,5 +52,18 @@ public class Path<E extends Vector<E>> implements Iterable<LineSegment<E>> {
 
     public Iterator<ImmutableVector<E>> getVectorIterator() {
         return positions.iterator();
+
+    }
+
+    public Iterable<ImmutableVector<E>> getVectorIterable()
+    {
+        return new Iterable<ImmutableVector<E>>() {
+
+            @Override
+            public Iterator<ImmutableVector<E>> iterator()
+            {
+                return getVectorIterator();
+            }
+        };
     }
 }

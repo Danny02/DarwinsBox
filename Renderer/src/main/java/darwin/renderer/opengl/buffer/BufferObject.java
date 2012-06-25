@@ -31,14 +31,12 @@ import darwin.renderer.GraphicContext;
  */
 public final class BufferObject
 {
-
     static {
         assert GLProfile.isAvailable(GLProfile.GL2GL3) : "This device doesn't support BufferObjects";
     }
 
     public interface BufferFactory
     {
-
         public BufferObject create(Target target);
 
         public BufferObject buildIndiceBuffer(int... indice);
@@ -56,11 +54,12 @@ public final class BufferObject
         int[] ids = new int[1];
         gc.getGL().glGenBuffers(1, ids, 0);
         id = ids[0];
+        System.out.println("Generate Buffer with ID: " + id);
     }
 
     @AssistedInject
     public BufferObject(GraphicContext gcont,
-            @Assisted int... indice)
+                        @Assisted int... indice)
     {
         this(gcont, Target.ELEMENT_ARRAY);
 
@@ -111,7 +110,7 @@ public final class BufferObject
     {
         size = bsize;
         gc.getGL().glBufferData(target.glvalue, size, null,
-                getGLConst(type, usage));
+                                getGLConst(type, usage));
     }
 
     /**
@@ -125,7 +124,7 @@ public final class BufferObject
         int bsize = GLBuffers.sizeOfBufferElem(data);
         data.rewind();
         gc.getGL().glBufferSubData(target.glvalue, offset, bsize * data.limit(),
-                data);
+                                   data);
     }
 
     public ByteBuffer mapBuffer(Access access)
@@ -136,7 +135,7 @@ public final class BufferObject
     public ByteBuffer mapRange(Access access, int offset, int length)
     {
         return gc.getGL().getGL2().glMapBufferRange(target.glvalue, offset, length,
-                access.glvalue);
+                                                    access.glvalue);
     }
 
     public void bind()
@@ -175,8 +174,9 @@ public final class BufferObject
         if (obj == null) {
             return false;
         }
-        if(obj == this)
-        	return true;
+        if (obj == this) {
+            return true;
+        }
         if (getClass() != obj.getClass()) {
             return false;
         }
