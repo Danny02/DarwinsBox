@@ -42,7 +42,6 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
 //    {
 //        return new Vector3(x, y, z);
 //    }
-
     @Override
     public Vector3 toVector3()
     {
@@ -182,5 +181,53 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     public float getZ()
     {
         return z;
+    }
+
+    @Override
+    public Vector3 rotateCW(int axis)
+    {
+        float tmp;
+        switch (axis) {
+            case 0://X
+                tmp = y;
+                y = -z;
+                z = tmp;
+            case 1://Y
+                tmp = x;
+                x = -z;
+                z = tmp;
+                break;
+            case 2://Z
+                tmp = y;
+                y = -x;
+                x = tmp;
+                break;
+        }
+
+        return this;
+    }
+
+    @Override
+    public Vector3 rotateCCW(int axis)
+    {
+        float tmp;
+        switch (axis) {
+            case 0://X
+                tmp = z;
+                z = -y;
+                y = tmp;
+            case 1://Y
+                tmp = z;
+                z = -x;
+                x = tmp;
+                break;
+            case 2://Z
+                tmp = x;
+                x = -y;
+                y = tmp;
+                break;
+        }
+
+        return this;
     }
 }

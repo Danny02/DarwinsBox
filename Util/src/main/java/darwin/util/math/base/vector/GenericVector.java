@@ -236,4 +236,17 @@ public class GenericVector extends Vector<GenericVector>
     {
         return new GenericVector(coords.clone());
     }
+
+    //TODO implementieren
+    @Override
+    public Vector<GenericVector> rotateCCW(int axis)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vector<GenericVector> rotateCW(int axis)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

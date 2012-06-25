@@ -42,6 +42,10 @@ public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
 
     public abstract Vector<E> max(float b);
 
+    public abstract Vector<E> rotateCCW(int axis);
+
+    public abstract Vector<E> rotateCW(int axis);
+
     public E reflect(ImmutableVector<E> normal)
     {
         E n = normal.clone();

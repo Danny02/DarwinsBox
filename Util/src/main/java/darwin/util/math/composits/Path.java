@@ -4,12 +4,10 @@
  */
 package darwin.util.math.composits;
 
-import darwin.util.math.composits.LineSegment;
-import darwin.util.math.base.vector.ImmutableVector;
+import java.util.*;
+
+import darwin.util.math.base.vector.*;
 import darwin.util.math.base.vector.Vector;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  *

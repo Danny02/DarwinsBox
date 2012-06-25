@@ -49,7 +49,6 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
 //    {
 //        return new Vector2(x, y);
 //    }
-
     @Override
     public Vector3 toVector3()
     {
@@ -173,5 +172,25 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     public float getY()
     {
         return y;
+    }
+
+    @Override
+    public Vector2 rotateCCW(int axis)
+    {
+        float tmp = x;
+        x = -y;
+        y = tmp;
+        
+        return this;
+    }
+
+    @Override
+    public Vector2 rotateCW(int axis)
+    {
+        float tmp = y;
+        y = -x;
+        x = tmp;
+
+        return this;
     }
 }
