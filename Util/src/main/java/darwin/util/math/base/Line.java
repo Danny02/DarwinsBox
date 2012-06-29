@@ -22,6 +22,7 @@ import darwin.util.math.base.vector.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
+//TODO get rid of all the toVector3 converts and the using of cross products
 public final class Line<E extends Vector<E>>
 {
     public enum Relationship
@@ -33,7 +34,7 @@ public final class Line<E extends Vector<E>>
     private final ImmutableVector<E> a;
     private final ImmutableVector<E> dir;
 
-    public  Line(ImmutableVector<E> a, ImmutableVector<E> dir)
+    public Line(ImmutableVector<E> a, ImmutableVector<E> dir)
     {
         if (dir.lengthQuad() == 0.) {
             throw new IllegalArgumentException("The direction vector must not have a length of null!");
@@ -42,7 +43,8 @@ public final class Line<E extends Vector<E>>
         this.dir = dir.clone().normalize();
     }
 
-    public static <E extends Vector<E>> Line<E> fromPoints(ImmutableVector<E> a, ImmutableVector<E> b)
+    public static <E extends Vector<E>> Line<E> fromPoints(ImmutableVector<E> a,
+                                                           ImmutableVector<E> b)
     {
         return new Line<>(a, a.clone().sub(b));
     }
@@ -79,8 +81,8 @@ public final class Line<E extends Vector<E>>
 
     public boolean isSkewTo(Line<E> g)
     {
-        Vector<E> tmp = a.clone().sub(g.a);
-        return !tmp.cross(dir).isParrallelTo(tmp.cross(g.dir));
+        ImmutableVector<Vector3> tmp = a.clone().sub(g.a).toVector3();
+        return !tmp.clone().cross(dir.toVector3()).isParrallelTo(tmp.clone().cross(g.dir.toVector3()));
     }
 
     public boolean contains(ImmutableVector<E> p)
@@ -94,15 +96,19 @@ public final class Line<E extends Vector<E>>
         Line<Vector3> t = new Line<>(a.toVector3(), dir.toVector3());
         Line<Vector3> o = new Line<>(g.a.toVector3(), g.dir.toVector3());
 
-        Plane e = Plane.fromLineAndDirection(t, dir.cross(g.dir));
+        Plane e = Plane.fromLineAndDirection(t, dir.toVector3().cross(g.dir.toVector3()));
         return e.getIntersection(o);
+    }
+
+    public double distanceToSquared(ImmutableVector<E> p)
+    {
+        Vector<E> tmp = a.clone().sub(p);
+        return tmp.lengthQuad() - dir.dot(tmp);
     }
 
     public double distanceTo(ImmutableVector<E> p)
     {
-        Vector tmp = a.clone().sub(p);
-        double lenquad = dir.cross(tmp).lengthQuad() / dir.lengthQuad();
-        return Math.sqrt(lenquad);
+        return Math.sqrt(distanceTo(p));
     }
 
     public double distanceTo(Line<E> g)
@@ -110,12 +116,13 @@ public final class Line<E extends Vector<E>>
         if (isParallelTo(g)) {
             return distanceTo(g.a);
         } else {
-            Vector3 n = dir.cross(g.dir).normalize();
+            //TODO
+            Vector3 n = dir.toVector3().cross(g.dir.toVector3()).normalize();
             return Math.abs(a.clone().sub(g.a).toVector3().dot(n));
         }
     }
 
-    public ImmutableVector<E> getAufpunkt()
+    public ImmutableVector<E> getStartingPoint()
     {
         return a;
     }
@@ -123,6 +130,11 @@ public final class Line<E extends Vector<E>>
     public ImmutableVector<E> getDirection()
     {
         return dir;
+    }
+
+    public boolean isElement(ImmutableVector<E> point)
+    {
+        return point.clone().sub(getStartingPoint()).isParrallelTo(getDirection());
     }
 
     @Override

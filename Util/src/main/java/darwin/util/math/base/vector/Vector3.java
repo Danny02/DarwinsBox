@@ -54,7 +54,6 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
         return new float[]{x, y, z};
     }
 
-    @Override
     public Vector3 cross(ImmutableVector<Vector3> b)
     {
         Vector3 mul = b.clone();

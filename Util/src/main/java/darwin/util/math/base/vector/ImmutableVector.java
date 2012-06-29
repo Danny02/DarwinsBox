@@ -31,8 +31,6 @@ public abstract class ImmutableVector<E extends Vector<E>> implements Tupel, Clo
 
     public abstract float dot(ImmutableVector<E> b);
 
-    public abstract Vector3 cross(ImmutableVector<E> b);
-
     public double getAngle(ImmutableVector<E> b)
     {
         double normalizer = length() * b.length();

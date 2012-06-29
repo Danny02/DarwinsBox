@@ -19,14 +19,12 @@ package darwin.util.math.composits;
 import darwin.util.math.base.Line;
 import darwin.util.math.base.vector.*;
 
-
 /**
  *
  * @author daniel
  */
 public class LineSegment<E extends Vector<E>>
 {
-
     private final ImmutableVector<E> start, end;
 
     public LineSegment(ImmutableVector<E> start, ImmutableVector<E> end)
@@ -48,5 +46,22 @@ public class LineSegment<E extends Vector<E>>
     public ImmutableVector<E> getStart()
     {
         return start;
+    }
+
+    public boolean isElement(ImmutableVector<E> point)
+    {
+        Vector<E> t = point.clone().sub(start);
+        Vector<E> dir = end.clone().sub(start).normalize();
+        if (t.isParrallelTo(dir)) {
+            float mul = t.getCoords()[0] / dir.getCoords()[0];
+            return 0 <= mul && mul <= 1f;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Linesegment(Start:" + start + " End:" + end + ')';
     }
 }

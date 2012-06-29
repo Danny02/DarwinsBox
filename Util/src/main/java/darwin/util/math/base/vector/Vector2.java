@@ -61,14 +61,6 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
         return new float[]{x, y};
     }
 
-    //special util methods
-    @Override
-    public Vector3 cross(ImmutableVector<Vector2> b)
-    {
-        Vector2 mul = b.clone();
-        return new Vector3(0, 0, x * mul.y - y * mul.x);
-    }
-
     //interface methods
     @Override
     public Vector2 add(ImmutableVector<Vector2> b)
@@ -180,7 +172,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
         float tmp = x;
         x = -y;
         y = tmp;
-        
+
         return this;
     }
 

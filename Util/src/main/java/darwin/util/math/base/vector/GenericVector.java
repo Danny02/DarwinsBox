@@ -226,12 +226,6 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
-    public Vector3 cross(ImmutableVector<GenericVector> b)
-    {
-        return toVector3().cross(b.toVector3());
-    }
-
-    @Override
     public GenericVector clone()
     {
         return new GenericVector(coords.clone());

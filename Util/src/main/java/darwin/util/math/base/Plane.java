@@ -17,6 +17,7 @@
 package darwin.util.math.base;
 
 import darwin.util.math.base.vector.*;
+
 import static darwin.util.math.util.MathUtil.almostEqual;
 
 /**
@@ -38,13 +39,13 @@ public class Plane
     public static <E extends Vector<E>> Plane fromLineAndDirection(
             Line<E> g, ImmutableVector<E> dir)
     {
-        return new Plane(g.getAufpunkt(), dir.cross(g.getDirection()));
+        return new Plane(g.getStartingPoint(), dir.toVector3().cross(g.getDirection().toVector3()));
     }
 
     public static <E extends Vector<E>> Plane fromPointAndLine(
             ImmutableVector<E> start, Line<E> g)
     {
-        return new Plane(start, start.clone().sub(g.getAufpunkt()).cross(g.getDirection()));
+        return new Plane(start, start.clone().sub(g.getStartingPoint()).toVector3().cross(g.getDirection().toVector3()));
     }
 
     public static <E extends Vector<E>> Plane fromPoints(ImmutableVector<E> p1,
@@ -52,13 +53,14 @@ public class Plane
                                                          ImmutableVector<E> p3)
     {
         Vector<E> tmp = p2.clone().sub(p1);
-        return new Plane(p1, tmp.cross(p3.clone().sub(p1)));
+        return new Plane(p1, tmp.toVector3().cross(p3.clone().sub(p1).toVector3()));
     }
 
     public static <E extends Vector<E>> Plane fromPointAndDirection(
-            ImmutableVector start, ImmutableVector<E> dir1, ImmutableVector<E> dir2)
+            ImmutableVector start, ImmutableVector<E> dir1,
+            ImmutableVector<E> dir2)
     {
-        return new Plane(start, dir1.cross(dir2));
+        return new Plane(start, dir1.toVector3().cross(dir2.toVector3()));
     }
 
     public boolean isParallel(Line<Vector3> g)
@@ -75,7 +77,7 @@ public class Plane
 
     public Line<Vector3> getSchnittKante(Plane e)
     {
-        Vector3 dir = normal.cross(e.normal);
+        Vector3 dir = normal.toVector3().cross(e.normal);
 
         float dot = normal.dot(e.normal);
         float tmp = 1 / (1 - dot * dot);
@@ -95,8 +97,8 @@ public class Plane
         if (NdotD == 0) {
             throw new IllegalArgumentException("There is no intersecting point when a line is parallel to a plane");
         }
-        float delta = (-nDot - g.getAufpunkt().dot(normal)) / NdotD;
-        return g.getAufpunkt().clone().add(g.getDirection().clone().mul(delta));
+        float delta = (-nDot - g.getStartingPoint().dot(normal)) / NdotD;
+        return g.getStartingPoint().clone().add(g.getDirection().clone().mul(delta));
     }
 
     public float distanceTo(ImmutableVector<Vector3> p)
@@ -106,7 +108,7 @@ public class Plane
 
     public float distanceTo(Line<Vector3> g)
     {
-        return distanceTo(g.getAufpunkt());
+        return distanceTo(g.getStartingPoint());
     }
 
     public float distanceTo(Plane e)
