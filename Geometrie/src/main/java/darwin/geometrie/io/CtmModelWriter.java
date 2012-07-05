@@ -16,10 +16,8 @@
  */
 package darwin.geometrie.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import javax.media.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
@@ -27,14 +25,13 @@ import org.slf4j.helpers.NOPLogger;
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
 import darwin.geometrie.unpacked.*;
-import darwin.jopenctm.compression.MG1Encoder;
-import darwin.jopenctm.compression.MeshEncoder;
+import darwin.jopenctm.compression.*;
 import darwin.jopenctm.data.AttributeData;
 import darwin.jopenctm.errorhandling.InvalidDataException;
 import darwin.jopenctm.io.CtmFileWriter;
 import darwin.util.logging.InjectLogger;
 
-import static darwin.geometrie.data.DataType.*;
+import static darwin.geometrie.data.DataType.FLOAT;
 import static darwin.jopenctm.data.Mesh.*;
 
 /**
@@ -46,12 +43,12 @@ public class CtmModelWriter implements ModelWriter
 {
     public static final String FILE_EXTENSION = "ctm";
     private final static String DEFAULT_COMMENT = "Exported with Darwin Lib";
-    private static final Element position, texcoord, normal;
+    private static final Element POSITION, TEX_COORD, NORMAL;
 
     static {
-        position = new Element(new GenericVector(FLOAT, CTM_POSITION_ELEMENT_COUNT), "Position");
-        texcoord = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), "TexCoord");
-        normal = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), "Normal");
+        POSITION = new Element(new GenericVector(FLOAT, CTM_POSITION_ELEMENT_COUNT), "Position");
+        TEX_COORD = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), "TexCoord");
+        NORMAL = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), "Normal");
     }
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -60,7 +57,7 @@ public class CtmModelWriter implements ModelWriter
 
     public CtmModelWriter()
     {
-        this(new MG1Encoder());
+        this(new RawEncoder());
     }
 
     public CtmModelWriter(MeshEncoder encoder)
@@ -75,6 +72,12 @@ public class CtmModelWriter implements ModelWriter
         }
         this.encoder = encoder;
         this.fileComment = fileComment;
+    }
+
+    @Override
+    public String getDefaultFileExtension()
+    {
+        return FILE_EXTENSION;
     }
 
     @Override
@@ -96,73 +99,63 @@ public class CtmModelWriter implements ModelWriter
 
     private darwin.jopenctm.data.Mesh convertMesh(Mesh mesh, String matName) throws IOException
     {
+        //standard checks
+        VertexBuffer vbuffer = mesh.getVertices();
+        int vc = mesh.getVertexCount();
+        if (!vbuffer.layout.hasElement(POSITION)) {
+            throw new IOException("The mesh doesn't have a float3 vertex position attribute!");
+        }
+
         if (mesh.getPrimitiv_typ() != GL.GL_TRIANGLES) {
             throw new IOException("The CTM File Format only supports triangle Meshes");
         }
 
-        VertexBuffer vbuffer = mesh.getVertices();
-        int vc = mesh.getVertexCount();
-
-        float[] vertices = new float[vc * CTM_POSITION_ELEMENT_COUNT];
-        float[] normals = null;
-        AttributeData texcoords = null;
+        //create indicie array
+        int[] meshIndicies = mesh.getIndicies();
+        if (meshIndicies == null) {
+            throw new IOException("Only meshes with indices can be exported!");
+        }
         int[] indices = new int[mesh.getIndexCount()];
+        System.arraycopy(meshIndicies, 0, indices, 0, indices.length);
 
-        if (!vbuffer.layout.hasElement(position)) {
-            throw new IOException("The mesh doesn't have a float3 vertex position attribute!");
-        }
 
-        List<AttributeData> attribute = new ArrayList<>();
-        for (Element el : vbuffer.layout.getElements()) {
-            if (el.equals(position) || el.equals(normal) || el.equals(texcoord)) {
-                continue;
-            }
-            if (el.getDataType() != FLOAT || el.getVectorType().getElementCount() > 4) {
-                logger.warn("The mesh-attribute " + el.toString() + " can't be exported to the ctm format!");
-                continue;
-            }
-            float[] values = new float[vc * CTM_ATTR_ELEMENT_COUNT];
-            int k = 0;
-            for (Vertex v : vbuffer) {
-                copyToBuffer(values, k, v, el);
-                k += CTM_ATTR_ELEMENT_COUNT;
-            }
-            attribute.add(new AttributeData(el.getBezeichnung(), null,
-                                            AttributeData.STANDART_PRECISION, values));
-        }
+        AttributeData[] atts = createAttributeData(vbuffer);
 
-        System.arraycopy(mesh.getIndicies(), 0, indices, 0, indices.length);
-
+        //create position array
+        float[] vertices = new float[vc * CTM_POSITION_ELEMENT_COUNT];
         int i = 0;
         for (Vertex v : vbuffer) {
-            copyToBuffer(vertices, i, v, position);
+            copyToBuffer(vertices, i, v, POSITION);
             i += CTM_POSITION_ELEMENT_COUNT;
         }
 
-        if (vbuffer.layout.hasElement(normal)) {
+        //create optional normal array
+        float[] normals = null;
+        if (vbuffer.layout.hasElement(NORMAL)) {
             normals = new float[vc * CTM_NORMAL_ELEMENT_COUNT];
             int k = 0;
             for (Vertex v : vbuffer) {
-                copyToBuffer(normals, k, v, normal);
+                copyToBuffer(normals, k, v, NORMAL);
                 k += CTM_NORMAL_ELEMENT_COUNT;
             }
         }
-        if (vbuffer.layout.hasElement(texcoord)) {
+
+        //create uv arrays
+        boolean hasUV = vbuffer.layout.hasElement(TEX_COORD);
+        AttributeData[] texcoords = new AttributeData[hasUV ? 1 : 0];
+        if (hasUV) {
             float[] values = new float[vc * CTM_UV_ELEMENT_COUNT];
             int k = 0;
             for (Vertex v : vbuffer) {
-                copyToBuffer(values, k, v, texcoord);
+                copyToBuffer(values, k, v, TEX_COORD);
                 k += CTM_UV_ELEMENT_COUNT;
             }
-            texcoords = new AttributeData("TexCoord", matName,
-                                          AttributeData.STANDART_UV_PRECISION, values);
+            texcoords[0] = new AttributeData("TexCoord", matName,
+                                             AttributeData.STANDART_UV_PRECISION, values);
         }
 
-        AttributeData[] atts = new AttributeData[attribute.size()];
-        attribute.toArray(atts);
         return new darwin.jopenctm.data.Mesh(vertices, normals, indices,
-                                             texcoords == null ? new AttributeData[0] : new AttributeData[]{texcoords},
-                                             atts);
+                                             texcoords, atts);
     }
 
     private void copyToBuffer(float[] buffer, int offset, Vertex v, Element e)
@@ -174,9 +167,37 @@ public class CtmModelWriter implements ModelWriter
         //System.arraycopy(data, 0, buffer, offset, data.length);
     }
 
-    @Override
-    public String getDefaultFileExtension()
+    private AttributeData[] createAttributeData(VertexBuffer vbuffer)
     {
-        return FILE_EXTENSION;
+        List<AttributeData> attribute = new ArrayList<>();
+        for (Element el : vbuffer.layout.getElements()) {
+            if (el.equals(POSITION) || el.equals(NORMAL) || el.equals(TEX_COORD)) {
+                continue;
+            }
+
+            if (el.getDataType() != FLOAT || el.getVectorType().getElementCount() > CTM_ATTR_ELEMENT_COUNT) {
+                logger.warn("The mesh-attribute " + el.toString()
+                        + " can't be exported to the ctm format! Only float attributes with max. 4 elements are supported.");
+                continue;
+            }
+
+            float[] values = new float[vbuffer.getVcount() * CTM_ATTR_ELEMENT_COUNT];
+
+            {
+                int k = 0;
+                for (Vertex v : vbuffer) {
+                    copyToBuffer(values, k, v, el);
+                    k += CTM_ATTR_ELEMENT_COUNT;
+                }
+            }
+
+            attribute.add(new AttributeData(el.getBezeichnung(), null,
+                                            AttributeData.STANDART_PRECISION, values));
+        }
+
+        AttributeData[] atts = new AttributeData[attribute.size()];
+        attribute.toArray(atts);
+
+        return atts;
     }
 }

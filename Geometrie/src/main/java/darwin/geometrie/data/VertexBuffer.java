@@ -18,11 +18,10 @@ package darwin.geometrie.data;
 
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
-import static java.lang.Math.*;
-import static darwin.geometrie.data.DataLayout.Format.*;
+import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE;
+import static java.lang.Math.max;
 
 /**
  * DatenModel um Vertex Attribute eines Modeles zu halten

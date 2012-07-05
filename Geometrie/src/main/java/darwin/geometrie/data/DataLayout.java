@@ -139,6 +139,11 @@ public class DataLayout implements Serializable
         return alignments.keySet();
     }
 
+    public int getElementCount()
+    {
+        return getElements().size();
+    }
+
     @Override
     public boolean equals(Object obj)
     {
