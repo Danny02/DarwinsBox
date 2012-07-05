@@ -20,7 +20,11 @@ package darwin.core.timing;
  *
  * @author daniel
  */
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class to handle all time relevant management. There are different Listeners
@@ -33,27 +37,23 @@ import java.util.*;
  * <p/>
  * @author daniel
  */
-public class GameTime
-{
+public class GameTime {
 
     static {
         HighPerformanceTimingFix.fix();
     }
 
-    private static class Start
-    {
+    private static class Start {
 
         private static final long time = System.nanoTime();
     }
-    private static final long SECOND_TO_NANO = 1_000_000_000L;
-    private static final double NANO_TO_SECOND = 1. / SECOND_TO_NANO;
+    private static final double NANO_IN_SECOND = TimeUnit.NANOSECONDS.toSeconds(1L);
     private long elapsed = 0, virtualElapsed = 0;
     private double scale = 1;
     private Map<Integer, StepListenerManager> stepListener = new HashMap<>();
     private Collection<DeltaListener> timeListener = new LinkedList<>();
 
-    public void update()
-    {
+    public void update() {
         long start = Start.time;
 
         long now = System.nanoTime();
@@ -68,23 +68,20 @@ public class GameTime
         elapsed += delta;
     }
 
-    private void updatedTimeListener(long nanoSeconds)
-    {
-        double delta = nanoSeconds * NANO_TO_SECOND;
+    private void updatedTimeListener(long nanoSeconds) {
+        double delta = nanoSeconds / NANO_IN_SECOND;
         for (DeltaListener listener : timeListener) {
             listener.update(delta);
         }
     }
 
-    private void updatedStepListener(long nanoSeconds)
-    {
+    private void updatedStepListener(long nanoSeconds) {
         for (StepListenerManager lm : stepListener.values()) {
             lm.update(elapsed, nanoSeconds);
         }
     }
 
-    public void addListener(int frequency, StepListener listener)
-    {
+    public void addListener(int frequency, StepListener listener) {
         StepListenerManager manager = stepListener.get(frequency);
         if (manager == null) {
             manager = new StepListenerManager(frequency);
@@ -93,8 +90,7 @@ public class GameTime
         manager.addListener(listener);
     }
 
-    public void removeListener(StepListener listener)
-    {
+    public void removeListener(StepListener listener) {
         for (StepListenerManager manager : stepListener.values()) {
             if (manager.removeListener(listener) && manager.isEmpty()) {
                 stepListener.remove(manager.getFrequency());
@@ -102,33 +98,28 @@ public class GameTime
         }
     }
 
-    public void addListener(DeltaListener listener)
-    {
+    public void addListener(DeltaListener listener) {
         timeListener.add(listener);
     }
 
-    public void removeListener(DeltaListener listener)
-    {
+    public void removeListener(DeltaListener listener) {
         timeListener.remove(listener);
     }
 
-    public double getElapsedTime()
-    {
-        return virtualElapsed * NANO_TO_SECOND;
+    public double getElapsedTime() {
+        return virtualElapsed / NANO_IN_SECOND;
     }
 
-    public long getElapsedSteps(int frequency)
-    {
-        return virtualElapsed / (frequency * SECOND_TO_NANO);
+    public long getElapsedSteps(int frequency) {
+        TimeUnit.NANOSECONDS.toSeconds(elapsed);
+        return virtualElapsed / TimeUnit.SECONDS.toNanos(frequency);
     }
 
-    public void setTimeScale(double scale)
-    {
+    public void setTimeScale(double scale) {
         this.scale = scale;
     }
 
-    public double getTimeScale()
-    {
+    public double getTimeScale() {
         return scale;
     }
 }
