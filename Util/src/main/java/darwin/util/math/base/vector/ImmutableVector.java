@@ -60,7 +60,7 @@ public abstract class ImmutableVector<E extends Vector<E>> implements Tupel, Clo
     public boolean isParrallelTo(ImmutableVector<E> v)
     {
         double angle = getAngle(v);
-        return abs(angle) == 0. || almostEqual(angle, PI, 2);
+        return almostEqual(angle, 0., 2) || almostEqual(angle, PI, 2);
     }
 
     public double length()

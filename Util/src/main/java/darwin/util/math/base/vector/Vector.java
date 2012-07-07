@@ -22,44 +22,44 @@ package darwin.util.math.base.vector;
  */
 public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
 {
-    public abstract Vector<E> add(ImmutableVector<E> b);
+    public abstract E add(ImmutableVector<E> b);
 
-    public abstract Vector<E> add(float b);
+    public abstract E add(float b);
 
-    public abstract Vector<E> sub(ImmutableVector<E> b);
+    public abstract E sub(ImmutableVector<E> b);
 
-    public abstract Vector<E> sub(float b);
+    public abstract E sub(float b);
 
-    public abstract Vector<E> mul(ImmutableVector<E> b);
+    public abstract E mul(ImmutableVector<E> b);
 
-    public abstract Vector<E> mul(float b);
+    public abstract E mul(float b);
 
-    public abstract Vector<E> min(ImmutableVector<E> b);
+    public abstract E min(ImmutableVector<E> b);
 
-    public abstract Vector<E> min(float b);
+    public abstract E min(float b);
 
-    public abstract Vector<E> max(ImmutableVector<E> b);
+    public abstract E max(ImmutableVector<E> b);
 
-    public abstract Vector<E> max(float b);
+    public abstract E max(float b);
 
-    public abstract Vector<E> rotateCCW(int axis);
+    public abstract E rotateCCW(int axis);
 
-    public abstract Vector<E> rotateCW(int axis);
+    public abstract E rotateCW(int axis);
 
     public E reflect(ImmutableVector<E> normal)
     {
         E n = normal.clone();
         n.mul(dot(n) * 2);
         sub(n);
-        return (E)this;
+        return (E) this;
     }
 
     public E normalize()
     {
         float len = (float) length();
         if (len != 0) {
-            mul(1f/len);
+            mul(1f / len);
         }
-        return (E)this;
+        return (E) this;
     }
 }
