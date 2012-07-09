@@ -16,8 +16,8 @@
  */
 package darwin.geometrie.io;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.logging.*;
 
 /**
  *
@@ -41,6 +41,14 @@ public class ResourcesLoader
 
     private static InputStream getStream(String path)
     {
-        return ResourcesLoader.class.getResourceAsStream('/' + path);
+        InputStream data = ResourcesLoader.class.getResourceAsStream('/' + path);
+        if (data == null) {
+            try {
+                data = new FileInputStream(path);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ResourcesLoader.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return data;
     }
 }
