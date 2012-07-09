@@ -52,11 +52,11 @@ public final class GraphicContext
     {
         assert initialized == false : "The Context is already initialized!";
 
-        GLProfile.initSingleton();
+        GLProfile.initSingleton(true);
         GLProfile profile = null;
         try {
             if (glProfil == null) {
-                profile = GLProfile.getMaximum(true);
+                profile = GLProfile.getMaximum();
             } else {
                 profile = GLProfile.get(glProfil);
             }

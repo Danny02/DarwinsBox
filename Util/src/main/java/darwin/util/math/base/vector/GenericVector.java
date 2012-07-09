@@ -118,7 +118,7 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
-    public Vector<GenericVector> sub(float b)
+    public GenericVector sub(float b)
     {
         for (int i = 0; i < coords.length; ++i) {
             coords[i] -= b;
@@ -145,7 +145,7 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
-    public Vector<GenericVector> mul(ImmutableVector<GenericVector> b)
+    public GenericVector mul(ImmutableVector<GenericVector> b)
     {
         float[] comp = b.getCoords();
         if (comp.length >= coords.length) {
@@ -186,7 +186,7 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
-    public Vector<GenericVector> min(float b)
+    public GenericVector min(float b)
     {
         for (int i = 0; i < coords.length; i++) {
             coords[i] = Math.min(coords[i], b);
@@ -210,7 +210,7 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
-    public Vector<GenericVector> max(float b)
+    public GenericVector max(float b)
     {
         for (int i = 0; i < coords.length; i++) {
             coords[i] = Math.max(coords[i], b);
@@ -233,13 +233,13 @@ public class GenericVector extends Vector<GenericVector>
 
     //TODO implementieren
     @Override
-    public Vector<GenericVector> rotateCCW(int axis)
+    public GenericVector rotateCCW(int axis)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Vector<GenericVector> rotateCW(int axis)
+    public GenericVector rotateCW(int axis)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
