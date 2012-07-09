@@ -17,7 +17,6 @@
 package darwin.geometrie.io;
 
 import java.io.*;
-import java.util.logging.*;
 
 /**
  *
@@ -46,7 +45,6 @@ public class ResourcesLoader
             try {
                 data = new FileInputStream(path);
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(ResourcesLoader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return data;
