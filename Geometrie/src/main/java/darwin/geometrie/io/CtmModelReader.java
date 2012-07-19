@@ -20,8 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
+import java.util.zip.ZipInputStream;
+
 import javax.media.opengl.GL;
 
 import darwin.geometrie.data.*;
@@ -32,15 +33,14 @@ import darwin.jopenctm.errorhandling.BadFormatException;
 import darwin.jopenctm.errorhandling.InvalidDataException;
 import darwin.jopenctm.io.CtmFileReader;
 
-import static darwin.geometrie.data.DataLayout.Format.*;
-import static darwin.geometrie.data.DataType.*;
+import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE32;
+import static darwin.geometrie.data.DataType.FLOAT;
 
 /**
  *
  * @author daniel
  */
-public class CtmModelReader implements ModelReader
-{
+public class CtmModelReader implements ModelReader {
 
     private static final Element position, texcoord, normal;
 
@@ -51,28 +51,37 @@ public class CtmModelReader implements ModelReader
     }
 
     @Override
-    public Model[] readModel(InputStream source) throws WrongFileTypeException, IOException
-    {
-        CtmFileReader cr = new CtmFileReader(source);
+    public Model[] readModel(InputStream source) throws WrongFileTypeException, IOException {
+        ZipInputStream zip = new ZipInputStream(source);
+        
+        List<Model> models = new ArrayList<>();
+        while (zip.getNextEntry() != null) {
+            models.add(readSingleModel(zip));
+        }
 
+        Model[] a = new Model[models.size()];
+        models.toArray(a);
+        return a;
+    }
+
+    public Model readSingleModel(InputStream source) throws WrongFileTypeException, IOException {
+        CtmFileReader cr = new CtmFileReader(source);
         try {
-            return new Model[]{convertMesh(cr.decode())};
+            return convertMesh(cr.decode());
         } catch (BadFormatException ex) {
             throw new WrongFileTypeException("The model has some bad format: "
-                    + ex.getMessage());
+                                             + ex.getMessage());
         } catch (InvalidDataException ex) {
             throw new IOException("The model has some invalide data: " + ex.getMessage());
         }
     }
 
     @Override
-    public boolean isSupported(String fileExtension)
-    {
+    public boolean isSupported(String fileExtension) {
         return fileExtension.toLowerCase().equals("cmt");
     }
 
-    private Model convertMesh(darwin.jopenctm.data.Mesh mesh)
-    {
+    public static Model convertMesh(darwin.jopenctm.data.Mesh mesh) {
         Collection<Element> elements = new ArrayList<>();
         elements.add(position);
 
@@ -102,7 +111,7 @@ public class CtmModelReader implements ModelReader
 
         Element[] elar = new Element[elements.size()];
         elements.toArray(elar);
-        DataLayout layout = new DataLayout(AUTO, elar);
+        DataLayout layout = new DataLayout(INTERLEAVE32, elar);
         int vcount = mesh.getVertexCount();
         VertexBuffer vb = new VertexBuffer(layout, vcount);
 
@@ -136,8 +145,7 @@ public class CtmModelReader implements ModelReader
         return new Model(m, null);
     }
 
-    public void fillElement(VertexBuffer vb, Element e, float[] data)
-    {
+    public static void fillElement(VertexBuffer vb, Element e, float[] data) {
         ByteBuffer b = ByteBuffer.allocateDirect(4 * data.length);
         FloatBuffer buffer = b.asFloatBuffer();
         buffer.put(data);

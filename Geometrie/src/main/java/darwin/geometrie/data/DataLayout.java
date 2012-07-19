@@ -166,9 +166,6 @@ public class DataLayout implements Serializable
         if (this.bytesize != other.bytesize) {
             return false;
         }
-        if (this.format != other.format) {
-            return false;
-        }
         return true;
     }
 

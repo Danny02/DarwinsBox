@@ -18,7 +18,8 @@ package darwin.geometrie.data;
 
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Objects;
 
 import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE;
 import static java.lang.Math.max;
@@ -28,34 +29,29 @@ import static java.lang.Math.max;
  * <p/>
  * @author Daniel Heinrich
  */
-public final class VertexBuffer implements Iterable<Vertex>
-{
+public final class VertexBuffer implements Iterable<Vertex> {
 
     public final ByteBuffer buffer;
     public final DataLayout layout;
     private int size;
     private int vcount = 0;
 
-    public VertexBuffer(Element e, int size)
-    {
+    public VertexBuffer(Element e, int size) {
         this(new DataLayout(INTERLEAVE, e), size);
     }
 
-    public VertexBuffer(DataLayout layout, int size)
-    {
+    public VertexBuffer(DataLayout layout, int size) {
         this.size = size;
         this.layout = layout;
         buffer = GLBuffers.newDirectByteBuffer(size * layout.getBytesize());
         buffer.limit(0);
     }
 
-    public VertexBuffer(Element e, float... data)
-    {
+    public VertexBuffer(Element e, float... data) {
         this(new DataLayout(INTERLEAVE, e), data);
     }
 
-    public VertexBuffer(DataLayout layout, float... data)
-    {
+    public VertexBuffer(DataLayout layout, float... data) {
         this(layout, data.length / (layout.getBytesize() / 4));
 
         for (Element e : layout.getElements()) {
@@ -71,41 +67,35 @@ public final class VertexBuffer implements Iterable<Vertex>
         buffer.asFloatBuffer().put(data);
     }
 
-    public void fullyInitialize()
-    {
+    public void fullyInitialize() {
         setVCount(size);
     }
 
-    public Vertex getVertex(int ind)
-    {
+    public Vertex getVertex(int ind) {
         if (ind >= getVcount()) {
             throw new IndexOutOfBoundsException("Vertexcount: " + getVcount()
-                    + ", requested Vertex: " + ind);
+                                                + ", requested Vertex: " + ind);
         }
         return new Vertex(this, ind);
     }
 
-    public int addVertex()
-    {
+    public int addVertex() {
         assert (vcount < size) : "No new vertices can be added to this vertex buffer!";
         int vid = vcount;
         setVCount(vcount + 1);
         return vid;
     }
 
-    public Vertex newVertex()
-    {
+    public Vertex newVertex() {
         return getVertex(addVertex());
     }
 
-    private void setVCount(int vc)
-    {
+    private void setVCount(int vc) {
         vcount = vc;
         buffer.limit(vcount * layout.getBytesize());
     }
 
-    public void copyInto(int offset, VertexBuffer vbuffer)
-    {
+    public void copyInto(int offset, VertexBuffer vbuffer) {
         assert (size >= vbuffer.vcount + offset) :
                 "Destination Buffer not large enough";
         assert (offset <= vcount) :
@@ -125,8 +115,7 @@ public final class VertexBuffer implements Iterable<Vertex>
         }
     }
 
-    public void copyVertex(int id, int offset, VertexBuffer vbuffer)
-    {
+    public void copyVertex(int id, int offset, VertexBuffer vbuffer) {
         assert (id + offset < vcount) : "The destination vertex is not in bound of the destination buffer";
         if (layout.equals(vbuffer.layout)) {
             ByteBuffer buf = vbuffer.buffer;
@@ -149,18 +138,15 @@ public final class VertexBuffer implements Iterable<Vertex>
         }
     }
 
-    public int getSize()
-    {
+    public int getSize() {
         return size;
     }
 
-    public int getVcount()
-    {
+    public int getVcount() {
         return vcount;
     }
 
-    public int remaining()
-    {
+    public int remaining() {
         return getSize() - getVcount();
     }
 
@@ -169,38 +155,31 @@ public final class VertexBuffer implements Iterable<Vertex>
      * throw an UnsupportedOperationException
      */
     @Override
-    public Iterator<Vertex> iterator()
-    {
+    public Iterator<Vertex> iterator() {
 
         final VertexBuffer vb = this;
-        return new Iterator<Vertex>()
-        {
-
+        return new Iterator<Vertex>() {
             int i = 0;
 
             @Override
-            public boolean hasNext()
-            {
+            public boolean hasNext() {
                 return i < vcount;
             }
 
             @Override
-            public Vertex next()
-            {
+            public Vertex next() {
                 return vb.getVertex(i++);
             }
 
             @Override
-            public void remove()
-            {
+            public void remove() {
                 throw new UnsupportedOperationException();
             }
         };
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -208,13 +187,10 @@ public final class VertexBuffer implements Iterable<Vertex>
             return false;
         }
         final VertexBuffer other = (VertexBuffer) obj;
-        if (this.buffer != other.buffer && (this.buffer == null || !this.buffer.equals(other.buffer))) {
+        if (this.buffer != other.buffer && (this.buffer == null || !equalsByteBuffers(buffer, other.buffer))) {
             return false;
         }
         if (this.layout != other.layout && (this.layout == null || !this.layout.equals(other.layout))) {
-            return false;
-        }
-        if (this.size != other.size) {
             return false;
         }
         if (this.vcount != other.vcount) {
@@ -223,9 +199,17 @@ public final class VertexBuffer implements Iterable<Vertex>
         return true;
     }
 
+    public boolean equalsByteBuffers(ByteBuffer that, ByteBuffer thiss) {
+        for (int i = thiss.limit() - 1, j = that.limit() - 1; i >= 0; i--, j--) {
+            if (thiss.get(i) != that.get(j)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 5;
         hash = 53 * hash + Objects.hashCode(this.buffer);
         hash = 53 * hash + Objects.hashCode(this.layout);
