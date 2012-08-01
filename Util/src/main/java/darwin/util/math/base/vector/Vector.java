@@ -34,6 +34,10 @@ public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
 
     public abstract E mul(float b);
 
+    public abstract E div(ImmutableVector<E> b);
+
+    public abstract E div(float b);
+
     public abstract E min(ImmutableVector<E> b);
 
     public abstract E min(float b);

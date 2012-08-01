@@ -171,6 +171,32 @@ public class GenericVector extends Vector<GenericVector>
     }
 
     @Override
+    public GenericVector div(ImmutableVector<GenericVector> b)
+    {
+        float[] comp = b.getCoords();
+        if (comp.length >= coords.length) {
+            throw new IllegalArgumentException("The other vector for this arithmetic "
+                    + "operation does not have at least the same dimesion!");
+        }
+
+        for (int i = 0; i < coords.length; ++i) {
+            coords[i] /= comp[i];
+        }
+
+        return this;
+    }
+
+    @Override
+    public GenericVector div(float a)
+    {
+        for (int i = 0; i < coords.length; ++i) {
+            coords[i] /= a;
+        }
+
+        return this;
+    }
+
+    @Override
     public GenericVector min(ImmutableVector<GenericVector> comp)
     {
         float[] c = comp.getCoords();

@@ -22,19 +22,17 @@ import darwin.util.math.base.tupel.Tupel3;
  *
  * @author daniel
  */
-public final class Vector3 extends Vector<Vector3> implements Tupel3
-{
+public final class Vector3 extends Vector<Vector3> implements Tupel3 {
+
     private float x, y, z;
 
-    public Vector3(float x, float y, float z)
-    {
+    public Vector3(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Vector3()
-    {
+    public Vector3() {
     }
 
 //    @Override
@@ -43,19 +41,16 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
 //        return new Vector3(x, y, z);
 //    }
     @Override
-    public Vector3 toVector3()
-    {
+    public Vector3 toVector3() {
         return clone();
     }
 
     @Override
-    public float[] getCoords()
-    {
+    public float[] getCoords() {
         return new float[]{x, y, z};
     }
 
-    public Vector3 cross(ImmutableVector<Vector3> b)
-    {
+    public Vector3 cross(ImmutableVector<Vector3> b) {
         Vector3 mul = b.clone();
         return new Vector3(y * mul.z - z * mul.y,
                            z * mul.x - x * mul.z,
@@ -63,8 +58,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 add(ImmutableVector<Vector3> b)
-    {
+    public Vector3 add(ImmutableVector<Vector3> b) {
         Vector3 sum = b.clone();
         x += sum.x;
         y += sum.y;
@@ -73,8 +67,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 add(float b)
-    {
+    public Vector3 add(float b) {
         x -= b;
         y -= b;
         z -= b;
@@ -82,8 +75,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 sub(ImmutableVector<Vector3> b)
-    {
+    public Vector3 sub(ImmutableVector<Vector3> b) {
         Vector3 sum = b.clone();
         x -= sum.x;
         y -= sum.y;
@@ -92,8 +84,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 sub(float b)
-    {
+    public Vector3 sub(float b) {
         x -= b;
         y -= b;
         z -= b;
@@ -101,8 +92,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 mul(ImmutableVector<Vector3> b)
-    {
+    public Vector3 mul(ImmutableVector<Vector3> b) {
         Vector3 sum = b.clone();
         x *= sum.x;
         y *= sum.y;
@@ -111,8 +101,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 mul(float b)
-    {
+    public Vector3 mul(float b) {
         x *= b;
         y *= b;
         z *= b;
@@ -120,8 +109,24 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 min(ImmutableVector<Vector3> b)
-    {
+    public Vector3 div(ImmutableVector<Vector3> b) {
+        Vector3 sum = b.clone();
+        x /= sum.x;
+        y /= sum.y;
+        z /= sum.z;
+        return this;
+    }
+
+    @Override
+    public Vector3 div(float b) {
+        x /= b;
+        y /= b;
+        z /= b;
+        return this;
+    }
+
+    @Override
+    public Vector3 min(ImmutableVector<Vector3> b) {
         Vector3 sum = b.clone();
         x = Math.min(x, sum.x);
         y = Math.min(y, sum.y);
@@ -130,8 +135,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 min(float b)
-    {
+    public Vector3 min(float b) {
         x = Math.min(x, b);
         y = Math.min(y, b);
         z = Math.min(z, b);
@@ -139,8 +143,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 max(ImmutableVector<Vector3> b)
-    {
+    public Vector3 max(ImmutableVector<Vector3> b) {
         Vector3 sum = b.clone();
         x = Math.max(x, sum.x);
         y = Math.max(y, sum.y);
@@ -149,8 +152,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 max(float b)
-    {
+    public Vector3 max(float b) {
         x = Math.max(x, b);
         y = Math.max(y, b);
         z = Math.max(z, b);
@@ -158,33 +160,28 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public float dot(ImmutableVector<Vector3> b)
-    {
+    public float dot(ImmutableVector<Vector3> b) {
         Vector3 sum = b.clone();
         return x * sum.x + y * sum.y + z * sum.z;
     }
 
     @Override
-    public float getX()
-    {
+    public float getX() {
         return x;
     }
 
     @Override
-    public float getY()
-    {
+    public float getY() {
         return y;
     }
 
     @Override
-    public float getZ()
-    {
+    public float getZ() {
         return z;
     }
 
     @Override
-    public Vector3 rotateCW(int axis)
-    {
+    public Vector3 rotateCW(int axis) {
         float tmp;
         switch (axis) {
             case 0://X
@@ -207,8 +204,7 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3
     }
 
     @Override
-    public Vector3 rotateCCW(int axis)
-    {
+    public Vector3 rotateCCW(int axis) {
         float tmp;
         switch (axis) {
             case 0://X

@@ -22,25 +22,22 @@ import darwin.util.math.base.tupel.Tupel2;
  *
  * @author daniel
  */
-public final class Vector2 extends Vector<Vector2> implements Tupel2
-{
+public final class Vector2 extends Vector<Vector2> implements Tupel2 {
+
     private float x, y;
 
-    public Vector2(float x, float y)
-    {
+    public Vector2(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public Vector2(ImmutableVector<Vector3> v3)
-    {
+    public Vector2(ImmutableVector<Vector3> v3) {
         float[] c = v3.getCoords();
         x = c[0];
         y = c[1];
     }
 
-    public Vector2()
-    {
+    public Vector2() {
     }
 
     //converter methods
@@ -50,21 +47,18 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
 //        return new Vector2(x, y);
 //    }
     @Override
-    public Vector3 toVector3()
-    {
+    public Vector3 toVector3() {
         return new Vector3(x, y, 0);
     }
 
     @Override
-    public float[] getCoords()
-    {
+    public float[] getCoords() {
         return new float[]{x, y};
     }
 
     //interface methods
     @Override
-    public Vector2 add(ImmutableVector<Vector2> b)
-    {
+    public Vector2 add(ImmutableVector<Vector2> b) {
         Vector2 sum = b.clone();
         x += sum.x;
         y += sum.y;
@@ -72,16 +66,14 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     @Override
-    public Vector2 add(float b)
-    {
+    public Vector2 add(float b) {
         x -= b;
         y -= b;
         return this;
     }
 
     @Override
-    public Vector2 sub(ImmutableVector<Vector2> b)
-    {
+    public Vector2 sub(ImmutableVector<Vector2> b) {
         Vector2 sum = b.clone();
         x -= sum.x;
         y -= sum.y;
@@ -89,16 +81,14 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     @Override
-    public Vector2 sub(float b)
-    {
+    public Vector2 sub(float b) {
         x -= b;
         y -= b;
         return this;
     }
 
     @Override
-    public Vector2 mul(ImmutableVector<Vector2> b)
-    {
+    public Vector2 mul(ImmutableVector<Vector2> b) {
         Vector2 sum = b.clone();
         x *= sum.x;
         y *= sum.y;
@@ -106,16 +96,29 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     @Override
-    public Vector2 mul(float b)
-    {
+    public Vector2 mul(float b) {
         x *= b;
         y *= b;
         return this;
     }
 
     @Override
-    public Vector2 min(ImmutableVector<Vector2> b)
-    {
+    public Vector2 div(ImmutableVector<Vector2> b) {
+        Vector2 sum = b.clone();
+        x /= sum.x;
+        y /= sum.y;
+        return this;
+    }
+
+    @Override
+    public Vector2 div(float b) {
+        x /= b;
+        y /= b;
+        return this;
+    }
+
+    @Override
+    public Vector2 min(ImmutableVector<Vector2> b) {
         Vector2 sum = b.clone();
         x = Math.min(x, sum.x);
         y = Math.min(y, sum.y);
@@ -123,16 +126,14 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     @Override
-    public Vector2 min(float b)
-    {
+    public Vector2 min(float b) {
         x = Math.min(x, b);
         y = Math.min(y, b);
         return this;
     }
 
     @Override
-    public Vector2 max(ImmutableVector<Vector2> b)
-    {
+    public Vector2 max(ImmutableVector<Vector2> b) {
         Vector2 sum = b.clone();
         x = Math.max(x, sum.x);
         y = Math.max(y, sum.y);
@@ -140,35 +141,30 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     @Override
-    public Vector2 max(float b)
-    {
+    public Vector2 max(float b) {
         x = Math.max(x, b);
         y = Math.max(y, b);
         return this;
     }
 
     @Override
-    public float dot(ImmutableVector<Vector2> b)
-    {
+    public float dot(ImmutableVector<Vector2> b) {
         Vector2 sum = b.clone();
         return x * sum.x + y * sum.y;
     }
 
     @Override
-    public float getX()
-    {
+    public float getX() {
         return x;
     }
 
     @Override
-    public float getY()
-    {
+    public float getY() {
         return y;
     }
 
     @Override
-    public Vector2 rotateCCW(int axis)
-    {
+    public Vector2 rotateCCW(int axis) {
         float tmp = x;
         x = -y;
         y = tmp;
@@ -177,8 +173,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2
     }
 
     @Override
-    public Vector2 rotateCW(int axis)
-    {
+    public Vector2 rotateCW(int axis) {
         float tmp = y;
         y = -x;
         x = tmp;
