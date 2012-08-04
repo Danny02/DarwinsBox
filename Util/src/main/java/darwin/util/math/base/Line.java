@@ -23,10 +23,10 @@ import darwin.util.math.base.vector.*;
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO get rid of all the toVector3 converts and the using of cross products
-public final class Line<E extends Vector<E>>
-{
-    public enum Relationship
-    {
+public final class Line<E extends Vector<E>> {
+
+    public enum Relationship {
+
         EQUAL, PARALLEL,
         SKEW, //Windschief
         INTERSECTING
@@ -34,23 +34,20 @@ public final class Line<E extends Vector<E>>
     private final ImmutableVector<E> a;
     private final ImmutableVector<E> dir;
 
-    public Line(ImmutableVector<E> a, ImmutableVector<E> dir)
-    {
+    public Line(ImmutableVector<E> a, ImmutableVector<E> dir) {
         if (dir.lengthQuad() == 0.) {
-            throw new IllegalArgumentException("The direction vector must not have a length of null!");
+            throw new IllegalArgumentException("The direction vector must not have a length of zero!");
         }
         this.a = a.clone();
         this.dir = dir.clone().normalize();
     }
 
     public static <E extends Vector<E>> Line<E> fromPoints(ImmutableVector<E> a,
-                                                           ImmutableVector<E> b)
-    {
+                                                           ImmutableVector<E> b) {
         return new Line<>(a, a.clone().sub(b));
     }
 
-    public Relationship getRelationship(Line<E> g)
-    {
+    public Relationship getRelationship(Line<E> g) {
         if (isParallelTo(g)) {
             if (contains(g.a)) {
                 return Relationship.EQUAL;
@@ -64,55 +61,71 @@ public final class Line<E extends Vector<E>>
         }
     }
 
-    public boolean isParallelTo(Line<E> g)
-    {
+    public boolean isParallelTo(Line<E> g) {
         return g.dir.isParrallelTo(dir);
     }
 
-    public boolean isEqualTo(Line<E> g)
-    {
+    public boolean isEqualTo(Line<E> g) {
         return isParallelTo(g) && contains(g.a);
     }
 
-    public boolean intersectsWith(Line<E> g)
-    {
+    public boolean intersectsWith(Line<E> g) {
         return !isSkewTo(g);
     }
 
-    public boolean isSkewTo(Line<E> g)
-    {
+    public boolean isSkewTo(Line<E> g) {
         ImmutableVector<Vector3> tmp = a.clone().sub(g.a).toVector3();
         return !tmp.clone().cross(dir.toVector3()).isParrallelTo(tmp.clone().cross(g.dir.toVector3()));
     }
 
-    public boolean contains(ImmutableVector<E> p)
-    {
+    public boolean contains(ImmutableVector<E> p) {
         return p.clone().sub(a).isParrallelTo(dir);
     }
 
-    public Vector3 getIntersection(Line<E> g)
-    {
-        //TODO speed up this method
-        Line<Vector3> t = new Line<>(a.toVector3(), dir.toVector3());
-        Line<Vector3> o = new Line<>(g.a.toVector3(), g.dir.toVector3());
+    public E getIntersection(Line<E> g) {
+        float[] d = dir.getCoords();
+        if (d.length < 2) {
+            throw new IllegalArgumentException("Can not intersect one dimesional Vectors!");
+        }
+        float[] t = g.dir.getCoords();
+        float[] c = g.a.clone().sub(a).getCoords();
 
-        Plane e = Plane.fromLineAndDirection(t, dir.toVector3().cross(g.dir.toVector3()));
-        return e.getIntersection(o);
+        int a = -1, b = -1;
+        out:
+        for (int i = 0; i < d.length; i++) {
+            if (d[i] != 0) {
+                a = i;
+                for (int j = 0; j < t.length; j++) {
+                    if (j == i) {
+                        continue;
+                    }
+                    if (t[j] != 0) {
+                        b = j;
+                        break out;
+                    }
+                }
+            }
+        }
+        
+        if(a==-1 || b==-1)
+        {
+            throw new IllegalArgumentException("The two lines do not intersect!");
+        }
+
+        float x2 = (c[a] * d[b] / (d[a] * t[b]) - c[b] / t[b]) / (1 - t[a] * d[b] / (d[a] * t[b]));
+        return g.getPoint(x2);
     }
 
-    public double distanceToSquared(ImmutableVector<E> p)
-    {
+    public double distanceToSquared(ImmutableVector<E> p) {
         Vector<E> tmp = a.clone().sub(p);
         return tmp.lengthQuad() - dir.dot(tmp);
     }
 
-    public double distanceTo(ImmutableVector<E> p)
-    {
+    public double distanceTo(ImmutableVector<E> p) {
         return Math.sqrt(distanceTo(p));
     }
 
-    public double distanceTo(Line<E> g)
-    {
+    public double distanceTo(Line<E> g) {
         if (isParallelTo(g)) {
             return distanceTo(g.a);
         } else {
@@ -122,30 +135,29 @@ public final class Line<E extends Vector<E>>
         }
     }
 
-    public ImmutableVector<E> getStartingPoint()
-    {
+    public ImmutableVector<E> getStartingPoint() {
         return a;
     }
 
-    public ImmutableVector<E> getDirection()
-    {
+    public ImmutableVector<E> getDirection() {
         return dir;
     }
 
-    public boolean isElement(ImmutableVector<E> point)
-    {
+    public E getPoint(float lerp) {
+        return dir.clone().mul(lerp).add(a);
+    }
+
+    public boolean isElement(ImmutableVector<E> point) {
         return point.clone().sub(getStartingPoint()).isParrallelTo(getDirection());
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Aufpunkt: " + a + "\nRichtung: " + dir;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -161,8 +173,7 @@ public final class Line<E extends Vector<E>>
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         return hash;
     }

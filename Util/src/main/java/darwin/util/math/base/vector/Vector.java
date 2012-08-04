@@ -20,8 +20,8 @@ package darwin.util.math.base.vector;
  *
  * @author daniel
  */
-public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
-{
+public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E> {
+
     public abstract E add(ImmutableVector<E> b);
 
     public abstract E add(float b);
@@ -50,20 +50,22 @@ public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E>
 
     public abstract E rotateCW(int axis);
 
-    public E reflect(ImmutableVector<E> normal)
-    {
+    public E reflect(ImmutableVector<E> normal) {
         E n = normal.clone();
         n.mul(dot(n) * 2);
         sub(n);
         return (E) this;
     }
 
-    public E normalize()
-    {
+    public E normalize() {
         float len = (float) length();
         if (len != 0) {
             mul(1f / len);
         }
         return (E) this;
+    }
+
+    public E invert() {
+        return (E) mul(-1);
     }
 }

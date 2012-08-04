@@ -31,13 +31,21 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2 {
         this.y = y;
     }
 
-    public Vector2(ImmutableVector<Vector3> v3) {
-        float[] c = v3.getCoords();
-        x = c[0];
-        y = c[1];
+    public Vector2(ImmutableVector v) {
+        float[] c = v.getCoords();
+        if (c.length > 0) {
+            x = c[0];
+        }
+        if (c.length > 1) {
+            y = c[1];
+        }
     }
 
     public Vector2() {
+    }
+
+    public static Vector2 createPositionFromID(int id, int width) {
+        return new Vector2(id % width, id / width);
     }
 
     //converter methods
@@ -67,8 +75,8 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2 {
 
     @Override
     public Vector2 add(float b) {
-        x -= b;
-        y -= b;
+        x += b;
+        y += b;
         return this;
     }
 
