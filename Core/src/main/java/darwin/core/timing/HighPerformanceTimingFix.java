@@ -17,32 +17,27 @@
 package darwin.core.timing;
 
 /**
- * A fix for a bug in the Hotspot VM which renders the
- * ForceTimeHighResolution switch useless. And there for makes it impossible
- * to get Thread sleep times small as 1ms. Starting such Deamon Thread as in the
- * bottom with an sleeptime which is not a multiply of 10 sets the OS somehow
- * into the high performance timeing mode.
+ * A fix for a bug in the Hotspot VM which renders the ForceTimeHighResolution
+ * switch useless. And there for makes it impossible to get Thread sleep times
+ * small as 1ms. Starting such Deamon Thread as in the bottom with an sleeptime
+ * which is not a multiply of 10 sets the OS somehow into the high performance
+ * timeing mode.
  *
- * Bug description:
- * http://bugs.sun.com/view_bug.do?bug_id=6435126
+ * Bug description: http://bugs.sun.com/view_bug.do?bug_id=6435126
  * <p/>
  * @author daniel
  */
-public class HighPerformanceTimingFix
-{
+public class HighPerformanceTimingFix {
 
     static {
-        new Thread()
-        {
-
+        new Thread() {
             {
                 this.setDaemon(true);
                 this.start();
             }
 
             @Override
-            public void run()
-            {
+            public void run() {
                 while (true) {
                     try {
                         Thread.sleep(Integer.MAX_VALUE);
@@ -54,10 +49,9 @@ public class HighPerformanceTimingFix
     }
 
     /**
-     * Calling this function at least once switches the OS into a high performance
-     * timing mode if it was not already in it.
+     * Calling this function at least once switches the OS into a high
+     * performance timing mode if it was not already in it.
      */
-    public static void fix()
-    {
+    public static void fix() {
     }
 }
