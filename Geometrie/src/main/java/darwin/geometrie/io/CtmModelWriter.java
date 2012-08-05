@@ -59,21 +59,62 @@ public class CtmModelWriter implements ModelWriter {
     private static final Logger logger = LoggerFactory.getLogger(CtmModelWriter.class);
     private final MeshEncoder encoder;
     private final String fileComment;
+    private final int compressionLevel;
+
+    //<editor-fold defaultstate="collapsed" desc="Builder">
+    public static class Builder {
+
+        private MeshEncoder encoder = new RawEncoder();
+        private String fileComment = DEFAULT_COMMENT;
+        private int compressionLevel = 5;
+
+        private Builder() {
+        }
+
+        public Builder andCompressionLevel(int cl) {
+            compressionLevel = cl;
+            return this;
+        }
+
+        public Builder andEncoder(MeshEncoder enc) {
+            encoder = enc;
+            return this;
+        }
+
+        public Builder andComment(String c) {
+            fileComment = c;
+            return this;
+        }
+
+        public CtmModelWriter build() {
+            return new CtmModelWriter(encoder, fileComment, compressionLevel);
+        }
+    }
+
+    public static Builder withCompressionLevel(int cl) {
+        return new Builder().andCompressionLevel(cl);
+    }
+
+    public static Builder withEncoder(MeshEncoder enc) {
+        return new Builder().andEncoder(enc);
+    }
+
+    public static Builder withComment(String c) {
+        return new Builder().andComment(c);
+    }
+    //</editor-fold>
 
     public CtmModelWriter() {
-        this(new RawEncoder());
+        this(new RawEncoder(), DEFAULT_COMMENT, 5);
     }
 
-    public CtmModelWriter(MeshEncoder encoder) {
-        this(encoder, DEFAULT_COMMENT);
-    }
-
-    public CtmModelWriter(MeshEncoder encoder, String fileComment) {
+    public CtmModelWriter(MeshEncoder encoder, String fileComment, int compressionLevel) {
         if (encoder == null) {
             throw new NullPointerException("The Encoder musn't be null!");
         }
         this.encoder = encoder;
         this.fileComment = fileComment;
+        this.compressionLevel = compressionLevel;
     }
 
     @Override
@@ -97,7 +138,7 @@ public class CtmModelWriter implements ModelWriter {
     }
 
     public void writeSingleModel(OutputStream out, Model m) throws IOException {
-        CtmFileWriter writer = new CtmFileWriter(out, encoder);
+        CtmFileWriter writer = new CtmFileWriter(out, encoder, compressionLevel);
 
         String matName = null;
         if (m.getMat() != null) {
