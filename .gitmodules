@@ -1,0 +1,3 @@
+[submodule "JOpenCTM"]
+	path = JOpenCTM
+	url = https://github.com/Danny02/JOpenCTM.git

@@ -16,12 +16,12 @@
  */
 package darwin.renderer.opengl.FrameBuffer;
 
+import darwin.renderer.GraphicContext;
+import darwin.renderer.opengl.GLClientConstants;
+
 import com.jogamp.opengl.util.texture.Texture;
 import javax.inject.Inject;
 import javax.media.opengl.*;
-
-import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.GLClientConstants;
 
 /**
  *
