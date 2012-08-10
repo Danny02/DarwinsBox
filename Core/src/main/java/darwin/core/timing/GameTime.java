@@ -20,10 +20,7 @@ package darwin.core.timing;
  *
  * @author daniel
  */
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**

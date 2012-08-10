@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.zip.ZipInputStream;
-
-import javax.media.opengl.GL;
 
 import darwin.geometrie.data.*;
 import darwin.geometrie.unpacked.Mesh;
@@ -32,6 +32,8 @@ import darwin.jopenctm.data.AttributeData;
 import darwin.jopenctm.errorhandling.BadFormatException;
 import darwin.jopenctm.errorhandling.InvalidDataException;
 import darwin.jopenctm.io.CtmFileReader;
+
+import javax.media.opengl.GL;
 
 import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE32;
 import static darwin.geometrie.data.DataType.FLOAT;
@@ -53,7 +55,7 @@ public class CtmModelReader implements ModelReader {
     @Override
     public Model[] readModel(InputStream source) throws WrongFileTypeException, IOException {
         ZipInputStream zip = new ZipInputStream(source);
-        
+
         List<Model> models = new ArrayList<>();
         while (zip.getNextEntry() != null) {
             models.add(readSingleModel(zip));
