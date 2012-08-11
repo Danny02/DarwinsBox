@@ -14,16 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling;
+package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
+
+import darwin.resourcehandling.ResourceChangeListener;
+import darwin.resourcehandling.ResourceHandle;
 
 /**
  *
  * @author daniel
  */
-public interface ResourceHandle {
-    public InputStream getStream() throws IOException;
-    public void registerChangeListener(ResourceChangeListener listener);
+abstract class ListenerHandler implements ResourceHandle {
+
+    private final List<ResourceChangeListener> listeners = new LinkedList<>();
+
+    protected void fireChangeEvent() {
+        for (ResourceChangeListener resourceChangeListener : listeners) {
+            resourceChangeListener.resourceChanged(this);
+        }
+    }
+
+    @Override
+    public void registerChangeListener(ResourceChangeListener listener) {
+        listeners.add(listener);
+    }
 }

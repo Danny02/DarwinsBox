@@ -16,14 +16,10 @@
  */
 package darwin.resourcehandling;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  *
  * @author daniel
  */
-public interface ResourceHandle {
-    public InputStream getStream() throws IOException;
-    public void registerChangeListener(ResourceChangeListener listener);
+public interface ResourceChangeListener {
+    public void resourceChanged(ResourceHandle handle);
 }

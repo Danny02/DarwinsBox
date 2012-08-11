@@ -14,16 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling;
+package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.WatchEvent;
 
 /**
  *
  * @author daniel
  */
-public interface ResourceHandle {
-    public InputStream getStream() throws IOException;
-    public void registerChangeListener(ResourceChangeListener listener);
+public interface FileChangeListener<E> {
+
+    public void fileChanged(WatchEvent.Kind<E> kind);
 }
