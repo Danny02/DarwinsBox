@@ -16,15 +16,6 @@
  */
 package darwin.renderer.dependencies;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.matcher.Matchers;
-import com.google.inject.name.Names;
-import com.google.inject.util.Providers;
-import javax.inject.*;
-import javax.media.opengl.*;
-
-import darwin.renderer.geometrie.attributs.*;
 import darwin.renderer.geometrie.attributs.StdAttributs.StdAttributsFactory;
 import darwin.renderer.geometrie.attributs.VAOAttributs.VAOAttributsFactory;
 import darwin.renderer.geometrie.attributs.VertexAttributs.VAttributsFactory;
@@ -36,7 +27,6 @@ import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.Shader.ShaderFactory;
-import darwin.renderer.util.memory.MemoryInfo;
 import darwin.resourcehandling.resmanagment.ROLoadJob.ROJobFactory;
 import darwin.resourcehandling.resmanagment.ShaderLoadJob.ShaderJobFactory;
 import darwin.resourcehandling.resmanagment.texture.CubeMapJob.CubeMapFactory;
@@ -44,6 +34,12 @@ import darwin.resourcehandling.resmanagment.texture.HeightMapLoadJob.HeightMapFa
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
 import darwin.resourcehandling.wrapper.TextureAtlas.AtlasFactory;
 import darwin.util.logging.Slf4jTypeListener;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.name.Names;
+import javax.media.opengl.*;
 
 /**
  *
