@@ -17,28 +17,30 @@
 package darwin.resourcehandling.dependencies;
 
 import darwin.resourcehandling.handle.ClasspathFileHandler.FileHandlerFactory;
+import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  *
  * @author daniel
  */
-public class ResourceHandlingModul extends AbstractModule
-{
+public class ResourceHandlingModul extends AbstractModule {
 
     @Override
-    protected void configure()
-    {
+    protected void configure() {
         //TODO introduce annotation processor for automatic factory interface creation of @AssistedInject constructors
-        Class[] factoryClasses = new Class[]
-        {
-            FileHandlerFactory.class,
-        };
+        Class[] factoryClasses = new Class[]{
+            FileHandlerFactory.class,};
 
         for (Class factory : factoryClasses) {
             install(new FactoryModuleBuilder().build(factory));
         }
+        
+        //TODO either do the thread starting in the DEBUG modul, or just start the thread manually
+        //on an injected instance in the main class
+        bind(WatchServiceNotifier.class).toProvider(IniWatchServiceProvider.class).in(Scopes.SINGLETON);
     }
 }

@@ -1,3 +1,5 @@
+package darwin.resourcehandling.core.impl;
+
 ///*
 // * Copyright (C) 2012 daniel
 // *

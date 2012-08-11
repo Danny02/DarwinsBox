@@ -16,8 +16,9 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.core.ResourceHandle;
@@ -26,18 +27,21 @@ import darwin.resourcehandling.core.ResourceHandle;
  *
  * @author daniel
  */
-abstract class ListenerHandler implements ResourceHandle {
+public class UrlHandle implements ResourceHandle {
 
-    private final List<ResourceChangeListener> listeners = new LinkedList<>();
+    private final URL url;
 
-    protected void fireChangeEvent() {
-        for (ResourceChangeListener resourceChangeListener : listeners) {
-            resourceChangeListener.resourceChanged(this);
-        }
+    public UrlHandle(URL url) {
+        this.url = url;
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        return url.openStream();
     }
 
     @Override
     public void registerChangeListener(ResourceChangeListener listener) {
-        listeners.add(listener);
+        //TODO if necessary, with http one could ask the server for the change date
     }
 }

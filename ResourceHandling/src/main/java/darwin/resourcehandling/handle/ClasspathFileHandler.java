@@ -24,6 +24,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchEvent.Kind;
 
+import darwin.resourcehandling.watchservice.FileChangeListener;
+import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 

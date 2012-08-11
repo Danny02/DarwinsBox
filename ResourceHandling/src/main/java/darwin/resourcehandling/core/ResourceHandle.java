@@ -16,13 +16,15 @@
  */
 package darwin.resourcehandling.core;
 
+import darwin.resourcehandling.ResourceChangeListener;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  *
  * @author daniel
  */
-public class UnreachableException extends RuntimeException {
-
-    public UnreachableException(String message, Throwable cause) {
-        super(message, cause);
-    }
+public interface ResourceHandle {
+    public InputStream getStream() throws IOException;
+    public void registerChangeListener(ResourceChangeListener listener);
 }

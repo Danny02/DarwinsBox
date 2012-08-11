@@ -16,6 +16,9 @@
  */
 package darwin.resourcehandling;
 
+import darwin.resourcehandling.core.Resource;
+import darwin.resourcehandling.core.ResourceHandle;
+
 /**
  *
  * @author daniel

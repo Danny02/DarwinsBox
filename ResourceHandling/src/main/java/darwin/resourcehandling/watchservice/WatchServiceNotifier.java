@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.handle;
+package darwin.resourcehandling.watchservice;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -29,6 +29,7 @@ import java.util.Map;
 
 import darwin.util.logging.InjectLogger;
 
+import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
@@ -38,6 +39,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
  *
  * @author daniel
  */
+@Singleton
 public class WatchServiceNotifier implements Runnable {
 
     @InjectLogger
@@ -93,7 +95,8 @@ public class WatchServiceNotifier implements Runnable {
     public void register(Path path, FileChangeListener callback) {
         if (service != null) {
             try {
-                callbacks.put(path.toAbsolutePath(), callback);
+                path = path.toAbsolutePath();
+                callbacks.put(path, callback);
 
                 Path dir = path;
                 if (!Files.isDirectory(dir)) {

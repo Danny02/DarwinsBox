@@ -14,12 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling;
+package darwin.resourcehandling.dependencies;
+
+import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+
+import com.google.inject.Provider;
 
 /**
  *
  * @author daniel
  */
-public interface Resource{
-    public ResourceHandle getHandle();
+public class IniWatchServiceProvider implements Provider<WatchServiceNotifier> {
+
+    @Override
+    public WatchServiceNotifier get() {
+        WatchServiceNotifier n = new WatchServiceNotifier();
+        n.createNotifierThread().start();
+        return n;
+    }
 }
