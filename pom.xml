@@ -121,10 +121,24 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     
-    <profiles>
+    <!--    <profiles>
         <profile>
             <id>release-sign-artifacts</id>
             <activation>
@@ -152,7 +166,7 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
+    </profiles>-->
         
     <dependencies>
         <dependency>
