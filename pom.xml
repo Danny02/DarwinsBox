@@ -8,6 +8,7 @@
     <packaging>pom</packaging>
 
     <name>DarwinsBox</name>
+    <description>A collection of game related librarys</description>
     <url>https://github.com/Danny02/DarwinsBox</url>
 
     <modules>
@@ -34,17 +35,17 @@
     </licenses>
 
     <scm>
-        <url>${project.url}</url>
-        <connection>scm:git:git://github.com/Danny02/DarwinsBox.git</connection>
+        <connection>scm:git:git@github.com:Danny02/DarwinsBox.git</connection>
         <developerConnection>scm:git:git@github.com:Danny02/DarwinsBox.git</developerConnection>
+        <url>git@github.com:Danny02/DarwinsBox.git</url>
     </scm>
 
     <developers>
         <developer>
-            <email>dannynullzwo@gmail.com</email>
             <name>Daniel Heinrich</name>
-            <url>https://github.com/Danny02</url>
+            <email>dannynullzwo@gmail.com</email>
             <id>Danny02</id>
+            <url>https://github.com/Danny02</url>
         </developer>
     </developers>
 
@@ -54,40 +55,6 @@
 
     <build>
         <plugins>
-<!--            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.4</version>
-                <configuration>
-                    <description>Official ${project.name} build of the ${project.version} release</description>
-                    <override>true</override>
-                    <includeAttached>true</includeAttached>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>upload</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
-            </plugin>-->
-<!--            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.4</version>
-                <configuration>
-                    <message>Building site for ${project.version}</message>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site</phase>
-                    </execution>
-                </executions>
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -121,30 +88,11 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
-<!--            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>process</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <processors>
-                                <processor>darwin.tools.annotations.ServiceProcessor</processor>
-                            </processors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-<!--                    <compilerArgument>-proc:none</compilerArgument>-->
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
@@ -175,20 +123,37 @@
             </plugin>
         </plugins>
     </build>
-
-<!--    <pluginRepositories>
-        <pluginRepository>
-            <id>sonatype-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>-->
-
+    
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+        
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
