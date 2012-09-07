@@ -39,25 +39,23 @@ public class GameTime {
     static {
         HighPerformanceTimingFix.fix();
     }
-
-    private static class Start {
-
-        private static final long time = System.nanoTime();
-    }
-    private static final double NANO_IN_SECOND = TimeUnit.NANOSECONDS.toSeconds(1L);
+    private static final double NANO_IN_SECOND = TimeUnit.SECONDS.toNanos(1L);
+    private long startTime = -1;
     private long elapsed = 0, virtualElapsed = 0;
     private double scale = 1;
     private Map<Integer, StepListenerManager> stepListener = new HashMap<>();
-    private Collection<DeltaListener> timeListener = new LinkedList<>();
+    private Collection<DeltaListener> timeListener = new ArrayList<>();
 
     public void update() {
-        long start = Start.time;
+        if (startTime == -1) {
+            startTime = System.nanoTime();
+            return;
+        }
 
         long now = System.nanoTime();
 
-        long delta = now - start - elapsed;
+        long delta = now - startTime - elapsed;
         long virtDelta = (long) (delta * scale);
-
         updatedTimeListener(virtDelta);
         updatedStepListener(virtDelta);
 
@@ -67,13 +65,13 @@ public class GameTime {
 
     private void updatedTimeListener(long nanoSeconds) {
         double delta = nanoSeconds / NANO_IN_SECOND;
-        for (DeltaListener listener : timeListener) {
+        for (DeltaListener listener : new ArrayList<>(timeListener)) {
             listener.update(delta);
         }
     }
 
     private void updatedStepListener(long nanoSeconds) {
-        for (StepListenerManager lm : stepListener.values()) {
+        for (StepListenerManager lm : new ArrayList<>(stepListener.values())) {
             lm.update(elapsed, nanoSeconds);
         }
     }
@@ -108,7 +106,6 @@ public class GameTime {
     }
 
     public long getElapsedSteps(int frequency) {
-        TimeUnit.NANOSECONDS.toSeconds(elapsed);
         return virtualElapsed / TimeUnit.SECONDS.toNanos(frequency);
     }
 

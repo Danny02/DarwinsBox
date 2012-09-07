@@ -21,5 +21,5 @@ package darwin.core.timing;
  * @author daniel
  */
 public interface StepListener {
-    public void update(int tickCount, float lerp);
+    public void update(int tickCount, float lerp, float tickTimeSpan);
 }

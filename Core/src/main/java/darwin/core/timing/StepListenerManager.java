@@ -22,47 +22,43 @@ package darwin.core.timing;
  */
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
-class StepListenerManager
-{
+class StepListenerManager {
 
-    private static final long SECOND_TO_NANO = 1_000_000_000L;
+    private static final long NANO_IN_SECOND = TimeUnit.SECONDS.toNanos(1L);
     private final Collection<StepListener> tickListener = new LinkedList<>();
-    private final long phase;
+    private final int frequency;
 
-    StepListenerManager(int frequency)
-    {
-        phase = SECOND_TO_NANO / frequency;
+    StepListenerManager(int frequency) {
+        this.frequency = frequency;
     }
 
-    boolean isEmpty()
-    {
+    boolean isEmpty() {
         return tickListener.isEmpty();
     }
 
-    void update(long totalTime, long delta)
-    {
+    void update(long totalTime, long delta) {
+        float timeSpan = 1f / frequency;
+        long phase = NANO_IN_SECOND / frequency;
+        
         int ticks = (int) ((totalTime / phase) - ((totalTime - delta) / phase));
         float lerp = (float) (totalTime % phase) / phase;
 
         for (StepListener listener : tickListener) {
-            listener.update(ticks, lerp);
-
+            listener.update(ticks, lerp, timeSpan);
         }
     }
 
-    int getFrequency()
-    {
-        return (int) (phase / SECOND_TO_NANO);
+    int getFrequency() {
+        return frequency;
     }
 
-    void addListener(StepListener listener)
-    {
+    void addListener(StepListener listener) {
         tickListener.add(listener);
     }
 
-    boolean removeListener(StepListener listener)
-    {
+    boolean removeListener(StepListener listener) {
         return tickListener.remove(listener);
     }
 }

@@ -48,6 +48,14 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2 {
         return new Vector2(id % width, id / width);
     }
 
+    public Vector2 getRotatedCCW() {
+        return new Vector2(-getY(), getX());
+    }
+
+    public Vector2 getRotatedCW() {
+        return new Vector2(getY(), -getX());
+    }
+
     //converter methods
 //    @Override
 //    public Vector2 clone()
@@ -187,5 +195,31 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2 {
         x = tmp;
 
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Float.floatToIntBits(this.x);
+        hash = 53 * hash + Float.floatToIntBits(this.y);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Vector2 other = (Vector2) obj;
+        if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.y) != Float.floatToIntBits(other.y)) {
+            return false;
+        }
+        return true;
     }
 }

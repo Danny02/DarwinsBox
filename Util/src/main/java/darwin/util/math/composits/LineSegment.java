@@ -16,9 +16,9 @@
  */
 package darwin.util.math.composits;
 
-import java.util.concurrent.TimeUnit;
 import darwin.util.math.base.Line;
-import darwin.util.math.base.vector.*;
+import darwin.util.math.base.vector.ImmutableVector;
+import darwin.util.math.base.vector.Vector;
 
 /**
  *

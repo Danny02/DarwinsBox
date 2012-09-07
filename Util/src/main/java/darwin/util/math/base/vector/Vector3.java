@@ -225,4 +225,34 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3 {
 
         return this;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 67 * hash + Float.floatToIntBits(this.x);
+        hash = 67 * hash + Float.floatToIntBits(this.y);
+        hash = 67 * hash + Float.floatToIntBits(this.z);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Vector3 other = (Vector3) obj;
+        if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.y) != Float.floatToIntBits(other.y)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.z) != Float.floatToIntBits(other.z)) {
+            return false;
+        }
+        return true;
+    }
 }

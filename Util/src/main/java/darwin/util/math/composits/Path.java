@@ -6,30 +6,30 @@ package darwin.util.math.composits;
 
 import java.util.*;
 
-import darwin.util.math.base.vector.*;
 import darwin.util.math.base.vector.Vector;
 
 /**
  *
  * @author daniel
  */
-public class Path<E extends Vector<E>> implements Iterable<LineSegment<E>> {
+public class Path<E extends Vector<E>> implements Iterable<E> {
 
-    private final List<ImmutableVector<E>> positions = new ArrayList<>(1 << 10);
+    private final List<E> positions = new ArrayList<>();
 
-    public void addPathElement(ImmutableVector<E> position) {
-        positions.add(position.clone());
+    public void addPathElement(E position) {
+        if (!positions.contains(position)) {
+            positions.add(position);
+        }
     }
 
     public int size() {
         return positions.size();
     }
 
-    @Override
-    public Iterator<LineSegment<E>> iterator() {
+    public Iterator<LineSegment<E>> getLineSegmentIterator() {
         return new Iterator<LineSegment<E>>() {
-            Iterator<ImmutableVector<E>> iter = positions.iterator();
-            ImmutableVector<E> prev, next = iter.next();
+            Iterator<E> iter = positions.iterator();
+            E prev, next = iter.next();
 
             @Override
             public boolean hasNext() {
@@ -50,20 +50,21 @@ public class Path<E extends Vector<E>> implements Iterable<LineSegment<E>> {
         };
     }
 
-    public Iterator<ImmutableVector<E>> getVectorIterator() {
-        return positions.iterator();
-
-    }
-
-    public Iterable<ImmutableVector<E>> getVectorIterable()
-    {
-        return new Iterable<ImmutableVector<E>>() {
-
+    public Iterable<LineSegment<E>> getLineSegmentIterable() {
+        return new Iterable<LineSegment<E>>() {
             @Override
-            public Iterator<ImmutableVector<E>> iterator()
-            {
-                return getVectorIterator();
+            public Iterator<LineSegment<E>> iterator() {
+                return getLineSegmentIterator();
             }
         };
+    }
+
+    public LineSegment<E> getClosingSegment() {
+        return new LineSegment<>(positions.get(positions.size() - 1), positions.get(0));
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return positions.iterator();
     }
 }

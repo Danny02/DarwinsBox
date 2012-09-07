@@ -16,6 +16,7 @@
  */
 package darwin.util.math.base.vector;
 
+import java.util.Arrays;
 import darwin.util.math.base.tupel.Tupel;
 
 import static darwin.util.math.util.MathUtil.almostEqual;

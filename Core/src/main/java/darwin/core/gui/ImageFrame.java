@@ -25,12 +25,11 @@ import javax.swing.*;
  *
  * @author daniel
  */
-public class ImageFrame extends JFrame
-{
+public class ImageFrame extends JFrame {
+
     private final Container main;
 
-    public ImageFrame(int width, int height) throws HeadlessException
-    {
+    public ImageFrame(int width, int height) throws HeadlessException {
         main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.X_AXIS));
         ScrollPane scroll = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
@@ -45,9 +44,10 @@ public class ImageFrame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void addImage(BufferedImage image)
-    {
-        main.add(new JLabel(new ImageIcon(image)));
+    public Container addImage(BufferedImage image) {
+        Container img = new JLabel(new ImageIcon(image));
+        main.add(img);
         pack();
+        return img;
     }
 }
