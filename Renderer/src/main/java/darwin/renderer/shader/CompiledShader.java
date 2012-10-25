@@ -16,6 +16,7 @@
  */
 package darwin.renderer.shader;
 
+import java.io.*;
 import java.nio.*;
 import java.util.Arrays;
 
@@ -30,50 +31,50 @@ import javax.media.opengl.*;
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public class CompiledShader {
+public class CompiledShader implements Externalizable {
 
     public static final String EXTENSION_STRING = "GL_ARB_get_program_binary";
-    
     private static int[] formats;
-    
-    private final int format;
-    private final Buffer data;
+    private int format;
+    private ByteBuffer data;
 
-    public CompiledShader(int format, Buffer data) {
+    public CompiledShader(int format, ByteBuffer data) {
         this.format = format;
         this.data = data;
     }
-    
-    public static CompiledShader fromShader(GraphicContext gc, ShaderProgramm prog)
-    {
-        GLES2 gl = gc.getGL().getGLES2();
-        
+
+    public static CompiledShader fromShader(GraphicContext gc, ShaderProgramm prog) {
+        GL2ES2 gl = gc.getGL().getGL2ES2();
+
         int pid = prog.getPObject();
         IntBuffer length = Buffers.newDirectIntBuffer(1);
+
+        gl.glGetProgramiv(pid, GL2.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, length);
+        if (length.get(0) == GL.GL_FALSE) {
+            throw new RuntimeException("The binary of this shader program is not retrievable(set PROGRAM_BINARY_RETRIEVABLE_HINT to true)!");
+        }
+
         gl.glGetProgramiv(pid, GL2.GL_PROGRAM_BINARY_LENGTH, length);
-        
         IntBuffer format = Buffers.newDirectIntBuffer(1);
         ByteBuffer data = Buffers.newDirectByteBuffer(length.get(0));
         gl.glGetProgramBinary(pid, length.get(0), length, format, data);
-        
-        if(gl.glGetError() == GL.GL_INVALID_OPERATION)
-        {
-            //invalid state can occure when program isn't linked or the buffer is to smal
+
+        if (gl.glGetError() == GL.GL_INVALID_OPERATION) {
+            //invalid state can occure when program isn't linked or the buffer is to smale
             throw new RuntimeException("The given shader program is not in a valid state(not linked correctly)");
         }
-        
+
         return new CompiledShader(format.get(0), data);
     }
 
-    public Optional<ShaderProgramm> toShader(GraphicContext gc) {        
+    public Optional<ShaderProgramm> toShader(GraphicContext gc) {
         GL2ES2 gl = gc.getGL().getGL2();
 
         int programObject = gl.glCreateProgram();
         ShaderProgramm prog = new ShaderProgramm(gc, programObject);
-        
+
         gl.glProgramBinary(prog.getPObject(), format, data, data.limit());
-        if(GLES2.GL_INVALID_ENUM == gl.glGetError())
-        {
+        if (GL2ES2.GL_INVALID_ENUM == gl.glGetError()) {
             return Optional.absent();
         }
 
@@ -84,40 +85,60 @@ public class CompiledShader {
             return Optional.absent();
         }
     }
-    
-    public boolean isFormatSupported(GraphicContext gc)
-    {
-        if(formats == null)
-        {
+
+    public boolean isFormatSupported(GraphicContext gc) {
+        if (formats == null) {
             initializeFormats(gc);
         }
-        
+
         return Arrays.binarySearch(formats, format) >= 0;
     }
-    
-    public synchronized static void initializeFormats(GraphicContext gc)
-    {
+
+    public synchronized static void initializeFormats(GraphicContext gc) {
         GL gl = gc.getGL();
-        
-        IntBuffer c = Buffers.newDirectIntBuffer(1);        
+
+        IntBuffer c = Buffers.newDirectIntBuffer(1);
         gl.glGetIntegerv(GL2ES2.GL_NUM_PROGRAM_BINARY_FORMATS, c);
-        
+
         c = Buffers.newDirectIntBuffer(c.get(0));
         gl.glGetIntegerv(GL2ES2.GL_PROGRAM_BINARY_FORMATS, c);
-        
+
         formats = c.array();
     }
-    
-    public static boolean isAvailable(GraphicContext gc)
-    {
+
+    public static boolean isAvailable(GraphicContext gc) {
         return gc.getGL().isExtensionAvailable(EXTENSION_STRING);
     }
 
-    public Buffer getData() {
+    public ByteBuffer getData() {
         return data;
     }
 
     public int getFormat() {
         return format;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(format);
+        byte[] dataArray = getDataArray();
+        out.writeInt(dataArray.length);
+        out.write(dataArray);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        format = in.readInt();
+        int len = in.readInt();
+        byte[] d = new byte[len];
+        in.read(d);
+        data = ByteBuffer.wrap(d);
+    }
+
+    public byte[] getDataArray() {
+        data.rewind();
+        byte[] d = new byte[data.limit()];
+        data.get(d);
+        return d;
     }
 }

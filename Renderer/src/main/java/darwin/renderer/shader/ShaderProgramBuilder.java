@@ -25,7 +25,7 @@ import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.BuildException.BuildError;
 
 import com.google.common.base.Optional;
-import javax.media.opengl.GL2GL3;
+import javax.media.opengl.*;
 
 /**
  *
@@ -69,16 +69,17 @@ public class ShaderProgramBuilder {
                 gl.glBindAttribLocation(programObject, sa.getIndex(), sa.getName());
             }
         }
+        
+        gl.glProgramParameteri(programObject, GL2GL3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL.GL_TRUE);
 
         gl.glLinkProgram(programObject);
-        
+
         ShaderProgramm prog = new ShaderProgramm(gc, programObject);
         Optional<String> error = prog.verify();
-        if(error.isPresent())
-        {
+        if (error.isPresent()) {
             throw new BuildException(error.get(), BuildError.LinkTime);
         }
-        
+
         return prog;
     }
 }

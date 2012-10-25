@@ -20,7 +20,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.media.opengl.GLES2;
 
 import darwin.geometrie.data.Element;
 import darwin.geometrie.data.VertexBuffer;
@@ -30,6 +29,7 @@ import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.shader.Shader;
 
+import javax.media.opengl.GL2ES2;
 import static darwin.renderer.opengl.GLSLType.*;
 
 /**
@@ -60,6 +60,6 @@ public final class Arrow implements GeometryFactory
     @Override
     public RenderMesh buildRenderable(Shader shader)
     {
-        return factory.create(shader, GLES2.GL_LINE_STRIP, null, vbo);
+        return factory.create(shader, GL2ES2.GL_LINE_STRIP, null, vbo);
     }
 }

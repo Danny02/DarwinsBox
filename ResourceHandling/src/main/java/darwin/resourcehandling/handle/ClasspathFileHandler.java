@@ -16,16 +16,13 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 
-import darwin.resourcehandling.watchservice.FileChangeListener;
-import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+import darwin.resourcehandling.watchservice.*;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import com.google.inject.assistedinject.*;
 
 /**
  *

@@ -29,25 +29,21 @@ import static java.lang.Integer.parseInt;
  *
  * @author daniel
  */
-public class ShaderObjektFactory
-{
-    private final static int ERROR_BUFFER_SIZE = 4096;
+public class ShaderObjektFactory {
+
     private final GraphicContext gc;
 
     @Inject
-    public ShaderObjektFactory(GraphicContext gcont)
-    {
+    public ShaderObjektFactory(GraphicContext gcont) {
         gc = gcont;
     }
 
-    public ShaderObjekt create(ShaderType type, String[] shadertext) throws BuildException
-    {
+    public ShaderObjekt create(ShaderType type, String[] shadertext) throws BuildException {
         int glObjectID = compileShaderObject(type, shadertext);
         return new ShaderObjekt(type, glObjectID);
     }
 
-    private int compileShaderObject(ShaderType type, String[] shaderText) throws BuildException
-    {
+    private int compileShaderObject(ShaderType type, String[] shaderText) throws BuildException {
         GL2GL3 gl = gc.getGL().getGL2GL3();
 
         int glObject = gl.glCreateShader(type.glConst);
@@ -59,23 +55,27 @@ public class ShaderObjektFactory
         return glObject;
     }
 
-    private void handleError(int shader, String[] sources) throws BuildException
-    {
+    private void handleError(int shader, String[] sources) throws BuildException {
         GL2GL3 gl = gc.getGL().getGL2GL3();
 
         int[] error = new int[1];
         gl.glGetShaderiv(shader, GL2ES2.GL_COMPILE_STATUS, error, 0);
 
         if (error[0] == GL.GL_FALSE) {
-            byte[] errormessage = new byte[ERROR_BUFFER_SIZE];
-            int[] len = new int[]{errormessage.length};
-            gl.glGetShaderInfoLog(shader, errormessage.length, len, 0, errormessage, 0);
+            int[] len = new int[1];
+            gl.glGetShaderiv(shader, GL2ES2.GL_INFO_LOG_LENGTH, len, 0);
+            if (len[0] == 0) {
+                return;
+            }
 
-            String tmp = new String(errormessage);
+            byte[] errormessage = new byte[len[0]];
+            gl.glGetShaderInfoLog(shader, len[0], len, 0, errormessage, 0);
+
+            String tmp = new String(errormessage, 0, len[0] + 1);
             BufferedReader errors = new BufferedReader(new StringReader(tmp));
 
             //TODO build a Shader error parser for all graphic cards and so on
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder("<");
             try {
                 String[][] texts = new String[sources.length][];
                 for (int i = 0; i < sources.length; i++) {
@@ -87,8 +87,8 @@ public class ShaderObjektFactory
                     String[] er = line.split(":");
                     if (er.length >= 4) {
                         try {
-                            int file = parseInt(er[0].trim());//because we add the version tag infont of everything
-                            int fLine = parseInt(er[1].split("\\(")[0]) - 2;//don'T know why
+                            int file = parseInt(er[1].trim());//because we add the version tag infont of everything
+                            int fLine = parseInt(er[2].split("\\(")[0]) - 1;//don'T know why
                             String sline = texts[file][fLine];
                             sb.append("\t\t").append(sline).append('\n');
                         } catch (Throwable t) {
@@ -97,7 +97,7 @@ public class ShaderObjektFactory
                 }
             } catch (IOException ex) {
             }
-            throw new BuildException(sb.toString(), BuildException.BuildError.CompileTime);
+            throw new BuildException(sb.append(">").toString(), BuildException.BuildError.CompileTime);
         }
     }
 }

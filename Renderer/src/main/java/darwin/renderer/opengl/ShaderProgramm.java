@@ -17,7 +17,6 @@
 package darwin.renderer.opengl;
 
 import darwin.renderer.GraphicContext;
-import darwin.renderer.shader.BuildException;
 import darwin.util.logging.InjectLogger;
 
 import com.google.common.base.Optional;
@@ -95,11 +94,11 @@ public class ShaderProgramm {
     
     public Optional<String> verify()
     {
-        GLES2 gl = gc.getGL().getGLES2();
+        GL2ES2 gl = gc.getGL().getGL2ES2();
         gl.glValidateProgram(programObject);
         int[] error = new int[]{-1};
         gl.glGetProgramiv(programObject, GL2GL3.GL_LINK_STATUS, error, 0);
-        if (error[0] == 0) {//means link status is FALSE
+        if (error[0] == GL.GL_FALSE) {
             int[] len = new int[]{512};
             byte[] errormessage = new byte[512];
             gl.glGetProgramInfoLog(programObject, 512, len, 0, errormessage, 0);
