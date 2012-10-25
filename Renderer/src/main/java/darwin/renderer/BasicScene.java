@@ -18,20 +18,26 @@ package darwin.renderer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import darwin.renderer.dependencies.MemoryInfoProvider;
+import darwin.renderer.geometrie.packed.*;
+import darwin.renderer.shader.Shader;
+import darwin.renderer.shader.ShaderUniform;
+import darwin.renderer.util.memory.MemoryInfo;
+import darwin.renderer.util.memory.PerformanceView;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
+import darwin.util.logging.InjectLogger;
+import darwin.util.math.base.vector.ImmutableVector;
+import darwin.util.math.base.vector.Vector3;
+import darwin.util.math.composits.ProjectionMatrix;
+import darwin.util.math.composits.ViewMatrix;
+import darwin.util.math.util.MatType;
+import darwin.util.math.util.MatrixCache;
+
 import javax.inject.Inject;
 import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-
-import darwin.renderer.dependencies.MemoryInfoProvider;
-import darwin.renderer.geometrie.packed.*;
-import darwin.renderer.shader.*;
-import darwin.renderer.util.memory.*;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
-import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.vector.*;
-import darwin.util.math.composits.*;
-import darwin.util.math.util.*;
 
 /**
  * Basic scene manager

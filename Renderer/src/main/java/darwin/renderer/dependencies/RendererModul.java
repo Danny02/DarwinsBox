@@ -33,13 +33,11 @@ import darwin.resourcehandling.resmanagment.texture.CubeMapJob.CubeMapFactory;
 import darwin.resourcehandling.resmanagment.texture.HeightMapLoadJob.HeightMapFactory;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
 import darwin.resourcehandling.wrapper.TextureAtlas.AtlasFactory;
-import darwin.util.logging.Slf4jTypeListener;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
-import javax.media.opengl.*;
+import javax.media.opengl.GLProfile;
 
 /**
  *
@@ -75,9 +73,6 @@ public class RendererModul extends AbstractModule
         for (Class factory : factoryClasses) {
             install(new FactoryModuleBuilder().build(factory));
         }
-
-        //needed for automatic Logger injection
-        bindListener(Matchers.any(), new Slf4jTypeListener());
 
 //        bind(ConfiguratorFactory.class).to(VAOAttributsFactory.class);
 

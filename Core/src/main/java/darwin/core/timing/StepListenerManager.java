@@ -41,8 +41,8 @@ class StepListenerManager {
     void update(long totalTime, long delta) {
         float timeSpan = 1f / frequency;
         long phase = NANO_IN_SECOND / frequency;
-        
-        int ticks = (int) ((totalTime / phase) - ((totalTime - delta) / phase));
+
+        int ticks = (int) ((totalTime / phase) - ((totalTime - delta) / phase));        
         float lerp = (float) (totalTime % phase) / phase;
 
         for (StepListener listener : tickListener) {

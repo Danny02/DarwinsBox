@@ -17,15 +17,11 @@
 package darwin.resourcehandling.watchservice;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.*;
+import java.nio.file.WatchEvent.Kind;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import darwin.util.logging.InjectLogger;
 
@@ -44,6 +40,10 @@ public class WatchServiceNotifier implements Runnable {
 
     @InjectLogger
     private final static Logger logger = NOPLogger.NOP_LOGGER;
+    //a little pollint timeout, to merge duplicated events of the same operation. 
+    //i.e. when a file is written by another app, this is sometimes done in chuncks. 
+    //And each written chunck causes a file modified event.
+    private static final int EVENT_MERGE_TIMEOUT = 100;
     private final Map<Path, FileChangeListener> callbacks = new HashMap<>();
     private final WatchService service;
 
@@ -64,16 +64,32 @@ public class WatchServiceNotifier implements Runnable {
             return;
         }
         try {
+            Map<FileChangeListener, Set<Kind<Path>>> listener = new HashMap<>();
             for (;;) {
-                WatchKey watchKey = service.take();
-                List<WatchEvent<?>> events = watchKey.pollEvents();
+                WatchKey watchKey = service.poll(EVENT_MERGE_TIMEOUT, TimeUnit.MILLISECONDS);
 
+                if (watchKey == null) {
+                    for (Entry<FileChangeListener, Set<Kind<Path>>> entry : listener.entrySet()) {
+                        for (Kind<Path> kind : entry.getValue()) {
+                            entry.getKey().fileChanged(kind);
+                        }
+                        listener.remove(entry.getKey());
+                    }
+                    watchKey = service.take();
+                }
+
+                List<WatchEvent<?>> events = watchKey.pollEvents();
                 for (WatchEvent event : events) {
                     Path c = (Path) event.context();
                     Path file = ((Path) watchKey.watchable()).resolve(c);
                     FileChangeListener l = callbacks.get(file.toAbsolutePath());
                     if (l != null) {
-                        l.fileChanged(event.kind());
+                        Set<Kind<Path>> eventTyps = listener.get(l);
+                        if (eventTyps == null) {
+                            eventTyps = new HashSet<>();
+                            listener.put(l, eventTyps);
+                        }
+                        eventTyps.add(event.kind());
                     }
                 }
 
@@ -89,6 +105,7 @@ public class WatchServiceNotifier implements Runnable {
     public Thread createNotifierThread() {
         Thread t = new Thread(this, "Filesystem watch service notifier thread");
         t.setDaemon(true);
+        t.setPriority(Thread.MIN_PRIORITY);
         return t;
     }
 
@@ -96,7 +113,10 @@ public class WatchServiceNotifier implements Runnable {
         if (service != null) {
             try {
                 path = path.toAbsolutePath();
-                callbacks.put(path, callback);
+                Object fcl = callbacks.put(path, callback);
+                //TODO fixen durch handle changing
+                assert fcl == null : "An error will occure, cause the first "
+                                     + "File Handle won't recieve any update events anymore";
 
                 Path dir = path;
                 if (!Files.isDirectory(dir)) {

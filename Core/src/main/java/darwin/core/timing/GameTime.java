@@ -56,11 +56,13 @@ public class GameTime {
 
         long delta = now - startTime - elapsed;
         long virtDelta = (long) (delta * scale);
+        
+        virtualElapsed += virtDelta;
+        elapsed += delta;
+        
         updatedTimeListener(virtDelta);
         updatedStepListener(virtDelta);
 
-        virtualElapsed += virtDelta;
-        elapsed += delta;
     }
 
     private void updatedTimeListener(long nanoSeconds) {
@@ -72,7 +74,7 @@ public class GameTime {
 
     private void updatedStepListener(long nanoSeconds) {
         for (StepListenerManager lm : new ArrayList<>(stepListener.values())) {
-            lm.update(elapsed, nanoSeconds);
+            lm.update(virtualElapsed, nanoSeconds);
         }
     }
 

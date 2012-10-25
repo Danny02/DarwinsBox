@@ -59,7 +59,7 @@ public class Element
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof Element)) {
             return false;
         }
         final Element other = (Element) obj;

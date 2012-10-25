@@ -16,14 +16,19 @@
  */
 package darwin.util.image;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import java.nio.file.*;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import darwin.util.misc.IterableFacade;
 
-import javax.imageio.*;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 /**

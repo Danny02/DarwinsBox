@@ -16,11 +16,13 @@
  */
 package darwin.renderer.opengl;
 
-import javax.inject.*;
-import javax.media.opengl.*;
-import org.slf4j.*;
-
 import darwin.renderer.GraphicContext;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.media.opengl.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

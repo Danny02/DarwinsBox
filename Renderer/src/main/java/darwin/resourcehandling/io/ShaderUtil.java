@@ -18,6 +18,8 @@ package darwin.resourcehandling.io;
 
 import java.io.*;
 import java.util.Arrays;
+
+import darwin.renderer.GraphicContext;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException;
+import darwin.renderer.shader.ShaderProgramBuilder;
 import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 import darwin.util.logging.InjectLogger;
@@ -36,31 +39,28 @@ import static darwin.renderer.opengl.ShaderType.*;
  * @author Daniel Heinrich
  */
 @Singleton
-public class ShaderUtil
-{
+public class ShaderUtil {
+
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private static final String includePrefix = "#pragma include";
     private static final String RES_PATH = "resources/shaders/";
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
-    private final ShaderProgrammFactory spFactory;
+    private final GraphicContext gc;
     private final ResourcesLoader resourceLoader;
 
     @Inject
     public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants,
-                      ShaderProgrammFactory spFactory,
-                      ResourcesLoader resourceLoader)
-    {
+                      ResourcesLoader resourceLoader, GraphicContext context) {
         this.soFactory = soFactory;
         this.constants = constants;
-        this.spFactory = spFactory;
+        gc = context;
         this.resourceLoader = resourceLoader;
     }
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
-    public ShaderProgramm compileShader(ShaderFile sfile)
-    {
+    public ShaderProgramm compileShader(ShaderFile sfile) {
 //        boolean error = false;
 //        StringBuilder errorText = new StringBuilder("Shader ");
         String errorMessage = null;
@@ -91,21 +91,23 @@ public class ShaderUtil
 
         if (exception == null) {
             try {
-                return spFactory.create(sfile.getAttributs(), fso, vso, gso);
+                return new ShaderProgramBuilder().
+                        with(sfile.getAttributs()).
+                        with(fso).with(vso).with(gso).
+                        link(gc);
             } catch (BuildException ex) {
                 exception = ex;
                 errorMessage = "while linking";
             }
         }
         logger.error("Shader " + exception.getErrorType() + " ERROR " + errorMessage
-                + " {" + sfile.name + "}\n" + exception.getMessage());
+                     + " {" + sfile.name + "}\n" + exception.getMessage());
         //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
         throw new Error("Shutting down!");
     }
 
     private ShaderObjekt createSObject(ShaderType target, String source,
-                                       String... mut) throws BuildException
-    {
+                                       String... mut) throws BuildException {
         if (source == null) {
             return null;
         }
@@ -120,26 +122,24 @@ public class ShaderUtil
         return soFactory.create(target, sources);
     }
 
-    public ShaderFile loadShader(ShaderDescription dscr) throws IOException
-    {
+    public ShaderFile loadShader(ShaderDescription dscr) throws IOException {
         return loadShader(dscr.f, dscr.v, dscr.g, dscr.flags);
     }
 
     /**
      * Erstellt eines ShaderProgramm Object. <br>
      * <p/>
-     * @param gl  <br> Der GL Context in dem das Programm erstellt werden soll.
-     *            <br>
-     * @param vs  <br> Pfad der auf eine Vertex ShaderProgramm Datei zeigt
-     *            (relativ zu "./resources/Shaders/"). <br>
-     * @param fs  <br> Pfad der auf eine Fragment ShaderProgramm Datei zeigt
-     *            (relativ zu "./resources/Shaders/"). <br>
+     * @param gl <br> Der GL Context in dem das Programm erstellt werden soll.
+     * <br>
+     * @param vs <br> Pfad der auf eine Vertex ShaderProgramm Datei zeigt
+     * (relativ zu "./resources/Shaders/"). <br>
+     * @param fs <br> Pfad der auf eine Fragment ShaderProgramm Datei zeigt
+     * (relativ zu "./resources/Shaders/"). <br>
      * @param uni <br> Eine Liste von Uniform variable der ShaderProgramm deren
-     *            positionen abgefragt werden sollen.
+     * positionen abgefragt werden sollen.
      */
     public ShaderFile loadShader(String fs, String vs, String gs,
-                                 String... ms) throws IOException
-    {
+                                 String... ms) throws IOException {
         InputStream fragis = null, vertis = null, geois = null;
         if (fs != null) {
             fragis = resourceLoader.getRessource(RES_PATH + fs);
@@ -177,8 +177,7 @@ public class ShaderUtil
 
     private ShaderFile loadShader(String name, InputStream fs,
                                   InputStream vs, InputStream gs,
-                                  String... mutations)
-    {
+                                  String... mutations) {
         //TODO ueberlegen defines nicht der src hinzuzufügen
         //sondern als weiteren src string uebergeben
         String f = getData(fs);
@@ -187,8 +186,7 @@ public class ShaderUtil
         return new ShaderFile(name, f, v, g, mutations);
     }
 
-    private String getData(InputStream file)
-    {
+    private String getData(InputStream file) {
         if (file == null) {
             return null;
         }
@@ -219,7 +217,7 @@ public class ShaderUtil
             }
         } catch (IOException ex) {
             logger.error("Fehler beim laden eines Shader Source Strings: "
-                    + ex.getLocalizedMessage());
+                         + ex.getLocalizedMessage());
         }
         out = sb.toString();
         return out;

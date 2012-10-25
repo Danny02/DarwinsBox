@@ -27,14 +27,18 @@ import org.slf4j.helpers.NOPLogger;
 
 import darwin.core.controls.InputController;
 import darwin.renderer.GraphicContext;
+import darwin.renderer.dependencies.RendererModul;
+import darwin.resourcehandling.dependencies.ResourceHandlingModul;
 import darwin.util.logging.*;
+
+import com.google.inject.*;
 
 /**
  *
  * @author daniel
  */
-public class Client
-{
+public class Client {
+
     private AnimatorBase animator;
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -43,14 +47,24 @@ public class Client
     private final List<GLEventListener> glListeners = new ArrayList<>();
     private final List<MouseListener> mouseListeners = new ArrayList<>();
 
+    public static Client createClient(Class... resources) {
+        Injector in = Guice.createInjector(getRequiredModules(resources));
+        return in.getInstance(Client.class);
+    }
+
+    public static Module[] getRequiredModules(Class... resources) {
+        return new Module[]{
+                    new RendererModul(),
+                    new LoggingModul(),
+                    new ResourceHandlingModul(resources)};
+    }
+
     @Inject
-    public Client(GraphicContext gc)
-    {
+    public Client(GraphicContext gc) {
         this.gc = gc;
     }
 
-    public void iniClient() throws InstantiationException
-    {
+    public void iniClient() throws InstantiationException {
         try {
             gc.iniContext();
             for (GLEventListener l : glListeners) {
@@ -69,8 +83,7 @@ public class Client
         animator.start();
     }
 
-    public void shutdown()
-    {
+    public void shutdown() {
         if (animator != null) {
             animator.stop();
         }
@@ -80,42 +93,39 @@ public class Client
         }
     }
 
-    public void addShutdownListener(ShutdownListener listener)
-    {
+    public void addShutdownListener(ShutdownListener listener) {
         shutdownlistener.add(listener);
     }
 
-    public void removeShutdownListner(ShutdownListener lister)
-    {
+    public void removeShutdownListner(ShutdownListener lister) {
         shutdownlistener.remove(lister);
     }
 
-    public void addGLEventListener(GLEventListener listener)
-    {
-        if(gc.isInitialized())
+    public void addGLEventListener(GLEventListener listener) {
+        if (gc.isInitialized()) {
             gc.getGLWindow().addGLEventListener(listener);
-        else
+        } else {
             glListeners.add(listener);
+        }
     }
 
-    public void removeGLEventListener(GLEventListener listener)
-    {
-        if(gc.isInitialized())
+    public void removeGLEventListener(GLEventListener listener) {
+        if (gc.isInitialized()) {
             gc.getGLWindow().removeGLEventListener(listener);
-        else
+        } else {
             glListeners.remove(listener);
+        }
     }
 
-    public void addMouseListener(InputController controller)
-    {
-        if(gc.isInitialized())
+    public void addMouseListener(InputController controller) {
+        if (gc.isInitialized()) {
             gc.getGLWindow().addMouseListener(controller);
-        else
+        } else {
             mouseListeners.add(controller);
+        }
     }
 
-    Window getWindow()
-    {
+    Window getWindow() {
         return gc.getGLWindow();
     }
 }

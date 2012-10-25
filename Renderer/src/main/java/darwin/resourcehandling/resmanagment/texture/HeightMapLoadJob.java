@@ -16,17 +16,21 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
-import com.google.inject.assistedinject.*;
-import com.jogamp.opengl.util.texture.*;
-import java.io.*;
-import javax.media.opengl.*;
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
+import java.io.IOException;
+import java.io.InputStream;
 
 import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.io.TextureUtil;
 import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.logging.InjectLogger;
+
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import com.jogamp.opengl.util.texture.*;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2GL3;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *
@@ -58,7 +62,7 @@ public class HeightMapLoadJob extends TextureLoadJob
         try (InputStream is = loader.getRessource(getPath());) {
             String[] suffix = getPath().split("\\.");
             TextureData td = TextureIO.newTextureData(gc.getGL().getGLProfile(), is,
-                    GL2GL3.GL_LUMINANCE_FLOAT32_ATI,
+                    GL2GL3.GL_LUMINANCE32F_ARB,
                     GL2GL3.GL_LUMINANCE, true,
                     suffix[suffix.length - 1]);
 

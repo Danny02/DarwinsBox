@@ -16,9 +16,10 @@
  */
 package darwin.resourcehandling.core;
 
-import darwin.resourcehandling.ResourceChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
+
+import darwin.resourcehandling.ResourceChangeListener;
 
 /**
  *

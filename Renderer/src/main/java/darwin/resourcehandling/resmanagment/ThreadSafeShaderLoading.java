@@ -19,12 +19,15 @@ package darwin.resourcehandling.resmanagment;
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Shader;
 
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLRunnable;
+
 
 /**
  *
  * @author dheinrich
  */
-public class ThreadSafeShaderLoading{
+public class ThreadSafeShaderLoading implements GLRunnable{
     private Shader sc;
     private ShaderProgramm sp;
 
@@ -33,8 +36,10 @@ public class ThreadSafeShaderLoading{
         this.sp = sp;
     }
 
-    public void load() {
+    @Override
+    public boolean run(GLAutoDrawable glad) {
         sc.ini(sp);
+        return true;
     }
 
 }

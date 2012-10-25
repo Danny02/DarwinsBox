@@ -18,23 +18,9 @@ package darwin.resourcehandling.resmanagment;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import lzma.sdk.lzma.Decoder;
-import lzma.streams.LzmaInputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
-
-import com.jogamp.opengl.util.texture.Texture;
-
+import darwin.renderer.GraphicContext;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
 import darwin.renderer.opengl.ShaderProgramm;
@@ -48,13 +34,21 @@ import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
 import darwin.resourcehandling.wrapper.TextureContainer;
 import darwin.util.logging.InjectLogger;
 
+import com.jogamp.opengl.util.texture.Texture;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.media.opengl.GLAutoDrawable;
+import lzma.sdk.lzma.Decoder;
+import lzma.streams.LzmaInputStream;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
+
 /**
  *
  * @author dheinrich
  */
 @Singleton
-public class ResourcesLoader
-{
+public class ResourcesLoader {
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -64,38 +58,38 @@ public class ResourcesLoader
     //shader stuff
     private final HashMap<ShaderLoadJob, List<Shader>> shadermap = new HashMap<>();
     private final HashMap<ShaderLoadJob, ShaderFile> shaderfiles = new HashMap<>();
-    private Stack<ThreadSafeShaderLoading> shadertoset = new Stack<>();
     //texture stuff
     private final HashMap<TextureLoadJob, TextureContainer> texturemap =
-            new HashMap<>();
+                                                            new HashMap<>();
     //Mesh stuff
     private final HashMap<ROLoadJob, List<RenderObjekt>> meshmap = new HashMap<>();
     private final ROJobFactory roFactory;
     private final ShaderFactory shaderFactory;
     private final ShaderJobFactory shaderJobFactory;
+    private final GraphicContext gc;
 
     @Inject
-    public ResourcesLoader(ROJobFactory roFactory, ShaderFactory shaderFactory, ShaderJobFactory shaderJobFactory)
-    {
+    public ResourcesLoader(ROJobFactory roFactory,
+                           ShaderFactory shaderFactory,
+                           ShaderJobFactory shaderJobFactory,
+                           GraphicContext gc) {
         this.roFactory = roFactory;
         this.shaderFactory = shaderFactory;
         this.shaderJobFactory = shaderJobFactory;
+        this.gc = gc;
     }
 
     public Shader getShader(String frag, String vertex, String geo,
-            String... mutations)
-    {
+                            String... mutations) {
         return getShader(new ShaderDescription(frag, vertex, geo, mutations));
     }
 
-    public Shader getShader(String name, boolean hasGeoShader)
-    {
+    public Shader getShader(String name, boolean hasGeoShader) {
         return getShader(new ShaderDescription(name, hasGeoShader));
     }
 
     synchronized public Shader getShader(ShaderDescription descr,
-            String... mutations)
-    {
+                                         String... mutations) {
         ShaderLoadJob job = shaderJobFactory.create(descr.mergeFlags(mutations));
         ShaderFile file = shaderfiles.get(job);
         if (file == null) {
@@ -120,13 +114,12 @@ public class ResourcesLoader
             l.add(shader);
         } else {
             shadermap.get(job).add(shader);
-            shadertoset.add(new ThreadSafeShaderLoading(shader, prog));
+            gc.getGLWindow().invoke(false, new ThreadSafeShaderLoading(shader, prog));
         }
         return shader;
     }
 
-    synchronized public void getRenderObjekt(RenderObjekt ro, ObjConfig oconf)
-    {
+    synchronized public void getRenderObjekt(RenderObjekt ro, ObjConfig oconf) {
         ROLoadJob job = roFactory.create(oconf);
         RenderModel[] models = (RenderModel[]) ressourcen.get(job);
         List<RenderObjekt> l = meshmap.get(job);
@@ -144,8 +137,7 @@ public class ResourcesLoader
         }
     }
 
-    synchronized public TextureContainer getTexture(TextureLoadJob ljob)
-    {
+    synchronized public TextureContainer getTexture(TextureLoadJob ljob) {
         Texture res = (Texture) ressourcen.get(ljob);
         if (res == null) {
             TextureContainer tc = texturemap.get(ljob);
@@ -161,22 +153,17 @@ public class ResourcesLoader
         }
     }
 
-    synchronized public void workAllJobs()
-    {
+    synchronized public void workAllJobs() {
         try {
             while (!jobs.isEmpty()) {
                 loadJob(jobs.remove());
-            }
-            while (!shadertoset.empty()) {
-                shadertoset.pop().load();
             }
         } catch (Throwable ex) {
             logger.error("Unresolved error in resource loading! Error: " + ex.getLocalizedMessage(), ex);
         }
     }
 
-    private void loadJob(LoadJob<?> j)
-    {
+    private void loadJob(LoadJob<?> j) {
         try {
             Object r = j.load();
             ressourcen.put(j, r);
@@ -186,15 +173,13 @@ public class ResourcesLoader
         }
     }
 
-    synchronized public void reloadRessources()
-    {
+    synchronized public void reloadRessources() {
         while (!oldjobs.isEmpty()) {
             jobs.add(oldjobs.remove());
         }
     }
 
-    public InputStream getRessource(String path) throws IOException
-    {
+    public InputStream getRessource(String path) throws IOException {
         InputStream is = getStream(path + ".lzma");
         if (is != null) {
             return new LzmaInputStream(is, new Decoder());
@@ -208,8 +193,7 @@ public class ResourcesLoader
         return is;
     }
 
-    private InputStream getStream(String path)
-    {
+    private InputStream getStream(String path) {
         return ResourcesLoader.class.getResourceAsStream('/' + path);
     }
 }

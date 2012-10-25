@@ -1,3 +1,5 @@
+#ifndef gamma_h
+#define gamma_h
 #pragma include includes/misc.h
 #ifndef GAMMA_VAL
     #define GAMMA_VAL 2.2
@@ -17,4 +19,5 @@ uconst float gamma = GAMMA_VAL;
 #else
     #define toLinear(x) x
     #define toGamma(x) x
+#endif
 #endif

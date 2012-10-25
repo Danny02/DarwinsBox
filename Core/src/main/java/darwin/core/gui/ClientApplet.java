@@ -19,10 +19,9 @@ package darwin.core.gui;
 //import netscape.javascript.JSException;
 //import netscape.javascript.JSObject;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.jogamp.newt.awt.NewtCanvasAWT;
 import java.awt.BorderLayout;
+
+import com.jogamp.newt.awt.NewtCanvasAWT;
 import javax.swing.JApplet;
 
 
@@ -40,8 +39,7 @@ public class ClientApplet extends JApplet implements ShutdownListener
     @Override
     public void init()
     {
-        Injector in = Guice.createInjector();
-        client = in.getInstance(Client.class);
+        client = Client.createClient();
         client.addShutdownListener(this);
         setLayout(new BorderLayout());
     }

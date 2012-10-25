@@ -16,19 +16,21 @@
  */
 package darwin.renderer.opengl;
 
+import darwin.renderer.GraphicContext;
+import darwin.renderer.shader.BuildException;
+import darwin.util.logging.InjectLogger;
+
+import com.google.common.base.Optional;
 import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-
-import darwin.util.logging.InjectLogger;
 
 /**
  * CPU seitige Repr�sentation eines OpenGL Shader Programmes
  * <p/>
  * @author Daniel Heinrich
  */
-public class ShaderProgramm
-{
+public class ShaderProgramm {
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -37,46 +39,41 @@ public class ShaderProgramm
         assert GLProfile.isAvailable(GLProfile.GL2ES2) : "This device doesn't support Shaders";
     }
     private static ShaderProgramm shaderinuse = null;
-    private final GLAutoDrawable drawable;
+    private final GraphicContext gc;
     private final int programObject;
 
-    public ShaderProgramm(GLAutoDrawable drawable, int programObject)
-    {
-        this.drawable = drawable;
+    public ShaderProgramm(GraphicContext context, int programObject) {
+        gc = context;
         this.programObject = programObject;
     }
 
     /**
      * @return Gibt den Index des Programm Objekt im Grafikspeicher zur�ck.
      */
-    public int getPObject()
-    {
+    public int getPObject() {
         return programObject;
     }
 
-    public int getUniformLocation(String s)
-    {
-        return drawable.getGL().getGL2GL3().glGetUniformLocation(getPObject(), s);
+    public int getUniformLocation(String s) {
+        return gc.getGL().getGL2GL3().glGetUniformLocation(getPObject(), s);
     }
 
     /**
      * @param name Name der Attribut Variable(wie im Vertex ShaderProgramm
-     *             definiert).
+     * definiert).
      * <p/>
      * @return Gibt den Index der Attribut Varibale im Grafikspeicher zur�ck.
      */
-    public int getAttrLocation(String name)
-    {
-        return drawable.getGL().getGL2GL3().glGetAttribLocation(programObject, name);
+    public int getAttrLocation(String name) {
+        return gc.getGL().getGL2GL3().glGetAttribLocation(programObject, name);
     }
 
     /**
      * Aktiviert das ShaderProgramm Programm im GL Context.
      */
-    public void use()
-    {
+    public void use() {
         if (shaderinuse != this) {
-            drawable.getGL().getGL2GL3().glUseProgram(getPObject());
+            gc.getGL().getGL2GL3().glUseProgram(getPObject());
             shaderinuse = this;
         }
     }
@@ -84,28 +81,41 @@ public class ShaderProgramm
     /**
      * Deaktiviert ShaderProgramm Programme im GL Context.
      */
-    public void disable()
-    {
-        drawable.getGL().getGL2GL3().glUseProgram(0);
+    public void disable() {
+        gc.getGL().getGL2GL3().glUseProgram(0);
         shaderinuse = null;
     }
 
-    public void delete()
-    {
-        drawable.getGL().getGL2GL3().glDeleteProgram(getPObject());
+    public void delete() {
+        gc.getGL().getGL2GL3().glDeleteProgram(getPObject());
         if (shaderinuse == this) {
             disable();
         }
     }
+    
+    public Optional<String> verify()
+    {
+        GLES2 gl = gc.getGL().getGLES2();
+        gl.glValidateProgram(programObject);
+        int[] error = new int[]{-1};
+        gl.glGetProgramiv(programObject, GL2GL3.GL_LINK_STATUS, error, 0);
+        if (error[0] == 0) {//means link status is FALSE
+            int[] len = new int[]{512};
+            byte[] errormessage = new byte[512];
+            gl.glGetProgramInfoLog(programObject, 512, len, 0, errormessage, 0);
+            return Optional.of(new String(errormessage, 0, len[0]));
+        }
+        return Optional.absent();
+    }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        if(obj == this)
-        	return true;
+        if (obj == this) {
+            return true;
+        }
         if (getClass() != obj.getClass()) {
             return false;
         }
@@ -117,8 +127,7 @@ public class ShaderProgramm
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 3;
         hash = 41 * hash + this.programObject;
         return hash;

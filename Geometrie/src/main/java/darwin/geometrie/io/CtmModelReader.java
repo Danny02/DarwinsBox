@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
 import darwin.geometrie.data.*;
@@ -37,6 +35,7 @@ import javax.media.opengl.GL;
 
 import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE32;
 import static darwin.geometrie.data.DataType.FLOAT;
+import static darwin.jopenctm.data.Mesh.*;
 
 /**
  *
@@ -44,12 +43,12 @@ import static darwin.geometrie.data.DataType.FLOAT;
  */
 public class CtmModelReader implements ModelReader {
 
-    private static final Element position, texcoord, normal;
+    public static final Element POSITION, TEX_COORD, NORMAL;
 
     static {
-        position = new Element(new GenericVector(FLOAT, 3), "Position");
-        texcoord = new Element(new GenericVector(FLOAT, 2), "TexCoord");
-        normal = new Element(new GenericVector(FLOAT, 3), "Normal");
+        POSITION = new Element(new GenericVector(FLOAT, CTM_POSITION_ELEMENT_COUNT), "Position");
+        TEX_COORD = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), "TexCoord");
+        NORMAL = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), "Normal");
     }
 
     @Override
@@ -85,15 +84,15 @@ public class CtmModelReader implements ModelReader {
 
     public static Model convertMesh(darwin.jopenctm.data.Mesh mesh) {
         Collection<Element> elements = new ArrayList<>();
-        elements.add(position);
+        elements.add(POSITION);
 
         if (mesh.hasNormals()) {
-            elements.add(normal);
+            elements.add(NORMAL);
         }
 
         Element[] uvEle = new Element[mesh.getUVCount() - 1];
         if (mesh.getUVCount() > 0) {
-            elements.add(texcoord);
+            elements.add(TEX_COORD);
             if (mesh.getUVCount() > 1) {
                 VectorType float2 = new GenericVector(FLOAT, 2);
                 for (int i = 1; i < mesh.texcoordinates.length; i++) {
@@ -119,14 +118,14 @@ public class CtmModelReader implements ModelReader {
 
         vb.fullyInitialize();
 
-        fillElement(vb, position, mesh.vertices);
+        fillElement(vb, POSITION, mesh.vertices);
 
         if (mesh.hasNormals()) {
-            fillElement(vb, normal, mesh.normals);
+            fillElement(vb, NORMAL, mesh.normals);
         }
 
         if (mesh.getUVCount() > 0) {
-            fillElement(vb, texcoord, mesh.texcoordinates[0].values);
+            fillElement(vb, TEX_COORD, mesh.texcoordinates[0].values);
             if (mesh.getUVCount() > 1) {
                 VectorType float2 = new GenericVector(FLOAT, 2);
                 for (int i = 1; i < mesh.texcoordinates.length; i++) {

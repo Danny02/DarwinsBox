@@ -24,7 +24,6 @@ package darwin.renderer.shader;
  * General Public License * along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.jogamp.opengl.util.texture.Texture;
@@ -37,41 +36,40 @@ import darwin.renderer.opengl.ShaderProgramm;
  *
  * @author dheinrich
  */
-public final class Sampler
-{
+public final class Sampler {
 
-    public interface SamplerFactory
-    {
+    public interface SamplerFactory {
 
         public Sampler create(String uniform, int textureUnit);
     }
     private final GraphicContext gc;
-    private final int textureUInit;
+    private final int textureUnit;
     private final String uniname;
     private boolean active;
     private int uniform_pos;
 
     @AssistedInject
     public Sampler(GraphicContext gcont,
-            @Assisted String uniform, @Assisted int textureUInit)
-    {
+                   @Assisted String uniform, @Assisted int textureUInit) {
         gc = gcont;
-        this.textureUInit = textureUInit;
+        this.textureUnit = textureUInit;
         uniname = uniform;
 
         setActive(true);
         uniform_pos = -1;
     }
 
-    protected void setActive(boolean active)
-    {
+    protected void setActive(boolean active) {
         this.active = active;
     }
 
-    public void bindTexture(Texture tex)
-    {
+    public int getTextureUnit() {
+        return textureUnit;
+    }
+
+    public void bindTexture(Texture tex) {
         GL gl = gc.getGL();
-        gl.glActiveTexture(textureUInit);
+        gl.glActiveTexture(textureUnit);
         if (!isActive() || tex == null) {
             gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
         } else {
@@ -79,16 +77,14 @@ public final class Sampler
         }
     }
 
-    public boolean isActive()
-    {
+    public boolean isActive() {
         return uniform_pos != -1 && active;
     }
 
-    public void setShader(ShaderProgramm s)
-    {
+    public void setShader(ShaderProgramm s) {
         uniform_pos = s.getUniformLocation(uniname);
         assert uniform_pos != -1;
         s.use();
-        gc.getGL().getGL2GL3().glUniform1i(uniform_pos, textureUInit - GL.GL_TEXTURE0);
+        gc.getGL().getGL2GL3().glUniform1i(uniform_pos, textureUnit - GL.GL_TEXTURE0);
     }
 }

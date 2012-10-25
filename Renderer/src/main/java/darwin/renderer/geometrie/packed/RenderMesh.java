@@ -29,6 +29,8 @@ import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
 
+import javax.annotation.Nullable;
+
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
@@ -58,7 +60,7 @@ public class RenderMesh implements Cloneable
             VAttributsFactory vfactory,
             @Assisted Shader shader,
             @Assisted int primitivtype,
-            @Assisted BufferObject indice,
+            @Assisted @Nullable BufferObject indice,
             @Assisted VertexBO... vertexdata)
     {
         gc = gcontex;
@@ -74,7 +76,7 @@ public class RenderMesh implements Cloneable
     public RenderMesh(GraphicContext gcontex,
             VAttributsFactory vfactory,
             @Assisted Shader shader,
-            @Assisted BufferObject indice,
+            @Assisted @Nullable BufferObject indice,
             @Assisted VertexBO... vertexdata)
     {
         this(gcontex, vfactory, shader, GL.GL_TRIANGLES, indice, vertexdata);

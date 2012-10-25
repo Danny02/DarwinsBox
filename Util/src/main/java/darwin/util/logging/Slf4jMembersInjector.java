@@ -18,10 +18,9 @@ package darwin.util.logging;
 
 import java.lang.reflect.Field;
 
+import com.google.inject.MembersInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.inject.MembersInjector;
 
 /**
  *

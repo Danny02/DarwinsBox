@@ -18,10 +18,7 @@ package darwin.resourcehandling.handle;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 
 import darwin.resourcehandling.watchservice.FileChangeListener;
@@ -34,20 +31,38 @@ import com.google.inject.assistedinject.AssistedInject;
  *
  * @author daniel
  */
+//TODO enable creation of handles relative to others and Path variables like ($TEXTURES, $MODELS ...)
 public class ClasspathFileHandler extends ListenerHandler {
 
     private final Path path;
 
+    //TODO zu jeder datei soll immer nur eine handle existieren dürfen, muss gechached werden
+    //TODO jede resourcen sollten auch gecached werden
     public static interface FileHandlerFactory {
 
-        public ClasspathFileHandler create(String file);
+        public ClasspathFileHandler create(Path file);
+    }
+
+    public ClasspathFileHandler(Path path) {
+        this(null, path);
     }
 
     @AssistedInject
     public ClasspathFileHandler(WatchServiceNotifier notifier,
-                                @Assisted String file) {
-        path = Paths.get(file);
-        notifier.register(path, new Callback());
+                                @Assisted Path file) {
+        path = file;
+        if (notifier != null) {
+            notifier.register(path, new FileChangeListener() {
+                @Override
+                public void fileChanged(Kind kind) {
+                    fireChangeEvent();
+                }
+            });
+        }
+    }
+
+    public Path getPath() {
+        return path;
     }
 
     @Override
@@ -56,24 +71,21 @@ public class ClasspathFileHandler extends ListenerHandler {
         if (Files.isReadable(path)) {
             return Files.newInputStream(path, StandardOpenOption.READ);
         } else {
+            if(path.isAbsolute())
+            {                
+                throw new IOException("Could not find absolute file. " + path);
+            }
+                
             String f = path.toString();
             if (!f.startsWith("/")) {
                 f = "/" + f;
             }
             InputStream in = ClasspathFileHandler.class.getResourceAsStream(f);
             if (in == null) {
-                throw new IOException("File could not be found! " + path);
+                throw new IOException("Could not find file in classpath." + path);
             } else {
                 return in;
             }
-        }
-    }
-
-    private class Callback implements FileChangeListener {
-
-        @Override
-        public void fileChanged(Kind kind) {
-            fireChangeEvent();
         }
     }
 }

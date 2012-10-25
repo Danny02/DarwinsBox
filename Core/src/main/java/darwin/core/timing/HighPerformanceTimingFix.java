@@ -32,8 +32,9 @@ public class HighPerformanceTimingFix {
     static {
         new Thread() {
             {
-                this.setDaemon(true);
-                this.start();
+                setDaemon(true);
+                setName("HighPerformanceTimer Fix SleepThread");
+                start();
             }
 
             @Override

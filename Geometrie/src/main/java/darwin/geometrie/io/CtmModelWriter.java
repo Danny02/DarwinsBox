@@ -16,28 +16,29 @@
  */
 package darwin.geometrie.io;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
-import darwin.geometrie.io.obj.ObjModelReader;
 import darwin.geometrie.unpacked.Mesh;
 import darwin.geometrie.unpacked.Model;
-import darwin.jopenctm.compression.*;
+import darwin.jopenctm.compression.MeshEncoder;
+import darwin.jopenctm.compression.RawEncoder;
 import darwin.jopenctm.data.AttributeData;
 import darwin.jopenctm.errorhandling.InvalidDataException;
 import darwin.jopenctm.io.CtmFileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.*;
+
 import javax.media.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static darwin.geometrie.data.DataType.FLOAT;
+import static darwin.geometrie.io.CtmModelReader.*;
 import static darwin.jopenctm.data.Mesh.*;
 
 /**
@@ -49,13 +50,7 @@ public class CtmModelWriter implements ModelWriter {
 
     public static final String FILE_EXTENSION = "ctm";
     private final static String DEFAULT_COMMENT = "Exported with Darwin Lib";
-    private static final Element POSITION, TEX_COORD, NORMAL;
-
-    static {
-        POSITION = new Element(new GenericVector(FLOAT, CTM_POSITION_ELEMENT_COUNT), "Position");
-        TEX_COORD = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), "TexCoord");
-        NORMAL = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), "Normal");
-    }
+    
     private static final Logger logger = LoggerFactory.getLogger(CtmModelWriter.class);
     private final MeshEncoder encoder;
     private final String fileComment;

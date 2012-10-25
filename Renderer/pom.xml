@@ -94,43 +94,29 @@
             <artifactId>Util</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl.all</artifactId>
-            <version>2.0-b57-20120502</version>
-        </dependency>
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen</artifactId>
-            <version>2.0-b43-20120502</version>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.0-rc10</version>
         </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <version>2.0-b43-20120502</version>
-        </dependency>-->
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl.all</artifactId>
-            <version>2.0-b526-20111018</version>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.0-rc10</version>
         </dependency>
         <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen</artifactId>
-            <version>2.0-b424-20111018</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <version>2.0-b424-20111018</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>13.0.1</version>
         </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>thirdparty.mave.iscpif.fr</id>
-            <name>ISCPIF repository</name>
-            <url>http://maven.iscpif.fr/thirdparty</url>
+            <id>jogamp-remote</id>
+            <name>jogamp test mirror</name>
+            <url>http://www.jogamp.org/deployment/maven/</url>
+            <layout>default</layout>
         </repository>
     </repositories>
 </project>
