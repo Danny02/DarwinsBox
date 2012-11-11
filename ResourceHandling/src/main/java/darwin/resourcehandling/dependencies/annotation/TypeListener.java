@@ -16,9 +16,12 @@
  */
 package darwin.resourcehandling.dependencies.annotation;
 
+import darwin.util.dependencies.SimpleMembersInjector;
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 
 import darwin.resourcehandling.core.ResourceHandle;
+import darwin.resourcehandling.handle.ClasspathFileHandler;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import com.google.inject.Provider;
@@ -42,7 +45,8 @@ public class TypeListener implements com.google.inject.spi.TypeListener {
         for (Field field : aTypeLiteral.getRawType().getDeclaredFields()) {
             InjectResource anno = field.getAnnotation(InjectResource.class);
             if (field.getType() == ResourceHandle.class && anno != null) {
-                aTypeEncounter.register(new MembersInjector<I>(field, anno.value(), provider.get()));
+                aTypeEncounter.register(new SimpleMembersInjector<I>(field, 
+                        new ClasspathFileHandler(provider.get(), Paths.get(anno.value()))));
             }
         }
     }

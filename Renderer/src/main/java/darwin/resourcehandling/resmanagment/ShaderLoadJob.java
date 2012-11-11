@@ -49,9 +49,6 @@ public class ShaderLoadJob implements LoadJob<ShaderProgramm>
     private ShaderFile sfile;
     private List<Shader> scontainer;
 
-//    public ShaderLoadJob(String f, String v, String g) {
-//        this(new ShaderDescription(f, v, g));
-//    }
     @AssistedInject
     public ShaderLoadJob(ShaderUtil util, @Assisted ShaderDescription dscr)
     {

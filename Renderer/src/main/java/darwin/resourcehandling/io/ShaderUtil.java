@@ -20,17 +20,19 @@ import java.io.*;
 import java.util.Arrays;
 
 import darwin.renderer.GraphicContext;
+import darwin.renderer.opengl.*;
+import darwin.renderer.shader.BuildException;
+import darwin.renderer.shader.ShaderProgramBuilder;
+import darwin.resourcehandling.io.ShaderFile.Builder;
+import darwin.resourcehandling.resmanagment.ResourceProvider;
+import darwin.resourcehandling.resmanagment.ResourcesLoader;
+import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.util.logging.InjectLogger;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-
-import darwin.renderer.opengl.*;
-import darwin.renderer.shader.BuildException;
-import darwin.renderer.shader.ShaderProgramBuilder;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
-import darwin.util.logging.InjectLogger;
 
 import static darwin.renderer.opengl.ShaderType.*;
 
@@ -48,7 +50,7 @@ public class ShaderUtil {
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
     private final GraphicContext gc;
-    private final ResourcesLoader resourceLoader;
+    private ResourceProvider resourceLoader;
 
     @Inject
     public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants,
@@ -69,21 +71,26 @@ public class ShaderUtil {
         fso = gso = vso = null;
 
         try {
-            fso = createSObject(Fragment, sfile.fragment, sfile.mutations);
+            if (sfile.fragment != null) {
+                fso = createSObject(Fragment, sfile.fragment, sfile.mutations);
+            }
         } catch (BuildException ex) {
             exception = ex;
             errorMessage = "in:Fragment of";
         }
         try {
-
-            vso = createSObject(Vertex, sfile.vertex, sfile.mutations);
+            if (sfile.vertex != null) {
+                vso = createSObject(Vertex, sfile.vertex, sfile.mutations);
+            }
         } catch (BuildException ex) {
             exception = ex;
             errorMessage = "in: Vertex of";
         }
 
         try {
-            gso = createSObject(Geometrie, sfile.geometrie, sfile.mutations);
+            if (sfile.geometrie != null) {
+                gso = createSObject(Geometrie, sfile.geometrie, sfile.mutations);
+            }
         } catch (BuildException ex) {
             exception = ex;
             errorMessage = "in: Geometrie of";
@@ -100,25 +107,19 @@ public class ShaderUtil {
                 errorMessage = "while linking";
             }
         }
-        logger.error("Shader " + exception.getErrorType() + " ERROR " + errorMessage
-                     + " {" + sfile.name + "}\n" + exception.getMessage());
-        //TODO Vllcht im Debug Modus einen Dummy shader generieren aus den gegebenen infos
-        throw new Error("Shutting down!");
+        throw new RuntimeException("Shader " + exception.getErrorType() + " ERROR " + errorMessage
+                                   + " {" + sfile.name + "}\n" + exception.getMessage());
     }
 
     private ShaderObjekt createSObject(ShaderType target, String source,
                                        String... mut) throws BuildException {
-        if (source == null) {
-            return null;
-        }
-        int len = mut != null ? mut.length : 0;
-        String[] sources = new String[2 + len];
+        String[] sources = new String[2 + mut.length];
         sources[0] = constants.getGlslVersion();
-        for (int i = 0; i < len; ++i) {
+        for (int i = 0; i < mut.length; ++i) {
             sources[i + 1] = "#define " + mut[i] + '\n';
         }
 
-        sources[len + 1] = source;
+        sources[mut.length + 1] = source;
         return soFactory.create(target, sources);
     }
 
@@ -140,53 +141,26 @@ public class ShaderUtil {
      */
     public ShaderFile loadShader(String fs, String vs, String gs,
                                  String... ms) throws IOException {
-        InputStream fragis = null, vertis = null, geois = null;
-        if (fs != null) {
-            fragis = resourceLoader.getRessource(RES_PATH + fs);
-        }
-        if (vs != null) {
-            vertis = resourceLoader.getRessource(RES_PATH + vs);
-        }
-        if (gs != null) {
-            geois = resourceLoader.getRessource(RES_PATH + gs);
-        }
 
         String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
-        ShaderFile ret = loadShader(name, fragis, vertis, geois, ms);
+        Builder b = Builder.create(name);
+        if (fs != null) {
+            b.withFragment(getData(resourceLoader.getRessource(RES_PATH + fs)));
+        }
+        if (vs != null) {
+            b.withVertex(getData(resourceLoader.getRessource(RES_PATH + vs)));
+        }
+        if (gs != null) {
+            b.withGeometrie(getData(resourceLoader.getRessource(RES_PATH + gs)));
+        }
 
-        if (vertis != null) {
-            try {
-                vertis.close();
-            } catch (IOException ex) {
-            }
-        }
-        if (fragis != null) {
-            try {
-                fragis.close();
-            } catch (IOException ex) {
-            }
-        }
-        if (geois != null) {
-            try {
-                geois.close();
-            } catch (IOException ex) {
-            }
-        }
+        b.withMutations(ms);
+
+        ShaderFile ret = b.create();
         return ret;
     }
 
-    private ShaderFile loadShader(String name, InputStream fs,
-                                  InputStream vs, InputStream gs,
-                                  String... mutations) {
-        //TODO ueberlegen defines nicht der src hinzuzufügen
-        //sondern als weiteren src string uebergeben
-        String f = getData(fs);
-        String v = getData(vs);
-        String g = getData(gs);
-        return new ShaderFile(name, f, v, g, mutations);
-    }
-
-    private String getData(InputStream file) {
+    public String getData(InputStream file) {
         if (file == null) {
             return null;
         }
@@ -220,6 +194,14 @@ public class ShaderUtil {
                          + ex.getLocalizedMessage());
         }
         out = sb.toString();
+        try {
+            file.close();
+        } catch (IOException ex) {
+        }
         return out;
+    }
+
+    public void setResourceLoader(ResourceProvider resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 }

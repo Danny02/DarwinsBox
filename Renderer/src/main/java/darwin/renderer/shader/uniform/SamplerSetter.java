@@ -16,10 +16,10 @@
  */
 package darwin.renderer.shader.uniform;
 
-import com.jogamp.opengl.util.texture.Texture;
-
 import darwin.renderer.shader.Sampler;
 import darwin.resourcehandling.wrapper.TextureContainer;
+
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
  *

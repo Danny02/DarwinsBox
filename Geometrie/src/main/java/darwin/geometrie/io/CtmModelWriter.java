@@ -16,12 +16,10 @@
  */
 package darwin.geometrie.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.*;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
@@ -50,7 +48,6 @@ public class CtmModelWriter implements ModelWriter {
 
     public static final String FILE_EXTENSION = "ctm";
     private final static String DEFAULT_COMMENT = "Exported with Darwin Lib";
-    
     private static final Logger logger = LoggerFactory.getLogger(CtmModelWriter.class);
     private final MeshEncoder encoder;
     private final String fileComment;
@@ -122,11 +119,22 @@ public class CtmModelWriter implements ModelWriter {
     @Override
     public void writeModel(OutputStream out, Model[] models) throws IOException {
         ZipOutputStream zip = new ZipOutputStream(out);
+        zip.setMethod(ZipOutputStream.STORED);
         for (int i = 0; i < models.length; i++) {
-            zip.putNextEntry(new ZipEntry("model" + i + ".ctm"));
+            ZipEntry zipEntry = new ZipEntry("model" + i + ".ctm");
 
-            writeSingleModel(zip, models[i]);
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            writeSingleModel(buf, models[i]);
+            byte[] toByteArray = buf.toByteArray();
+            CRC32 c = new CRC32();
+            c.update(toByteArray);
 
+            zipEntry.setSize(toByteArray.length);
+            zipEntry.setCompressedSize(toByteArray.length);
+            zipEntry.setCrc(c.getValue());
+
+            zip.putNextEntry(zipEntry);
+            zip.write(toByteArray);
             zip.closeEntry();
         }
         zip.finish();

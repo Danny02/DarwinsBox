@@ -16,10 +16,12 @@
  */
 package darwin.resourcehandling;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import darwin.resourcehandling.core.ResourceHandle;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
+
 import javax.annotation.processing.*;
 import javax.inject.Named;
 import javax.lang.model.SourceVersion;

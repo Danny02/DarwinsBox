@@ -34,6 +34,7 @@ import darwin.util.math.composits.ViewMatrix;
 import darwin.util.math.util.MatType;
 import darwin.util.math.util.MatrixCache;
 
+import com.google.common.base.Optional;
 import javax.inject.Inject;
 import javax.media.opengl.*;
 import org.slf4j.Logger;
@@ -175,17 +176,17 @@ public class BasicScene implements GLEventListener
     public void addShader(Shader shader)
     {
         if (shaders.add(shader)) {
-            ShaderUniform h = shader.getUniform("halfvector");
-            if (h != null) {
-                half.add(h);
+            Optional<ShaderUniform> h = shader.getUniform("halfvector");
+            if (h.isPresent()) {
+                half.add(h.get());
             }
-            ShaderUniform l = shader.getUniform("light_pos");
-            if (l != null) {
-                lightdir.add(l);
+            Optional<ShaderUniform> l = shader.getUniform("light_pos");
+            if (l.isPresent()) {
+                lightdir.add(l.get());
             }
-            ShaderUniform a = shader.getUniform("time_delta");
-            if (a != null) {
-                animated.add(a);
+            Optional<ShaderUniform> a = shader.getUniform("time_delta");
+            if (a.isPresent()) {
+                animated.add(a.get());
             }
             iniShader(shader);
             matrices.addListener(shader);

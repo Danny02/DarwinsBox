@@ -68,7 +68,7 @@ public class ClientWindow implements ShutdownListener
 //        });
     }
 
-    public void startUp() throws InstantiationException
+    public Window startUp() throws InstantiationException
     {
         client.iniClient();
         Window win = client.getWindow();
@@ -83,6 +83,7 @@ public class ClientWindow implements ShutdownListener
                 doShutDown();
             }
         });
+        return win;
     }
 
     @Override

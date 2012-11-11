@@ -14,36 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.dependencies.annotation;
+package darwin.util.dependencies;
 
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
 
-import darwin.resourcehandling.core.ResourceHandle;
-import darwin.resourcehandling.handle.ClasspathFileHandler;
-import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+import com.google.inject.MembersInjector;
 
 /**
  *
  * @author daniel
  */
-public class MembersInjector<T> implements com.google.inject.MembersInjector<T>
-{
+public class SimpleMembersInjector<T> implements MembersInjector<T> {
 
     private final Field field;
-    private final ResourceHandle handle;
+    private final Object value;
 
-    MembersInjector(Field field, String resourceString, WatchServiceNotifier notifier) {
+    public SimpleMembersInjector(Field field, Object value) {
         this.field = field;
-        handle = new ClasspathFileHandler(notifier, Paths.get(resourceString));
+        this.value = value;
         field.setAccessible(true);
     }
 
     @Override
-    public void injectMembers(T anArg0)
-    {
+    public void injectMembers(T anArg0) {
         try {
-            field.set(anArg0, handle);
+            field.set(anArg0, value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

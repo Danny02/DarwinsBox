@@ -28,6 +28,7 @@ import darwin.resourcehandling.io.ShaderFile;
 import darwin.util.math.util.GenListener;
 import darwin.util.math.util.MatrixEvent;
 
+import com.google.common.base.Optional;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import javax.media.opengl.GL;
@@ -164,15 +165,14 @@ public class Shader implements GenListener<MatrixEvent>
         return programm;
     }
 
-    public ShaderUniform getUniform(String name)
+    public Optional<ShaderUniform> getUniform(String name)
     {
-        ShaderUniform s = uniformMap.get(name);
-        return s;
+        return Optional.fromNullable(uniformMap.get(name));
     }
 
-    public ShaderAttribute getAttribut(Element ele)
+    public Optional<ShaderAttribute> getAttribut(Element ele)
     {
-        return attributrMap.get(ele);
+        return Optional.fromNullable(attributrMap.get(ele));
     }
 
     public Collection<Element> getAttributElements()
@@ -180,9 +180,9 @@ public class Shader implements GenListener<MatrixEvent>
         return attributrMap.keySet();
     }
 
-    public Sampler getSampler(String name)
+    public Optional<Sampler> getSampler(String name)
     {
-        return samplerMap.get(name);
+        return Optional.fromNullable(samplerMap.get(name));
     }
 
     public int getAttributsHash()

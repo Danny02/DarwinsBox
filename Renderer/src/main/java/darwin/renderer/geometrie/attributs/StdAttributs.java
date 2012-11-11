@@ -16,16 +16,23 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.*;
-import java.util.*;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
+import java.util.LinkedList;
+import java.util.List;
 
-import darwin.geometrie.data.*;
+import darwin.geometrie.data.DataLayout;
+import darwin.geometrie.data.Element;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
-import darwin.renderer.shader.*;
+import darwin.renderer.shader.Shader;
+import darwin.renderer.shader.ShaderAttribute;
+
+import com.google.common.base.Optional;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 
 /**
  *
@@ -60,9 +67,9 @@ public class StdAttributs implements AttributsConfigurator
             DataLayout dl = vbuffers[i].layout;
             List<AttributConfig> cs = new LinkedList<>();
             for (Element ele : dl.getElements()) {
-                ShaderAttribute sa = shader.getAttribut(ele);
-                if (sa != null) {
-                    cs.add(new AttributConfig(sa, dl.getAttribut(ele)));
+                Optional<ShaderAttribute> sa = shader.getAttribut(ele);
+                if (sa.isPresent()) {
+                    cs.add(new AttributConfig(sa.get(), dl.getAttribut(ele)));
                 }
             }
             AttributConfig[] c = new AttributConfig[cs.size()];

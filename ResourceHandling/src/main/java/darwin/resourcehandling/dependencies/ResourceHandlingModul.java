@@ -16,7 +16,8 @@
  */
 package darwin.resourcehandling.dependencies;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
 
 import darwin.resourcehandling.core.ResourceHandle;
@@ -37,7 +38,7 @@ import com.google.inject.name.Names;
 public class ResourceHandlingModul extends AbstractModule {
 
     private Class[] resourceDescriptionClasses;
-    private final Provider<WatchServiceNotifier> wsProvider = new SingeltonWatchServiceProvider();
+    private Provider<WatchServiceNotifier> wsProvider = new WatchServiceProvider();
 
     public ResourceHandlingModul(Class... resourceDescriptionClasses) {
         this.resourceDescriptionClasses = resourceDescriptionClasses;
@@ -53,11 +54,24 @@ public class ResourceHandlingModul extends AbstractModule {
             install(new FactoryModuleBuilder().build(factory));
         }
 
+        bindResourceClasses();
 
+        if (Stage.DEVELOPMENT == currentStage()) {
+            bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).toInstance(true);
+        }
+
+        bind(WatchServiceNotifier.class).toProvider(WatchServiceProvider.class).in(Scopes.SINGLETON);
 
         //TODO a little hack to get the InjectResource working, because while injection time otherwise
-        //no watchservice instance is reachable        
+        //no watchservice instance is reachable  
+        bindListener(Matchers.any(), new TypeListener(wsProvider));
+    }
 
+    private ClasspathFileHandler getResource(String file) {
+        return new ClasspathFileHandler(wsProvider.get(), Paths.get(file));
+    }
+
+    private void bindResourceClasses() {
         for (Class c : resourceDescriptionClasses) {
             for (Field f : c.getFields()) {
                 int m = f.getModifiers();
@@ -68,7 +82,6 @@ public class ResourceHandlingModul extends AbstractModule {
                         bind(ResourceHandle.class).annotatedWith(Names.named(resourcePath)).
                                 toInstance(getResource(resourcePath));
                         bind(ClasspathFileHandler.class).annotatedWith(Names.named(resourcePath)).
-//                                toProvider(null).in(Singleton.class);
                                 toInstance(getResource(resourcePath));
                     } catch (IllegalAccessException ex) {
                         //TODO log a waring here maybe
@@ -76,15 +89,5 @@ public class ResourceHandlingModul extends AbstractModule {
                 }
             }
         }
-
-        //TODO either do the thread starting in the DEBUG modul, or just start the thread manually
-        //on an injected instance in the main class
-        bind(WatchServiceNotifier.class).toProvider(wsProvider).in(Scopes.SINGLETON);
-
-        bindListener(Matchers.any(), new TypeListener(wsProvider));
-    }
-
-    private ClasspathFileHandler getResource(String file) {
-        return new ClasspathFileHandler(wsProvider.get(), Paths.get(file));
     }
 }

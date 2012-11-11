@@ -16,10 +16,8 @@
  */
 package darwin.renderer.shader.uniform;
 
-import com.jogamp.opengl.util.texture.Texture;
-import java.util.*;
-import javax.inject.*;
-import javax.media.opengl.GL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import darwin.geometrie.unpacked.Material;
 import darwin.renderer.shader.*;
@@ -28,39 +26,40 @@ import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
 import darwin.resourcehandling.wrapper.TextureContainer;
 
+import com.google.common.base.Optional;
+import com.jogamp.opengl.util.texture.Texture;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.media.opengl.GL;
+
 /**
  *
  * @author daniel
  */
 @Singleton
-public class ShaderMaterialFactory
-{
+public class ShaderMaterialFactory {
 
     private final TextureJobFactory factory;
     private final ResourcesLoader loader;
 
     @Inject
-    public ShaderMaterialFactory(TextureJobFactory factory, ResourcesLoader loader)
-    {
+    public ShaderMaterialFactory(TextureJobFactory factory, ResourcesLoader loader) {
         this.factory = factory;
         this.loader = loader;
     }
 
-    public ShaderMaterial create(Shader shader, Collection<UniformSetter> setter)
-    {
+    public ShaderMaterial create(Shader shader, Collection<UniformSetter> setter) {
         UniformSetter[] array = new UniformSetter[setter.size()];
         setter.toArray(array);
         return new ShaderMaterial(shader, array);
     }
 
-    public ShaderMaterial create(Shader shader, Material material)
-    {
+    public ShaderMaterial create(Shader shader, Material material) {
         return create(shader, material, new ArrayList<UniformSetter>());
     }
 
     public ShaderMaterial create(Shader shader, Material material,
-            Collection<UniformSetter> setter)
-    {
+                                 Collection<UniformSetter> setter) {
         ArrayList<UniformSetter> s = new ArrayList<>(setter);
         add2List(s, createSetter(shader, "mat_diffuse", material.getDiffuse()));
         add2List(s, createSetter(shader, "mat_ambient", material.getAmbient()));
@@ -78,41 +77,40 @@ public class ShaderMaterialFactory
         return create(shader, s);
     }
 
-    public ShaderMaterial create(Shader s, Texture[] texs, String... unames)
-    {
+    public ShaderMaterial create(Shader s, Texture[] texs, String... unames) {
         UniformSetter[] setter = new UniformSetter[texs.length];
         for (int i = 0; i < texs.length; i++) {
-            setter[i] = new SamplerSetter(s.getSampler(unames[i]), texs[i]);
+            Optional<Sampler> sampler = s.getSampler(unames[i]);
+            if (sampler.isPresent()) {
+                setter[i] = new SamplerSetter(sampler.get(), texs[i]);
+            }
         }
         return new ShaderMaterial(s, setter);
     }
 
-    private void add2List(Collection<UniformSetter> list, UniformSetter s)
-    {
+    private void add2List(Collection<UniformSetter> list, Optional<? extends UniformSetter> s) {
         if (s != null) {
-            list.add(s);
+            list.add(s.get());
         }
     }
 
-    private UniformSetter createSetter(Shader shader, String name, float... value)
-    {
-        ShaderUniform u = shader.getUniform(name);
-        if (u != null && value != null) {
-            return new FloatSetter(u, value);
+    private Optional<FloatSetter> createSetter(Shader shader, String name, float... values) {
+        Optional<ShaderUniform> u = shader.getUniform(name);
+        if (u.isPresent() && values != null && values.length != 0) {
+            return Optional.of(new FloatSetter(u.get(), values));
+        } else {
+            return Optional.absent();
         }
-        return null;
     }
 
-    private UniformSetter createSetter(Shader shader, String name, String path)
-    {
-        if (path != null) {
-            Sampler s = shader.getSampler(name);
-            if (s != null) {
-                TextureLoadJob tlj = factory.create(path, GL.GL_LINEAR, GL.GL_REPEAT);
-                TextureContainer tc = loader.getTexture(tlj);
-                return new SamplerSetter(s, tc);
-            }
+    private Optional<SamplerSetter> createSetter(Shader shader, String name, String path) {
+        Optional<Sampler> s = shader.getSampler(name);
+        if (s.isPresent()) {
+            TextureLoadJob tlj = factory.create(path, GL.GL_LINEAR, GL.GL_REPEAT);
+            TextureContainer tc = loader.getTexture(tlj);
+            return Optional.of(new SamplerSetter(s.get(), tc));
+        } else {
+            return Optional.absent();
         }
-        return null;
     }
 }

@@ -16,27 +16,22 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-
-import darwin.geometrie.unpacked.Material;
-import darwin.geometrie.unpacked.Mesh;
-import darwin.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
+import darwin.renderer.shader.Sampler;
 import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.uniform.SamplerSetter;
-import darwin.renderer.shader.uniform.ShaderMaterial;
-import darwin.renderer.shader.uniform.ShaderMaterialFactory;
-import darwin.renderer.shader.uniform.UniformSetter;
+import darwin.renderer.shader.uniform.*;
 import darwin.resourcehandling.wrapper.TextureContainer;
+
+import com.google.common.base.Optional;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 
 /**
  * Haelt alle Render relevanten Attribute eines 3D Modelles. Rendert ein Modell
@@ -44,11 +39,9 @@ import darwin.resourcehandling.wrapper.TextureContainer;
  * <p/>
  * @author Daniel Heinrich
  */
-public final class RenderModel implements Shaded, Cloneable
-{
+public final class RenderModel implements Shaded, Cloneable {
 
-    public interface RenderModelFactory
-    {
+    public interface RenderModelFactory {
 
         public RenderModel create(Model model, Shader shader);
 
@@ -62,9 +55,8 @@ public final class RenderModel implements Shaded, Cloneable
 
     @AssistedInject
     public RenderModel(ShaderMaterialFactory factory,
-            @Assisted RenderMesh rbuffer, @Assisted Shader shader,
-            @Assisted Material mat)
-    {
+                       @Assisted RenderMesh rbuffer, @Assisted Shader shader,
+                       @Assisted Material mat) {
         this.factory = factory;
         this.rbuffer = rbuffer;
         material = mat;
@@ -73,9 +65,8 @@ public final class RenderModel implements Shaded, Cloneable
 
     @AssistedInject
     public RenderModel(RenderMeshFactory meshFactory, ShaderMaterialFactory factory,
-            VBOFactoy vboFactoy, BufferFactory bufferFactory,
-            @Assisted Model model, @Assisted Shader shader)
-    {
+                       VBOFactoy vboFactoy, BufferFactory bufferFactory,
+                       @Assisted Model model, @Assisted Shader shader) {
         this.factory = factory;
         material = model.getMat();
         setShader(shader);
@@ -93,8 +84,7 @@ public final class RenderModel implements Shaded, Cloneable
     }
 
     @Override
-    public void render()
-    {
+    public void render() {
         if (shader.isInitialized()) {
             for (UniformSetter us : uniforms) {
                 us.set();
@@ -104,8 +94,7 @@ public final class RenderModel implements Shaded, Cloneable
         }
     }
 
-    public void setShader(Shader shader)
-    {
+    public void setShader(Shader shader) {
         this.shader = shader;
         if (material != null) {
             ShaderMaterial smaterial = factory.create(shader, material);
@@ -113,25 +102,24 @@ public final class RenderModel implements Shaded, Cloneable
         }
     }
 
-    public void addSamplerSetter(String s, TextureContainer tc)
-    {
-        uniforms.add(new SamplerSetter(shader.getSampler(s), tc));
+    public void addSamplerSetter(String s, TextureContainer tc) {
+        Optional<Sampler> sampler = shader.getSampler(s);
+        if (sampler.isPresent()) {
+            uniforms.add(new SamplerSetter(sampler.get(), tc));
+        }
     }
 
-    public void addUniformSetter(UniformSetter us)
-    {
+    public void addUniformSetter(UniformSetter us) {
         uniforms.add(us);
     }
 
     @Override
-    public Shader getShader()
-    {
+    public Shader getShader() {
         return shader;
     }
 
     @Override
-    public RenderModel clone()
-    {
+    public RenderModel clone() {
         return new RenderModel(factory, rbuffer.clone(), shader, material);
     }
 }

@@ -48,7 +48,7 @@ import org.slf4j.helpers.NOPLogger;
  * @author dheinrich
  */
 @Singleton
-public class ResourcesLoader {
+public class ResourcesLoader implements ResourceProvider{
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -179,6 +179,7 @@ public class ResourcesLoader {
         }
     }
 
+    @Override
     public InputStream getRessource(String path) throws IOException {
         InputStream is = getStream(path + ".lzma");
         if (is != null) {
@@ -189,7 +190,6 @@ public class ResourcesLoader {
                 throw new IOException("Resource couldn't be found: " + path);
             }
         }
-
         return is;
     }
 
