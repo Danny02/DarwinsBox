@@ -113,12 +113,8 @@ public class Shader implements GenListener<MatrixEvent>
     @SuppressWarnings("unchecked")
     private void ini(Map<?, ? extends ShaderElement> map)
     {
-        for (Iterator<?> keys = map.keySet().iterator(); keys.hasNext();) {
-            ShaderElement se = map.get(keys.next());
+        for (ShaderElement se : map.values()) {
             se.ini(programm);
-            if (se.getIndex() < 0) {
-                keys.remove();
-            }
         }
     }
 

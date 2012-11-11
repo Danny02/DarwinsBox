@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
 import darwin.core.controls.InputController;
+import darwin.core.dependencies.CoreModul;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.dependencies.RendererModul;
 import darwin.resourcehandling.dependencies.ResourceHandlingModul;
@@ -53,10 +54,10 @@ public class Client {
     }
 
     public static Module[] getRequiredModules(Class... resources) {
-        return new Module[]{
-                    new RendererModul(),
-                    new LoggingModul(),
-                    new ResourceHandlingModul(resources)};
+        return new Module[]{new CoreModul(),
+                            new RendererModul(),
+                            new LoggingModul(),
+                            new ResourceHandlingModul(resources)};
     }
 
     @Inject

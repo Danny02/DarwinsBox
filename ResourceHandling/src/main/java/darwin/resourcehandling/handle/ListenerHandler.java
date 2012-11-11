@@ -16,8 +16,7 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.core.ResourceHandle;

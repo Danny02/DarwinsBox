@@ -19,8 +19,7 @@ package darwin.resourcehandling.dependencies;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import com.google.inject.Provider;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.*;
 
 /**
  *

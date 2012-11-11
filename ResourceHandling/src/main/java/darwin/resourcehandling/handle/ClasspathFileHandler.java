@@ -16,16 +16,15 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 
-import darwin.resourcehandling.watchservice.FileChangeListener;
-import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+import darwin.resourcehandling.watchservice.*;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import com.google.inject.Stage;
+import com.google.inject.assistedinject.*;
+import javax.inject.Inject;
 
 /**
  *
@@ -34,6 +33,8 @@ import com.google.inject.assistedinject.AssistedInject;
 //TODO enable creation of handles relative to others and Path variables like ($TEXTURES, $MODELS ...)
 public class ClasspathFileHandler extends ListenerHandler {
 
+    private final Stage stage;
+    private static final Path DEV_FOLDER = Paths.get("src/main/resources");
     private final Path path;
 
     //TODO zu jeder datei soll immer nur eine handle existieren dürfen, muss gechached werden
@@ -42,22 +43,27 @@ public class ClasspathFileHandler extends ListenerHandler {
 
         public ClasspathFileHandler create(Path file);
     }
+    private final FileChangeListener fileListener = new FileChangeListener() {
+        @Override
+        public void fileChanged(Kind kind) {
+            fireChangeEvent();
+        }
+    };
 
     public ClasspathFileHandler(Path path) {
-        this(null, path);
+        this(null, Stage.PRODUCTION, path);
     }
 
     @AssistedInject
-    public ClasspathFileHandler(WatchServiceNotifier notifier,
+    public ClasspathFileHandler(WatchServiceNotifier notifier, Stage stage,
                                 @Assisted Path file) {
+        this.stage = stage;
         path = file;
         if (notifier != null) {
-            notifier.register(path, new FileChangeListener() {
-                @Override
-                public void fileChanged(Kind kind) {
-                    fireChangeEvent();
-                }
-            });
+            notifier.register(path, fileListener);
+            if (stage == Stage.DEVELOPMENT) {
+                notifier.register(DEV_FOLDER.resolve(path), fileListener);
+            }
         }
     }
 
@@ -67,15 +73,16 @@ public class ClasspathFileHandler extends ListenerHandler {
 
     @Override
     public InputStream getStream() throws IOException {
-
+        Path devPath = DEV_FOLDER.resolve(path);
         if (Files.isReadable(path)) {
             return Files.newInputStream(path, StandardOpenOption.READ);
+        } else if (stage == Stage.DEVELOPMENT && Files.isReadable(devPath)) {
+            return Files.newInputStream(devPath, StandardOpenOption.READ);
         } else {
-            if(path.isAbsolute())
-            {                
+            if (path.isAbsolute()) {
                 throw new IOException("Could not find absolute file. " + path);
             }
-                
+
             String f = path.toString();
             if (!f.startsWith("/")) {
                 f = "/" + f;

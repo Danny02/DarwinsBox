@@ -56,19 +56,18 @@ public class ResourceHandlingModul extends AbstractModule {
 
         bindResourceClasses();
 
-        if (Stage.DEVELOPMENT == currentStage()) {
-            bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).toInstance(true);
-        }
+        bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).
+                toInstance(Stage.DEVELOPMENT == currentStage());
 
         bind(WatchServiceNotifier.class).toProvider(WatchServiceProvider.class).in(Scopes.SINGLETON);
 
         //TODO a little hack to get the InjectResource working, because while injection time otherwise
         //no watchservice instance is reachable  
-        bindListener(Matchers.any(), new TypeListener(wsProvider));
+        bindListener(Matchers.any(), new TypeListener(wsProvider, currentStage()));
     }
 
     private ClasspathFileHandler getResource(String file) {
-        return new ClasspathFileHandler(wsProvider.get(), Paths.get(file));
+        return new ClasspathFileHandler(wsProvider.get(), currentStage(), Paths.get(file));
     }
 
     private void bindResourceClasses() {
