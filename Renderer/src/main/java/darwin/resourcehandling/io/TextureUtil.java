@@ -16,18 +16,16 @@
  */
 package darwin.resourcehandling.io;
 
-import com.google.inject.Inject;
-import com.jogamp.opengl.util.texture.*;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLException;
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
+import java.io.*;
 
 import darwin.renderer.GraphicContext;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.logging.InjectLogger;
+
+import com.google.inject.Inject;
+import com.jogamp.opengl.util.texture.*;
+import javax.media.opengl.*;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *
@@ -38,15 +36,13 @@ public class TextureUtil
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
-    private static final String[] postfixes = new String[]{"_RT", "_LT", "_UP", "_DN", "_FT", "_BK"};
+//    private static final String[] postfixes = new String[]{"_RT", "_LT", "_UP", "_DN", "_FT", "_BK"};
     private final GraphicContext gc;
-    private final ResourcesLoader loader;
 
     @Inject
-    public TextureUtil(GraphicContext gc, ResourcesLoader loader)
+    public TextureUtil(GraphicContext gc)
     {
         this.gc = gc;
-        this.loader = loader;
     }
 
     /**
@@ -155,48 +151,48 @@ public class TextureUtil
     /**
      * L�d eine Texture mit angegebener Filterung und Warp Funktion.
      */
-    public Texture loadTexture(String path, int filtering, int wrapstyle) throws IOException
-    {
-        Texture tex = loadTexture(path);
-        setTexturePara(tex, filtering, wrapstyle);
-        return tex;
-    }
+//    public Texture loadTexture(String path, int filtering, int wrapstyle) throws IOException
+//    {
+//        Texture tex = loadTexture(path);
+//        setTexturePara(tex, filtering, wrapstyle);
+//        return tex;
+//    }
 
     /**
      * Laed eine Textur ohne eine Filterung oder Warp Funktion zu setzten
      */
-    public Texture loadTexture(String path) throws IOException
-    {
-        try (InputStream is = loader.getRessource(path)) {
-            if (is == null) {
-                logger.warn(
-                        "Ressource \"" + path + "\" konnte nicht gefunden werden.");
-                throw new IOException("Error loading file " + path);
-            }
-            String[] suffix = path.split("\\.");
-            Texture tex = TextureIO.newTexture(is, true,
-                    suffix[suffix.length - 1]);
-            logger.info("Texture: " + path + " ...loaded!");
-            return tex;
-        } catch (GLException ex) {
-            logger.error("GL Fehler beim laden der Texture " + path + "\n(" + ex.getLocalizedMessage() + ")");
-            throw new IOException("Error loading file " + path);
-        }
-    }
+//    public Texture loadTexture(String path) throws IOException
+//    {
+//        try (InputStream is = loader.getRessource(path)) {
+//            if (is == null) {
+//                logger.warn(
+//                        "Ressource \"" + path + "\" konnte nicht gefunden werden.");
+//                throw new IOException("Error loading file " + path);
+//            }
+//            String[] suffix = path.split("\\.");
+//            Texture tex = TextureIO.newTexture(is, true,
+//                    suffix[suffix.length - 1]);
+//            logger.info("Texture: " + path + " ...loaded!");
+//            return tex;
+//        } catch (GLException ex) {
+//            logger.error("GL Fehler beim laden der Texture " + path + "\n(" + ex.getLocalizedMessage() + ")");
+//            throw new IOException("Error loading file " + path);
+//        }
+//    }
 
-    public Texture loadCubeMap(String path) throws IOException
-    {
-        GL gl = gc.getGL();
-        Texture cubemap = TextureIO.newTexture(GL.GL_TEXTURE_CUBE_MAP);
-        cubemap.bind(gl);
-
-        for (int i = 0; i < 6; ++i) {
-            InputStream is = loader.getRessource(path + postfixes[i] + ".dds");
-            TextureData data = TextureIO.newTextureData(gl.getGLProfile(), is,
-                    false, "dds");
-            cubemap.updateImage(gl, data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
-        }
-        setTexturePara(cubemap, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
-        return cubemap;
-    }
+//    public Texture loadCubeMap(String path) throws IOException
+//    {
+//        GL gl = gc.getGL();
+//        Texture cubemap = TextureIO.newTexture(GL.GL_TEXTURE_CUBE_MAP);
+//        cubemap.bind(gl);
+//
+//        for (int i = 0; i < 6; ++i) {
+//            InputStream is = loader.getRessource(path + postfixes[i] + ".dds");
+//            TextureData data = TextureIO.newTextureData(gl.getGLProfile(), is,
+//                    false, "dds");
+//            cubemap.updateImage(gl, data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
+//        }
+//        setTexturePara(cubemap, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
+//        return cubemap;
+//    }
 }

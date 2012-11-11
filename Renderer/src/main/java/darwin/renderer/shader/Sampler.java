@@ -83,7 +83,6 @@ public final class Sampler {
 
     public void setShader(ShaderProgramm s) {
         uniform_pos = s.getUniformLocation(uniname);
-        assert uniform_pos != -1;
         s.use();
         gc.getGL().getGL2GL3().glUniform1i(uniform_pos, textureUnit - GL.GL_TEXTURE0);
     }

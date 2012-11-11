@@ -383,12 +383,12 @@ public class FrameBufferObject {
         assert (id != 0);
         Texture tex = getColorAttachmentTexture(0);
         if (tex != null) {
-            tex.bind(null);
+            tex.bind(gc.getGL());
         }
     }
 
     /**
-     * L�scht das FBO aus dem Grafikspeicher.
+     * Loescht das FBO aus dem Grafikspeicher.
      */
     public void delete() {
         assert (id != 0);

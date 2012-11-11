@@ -58,29 +58,29 @@ public class CubeMapJob extends TextureLoadJob
     public Texture load()
     {
         Texture re = null;
-        try {
-            re = util.loadCubeMap(getPath());
-            tcontainer.setTexture(re);
-        } catch (IOException ex) {
-            logger.warn("CubeMap " + getPath() + " konnte nicht geladen werden.\n("
-                    + ex.getLocalizedMessage() + ")", ex);
-
-            re = TextureIO.newTexture(GL.GL_TEXTURE_CUBE_MAP);
-            re.bind(gc.getGL());
-            try {
-                InputStream iss = loader.getRessource(texturepath + "error.dds");
-                TextureData data = TextureIO.newTextureData(gc.getGL().getGLProfile(),
-                        iss, false, TextureIO.DDS);
-                for (int i = 0; i < 6; ++i) {
-                    re.updateImage(gc.getGL(), data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
-                }
-            } catch (IOException ex1) {
-                logger.error("Keine Error Texturen gefunden.", ex1);
-                return null;
-            }
-
-            util.setTexturePara(re, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
-        }
+//        try {
+//            re = util.loadCubeMap(getPath());
+//            tcontainer.setTexture(re);
+//        } catch (IOException ex) {
+//            logger.warn("CubeMap " + getPath() + " konnte nicht geladen werden.\n("
+//                    + ex.getLocalizedMessage() + ")", ex);
+//
+//            re = TextureIO.newTexture(GL.GL_TEXTURE_CUBE_MAP);
+//            re.bind(gc.getGL());
+//            try {
+//                InputStream iss = loader.getRessource(texturepath + "error.dds");
+//                TextureData data = TextureIO.newTextureData(gc.getGL().getGLProfile(),
+//                        iss, false, TextureIO.DDS);
+//                for (int i = 0; i < 6; ++i) {
+//                    re.updateImage(gc.getGL(), data, GL.GL_TEXTURE_CUBE_MAP + 2 + i);
+//                }
+//            } catch (IOException ex1) {
+//                logger.error("Keine Error Texturen gefunden.", ex1);
+//                return null;
+//            }
+//
+//            util.setTexturePara(re, GL.GL_LINEAR, GL.GL_CLAMP_TO_EDGE);
+//        }
 
         return re;
     }

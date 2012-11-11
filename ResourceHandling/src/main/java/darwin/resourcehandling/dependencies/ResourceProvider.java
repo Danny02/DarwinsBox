@@ -19,8 +19,7 @@ package darwin.resourcehandling.dependencies;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import darwin.resourcehandling.handle.ClasspathFileHandler;
-import darwin.resourcehandling.handle.ClasspathFileHandler.FileHandlerFactory;
+import darwin.resourcehandling.handle.*;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

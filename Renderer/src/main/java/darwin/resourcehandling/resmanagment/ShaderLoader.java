@@ -18,7 +18,6 @@ package darwin.resourcehandling.resmanagment;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.logging.Level;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
@@ -26,7 +25,7 @@ import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.Shader.ShaderFactory;
 import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.core.ResourceHandle;
-import darwin.resourcehandling.handle.ClasspathFileHandler.FileHandlerFactory;
+import darwin.resourcehandling.handle.FileHandlerFactory;
 import darwin.resourcehandling.io.ShaderFile.Builder;
 import darwin.resourcehandling.io.*;
 import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
@@ -90,10 +89,10 @@ public class ShaderLoader {
                 fragment.registerChangeListener(this);
             }
             if (vertex != null) {
-                fragment.registerChangeListener(this);
+                vertex.registerChangeListener(this);
             }
             if (geometrie != null) {
-                fragment.registerChangeListener(this);
+                geometrie.registerChangeListener(this);
             }
         }
 
@@ -138,7 +137,9 @@ public class ShaderLoader {
                 public boolean run(GLAutoDrawable glad) {
                     try {
                         ShaderProgramm compiledShader = util.compileShader(file);
+                        ShaderProgramm old = shader.getProgramm();
                         shader.ini(compiledShader);
+                        old.delete();
                         logger.info("Shader " + name + " was succesfully compiled!");
                     } catch (Throwable ex) {
                         logger.warn(ex.getLocalizedMessage());

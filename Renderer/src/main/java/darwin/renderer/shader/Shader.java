@@ -38,16 +38,14 @@ import javax.media.opengl.GL2ES2;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Shader implements GenListener<MatrixEvent>
-{
+public class Shader implements GenListener<MatrixEvent> {
 
-    public interface ShaderFactory
-    {
+    public interface ShaderFactory {
 
         public Shader create(ShaderFile sf);
 
         public Shader create(List<ShaderAttribute> attributes,
-                List<ShaderUniform> uniforms, List<String> samplerNames);
+                             List<ShaderUniform> uniforms, List<String> samplerNames);
     }
     private final GraphicContext gc;
     private final Map<Element, ShaderAttribute> attributrMap;
@@ -60,17 +58,15 @@ public class Shader implements GenListener<MatrixEvent>
 
     @AssistedInject
     public Shader(GraphicContext gcont, SamplerFactory factory,
-            @Assisted ShaderFile sf)
-    {
+                  @Assisted ShaderFile sf) {
         this(gcont, factory, sf.getAttributs(), sf.getUniforms(), sf.getSampler());
     }
 
     @AssistedInject
     public Shader(GraphicContext gcont, SamplerFactory factory,
-            @Assisted List<ShaderAttribute> attributes,
-            @Assisted List<ShaderUniform> uniforms,
-            @Assisted List<String> samplerNames)
-    {
+                  @Assisted List<ShaderAttribute> attributes,
+                  @Assisted List<ShaderUniform> uniforms,
+                  @Assisted List<String> samplerNames) {
         gc = gcont;
         matricen = new MatrixSetter();
         attributrMap = new HashMap<>(attributes.size());
@@ -95,8 +91,7 @@ public class Shader implements GenListener<MatrixEvent>
         }
     }
 
-    public Shader ini(ShaderProgramm prog)
-    {
+    public Shader ini(ShaderProgramm prog) {
         programm = prog;
 
         ini(attributrMap);
@@ -111,15 +106,13 @@ public class Shader implements GenListener<MatrixEvent>
     }
 
     @SuppressWarnings("unchecked")
-    private void ini(Map<?, ? extends ShaderElement> map)
-    {
+    private void ini(Map<?, ? extends ShaderElement> map) {
         for (ShaderElement se : map.values()) {
             se.ini(programm);
         }
     }
 
-    private int buildAttrHash()
-    {
+    private int buildAttrHash() {
         int hash = 9;
         for (ShaderAttribute sa : attributrMap.values()) {
             if (sa.getIndex() != -1) {
@@ -129,15 +122,19 @@ public class Shader implements GenListener<MatrixEvent>
         return hash;
     }
 
-    public void updateUniformData()
-    {
+    public void bind() {
+        programm.use();
+    }
+
+    public void updateUniformData() {
+        bind();
+        
         matricen.set();
 
         for (UniformSetter us : usetter) {
             us.set();
         }
 
-        programm.use();
         GL2ES2 gl = gc.getGL().getGL2ES2();
         for (ShaderUniform su : uniformMap.values()) {
             if (su.wasChanged()) {
@@ -146,49 +143,40 @@ public class Shader implements GenListener<MatrixEvent>
         }
     }
 
-    public void addUSetter(UniformSetter uss)
-    {
+    public void addUSetter(UniformSetter uss) {
         usetter.add(uss);
     }
 
-    public boolean isInitialized()
-    {
+    public boolean isInitialized() {
         return programm != null;
     }
 
-    public ShaderProgramm getProgramm()
-    {
+    public ShaderProgramm getProgramm() {
         return programm;
     }
 
-    public Optional<ShaderUniform> getUniform(String name)
-    {
+    public Optional<ShaderUniform> getUniform(String name) {
         return Optional.fromNullable(uniformMap.get(name));
     }
 
-    public Optional<ShaderAttribute> getAttribut(Element ele)
-    {
+    public Optional<ShaderAttribute> getAttribut(Element ele) {
         return Optional.fromNullable(attributrMap.get(ele));
     }
 
-    public Collection<Element> getAttributElements()
-    {
+    public Collection<Element> getAttributElements() {
         return attributrMap.keySet();
     }
 
-    public Optional<Sampler> getSampler(String name)
-    {
+    public Optional<Sampler> getSampler(String name) {
         return Optional.fromNullable(samplerMap.get(name));
     }
 
-    public int getAttributsHash()
-    {
+    public int getAttributsHash() {
         return attrhash;
     }
 
     @Override
-    public void changeOccured(MatrixEvent t)
-    {
+    public void changeOccured(MatrixEvent t) {
         matricen.changeOccured(t);
     }
 }

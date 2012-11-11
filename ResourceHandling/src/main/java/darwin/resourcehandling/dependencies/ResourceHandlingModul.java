@@ -16,14 +16,12 @@
  */
 package darwin.resourcehandling.dependencies;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.nio.file.Paths;
 
 import darwin.resourcehandling.core.ResourceHandle;
 import darwin.resourcehandling.dependencies.annotation.TypeListener;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
-import darwin.resourcehandling.handle.ClasspathFileHandler.FileHandlerFactory;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import com.google.inject.*;
@@ -48,7 +46,7 @@ public class ResourceHandlingModul extends AbstractModule {
     protected void configure() {
         //TODO introduce annotation processor for automatic factory interface creation of @AssistedInject constructors
         Class[] factoryClasses = new Class[]{
-            FileHandlerFactory.class,};
+            };
 
         for (Class factory : factoryClasses) {
             install(new FactoryModuleBuilder().build(factory));

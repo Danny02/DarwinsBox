@@ -112,22 +112,22 @@ public class TextureLoadJob implements LoadJob<Texture>
         if (texture != null) {
             texture.destroy(gc.getGL());
         }
-        try {
-            texture = util.loadTexture(path, filtering, wrapping);
-            if (filtering == GL.GL_LINEAR) {
-                texture.setTexParameteri(gc.getGL(), GL.GL_TEXTURE_MIN_FILTER,
-                                         GL.GL_LINEAR_MIPMAP_LINEAR);
-            }
-        } catch (IOException ex) {
-            logger.warn("Texture {} konnte nicht geladen werden.\n({})", path, ex.getLocalizedMessage());
-            try {
-                texture = util.loadTexture(texturepath + "error.dds",
-                                           GL.GL_NEAREST,
-                                           wrapping);
-            } catch (IOException ex1) {
-                logger.error("Keine Error Texturen gefunden.", ex1);
-            }
-        }
+//        try {
+//            texture = util.loadTexture(path, filtering, wrapping);
+//            if (filtering == GL.GL_LINEAR) {
+//                texture.setTexParameteri(gc.getGL(), GL.GL_TEXTURE_MIN_FILTER,
+//                                         GL.GL_LINEAR_MIPMAP_LINEAR);
+//            }
+//        } catch (IOException ex) {
+//            logger.warn("Texture {} konnte nicht geladen werden.\n({})", path, ex.getLocalizedMessage());
+//            try {
+//                texture = util.loadTexture(texturepath + "error.dds",
+//                                           GL.GL_NEAREST,
+//                                           wrapping);
+//            } catch (IOException ex1) {
+//                logger.error("Keine Error Texturen gefunden.", ex1);
+//            }
+//        }
         tcontainer.setTexture(texture);
         return texture;
     }

@@ -23,8 +23,6 @@ import java.nio.file.WatchEvent.Kind;
 import darwin.resourcehandling.watchservice.*;
 
 import com.google.inject.Stage;
-import com.google.inject.assistedinject.*;
-import javax.inject.Inject;
 
 /**
  *
@@ -37,12 +35,6 @@ public class ClasspathFileHandler extends ListenerHandler {
     private static final Path DEV_FOLDER = Paths.get("src/main/resources");
     private final Path path;
 
-    //TODO zu jeder datei soll immer nur eine handle existieren dürfen, muss gechached werden
-    //TODO jede resourcen sollten auch gecached werden
-    public static interface FileHandlerFactory {
-
-        public ClasspathFileHandler create(Path file);
-    }
     private final FileChangeListener fileListener = new FileChangeListener() {
         @Override
         public void fileChanged(Kind kind) {
@@ -54,9 +46,8 @@ public class ClasspathFileHandler extends ListenerHandler {
         this(null, Stage.PRODUCTION, path);
     }
 
-    @AssistedInject
     public ClasspathFileHandler(WatchServiceNotifier notifier, Stage stage,
-                                @Assisted Path file) {
+                                Path file) {
         this.stage = stage;
         path = file;
         if (notifier != null) {
