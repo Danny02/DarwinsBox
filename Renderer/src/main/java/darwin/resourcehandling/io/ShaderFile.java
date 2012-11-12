@@ -245,6 +245,8 @@ public class ShaderFile implements Serializable {
                 return GLSLType.MAT3;
             case "mat4":
                 return GLSLType.MAT4;
+            case "int":
+                return GLSLType.INT;
             default:
                 //TODO gscheite fehler behandlung, eigenen exception
                 throw new RuntimeException("GLSL Typ konnte nicht aufgelöst "

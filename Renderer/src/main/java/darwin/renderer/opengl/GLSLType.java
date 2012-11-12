@@ -23,10 +23,10 @@ import darwin.geometrie.data.VectorType;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class GLSLType implements VectorType
-{
+public class GLSLType implements VectorType {
 
     public static final GLSLType FLOAT = new GLSLType(DataType.FLOAT, 1, false),
+            INT = new GLSLType(DataType.INT, 1, false),
             VEC2 = new GLSLType(DataType.FLOAT, 2, false),
             VEC3 = new GLSLType(DataType.FLOAT, 3, false),
             VEC4 = new GLSLType(DataType.FLOAT, 4, false),
@@ -36,44 +36,39 @@ public class GLSLType implements VectorType
     private final DataType datatype;
     private final boolean ismatrix;
 
-    private GLSLType(DataType type, int size, boolean ismatrix)
-    {
+    private GLSLType(DataType type, int size, boolean ismatrix) {
         this.datatype = type;
         this.size = size;
         this.ismatrix = ismatrix;
     }
 
     @Override
-    public DataType getDataType()
-    {
+    public DataType getDataType() {
         return datatype;
     }
 
     @Override
-    public int getElementCount()
-    {
+    public int getElementCount() {
         return size;
     }
 
     @Override
-    public int getByteSize()
-    {
+    public int getByteSize() {
         return datatype.getByteSize() * size;
     }
 
-    public boolean isMatrix()
-    {
+    public boolean isMatrix() {
         return ismatrix;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        if(obj == this)
-        	return true;
+        if (obj == this) {
+            return true;
+        }
         if (!(obj instanceof VectorType)) {
             return false;
         }
@@ -88,8 +83,7 @@ public class GLSLType implements VectorType
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         hash = 47 * hash + this.size;
         hash = 47 * hash + (this.datatype != null ? this.datatype.hashCode() : 0);

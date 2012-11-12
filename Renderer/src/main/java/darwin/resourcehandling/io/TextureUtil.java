@@ -107,6 +107,7 @@ public class TextureUtil
             boolean mipmap)
     {
         GL gl = gc.getGL();
+        
         TextureData a = new TextureData(gl.getGLProfile(), internalFormat,
                 width, height, border,
                 pixelFormat, pixelType,
