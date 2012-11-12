@@ -46,10 +46,10 @@ public class GameTime {
     private Map<Integer, StepListenerManager> stepListener = new HashMap<>();
     private Collection<DeltaListener> timeListener = new ArrayList<>();
 
-    public void update() {
+    public long update() {
         if (startTime == -1) {
             startTime = System.nanoTime();
-            return;
+            return 0;
         }
 
         long now = System.nanoTime();
@@ -62,7 +62,8 @@ public class GameTime {
         
         updatedTimeListener(virtDelta);
         updatedStepListener(virtDelta);
-
+        
+        return delta;
     }
 
     private void updatedTimeListener(long nanoSeconds) {

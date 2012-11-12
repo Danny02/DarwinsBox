@@ -289,7 +289,8 @@ public class FrameBufferObject {
     private void bindTexture(Texture tex, int glType) {
         assert (tex != null);
         assert (currdraw == id);
-        assert (checkSize(tex.getWidth(), tex.getHeight()));
+        boolean size = checkSize(tex.getWidth(), tex.getHeight());
+        assert (size);
         assert ((tex.getTarget() == GL.GL_TEXTURE_2D || tex.getTarget() == GL2GL3.GL_TEXTURE_RECTANGLE));
         assert (id != 0);
         gc.getGL().glFramebufferTexture2D(GL.GL_FRAMEBUFFER,

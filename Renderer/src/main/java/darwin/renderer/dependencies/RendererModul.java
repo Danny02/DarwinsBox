@@ -23,6 +23,7 @@ import darwin.renderer.geometrie.factorys.Rahmen.RahmenFactory;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.opengl.FrameBuffer.*;
+import darwin.renderer.opengl.FrameBuffer.RenderBuffer.RenderBufferFactory;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Sampler.SamplerFactory;
@@ -68,6 +69,7 @@ public class RendererModul extends AbstractModule
             HeightMapFactory.class,
             CubeMapFactory.class,
             AtlasFactory.class,
+            RenderBufferFactory.class
         };
 
         for (Class factory : factoryClasses) {

@@ -53,28 +53,28 @@ public class FboUtil
      * <p/>
      * @return das erstellte FBO wird zur�ckgegeben.
      */
-    public FrameBufferObject configureStandart(FrameBufferObject fbo, int width, int height)
-    {
-        Texture tex = util.newTexture(GL.GL_RGBA8, width, height, 0,
-                GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
-                true);
-        util.setTexturePara(tex, GL.GL_NEAREST, GL.GL_CLAMP_TO_EDGE);
-
-        RenderBuffer rb = factory.create(width, height, GL2ES2.GL_DEPTH_COMPONENT);
-
-        fbo.setColor_Attachment(0, tex);
-        fbo.setDepth_Attachment(rb);
-        return fbo;
-    }
-
-    public FrameBufferObject configureDefault(FrameBufferObject fbo,
-            int width, int height, int samples)
-    {
-        RenderBuffer col = factory.create(samples, width, height, GL2ES2.GL_RGBA8);
-        RenderBuffer dep = factory.create(samples, width, height, GL2ES2.GL_DEPTH_COMPONENT);
-
-        fbo.setColor_Attachment(0, col);
-        fbo.setDepth_Attachment(dep);
-        return fbo;
-    }
+//    public FrameBufferObject configureStandart(FrameBufferObject fbo, int width, int height)
+//    {
+//        Texture tex = util.newTexture(GL.GL_RGBA8, width, height, 0,
+//                GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
+//                true);
+//        util.setTexturePara(tex, GL.GL_NEAREST, GL.GL_CLAMP_TO_EDGE);
+//
+//        RenderBuffer rb = factory.create(width, height, GL2ES2.GL_DEPTH_COMPONENT);
+//
+//        fbo.setColor_Attachment(0, tex);
+//        fbo.setDepth_Attachment(rb);
+//        return fbo;
+//    }
+//
+//    public FrameBufferObject configureDefault(FrameBufferObject fbo,
+//            int width, int height, int samples)
+//    {
+//        RenderBuffer col = factory.create(samples, width, height, GL2ES2.GL_RGBA8);
+//        RenderBuffer dep = factory.create(samples, width, height, GL2ES2.GL_DEPTH_COMPONENT);
+//
+//        fbo.setColor_Attachment(0, col);
+//        fbo.setDepth_Attachment(dep);
+//        return fbo;
+//    }
 }
