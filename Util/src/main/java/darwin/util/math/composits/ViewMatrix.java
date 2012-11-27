@@ -38,6 +38,18 @@ public class ViewMatrix extends Matrix4 {
         return this;
     }
 
+    @Override
+    public ViewMatrix translate(ImmutableVector<Vector3> vec) {
+        super.translate(vec);
+        return this;
+    }
+
+    @Override
+    public ViewMatrix translate(float x, float y, float z) {
+        super.translate(x, y, z);
+        return this;
+    }
+
     /**
      * Implementation der aus GLUT bekannten lookAt funktion
      */
