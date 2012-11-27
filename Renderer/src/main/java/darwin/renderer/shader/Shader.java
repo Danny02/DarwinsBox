@@ -96,6 +96,7 @@ public class Shader implements GenListener<MatrixEvent> {
 
         ini(attributrMap);
         ini(uniformMap);
+        
         attrhash = buildAttrHash();
 
         for (Sampler s : samplerMap.values()) {

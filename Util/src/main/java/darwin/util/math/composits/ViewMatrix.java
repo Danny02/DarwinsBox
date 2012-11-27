@@ -23,14 +23,19 @@ import darwin.util.math.base.vector.*;
  *
  * @author Daniel Heinrich
  */
-public class ViewMatrix extends Matrix4
-{
+public class ViewMatrix extends Matrix4 {
+
     private static final long serialVersionUID = -7461026157857152643L;
 
-    public Vector3 getViewDirection()
-    {
+    public Vector3 getViewDirection() {
         float[] f = inverse().getColumn(2).getCoords();
         return new Vector3(f[0], f[1], f[2]);
+    }
+
+    @Override
+    public ViewMatrix inverse() {
+        super.inverse();
+        return this;
     }
 
     /**
@@ -38,8 +43,7 @@ public class ViewMatrix extends Matrix4
      */
     public void lookAt(ImmutableVector<Vector3> eye,
                        ImmutableVector<Vector3> center,
-                       ImmutableVector<Vector3> up)
-    {
+                       ImmutableVector<Vector3> up) {
         Vector3 forward, side, up2;
         Matrix4 matrix = new Matrix4();
 
@@ -72,8 +76,7 @@ public class ViewMatrix extends Matrix4
     }
 
     @Override
-    public ViewMatrix clone()
-    {
+    public ViewMatrix clone() {
         ViewMatrix m = new ViewMatrix();
         m.setMat(getArray().clone());
         return m;

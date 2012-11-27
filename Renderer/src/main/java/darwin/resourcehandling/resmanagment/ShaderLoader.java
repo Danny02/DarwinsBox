@@ -139,8 +139,10 @@ public class ShaderLoader {
                         ShaderProgramm compiledShader = util.compileShader(file);
                         ShaderProgramm old = shader.getProgramm();
                         shader.ini(compiledShader);
-                        old.delete();
                         logger.info("Shader " + name + " was succesfully compiled!");
+                        if (old != null) {
+                            old.delete();
+                        }
                     } catch (Throwable ex) {
                         logger.warn(ex.getLocalizedMessage());
                     }

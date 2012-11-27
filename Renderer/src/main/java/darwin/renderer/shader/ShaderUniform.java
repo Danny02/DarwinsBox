@@ -73,6 +73,7 @@ public class ShaderUniform implements ShaderElement
     {
         sp.use();
         data.setLocation(sp.getUniformLocation(name));
+        changed = true;
     }
 
     GLUniformData getData()

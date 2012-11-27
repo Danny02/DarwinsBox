@@ -31,7 +31,7 @@ import static darwin.util.math.util.MatType.*;
 //TODO add camera matrix
 public class MatrixCache {
 
-    private ModelMatrix model;
+    private ModelMatrix model = new ModelMatrix();
     //TODO testen ob das überhaupt was bringt
     private int mhash;
     private ViewMatrix view;
@@ -47,9 +47,7 @@ public class MatrixCache {
 //    public void setNormal(boolean normal) {
 //        this.normal = normal;
 //    }
-
-    public MatrixCache()
-    {
+    public MatrixCache() {
         this(new ProjectionMatrix());
     }
 
@@ -127,21 +125,20 @@ public class MatrixCache {
 //        }
 //        return s;
 //    }
-
     public ProjectionMatrix getProjektion() {
         return projektion;
     }
 
     public Matrix4 getModelViewProjection() {
         if (pvm == null) {
-            pvm = getViewProjection().mult(model);
+            pvm = getViewProjection().clone().mult(model);
         }
         return pvm;
     }
 
     public Matrix4 getViewProjection() {
         if (pv == null) {
-            pv = projektion.mult(view);
+            pv = projektion.clone().mult(view);
         }
         return pv;
 //        return normal ? pv : getShadowProjection();
@@ -149,7 +146,7 @@ public class MatrixCache {
 
     public Matrix4 getViewProjectionInverse() {
         if (pvi == null) {
-            pvi = getViewProjection().inverse();
+            pvi = getViewProjection().clone().inverse();
         }
         return pvi;
     }
@@ -165,15 +162,14 @@ public class MatrixCache {
 
     public Matrix4 getModelView() {
         if (vm == null) {
-            vm = view.mult(model);
+            vm = view.clone().mult(model);
         }
         return vm;
     }
 
     public Matrix getNormalView() {
         if (vn == null) {
-            Matrix v = view.getMinor(3, 3);
-            vn = v.mult(getNormal());
+            vn = view.getMinor(3, 3).mult(getNormal());
         }
         return vn;
     }
