@@ -19,12 +19,11 @@ package darwin.resourcehandling.dependencies.annotation;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
 
-import darwin.resourcehandling.core.ResourceHandle;
-import darwin.resourcehandling.handle.ClasspathFileHandler;
-import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+import darwin.resourcehandling.ResourceHandle;
+import darwin.resourcehandling.handle.*;
 import darwin.util.dependencies.SimpleMembersInjector;
 
-import com.google.inject.*;
+import com.google.inject.TypeLiteral;
 import com.google.inject.spi.TypeEncounter;
 
 /**
@@ -33,12 +32,10 @@ import com.google.inject.spi.TypeEncounter;
  */
 public class TypeListener implements com.google.inject.spi.TypeListener {
 
-    private final Provider<WatchServiceNotifier> provider;
-    private final Stage stage;
+    private final FileHandlerFactory factory;
 
-    public TypeListener(Provider<WatchServiceNotifier> provider, Stage s) {
-        this.provider = provider;
-        stage = s;
+    public TypeListener(FileHandlerFactory factory) {
+        this.factory = factory;
     }
 
     @Override
@@ -46,10 +43,27 @@ public class TypeListener implements com.google.inject.spi.TypeListener {
         for (Field field : aTypeLiteral.getRawType().getDeclaredFields()) {
             InjectResource anno = field.getAnnotation(InjectResource.class);
             if (field.getType() == ResourceHandle.class && anno != null) {
-                aTypeEncounter.register(new SimpleMembersInjector<I>(field,
-                                                                     new ClasspathFileHandler(provider.get(),
-                                                                                              stage, Paths.get(anno.value()))));
+                aTypeEncounter.register(new SimpleMembersInjector<I>(field, get(anno.prefix() + anno.value())));
+            }
+
+            InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
+            if (field.getType() == ResourceBundle.class && anno != null) {
+                String pp = anno2.value();
+                if (pp != null) {
+                    String[] paths = pp.split(",");
+                    ResourceHandle[] handles = new ResourceHandle[paths.length];
+                    for (int i = 0; i < paths.length; ++i) {
+                        handles[i] = get(anno2.prefix() + paths[i].trim());
+                    }
+
+                    ResourceBundle bundle = new ResourceBundle(handles);
+                    aTypeEncounter.register(new SimpleMembersInjector<I>(field, bundle));
+                }
             }
         }
+    }
+
+    private ClasspathFileHandler get(String p) {
+        return factory.create(Paths.get(p));
     }
 }

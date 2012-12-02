@@ -16,15 +16,18 @@
  */
 package darwin.resourcehandling.dependencies;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
 
-import darwin.resourcehandling.core.ResourceHandle;
+import darwin.resourcehandling.ResourceHandle;
 import darwin.resourcehandling.dependencies.annotation.TypeListener;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
+import darwin.resourcehandling.handle.FileHandlerFactory;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Stage;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
@@ -35,8 +38,8 @@ import com.google.inject.name.Names;
  */
 public class ResourceHandlingModul extends AbstractModule {
 
-    private Class[] resourceDescriptionClasses;
-    private Provider<WatchServiceNotifier> wsProvider = new WatchServiceProvider();
+    private final Class[] resourceDescriptionClasses;
+    private final WatchServiceNotifier watcher = new WatchServiceNotifier();
 
     public ResourceHandlingModul(Class... resourceDescriptionClasses) {
         this.resourceDescriptionClasses = resourceDescriptionClasses;
@@ -45,8 +48,7 @@ public class ResourceHandlingModul extends AbstractModule {
     @Override
     protected void configure() {
         //TODO introduce annotation processor for automatic factory interface creation of @AssistedInject constructors
-        Class[] factoryClasses = new Class[]{
-            };
+        Class[] factoryClasses = new Class[]{};
 
         for (Class factory : factoryClasses) {
             install(new FactoryModuleBuilder().build(factory));
@@ -54,18 +56,25 @@ public class ResourceHandlingModul extends AbstractModule {
 
         bindResourceClasses();
 
-        bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).
-                toInstance(Stage.DEVELOPMENT == currentStage());
+        boolean hotReload = Stage.DEVELOPMENT == currentStage();
+        bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).toInstance(hotReload);
 
-        bind(WatchServiceNotifier.class).toProvider(WatchServiceProvider.class).in(Scopes.SINGLETON);
+        if (hotReload) {
+            watcher.createNotifierThread().start();
+        }
+        bind(WatchServiceNotifier.class).toInstance(watcher);
 
-        //TODO a little hack to get the InjectResource working, because while injection time otherwise
+        FileHandlerFactory factory = new FileHandlerFactory(watcher, currentStage());
+        bind(FileHandlerFactory.class).toInstance(factory);
+
+
+        //TODO a little hack to get the InjectResource/InjectBundle working, because while injection time otherwise
         //no watchservice instance is reachable  
-        bindListener(Matchers.any(), new TypeListener(wsProvider, currentStage()));
+        bindListener(Matchers.any(), new TypeListener(factory));
     }
 
     private ClasspathFileHandler getResource(String file) {
-        return new ClasspathFileHandler(wsProvider.get(), currentStage(), Paths.get(file));
+        return new ClasspathFileHandler(watcher, currentStage(), Paths.get(file));
     }
 
     private void bindResourceClasses() {

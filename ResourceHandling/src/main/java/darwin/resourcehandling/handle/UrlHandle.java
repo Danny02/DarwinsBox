@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.core.ResourceHandle;
+import darwin.resourcehandling.ResourceHandle;
 
 /**
  *

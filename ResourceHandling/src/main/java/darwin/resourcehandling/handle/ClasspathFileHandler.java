@@ -16,11 +16,13 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 
-import darwin.resourcehandling.watchservice.*;
+import darwin.resourcehandling.watchservice.FileChangeListener;
+import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import com.google.inject.Stage;
 
@@ -32,7 +34,7 @@ import com.google.inject.Stage;
 public class ClasspathFileHandler extends ListenerHandler {
 
     private final Stage stage;
-    private static final Path DEV_FOLDER = Paths.get("src/main/resources");
+    public static final Path DEV_FOLDER = Paths.get("src/main/resources");
     private final Path path;
 
     private final FileChangeListener fileListener = new FileChangeListener() {

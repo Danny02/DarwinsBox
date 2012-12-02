@@ -19,7 +19,8 @@
 package darwin.resourcehandling.handle;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 

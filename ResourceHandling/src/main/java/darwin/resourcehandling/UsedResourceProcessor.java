@@ -16,11 +16,13 @@
  */
 package darwin.resourcehandling;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.nio.file.*;
+import java.util.*;
 
-import darwin.resourcehandling.core.ResourceHandle;
+import darwin.resourcehandling.dependencies.annotation.InjectBundle;
+import darwin.resourcehandling.dependencies.annotation.InjectResource;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
+import darwin.resourcehandling.handle.ResourceBundle;
 
 import javax.annotation.processing.*;
 import javax.inject.Named;
@@ -36,12 +38,23 @@ import javax.tools.Diagnostic.Kind;
 public class UsedResourceProcessor extends AbstractProcessor {
 
 //    private static final String servicePath = "META-INF/services/";
-    private static final Set<String> resources = new HashSet<>();
+    private static final Set<Path> resources = new HashSet<>();
+    private static final Map<String, ResourceDependecyInspector> inspectors = new HashMap<>();
+
+    static {
+        for (ResourceDependecyInspector in : ServiceLoader.load(ResourceDependecyInspector.class)) {
+            for (String prefix : in.getSupportedFileTypes()) {
+                inspectors.put(prefix, in);
+            }
+        }
+    }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new HashSet<>();
         annotations.add(Named.class.getCanonicalName());
+        annotations.add(InjectResource.class.getCanonicalName());
+        annotations.add(InjectBundle.class.getCanonicalName());
         return annotations;
     }
 
@@ -56,15 +69,69 @@ public class UsedResourceProcessor extends AbstractProcessor {
                 }
             }
         }
+
+        for (Element e : env.getElementsAnnotatedWith(InjectResource.class)) {
+            if (e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.PARAMETER) {
+                String typeName = getFQN(e);
+                if (typeName.equals(ResourceHandle.class.getCanonicalName())) {
+                    InjectResource annotation = e.getAnnotation(InjectResource.class);
+                    appendResource(annotation.prefix() + annotation.value());
+                }
+            }
+        }
+
+        for (Element e : env.getElementsAnnotatedWith(InjectBundle.class)) {
+            if (e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.PARAMETER) {
+                String typeName = getFQN(e);
+                if (typeName.equals(ResourceBundle.class.getCanonicalName())) {
+                    InjectBundle annotation = e.getAnnotation(InjectBundle.class);
+                    String pp = annotation.value();
+                    if (pp != null) {
+                        for (String path : pp.split(",")) {
+                            appendResource(annotation.prefix() + path);
+                        }
+                    }
+                }
+            }
+        }
         return true;
     }
 
     private void appendResource(String resourcePath) {
+        Path path = Paths.get(resourcePath);
+        appendResource(path);
+    }
 
+    private String getFileExtension(Path p) {
+        String fn = p.toFile().getName();
+        String[] parts = fn.split("\\.");
+        if (parts.length > 1) {
+            return parts[parts.length - 1];
+        } else {
+            return null;
+        }
+    }
+
+    private void appendResource(Path path) {
+        if (path == null || resources.contains(path)) {
+            return;
+        }
+
+        resources.add(path);
         Messager m = processingEnv.getMessager();
-        
-        resources.add(resourcePath);
-        m.printMessage(Kind.NOTE, resourcePath);
+        m.printMessage(Kind.NOTE, path.toString());
+
+        if (!Files.exists(ClasspathFileHandler.DEV_FOLDER.resolve(path))) {
+            m.printMessage(Kind.WARNING, "Could not find resource at path: " + path.toString());
+        }
+
+        String extension = getFileExtension(path);
+        ResourceDependecyInspector in = inspectors.get(extension);
+        if (in != null) {
+            for (Path p : in.getDependencys(new ClasspathFileHandler(path))) {
+                appendResource(path);
+            }
+        }
 //
 //        String providerName = getFQN(provider).toString();
 //
@@ -84,9 +151,8 @@ public class UsedResourceProcessor extends AbstractProcessor {
     }
 
     private String getFQN(Element e) {
-        return  e.asType().toString();
+        return e.asType().toString();
     }
-
 //    private PrintWriter getWriter(String file) throws IOException {
 //        
 //        PrintWriter pw = writer.get(file);
@@ -101,4 +167,16 @@ public class UsedResourceProcessor extends AbstractProcessor {
 //        }
 //        return pw;
 //    }
+
+    public static void main(String... args) {
+        UsedResourceProcessor u = new UsedResourceProcessor();
+        Path p = ClasspathFileHandler.DEV_FOLDER.resolve("resources/shader/sphere.frag");
+        String ex = u.getFileExtension(p);
+        System.out.println(ex);
+        ResourceDependecyInspector s = inspectors.get(ex);
+        System.out.println(s);
+        for (Path a : s.getDependencys(new ClasspathFileHandler(p))) {
+            System.out.println(a);
+        };
+    }
 }

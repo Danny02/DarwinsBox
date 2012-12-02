@@ -45,8 +45,8 @@ public class ShaderUtil {
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
-    private static final String includePrefix = "#pragma include";
-    private static final String RES_PATH = "resources/shaders/";
+    public static final String INCLUDE_PREFIX = "#pragma include";
+    public static final String SHADER_PATH_PREFIX = "resources/shaders/";
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
     private final GraphicContext gc;
@@ -145,13 +145,13 @@ public class ShaderUtil {
         String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
         Builder b = Builder.create(name);
         if (fs != null) {
-            b.withFragment(getData(resourceLoader.getRessource(RES_PATH + fs)));
+            b.withFragment(getData(resourceLoader.getRessource(SHADER_PATH_PREFIX + fs)));
         }
         if (vs != null) {
-            b.withVertex(getData(resourceLoader.getRessource(RES_PATH + vs)));
+            b.withVertex(getData(resourceLoader.getRessource(SHADER_PATH_PREFIX + vs)));
         }
         if (gs != null) {
-            b.withGeometrie(getData(resourceLoader.getRessource(RES_PATH + gs)));
+            b.withGeometrie(getData(resourceLoader.getRessource(SHADER_PATH_PREFIX + gs)));
         }
 
         b.withMutations(ms);
@@ -172,9 +172,9 @@ public class ShaderUtil {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (line.startsWith(includePrefix)) {
-                    String path = line.substring(includePrefix.length()).trim();
-                    InputStream shader = resourceLoader.getRessource(RES_PATH + path);
+                if (line.startsWith(INCLUDE_PREFIX)) {
+                    String path = line.substring(INCLUDE_PREFIX.length()).trim();
+                    InputStream shader = resourceLoader.getRessource(SHADER_PATH_PREFIX + path);
                     if (shader != null) {
                         String src = getData(shader);
                         sb.append(src);

@@ -24,7 +24,7 @@ import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.Shader.ShaderFactory;
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.core.ResourceHandle;
+import darwin.resourcehandling.ResourceHandle;
 import darwin.resourcehandling.handle.FileHandlerFactory;
 import darwin.resourcehandling.io.ShaderFile.Builder;
 import darwin.resourcehandling.io.*;
@@ -41,8 +41,7 @@ import org.slf4j.helpers.NOPLogger;
  * @author some
  */
 public class ShaderLoader {
-
-    private static final Path SHADER_PATH = Paths.get("resources/shaders");
+    public static final Path SHADER_PATH = Paths.get(ShaderUtil.SHADER_PATH_PREFIX);
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private final FileHandlerFactory fileFactory;
