@@ -36,7 +36,6 @@ public class ClasspathFileHandler extends ListenerHandler {
     private final Stage stage;
     public static final Path DEV_FOLDER = Paths.get("src/main/resources");
     private final Path path;
-
     private final FileChangeListener fileListener = new FileChangeListener() {
         @Override
         public void fileChanged(Kind kind) {
@@ -58,6 +57,11 @@ public class ClasspathFileHandler extends ListenerHandler {
                 notifier.register(DEV_FOLDER.resolve(path), fileListener);
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return path.toString();
     }
 
     public Path getPath() {

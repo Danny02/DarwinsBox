@@ -39,7 +39,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 public class WatchServiceNotifier implements Runnable {
 
     @InjectLogger
-    private final static Logger logger = NOPLogger.NOP_LOGGER;
+    private static Logger logger = NOPLogger.NOP_LOGGER;
     //a little pollint timeout, to merge duplicated events of the same operation. 
     //i.e. when a file is written by another app, this is sometimes done in chuncks. 
     //And each written chunck causes a file modified event.

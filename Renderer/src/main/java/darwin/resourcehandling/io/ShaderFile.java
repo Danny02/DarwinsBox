@@ -65,13 +65,17 @@ public class ShaderFile implements Serializable {
         private String name, vertex, fragment, geometrie;
         private String[] mutations;
 
-        private Builder() {
+        public Builder() {
         }
 
         public static Builder create(String name) {
-            Builder builder = new Builder();
-            builder.name = name;
-            return builder;
+            return new Builder().withName(name);
+        }
+        
+        public Builder withName(String n)
+        {
+            name = n;
+            return this;
         }
 
         public Builder withFragment(String frag) {

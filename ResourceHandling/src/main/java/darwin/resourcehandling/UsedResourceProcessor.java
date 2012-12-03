@@ -16,14 +16,18 @@
  */
 package darwin.resourcehandling;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import darwin.resourcehandling.dependencies.annotation.InjectBundle;
 import darwin.resourcehandling.dependencies.annotation.InjectResource;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
 import darwin.resourcehandling.handle.ResourceBundle;
 
+import com.google.inject.Stage;
 import javax.annotation.processing.*;
 import javax.inject.Named;
 import javax.lang.model.SourceVersion;
@@ -44,6 +48,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
     static {
         for (ResourceDependecyInspector in : ServiceLoader.load(ResourceDependecyInspector.class)) {
             for (String prefix : in.getSupportedFileTypes()) {
+                System.out.println(prefix + " -> " + in.getClass());
                 inspectors.put(prefix, in);
             }
         }
@@ -128,8 +133,9 @@ public class UsedResourceProcessor extends AbstractProcessor {
         String extension = getFileExtension(path);
         ResourceDependecyInspector in = inspectors.get(extension);
         if (in != null) {
-            for (Path p : in.getDependencys(new ClasspathFileHandler(path))) {
-                appendResource(path);
+            m.printMessage(Kind.NOTE, "Inspecting resource: " + path.toString() + ", with: " + in.getClass());
+            for (Path p : in.getDependencys(new ClasspathFileHandler(null, Stage.DEVELOPMENT, path))) {
+                appendResource(p);
             }
         }
 //
@@ -167,16 +173,4 @@ public class UsedResourceProcessor extends AbstractProcessor {
 //        }
 //        return pw;
 //    }
-
-    public static void main(String... args) {
-        UsedResourceProcessor u = new UsedResourceProcessor();
-        Path p = ClasspathFileHandler.DEV_FOLDER.resolve("resources/shader/sphere.frag");
-        String ex = u.getFileExtension(p);
-        System.out.println(ex);
-        ResourceDependecyInspector s = inspectors.get(ex);
-        System.out.println(s);
-        for (Path a : s.getDependencys(new ClasspathFileHandler(p))) {
-            System.out.println(a);
-        };
-    }
 }

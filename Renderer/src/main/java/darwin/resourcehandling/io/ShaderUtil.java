@@ -17,6 +17,8 @@
 package darwin.resourcehandling.io;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import darwin.renderer.GraphicContext;
@@ -47,6 +49,7 @@ public class ShaderUtil {
     private Logger logger = NOPLogger.NOP_LOGGER;
     public static final String INCLUDE_PREFIX = "#pragma include";
     public static final String SHADER_PATH_PREFIX = "resources/shaders/";
+    public static final Path SHADER_PATH = Paths.get(ShaderUtil.SHADER_PATH_PREFIX);
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
     private final GraphicContext gc;
@@ -111,7 +114,7 @@ public class ShaderUtil {
                                    + " {" + sfile.name + "}\n" + exception.getMessage());
     }
 
-    private ShaderObjekt createSObject(ShaderType target, String source,
+    public ShaderObjekt createSObject(ShaderType target, String source,
                                        String... mut) throws BuildException {
         String[] sources = new String[2 + mut.length];
         sources[0] = constants.getGlslVersion();

@@ -47,7 +47,7 @@ public class TypeListener implements com.google.inject.spi.TypeListener {
             }
 
             InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
-            if (field.getType() == ResourceBundle.class && anno != null) {
+            if (field.getType() == ResourceBundle.class && anno2 != null) {
                 String pp = anno2.value();
                 if (pp != null) {
                     String[] paths = pp.split(",");

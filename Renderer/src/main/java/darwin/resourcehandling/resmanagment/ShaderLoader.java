@@ -17,21 +17,27 @@
 package darwin.resourcehandling.resmanagment;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.util.logging.Level;
 
 import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.ShaderProgramm;
+import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.Shader.ShaderFactory;
-import darwin.resourcehandling.ResourceChangeListener;
+import darwin.renderer.shader.ShaderProgramBuilder;
 import darwin.resourcehandling.ResourceHandle;
-import darwin.resourcehandling.handle.FileHandlerFactory;
+import darwin.resourcehandling.dependencies.annotation.InjectBundle;
+import darwin.resourcehandling.factory.ResourceFromBundle;
+import darwin.resourcehandling.factory.ResourceWrapper;
+import darwin.resourcehandling.handle.ResourceBundle;
+import darwin.resourcehandling.io.ShaderFile;
 import darwin.resourcehandling.io.ShaderFile.Builder;
-import darwin.resourcehandling.io.*;
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.resourcehandling.io.ShaderUtil;
 import darwin.util.logging.InjectLogger;
 
-import javax.inject.Inject;
+import com.google.common.base.Equivalence.Wrapper;
+import com.google.common.base.Optional;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
@@ -40,107 +46,116 @@ import org.slf4j.helpers.NOPLogger;
  *
  * @author some
  */
-public class ShaderLoader {
-    public static final Path SHADER_PATH = Paths.get(ShaderUtil.SHADER_PATH_PREFIX);
+public class ShaderLoader implements ResourceFromBundle<Shader> {
+
+    @InjectBundle(value = "Empty.frag,Empty.vert", prefix = ShaderUtil.SHADER_PATH_PREFIX)
+    private ResourceBundle empty;
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
-    private final FileHandlerFactory fileFactory;
     private final ShaderUtil util;
     private final ShaderFactory shaderFactory;
     private final GraphicContext gcontext;
+    private final String[] mutations;
 
-    @Inject
-    public ShaderLoader(FileHandlerFactory fileFactory, ShaderUtil util, ShaderFactory shaderFactory, GraphicContext gcontext) {
-        this.fileFactory = fileFactory;
+    public interface ShaderLoaderFactory {
+
+        public ShaderLoader create(String... mutations);
+    }
+
+    @AssistedInject
+    public ShaderLoader(ShaderUtil util, ShaderFactory shaderFactory, GraphicContext gcontext, @Assisted String[] mutations) {
         this.util = util;
         this.shaderFactory = shaderFactory;
         this.gcontext = gcontext;
+        this.mutations = mutations;
     }
 
-    public Shader loadShader(ShaderDescription descr) throws IOException {
-        ResourceHandle fragment = null, vertex = null, geometrie = null;
-        if (descr.f != null) {
-            fragment = fileFactory.create(SHADER_PATH.resolve(descr.f));
+    @Override
+    public Shader create(ResourceBundle bundle) throws IOException {
+        Builder builder = new Builder();
+        switch (bundle.getCount()) {
+            default:
+            case 3:
+                builder.withGeometrie(util.getData(bundle.get(2).getStream()));
+            case 2:
+                builder.withVertex(util.getData(bundle.get(1).getStream()));
+            case 1:
+                builder.withFragment(util.getData(bundle.get(0).getStream()));
         }
-        if (descr.v != null) {
-            vertex = fileFactory.create(SHADER_PATH.resolve(descr.v));
-        }
-        if (descr.g != null) {
-            geometrie = fileFactory.create(SHADER_PATH.resolve(descr.g));
-        }
+        builder.withName(getName(bundle)).withMutations(mutations);
 
-        ShaderReLoader reloader = new ShaderReLoader(fragment, vertex, geometrie);
-        return reloader.createShader(descr.toString());
+        final ShaderFile file = builder.create();
+        final Shader shader = shaderFactory.create(file);
+
+        gcontext.getGLWindow().invoke(false, new GLRunnable() {
+            @Override
+            public boolean run(GLAutoDrawable glad) {
+                try {
+                    ShaderProgramm compiledShader = util.compileShader(file);
+                    ShaderProgramm old = shader.getProgramm();
+                    shader.ini(compiledShader);
+                    logger.info("Shader " + file.name + " was succesfully compiled!");
+                    if (old != null) {
+                        old.delete();
+                    }
+                } catch (Throwable ex) {
+                    logger.warn(ex.getLocalizedMessage());
+                }
+                return true;
+            }
+        });
+
+        return shader;
     }
 
-    private class ShaderReLoader implements ResourceChangeListener {
-
-        private Shader shader;
-        private String name;
-        private final ResourceHandle fragment, vertex, geometrie;
-
-        public ShaderReLoader(ResourceHandle fragment, ResourceHandle vertex, ResourceHandle geometrie) {
-            this.fragment = fragment;
-            this.vertex = vertex;
-            this.geometrie = geometrie;
-
-            if (fragment != null) {
-                fragment.registerChangeListener(this);
-            }
-            if (vertex != null) {
-                vertex.registerChangeListener(this);
-            }
-            if (geometrie != null) {
-                geometrie.registerChangeListener(this);
-            }
-        }
-
-        public ShaderFile buildFile(String name) throws IOException {
-            Builder builder = Builder.create(name);
-
-            if (fragment != null) {
-                builder.withFragment(util.getData(fragment.getStream()));
-            }
-            if (vertex != null) {
-                builder.withVertex(util.getData(vertex.getStream()));
-            }
-            if (geometrie != null) {
-                builder.withGeometrie(util.getData(geometrie.getStream()));
+    @Override
+    public void update(final ResourceBundle bundle, ResourceHandle changed, final ResourceWrapper<Shader> wrapper) {
+        final Shader shader = wrapper.get();
+        try {
+            String d = null;
+            ShaderType t = null;
+            switch (bundle.getCount()) {
+                default:
+                case 3:
+                    if (bundle.get(2) == changed) {
+                        d = util.getData(bundle.get(2).getStream());
+                        t = ShaderType.Geometrie;
+                        break;
+                    }
+                case 2:
+                    if (bundle.get(1) == changed) {
+                        d = util.getData(bundle.get(1).getStream());
+                        t = ShaderType.Vertex;
+                        break;
+                    }
+                case 1:
+                    if (bundle.get(0) == changed) {
+                        d = util.getData(bundle.get(0).getStream());
+                        t = ShaderType.Fragment;
+                        break;
+                    }
             }
 
-            return builder.create();
-        }
-
-        public Shader createShader(String name) throws IOException {
-            if (shader == null) {
-                this.name = null;
-                ShaderFile file = buildFile(name);
-                shader = shaderFactory.create(file);
-                compile(file);
-            }
-            return shader;
-        }
-
-        @Override
-        public void resourceChanged(ResourceHandle handle) {
-            try {
-                compile(buildFile(name));
-            } catch (IOException ex) {
-                logger.warn(ex.getLocalizedMessage(), ex);
-            }
-        }
-
-        private void compile(final ShaderFile file) {
+            final ShaderType type = t;
+            final String data = d;
             gcontext.getGLWindow().invoke(false, new GLRunnable() {
                 @Override
                 public boolean run(GLAutoDrawable glad) {
                     try {
-                        ShaderProgramm compiledShader = util.compileShader(file);
-                        ShaderProgramm old = shader.getProgramm();
-                        shader.ini(compiledShader);
-                        logger.info("Shader " + name + " was succesfully compiled!");
-                        if (old != null) {
-                            old.delete();
+                        GL2GL3 gl = glad.getGL().getGL2GL3();
+                        ShaderObjekt so = util.createSObject(type, data, mutations);
+                        int po = shader.getProgramm().getPObject();
+
+                        gl.glAttachShader(po, so.getShaderobjekt());
+                        gl.glLinkProgram(po);
+                        shader.ini(shader.getProgramm());
+                        
+                        Optional<String> error = shader.getProgramm().verify();
+                        if (error.isPresent()) {
+                            logger.warn(error.get());
+                            wrapper.set(getFallBack());
+                        } else {
+                            logger.info("Shader " + getName(bundle) + " was succesfully updated!");
                         }
                     } catch (Throwable ex) {
                         logger.warn(ex.getLocalizedMessage());
@@ -148,6 +163,25 @@ public class ShaderLoader {
                     return true;
                 }
             });
+        } catch (IOException ex) {
+            logger.warn(ex.getLocalizedMessage());
+        }
+    }
+
+    private String getName(ResourceBundle bundle) {
+        String name = "";
+        for (int i = 0; i < bundle.getCount(); i++) {
+            name += bundle.get(i).getName() + "; ";
+        }
+        return name;
+    }
+
+    @Override
+    public Shader getFallBack() {
+        try {
+            return create(empty);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not load fallback shader!");
         }
     }
 }

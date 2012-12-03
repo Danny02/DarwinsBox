@@ -30,6 +30,7 @@ import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.Shader.ShaderFactory;
 import darwin.resourcehandling.resmanagment.ROLoadJob.ROJobFactory;
 import darwin.resourcehandling.resmanagment.ShaderLoadJob.ShaderJobFactory;
+import darwin.resourcehandling.resmanagment.ShaderLoader.ShaderLoaderFactory;
 import darwin.resourcehandling.resmanagment.texture.CubeMapJob.CubeMapFactory;
 import darwin.resourcehandling.resmanagment.texture.HeightMapLoadJob.HeightMapFactory;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
@@ -69,7 +70,8 @@ public class RendererModul extends AbstractModule
             HeightMapFactory.class,
             CubeMapFactory.class,
             AtlasFactory.class,
-            RenderBufferFactory.class
+            RenderBufferFactory.class,
+            ShaderLoaderFactory.class
         };
 
         for (Class factory : factoryClasses) {

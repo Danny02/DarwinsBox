@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,37 +16,40 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.Iterator;
 
 import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.ResourceHandle;
+import darwin.util.misc.ArrayIterator;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public class UrlHandle implements ResourceHandle {
+public class ResourceBundle implements Iterable<ResourceHandle> {
 
-    private final URL url;
+    private final ResourceHandle[] handles;
 
-    public UrlHandle(URL url) {
-        this.url = url;
+    public ResourceBundle(ResourceHandle[] handles) {
+        this.handles = handles;
     }
 
-    @Override
-    public String getName() {
-        return url.toString();
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        return url.openStream();
-    }
-
-    @Override
     public void registerChangeListener(ResourceChangeListener listener) {
-        //TODO if necessary, with http one could ask the server for the change date
+        for (ResourceHandle h : handles) {
+            h.registerChangeListener(listener);
+        }
+    }
+
+    public ResourceHandle get(int i) {
+        return handles[i];
+    }
+
+    public int getCount() {
+        return handles.length;
+    }
+
+    @Override
+    public Iterator<ResourceHandle> iterator() {
+        return new ArrayIterator(handles);
     }
 }

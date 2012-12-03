@@ -16,9 +16,11 @@
  */
 package darwin.renderer.shader;
 
-import java.nio.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
-import darwin.renderer.opengl.*;
+import darwin.renderer.opengl.GlElement;
+import darwin.renderer.opengl.ShaderProgramm;
 
 import com.jogamp.opengl.util.GLBuffers;
 import javax.media.opengl.GLUniformData;

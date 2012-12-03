@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,39 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.handle;
+package darwin.util.misc;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.ResourceHandle;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public class UrlHandle implements ResourceHandle {
+public class ArrayIterator<T> implements Iterator<T> {
 
-    private final URL url;
+    private final T[] array;
+    private int index;
 
-    public UrlHandle(URL url) {
-        this.url = url;
+    public ArrayIterator(T[] array) {
+        this.array = array;
     }
 
     @Override
-    public String getName() {
-        return url.toString();
+    public boolean hasNext() {
+        return index < array.length;
     }
 
     @Override
-    public InputStream getStream() throws IOException {
-        return url.openStream();
+    public T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        return array[index++];
     }
 
     @Override
-    public void registerChangeListener(ResourceChangeListener listener) {
-        //TODO if necessary, with http one could ask the server for the change date
+    public void remove() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

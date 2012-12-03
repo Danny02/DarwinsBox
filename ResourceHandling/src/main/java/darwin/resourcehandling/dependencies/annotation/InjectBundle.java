@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling;
+package darwin.resourcehandling.dependencies.annotation;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceHandle {
-    public String getName();
-    public InputStream getStream() throws IOException;
-    public void registerChangeListener(ResourceChangeListener listener);
+@Target({FIELD})
+@Retention(RUNTIME)
+public @interface InjectBundle {
+
+    String value();
+
+    String prefix() default "resources/";
 }

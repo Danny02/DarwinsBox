@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,15 @@
  */
 package darwin.resourcehandling;
 
-import java.io.IOException;
-import java.io.InputStream;
-
+import java.nio.file.Path;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceHandle {
-    public String getName();
-    public InputStream getStream() throws IOException;
-    public void registerChangeListener(ResourceChangeListener listener);
+public interface ResourceDependecyInspector {
+
+    public Iterable<Path> getDependencys(ResourceHandle resource);
+
+    public String[] getSupportedFileTypes();
 }

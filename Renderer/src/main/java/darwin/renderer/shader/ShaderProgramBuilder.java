@@ -25,7 +25,8 @@ import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.BuildException.BuildError;
 
 import com.google.common.base.Optional;
-import javax.media.opengl.*;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2GL3;
 
 /**
  *
@@ -68,6 +69,7 @@ public class ShaderProgramBuilder {
             if (index >= 0 && index < max[0]) {
                 gl.glBindAttribLocation(programObject, sa.getIndex(), sa.getName());
             }
+            //Loggen wenn zeug ned geht
         }
         
         gl.glProgramParameteri(programObject, GL2GL3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL.GL_TRUE);

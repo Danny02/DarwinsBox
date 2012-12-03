@@ -14,14 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.io;
+package darwin.resourcehandling;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public class ShaderCache {
-    public static void main(String... args) {
-        
-    }
+public interface Resource {
+    public boolean isInitialized();
 }
