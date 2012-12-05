@@ -63,6 +63,10 @@ public class RenderMesh implements Cloneable
             @Assisted @Nullable BufferObject indice,
             @Assisted VertexBO... vertexdata)
     {
+        if(!shader.isInitialized())
+        {
+            throw new RuntimeException("Shader must be initialized");
+        }
         gc = gcontex;
         this.primitivtype = primitivtype;
         asarray = indice == null;

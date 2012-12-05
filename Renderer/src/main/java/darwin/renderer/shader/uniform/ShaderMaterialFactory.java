@@ -21,7 +21,6 @@ import java.util.Collection;
 
 import darwin.geometrie.unpacked.Material;
 import darwin.renderer.shader.*;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
 import darwin.resourcehandling.wrapper.TextureContainer;
@@ -40,12 +39,10 @@ import javax.media.opengl.GL;
 public class ShaderMaterialFactory {
 
     private final TextureJobFactory factory;
-    private final ResourcesLoader loader;
 
     @Inject
-    public ShaderMaterialFactory(TextureJobFactory factory, ResourcesLoader loader) {
+    public ShaderMaterialFactory(TextureJobFactory factory) {
         this.factory = factory;
-        this.loader = loader;
     }
 
     public ShaderMaterial create(Shader shader, Collection<UniformSetter> setter) {
@@ -105,12 +102,12 @@ public class ShaderMaterialFactory {
 
     private Optional<SamplerSetter> createSetter(Shader shader, String name, String path) {
         Optional<Sampler> s = shader.getSampler(name);
-        if (s.isPresent()) {
-            TextureLoadJob tlj = factory.create(path, GL.GL_LINEAR, GL.GL_REPEAT);
-            TextureContainer tc = loader.getTexture(tlj);
-            return Optional.of(new SamplerSetter(s.get(), tc));
-        } else {
+//        if (s.isPresent()) {
+//            TextureLoadJob tlj = factory.create(path, GL.GL_LINEAR, GL.GL_REPEAT);
+//            TextureContainer tc = loader.getTexture(tlj);
+//            return Optional.of(new SamplerSetter(s.get(), tc));
+//        } else {
             return Optional.absent();
-        }
+//        }
     }
 }

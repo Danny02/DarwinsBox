@@ -19,16 +19,12 @@ package darwin.resourcehandling.io;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException;
 import darwin.renderer.shader.ShaderProgramBuilder;
-import darwin.resourcehandling.io.ShaderFile.Builder;
-import darwin.resourcehandling.resmanagment.ResourceProvider;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.resourcehandling.handle.FileHandlerFactory;
 import darwin.util.logging.InjectLogger;
 
 import javax.inject.Inject;
@@ -53,15 +49,14 @@ public class ShaderUtil {
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
     private final GraphicContext gc;
-    private ResourceProvider resourceLoader;
+    private final FileHandlerFactory fileFactory;
 
     @Inject
-    public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants,
-                      ResourcesLoader resourceLoader, GraphicContext context) {
+    public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants, GraphicContext gc, FileHandlerFactory fileFactory) {
         this.soFactory = soFactory;
         this.constants = constants;
-        gc = context;
-        this.resourceLoader = resourceLoader;
+        this.gc = gc;
+        this.fileFactory = fileFactory;
     }
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
@@ -115,7 +110,7 @@ public class ShaderUtil {
     }
 
     public ShaderObjekt createSObject(ShaderType target, String source,
-                                       String... mut) throws BuildException {
+                                      String... mut) throws BuildException {
         String[] sources = new String[2 + mut.length];
         sources[0] = constants.getGlslVersion();
         for (int i = 0; i < mut.length; ++i) {
@@ -124,43 +119,6 @@ public class ShaderUtil {
 
         sources[mut.length + 1] = source;
         return soFactory.create(target, sources);
-    }
-
-    public ShaderFile loadShader(ShaderDescription dscr) throws IOException {
-        return loadShader(dscr.f, dscr.v, dscr.g, dscr.flags);
-    }
-
-    /**
-     * Erstellt eines ShaderProgramm Object. <br>
-     * <p/>
-     * @param gl <br> Der GL Context in dem das Programm erstellt werden soll.
-     * <br>
-     * @param vs <br> Pfad der auf eine Vertex ShaderProgramm Datei zeigt
-     * (relativ zu "./resources/Shaders/"). <br>
-     * @param fs <br> Pfad der auf eine Fragment ShaderProgramm Datei zeigt
-     * (relativ zu "./resources/Shaders/"). <br>
-     * @param uni <br> Eine Liste von Uniform variable der ShaderProgramm deren
-     * positionen abgefragt werden sollen.
-     */
-    public ShaderFile loadShader(String fs, String vs, String gs,
-                                 String... ms) throws IOException {
-
-        String name = vs + "\t" + fs + "\t" + gs + " - " + Arrays.toString(ms);
-        Builder b = Builder.create(name);
-        if (fs != null) {
-            b.withFragment(getData(resourceLoader.getRessource(SHADER_PATH_PREFIX + fs)));
-        }
-        if (vs != null) {
-            b.withVertex(getData(resourceLoader.getRessource(SHADER_PATH_PREFIX + vs)));
-        }
-        if (gs != null) {
-            b.withGeometrie(getData(resourceLoader.getRessource(SHADER_PATH_PREFIX + gs)));
-        }
-
-        b.withMutations(ms);
-
-        ShaderFile ret = b.create();
-        return ret;
     }
 
     public String getData(InputStream file) {
@@ -177,7 +135,7 @@ public class ShaderUtil {
                 line = line.trim();
                 if (line.startsWith(INCLUDE_PREFIX)) {
                     String path = line.substring(INCLUDE_PREFIX.length()).trim();
-                    InputStream shader = resourceLoader.getRessource(SHADER_PATH_PREFIX + path);
+                    InputStream shader = fileFactory.create(SHADER_PATH_PREFIX + path).getStream();
                     if (shader != null) {
                         String src = getData(shader);
                         sb.append(src);
@@ -202,9 +160,5 @@ public class ShaderUtil {
         } catch (IOException ex) {
         }
         return out;
-    }
-
-    public void setResourceLoader(ResourceProvider resourceLoader) {
-        this.resourceLoader = resourceLoader;
     }
 }

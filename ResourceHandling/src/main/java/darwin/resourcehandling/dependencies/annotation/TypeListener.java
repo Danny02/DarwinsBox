@@ -16,11 +16,16 @@
  */
 package darwin.resourcehandling.dependencies.annotation;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import darwin.resourcehandling.ResourceHandle;
-import darwin.resourcehandling.handle.*;
+import darwin.resourcehandling.handle.ResourceHandle;
+import darwin.resourcehandling.factory.*;
+import darwin.resourcehandling.handle.FileHandlerFactory;
+import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.util.dependencies.SimpleMembersInjector;
 
 import com.google.inject.TypeLiteral;
@@ -33,6 +38,18 @@ import com.google.inject.spi.TypeEncounter;
 public class TypeListener implements com.google.inject.spi.TypeListener {
 
     private final FileHandlerFactory factory;
+    private final ResourceFactory rFactory = null;
+    private static final Map<Class, ResourceFromBundleProvider> bundleProvider = new HashMap<>();
+    private static final Map<Class, ResourceFromHandleProvider> handleProvider = new HashMap<>();
+
+    static {
+        for (ResourceFromBundleProvider prov : ServiceLoader.load(ResourceFromBundleProvider.class)) {
+            bundleProvider.put(prov.getType(), prov);
+        }
+        for (ResourceFromHandleProvider prov : ServiceLoader.load(ResourceFromHandleProvider.class)) {
+            handleProvider.put(prov.getType(), prov);
+        }
+    }
 
     public TypeListener(FileHandlerFactory factory) {
         this.factory = factory;
@@ -42,28 +59,56 @@ public class TypeListener implements com.google.inject.spi.TypeListener {
     public <I> void hear(TypeLiteral<I> aTypeLiteral, TypeEncounter<I> aTypeEncounter) {
         for (Field field : aTypeLiteral.getRawType().getDeclaredFields()) {
             InjectResource anno = field.getAnnotation(InjectResource.class);
-            if (field.getType() == ResourceHandle.class && anno != null) {
-                aTypeEncounter.register(new SimpleMembersInjector<I>(field, get(anno.prefix() + anno.value())));
+            if (anno != null) {
+                ResourceHandle handle = factory.create(anno.file());
+                if (field.getType() == ResourceHandle.class) {
+                    aTypeEncounter.register(new SimpleMembersInjector<I>(field, handle));
+                } else {
+                    ResourceFromHandle from = getHandleFactory(field.getType());
+                    if (from != null) {
+                        try {
+                            aTypeEncounter.register(
+                                    new SimpleMembersInjector<I>(field, from.create(handle)));
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             }
 
             InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
-            if (field.getType() == ResourceBundle.class && anno2 != null) {
-                String pp = anno2.value();
+            if (anno2 != null) {
+                String[] pp = anno2.files();
                 if (pp != null) {
-                    String[] paths = pp.split(",");
-                    ResourceHandle[] handles = new ResourceHandle[paths.length];
-                    for (int i = 0; i < paths.length; ++i) {
-                        handles[i] = get(anno2.prefix() + paths[i].trim());
+                    ResourceHandle[] handles = new ResourceHandle[pp.length];
+                    for (int i = 0; i < pp.length; ++i) {
+                        handles[i] = factory.create(anno2.prefix() + pp[i].trim());
                     }
 
-                    ResourceBundle bundle = new ResourceBundle(handles);
-                    aTypeEncounter.register(new SimpleMembersInjector<I>(field, bundle));
+                    ResourceBundle bundle = new ResourceBundle(handles, anno2.options());
+                    if (field.getType() == ResourceBundle.class) {
+                        aTypeEncounter.register(new SimpleMembersInjector<I>(field, bundle));
+                    } else {
+                        ResourceFromBundle from = getBundleFactory(field.getType());
+                        if (from != null) {
+                            try {
+                                aTypeEncounter.register(
+                                        new SimpleMembersInjector<I>(field, from.create(bundle)));
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    private ClasspathFileHandler get(String p) {
-        return factory.create(Paths.get(p));
+    public ResourceFromBundle getBundleFactory(Class c) {
+        return (ResourceFromBundle) bundleProvider.get(c).get();
+    }
+
+    public ResourceFromHandle getHandleFactory(Class c) {
+        return (ResourceFromHandle) handleProvider.get(c).get();
     }
 }

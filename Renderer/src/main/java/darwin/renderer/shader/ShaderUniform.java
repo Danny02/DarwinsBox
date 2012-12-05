@@ -29,16 +29,14 @@ import javax.media.opengl.GLUniformData;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ShaderUniform implements ShaderElement
-{
+public class ShaderUniform implements ShaderElement {
 
     private final String name;
     private final GlElement element;
     private final GLUniformData data;
     private boolean changed = false;
 
-    public ShaderUniform(String name, GlElement element)
-    {
+    public ShaderUniform(String name, GlElement element) {
         this.name = name;
         this.element = element;
 
@@ -46,83 +44,73 @@ public class ShaderUniform implements ShaderElement
         if (element.isMatrix()) {
             int s = (int) Math.sqrt(eleCount);
             data = new GLUniformData(name, s, s,
-                    GLBuffers.newDirectFloatBuffer(eleCount));
+                                     GLBuffers.newDirectFloatBuffer(eleCount));
         } else {
             data = new GLUniformData(name, eleCount, (FloatBuffer) null);
         }
     }
 
     @Override
-    public GlElement getElement()
-    {
+    public GlElement getElement() {
         return element;
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public int getIndex()
-    {
+    public int getIndex() {
         return data.getLocation();
     }
 
     @Override
-    public void ini(ShaderProgramm sp)
-    {
+    public void ini(ShaderProgramm sp) {
         sp.use();
         data.setLocation(sp.getUniformLocation(name));
-        changed = true;
+        if (data.getObject() != null) {
+            changed = true;
+        }
     }
 
-    GLUniformData getData()
-    {
+    GLUniformData getData() {
         return data;
     }
 
-    public void setData(int value)
-    {
+    public void setData(int value) {
         data.setData(value);
         changed = true;
     }
 
-    public void setData(float value)
-    {
+    public void setData(float value) {
         data.setData(value);
         changed = true;
     }
 
-    public void setData(float... array)
-    {
+    public void setData(float... array) {
         data.setData(FloatBuffer.wrap(array));
         changed = true;
     }
 
-    public void setData(FloatBuffer value)
-    {
+    public void setData(FloatBuffer value) {
         data.setData(value);
         changed = true;
     }
 
-    public void setData(IntBuffer value)
-    {
+    public void setData(IntBuffer value) {
         data.setData(value);
         changed = true;
     }
 
-    public boolean wasChanged()
-    {
+    public boolean wasChanged() {
         boolean res = changed;
         changed = false;
         return res;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }

@@ -16,7 +16,7 @@
  */
 package darwin.resourcehandling.resmanagment;
 
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.resourcehandling.handle.ResourceBundle;
 
 /**
  *
@@ -27,27 +27,21 @@ import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
 //solche veränderungen der modell daten gehören rein in den build prozess
 public class ObjConfig
 {
-
     private final String path;
-    private final ShaderDescription shader;
+    private final ResourceBundle shader;
 
-    public ObjConfig(String path, String descr)
-    {
-        this(path, new ShaderDescription(descr, false));
-    }
-
-    public ObjConfig(String path, ShaderDescription descr)
-    {
+    public ObjConfig(String path, ResourceBundle shader) {
         this.path = path;
-        shader = descr;
+        this.shader = shader;
     }
+
 
     public String getPath()
     {
         return path;
     }
 
-    public ShaderDescription getShader()
+    public ResourceBundle getShaderResource()
     {
         return shader;
     }

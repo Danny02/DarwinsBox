@@ -29,12 +29,10 @@ import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.Shader.ShaderFactory;
 import darwin.resourcehandling.resmanagment.ROLoadJob.ROJobFactory;
-import darwin.resourcehandling.resmanagment.ShaderLoadJob.ShaderJobFactory;
-import darwin.resourcehandling.resmanagment.ShaderLoader.ShaderLoaderFactory;
 import darwin.resourcehandling.resmanagment.texture.CubeMapJob.CubeMapFactory;
 import darwin.resourcehandling.resmanagment.texture.HeightMapLoadJob.HeightMapFactory;
 import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
-import darwin.resourcehandling.wrapper.TextureAtlas.AtlasFactory;
+//import darwin.resourcehandling.wrapper.TextureAtlas.AtlasFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -64,14 +62,12 @@ public class RendererModul extends AbstractModule
             RahmenFactory.class,
             SamplerFactory.class,
             ROJobFactory.class,
-            ShaderJobFactory.class,
             ShaderFactory.class,
             TextureJobFactory.class,
             HeightMapFactory.class,
             CubeMapFactory.class,
-            AtlasFactory.class,
+//            AtlasFactory.class,
             RenderBufferFactory.class,
-            ShaderLoaderFactory.class
         };
 
         for (Class factory : factoryClasses) {

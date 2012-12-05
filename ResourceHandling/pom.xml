@@ -49,11 +49,6 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses />.
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>Geometrie</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>3.0</version>
@@ -63,6 +58,11 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses />.
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
             <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Util</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

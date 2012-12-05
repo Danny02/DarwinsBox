@@ -14,39 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.geometrie.io;
+package darwin.resourcehandling.handle;
 
-import java.io.*;
+import darwin.resourcehandling.ResourceChangeListener;
+import java.io.IOException;
+import java.io.InputStream;
+
 
 /**
  *
  * @author daniel
  */
-/**
- *
- * @author dheinrich
- */
-public class ResourcesLoader
-{
-    public static InputStream getRessource(String path) throws IOException
-    {
-        InputStream is = getStream(path);
-        if (is == null) {
-            throw new IOException("Resource couldn't be found: " + path);
-        }
-
-        return is;
-    }
-
-    private static InputStream getStream(String path)
-    {
-        InputStream data = ResourcesLoader.class.getResourceAsStream('/' + path);
-        if (data == null) {
-            try {
-                data = new FileInputStream(path);
-            } catch (FileNotFoundException ex) {
-            }
-        }
-        return data;
-    }
+public interface ResourceHandle {
+    public String getName();
+    public InputStream getStream() throws IOException;
+    public void registerChangeListener(ResourceChangeListener listener);
 }

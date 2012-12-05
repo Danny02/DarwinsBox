@@ -16,23 +16,27 @@
  */
 package darwin.core.gui;
 
-import com.jogamp.newt.Window;
-import com.jogamp.newt.event.MouseListener;
-import com.jogamp.opengl.util.*;
 import java.util.*;
-import javax.inject.Inject;
-import javax.media.opengl.*;
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
 
 import darwin.core.controls.InputController;
 import darwin.core.dependencies.CoreModul;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.dependencies.RendererModul;
 import darwin.resourcehandling.dependencies.ResourceHandlingModul;
-import darwin.util.logging.*;
+import darwin.util.logging.InjectLogger;
+import darwin.util.logging.LoggingModul;
+import darwin.util.misc.RuntimeUtil;
 
 import com.google.inject.*;
+import com.jogamp.newt.Window;
+import com.jogamp.newt.event.MouseListener;
+import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.AnimatorBase;
+import javax.inject.Inject;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLException;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *
@@ -47,17 +51,25 @@ public class Client {
     private final GraphicContext gc;
     private final List<GLEventListener> glListeners = new ArrayList<>();
     private final List<MouseListener> mouseListeners = new ArrayList<>();
+    private static Injector INJECTOR;
 
-    public static Client createClient(Class... resources) {
-        Injector in = Guice.createInjector(getRequiredModules(resources));
-        return in.getInstance(Client.class);
+    public static Client createClient() {
+        return getInjector(false).getInstance(Client.class);
     }
 
-    public static Module[] getRequiredModules(Class... resources) {
-        return new Module[]{new CoreModul(),
-                            new RendererModul(),
-                            new LoggingModul(),
-                            new ResourceHandlingModul(resources)};
+    public static Client createClient(boolean debug) {
+        return getInjector(debug).getInstance(Client.class);
+    }
+
+    public synchronized static Injector getInjector(boolean debug) {
+        if (INJECTOR == null) {
+            Stage stage = (RuntimeUtil.IS_DEBUGGING || debug) ? Stage.DEVELOPMENT : Stage.PRODUCTION;
+            INJECTOR = Guice.createInjector(stage, new Module[]{new CoreModul(),
+                                                                new RendererModul(),
+                                                                new LoggingModul(),
+                                                                new ResourceHandlingModul()});
+        }
+        return INJECTOR;
     }
 
     @Inject
@@ -102,6 +114,12 @@ public class Client {
         shutdownlistener.remove(lister);
     }
 
+    public <T extends GLEventListener> T addGLEventListener(Class<T> listener) {
+        T t = INJECTOR.getInstance(listener);
+        addGLEventListener(t);
+        return t;
+    }
+
     public void addGLEventListener(GLEventListener listener) {
         if (gc.isInitialized()) {
             gc.getGLWindow().addGLEventListener(listener);
@@ -119,6 +137,14 @@ public class Client {
     }
 
     public void addMouseListener(InputController controller) {
+        if (gc.isInitialized()) {
+            gc.getGLWindow().addMouseListener(controller);
+        } else {
+            mouseListeners.add(controller);
+        }
+    }
+
+    public void addMouseListener(MouseListener controller) {
         if (gc.isInitialized()) {
             gc.getGLWindow().addMouseListener(controller);
         } else {

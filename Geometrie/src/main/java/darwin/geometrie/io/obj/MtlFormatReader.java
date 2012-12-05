@@ -17,13 +17,15 @@
 package darwin.geometrie.io.obj;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+
+import darwin.resourcehandling.handle.ClasspathFileHandler;
+import darwin.util.logging.InjectLogger;
+
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-
-import darwin.geometrie.io.ResourcesLoader;
-import darwin.util.logging.InjectLogger;
 
 /**
  * Parser f�r das MTL Material Format
@@ -50,7 +52,7 @@ public class MtlFormatReader
 
         if (materials == null) {
             materials = new HashMap<>();
-            InputStream is = ResourcesLoader.getRessource(modelfolder + path);
+            InputStream is = new ClasspathFileHandler(Paths.get(modelfolder + path)).getStream();
             try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {

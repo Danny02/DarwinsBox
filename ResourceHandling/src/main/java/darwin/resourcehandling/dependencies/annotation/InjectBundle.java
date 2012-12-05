@@ -30,7 +30,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface InjectBundle {
 
-    String value();
+    String[] files();
 
     String prefix() default "resources/";
+    
+    String[] options() default {};
 }

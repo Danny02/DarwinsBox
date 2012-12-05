@@ -18,37 +18,38 @@ package darwin.renderer.geometrie;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import darwin.geometrie.unpacked.Material;
 import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.shader.Shader;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
-import darwin.resourcehandling.resmanagment.texture.ShaderDescription;
+import darwin.resourcehandling.factory.ResourceFactory;
+import darwin.resourcehandling.handle.ResourceBundle;
+import darwin.resourcehandling.resmanagment.ShaderLoader;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 @Singleton
-public class ModelPacker
-{
+public class ModelPacker {
 
     private final RenderModelFactory factory;
-    private final ResourcesLoader loader;
+    private final ResourceFactory rfac;
+    private final ShaderLoader sfac;
 
     @Inject
-    public ModelPacker(RenderModelFactory factory, ResourcesLoader loader)
-    {
+    public ModelPacker(RenderModelFactory factory, ResourceFactory rfac, ShaderLoader sfac) {
         this.factory = factory;
-        this.loader = loader;
+        this.rfac = rfac;
+        this.sfac = sfac;
     }
 
-    public RenderModel[] packModel(Model[] models, ShaderDescription description)
-    {
+    public RenderModel[] packModel(Model[] models, ResourceBundle description) {
         RenderModel[] out = new RenderModel[models.length];
 
 //        MeshModifier mm = new TangendCreator();
@@ -77,7 +78,7 @@ public class ModelPacker
             String[] mutations = new String[mut.size()];
             mut.toArray(mutations);
 
-            Shader s = loader.getShader(description, mutations);
+            Shader s = rfac.createResource(sfac, description.merge(mutations)).get();
 
             out[i] = factory.create(m, s);
         }

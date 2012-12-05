@@ -14,15 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.resmanagment;
+package darwin.util.misc;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceProvider {
-    public InputStream getRessource(String name) throws IOException ;
+public class RuntimeUtil {
+
+    public static final boolean IS_DEBUGGING;
+    static{
+        boolean a = false;
+        Pattern p = Pattern.compile("-Xdebug|jdwp");
+        for (String arg : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
+            if (p.matcher(arg).find()) {
+                a = true;
+            }
+        }
+        IS_DEBUGGING = a;
+    }
 }

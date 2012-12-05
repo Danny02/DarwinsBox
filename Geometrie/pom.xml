@@ -76,6 +76,11 @@
             <artifactId>JOpenCTM</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ResourceHandling</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>

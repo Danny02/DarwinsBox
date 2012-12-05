@@ -16,13 +16,9 @@
  */
 package darwin.resourcehandling.resmanagment;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 import java.io.*;
 import java.util.List;
 import java.util.ServiceLoader;
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
 
 import darwin.geometrie.io.ModelReader;
 import darwin.geometrie.io.WrongFileTypeException;
@@ -30,6 +26,12 @@ import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.ModelPacker;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
+import darwin.resourcehandling.handle.FileHandlerFactory;
+
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *
@@ -45,15 +47,15 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
     }
     private Logger logger = NOPLogger.NOP_LOGGER;
     private final ModelPacker packer;
-    private final ResourcesLoader loader;
     private final ObjConfig ljob;
     private List<RenderObjekt> mcontainer;
+    private final FileHandlerFactory factory;
 
     @AssistedInject
-    public ROLoadJob(ModelPacker packer, ResourcesLoader loader, @Assisted ObjConfig ljob)
+    public ROLoadJob(ModelPacker packer, FileHandlerFactory loader, @Assisted ObjConfig ljob)
     {
         this.packer = packer;
-        this.loader = loader;
+        this.factory = loader;
         this.ljob = ljob;
     }
 
@@ -63,7 +65,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
         String path = ljob.getPath();
         String ext = path.substring(path.lastIndexOf('.') + 1);
 
-        InputStream in = new BufferedInputStream(loader.getRessource(path));
+        InputStream in = new BufferedInputStream(factory.create(path).getStream());
         in.mark(1024);//one kilobyte should be enough to check if the file is of the right type
 
         Model[] mo = null;
@@ -87,7 +89,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
                     + path + "\"");
         }
 
-        RenderModel[] models = packer.packModel(mo, ljob.getShader());
+        RenderModel[] models = packer.packModel(mo, ljob.getShaderResource());
 
         for (RenderObjekt ro2 : mcontainer) {
             ro2.setModels(models);

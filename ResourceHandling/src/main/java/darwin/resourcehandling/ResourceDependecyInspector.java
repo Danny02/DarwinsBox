@@ -16,6 +16,7 @@
  */
 package darwin.resourcehandling;
 
+import darwin.resourcehandling.handle.ResourceHandle;
 import java.nio.file.Path;
 
 /**

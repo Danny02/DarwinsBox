@@ -16,10 +16,10 @@
  */
 package darwin.resourcehandling.handle;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.ResourceHandle;
 import darwin.util.misc.ArrayIterator;
 
 /**
@@ -29,9 +29,18 @@ import darwin.util.misc.ArrayIterator;
 public class ResourceBundle implements Iterable<ResourceHandle> {
 
     private final ResourceHandle[] handles;
+    private final String[] options;
 
-    public ResourceBundle(ResourceHandle[] handles) {
+    public ResourceBundle(ResourceHandle[] handles, String... options) {
         this.handles = handles;
+        this.options = options;
+    }
+    
+    public ResourceBundle merge(String... op)
+    {
+        String[] osp = Arrays.copyOf(options, options.length+op.length);
+        System.arraycopy(op, 0, osp, options.length, op.length);
+        return new ResourceBundle(handles, osp);
     }
 
     public void registerChangeListener(ResourceChangeListener listener) {
@@ -47,9 +56,45 @@ public class ResourceBundle implements Iterable<ResourceHandle> {
     public int getCount() {
         return handles.length;
     }
+    
+    public String[] getOptions()
+    {
+        return Arrays.copyOf(options, options.length);
+    }
 
     @Override
     public Iterator<ResourceHandle> iterator() {
         return new ArrayIterator(handles);
+    }
+
+    @Override
+    public String toString() {
+        String name = "";
+        for (int i = 0; i < getCount(); i++) {
+            name += get(i).getName() + "; ";
+        }
+        return name;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 73 * hash + Arrays.deepHashCode(this.handles);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ResourceBundle other = (ResourceBundle) obj;
+        if (!Arrays.deepEquals(this.handles, other.handles)) {
+            return false;
+        }
+        return true;
     }
 }

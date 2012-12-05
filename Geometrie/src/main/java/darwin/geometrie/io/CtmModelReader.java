@@ -23,6 +23,7 @@ import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 
+import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
 import darwin.geometrie.unpacked.Mesh;
 import darwin.geometrie.unpacked.Model;
@@ -41,6 +42,7 @@ import static darwin.jopenctm.data.Mesh.*;
  *
  * @author daniel
  */
+@ServiceProvider(ModelReader.class)
 public class CtmModelReader implements ModelReader {
 
     public static final Element POSITION, TEX_COORD, NORMAL;

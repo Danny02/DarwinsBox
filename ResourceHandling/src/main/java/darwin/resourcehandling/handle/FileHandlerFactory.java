@@ -19,6 +19,7 @@
 package darwin.resourcehandling.handle;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +44,10 @@ public class FileHandlerFactory {
     public FileHandlerFactory(WatchServiceNotifier notifier, Stage stage) {
         this.notifier = notifier;
         this.stage = stage;
+    }
+
+    public ClasspathFileHandler create(String file) {
+        return create(Paths.get(file));
     }
 
     public ClasspathFileHandler create(Path file) {

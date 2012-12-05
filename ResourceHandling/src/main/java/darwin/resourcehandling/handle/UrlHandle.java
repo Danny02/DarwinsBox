@@ -19,9 +19,9 @@ package darwin.resourcehandling.handle;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.ResourceHandle;
 
 /**
  *
@@ -48,5 +48,27 @@ public class UrlHandle implements ResourceHandle {
     @Override
     public void registerChangeListener(ResourceChangeListener listener) {
         //TODO if necessary, with http one could ask the server for the change date
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.url);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UrlHandle other = (UrlHandle) obj;
+        if (!Objects.equals(this.url, other.url)) {
+            return false;
+        }
+        return true;
     }
 }

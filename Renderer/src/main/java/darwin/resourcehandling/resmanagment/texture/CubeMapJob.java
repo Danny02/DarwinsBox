@@ -16,19 +16,16 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
+import darwin.renderer.GraphicContext;
+import darwin.resourcehandling.handle.FileHandlerFactory;
+import darwin.resourcehandling.io.TextureUtil;
+import darwin.util.logging.InjectLogger;
+
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import com.jogamp.opengl.util.texture.*;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.media.opengl.GL;
+import com.jogamp.opengl.util.texture.Texture;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-
-import darwin.renderer.GraphicContext;
-import darwin.resourcehandling.io.TextureUtil;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
-import darwin.util.logging.InjectLogger;
 
 
 /**
@@ -44,10 +41,10 @@ public class CubeMapJob extends TextureLoadJob
     private static final String texturepath = "resources/Textures/";
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
-    private final ResourcesLoader loader;
+private FileHandlerFactory loader;
 
     @AssistedInject
-    public CubeMapJob(GraphicContext gc, TextureUtil util, ResourcesLoader loader,
+    public CubeMapJob(GraphicContext gc, TextureUtil util, FileHandlerFactory loader,
             @Assisted String path)
     {
         super(gc, util, path, -1, -1);

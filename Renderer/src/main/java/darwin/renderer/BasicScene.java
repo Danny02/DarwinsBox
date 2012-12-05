@@ -25,7 +25,6 @@ import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.ShaderUniform;
 import darwin.renderer.util.memory.MemoryInfo;
 import darwin.renderer.util.memory.PerformanceView;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.vector.ImmutableVector;
 import darwin.util.math.base.vector.Vector3;
@@ -51,7 +50,6 @@ public class BasicScene implements GLEventListener
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     protected final GraphicContext gc;
-    protected final ResourcesLoader loader;
 //    private final List<GenListener<Dimension>> dimlistener =
 //                                               new LinkedList<GenListener<Dimension>>();
     private final Queue<Renderable> robjekts = new ConcurrentLinkedQueue<>();
@@ -65,10 +63,9 @@ public class BasicScene implements GLEventListener
     private ImmutableVector<Vector3> lightDir = new Vector3(0, -1, 0);
 
     @Inject
-    public BasicScene(GraphicContext gc, ResourcesLoader loader)
+    public BasicScene(GraphicContext gc)
     {
         this.gc = gc;
-        this.loader = loader;
         matrices = new MatrixCache(new ProjectionMatrix());
         half = new LinkedList<>();
         lightdir = new LinkedList<>();
@@ -120,7 +117,6 @@ public class BasicScene implements GLEventListener
         if (!drawable.getContext().isCurrent()) {
             return;
         }
-        loader.workAllJobs();
         try {
             customRender();
         } catch (Throwable ex) {

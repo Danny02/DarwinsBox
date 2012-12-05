@@ -16,21 +16,19 @@
  */
 package darwin.resourcehandling.resmanagment.texture;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import com.jogamp.opengl.util.texture.Texture;
 import java.io.File;
-import java.io.IOException;
-import javax.inject.Named;
-import javax.media.opengl.GL;
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
 
 import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.io.TextureUtil;
 import darwin.resourcehandling.resmanagment.LoadJob;
 import darwin.resourcehandling.wrapper.TextureContainer;
 import darwin.util.logging.InjectLogger;
+
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import com.jogamp.opengl.util.texture.Texture;
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *

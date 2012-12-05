@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.ResourceHandle;
 
 /**
  *

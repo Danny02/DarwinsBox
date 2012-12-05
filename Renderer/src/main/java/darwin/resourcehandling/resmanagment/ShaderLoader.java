@@ -17,14 +17,13 @@
 package darwin.resourcehandling.resmanagment;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
+import darwin.annotations.ServiceProvider;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.Shader.ShaderFactory;
-import darwin.renderer.shader.ShaderProgramBuilder;
-import darwin.resourcehandling.ResourceHandle;
+import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.dependencies.annotation.InjectBundle;
 import darwin.resourcehandling.factory.ResourceFromBundle;
 import darwin.resourcehandling.factory.ResourceWrapper;
@@ -34,10 +33,8 @@ import darwin.resourcehandling.io.ShaderFile.Builder;
 import darwin.resourcehandling.io.ShaderUtil;
 import darwin.util.logging.InjectLogger;
 
-import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.base.Optional;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import javax.inject.Inject;
 import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
@@ -48,26 +45,19 @@ import org.slf4j.helpers.NOPLogger;
  */
 public class ShaderLoader implements ResourceFromBundle<Shader> {
 
-    @InjectBundle(value = "Empty.frag,Empty.vert", prefix = ShaderUtil.SHADER_PATH_PREFIX)
+    @InjectBundle(files = {"Empty.frag", "Empty.vert"}, prefix = ShaderUtil.SHADER_PATH_PREFIX)
     private ResourceBundle empty;
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private final ShaderUtil util;
     private final ShaderFactory shaderFactory;
     private final GraphicContext gcontext;
-    private final String[] mutations;
 
-    public interface ShaderLoaderFactory {
-
-        public ShaderLoader create(String... mutations);
-    }
-
-    @AssistedInject
-    public ShaderLoader(ShaderUtil util, ShaderFactory shaderFactory, GraphicContext gcontext, @Assisted String[] mutations) {
+    @Inject
+    public ShaderLoader(ShaderUtil util, ShaderFactory shaderFactory, GraphicContext gcontext) {
         this.util = util;
         this.shaderFactory = shaderFactory;
         this.gcontext = gcontext;
-        this.mutations = mutations;
     }
 
     @Override
@@ -82,7 +72,7 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
             case 1:
                 builder.withFragment(util.getData(bundle.get(0).getStream()));
         }
-        builder.withName(getName(bundle)).withMutations(mutations);
+        builder.withName(bundle.toString()).withMutations(bundle.getOptions());
 
         final ShaderFile file = builder.create();
         final Shader shader = shaderFactory.create(file);
@@ -143,19 +133,19 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                 public boolean run(GLAutoDrawable glad) {
                     try {
                         GL2GL3 gl = glad.getGL().getGL2GL3();
-                        ShaderObjekt so = util.createSObject(type, data, mutations);
+                        ShaderObjekt so = util.createSObject(type, data, bundle.getOptions());
                         int po = shader.getProgramm().getPObject();
 
                         gl.glAttachShader(po, so.getShaderobjekt());
                         gl.glLinkProgram(po);
                         shader.ini(shader.getProgramm());
-                        
+
                         Optional<String> error = shader.getProgramm().verify();
                         if (error.isPresent()) {
                             logger.warn(error.get());
                             wrapper.set(getFallBack());
                         } else {
-                            logger.info("Shader " + getName(bundle) + " was succesfully updated!");
+                            logger.info("Shader " + bundle + " was succesfully updated!");
                         }
                     } catch (Throwable ex) {
                         logger.warn(ex.getLocalizedMessage());
@@ -166,14 +156,6 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
         } catch (IOException ex) {
             logger.warn(ex.getLocalizedMessage());
         }
-    }
-
-    private String getName(ResourceBundle bundle) {
-        String name = "";
-        for (int i = 0; i < bundle.getCount(); i++) {
-            name += bundle.get(i).getName() + "; ";
-        }
-        return name;
     }
 
     @Override

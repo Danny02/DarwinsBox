@@ -16,20 +16,21 @@
  */
 package darwin.resourcehandling.factory;
 
-import java.io.IOException;
-
-import darwin.resourcehandling.handle.ResourceHandle;
-import darwin.resourcehandling.handle.ResourceBundle;
+import javax.inject.Provider;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceFromBundle<T> {
+public abstract class ResourceFromHandleProvider<T> implements Provider<ResourceFromHandle<T>> {
 
-    public T create(ResourceBundle handle) throws IOException;
+    private final Class<T> t;
 
-    public void update(ResourceBundle bundle, ResourceHandle changed, ResourceWrapper<T> wrapper);
+    protected ResourceFromHandleProvider(Class<T> t) {
+        this.t = t;
+    }
 
-    public T getFallBack();
+    public Class<T> getType() {
+        return t;
+    }
 }

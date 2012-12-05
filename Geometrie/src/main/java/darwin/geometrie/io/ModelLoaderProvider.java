@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,24 @@
  */
 package darwin.geometrie.io;
 
+import darwin.annotations.ServiceProvider;
+import darwin.geometrie.unpacked.Model;
+import darwin.resourcehandling.factory.ResourceFromHandle;
+import darwin.resourcehandling.factory.ResourceFromHandleProvider;
+
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public class Propertie
-{
-
-    public final String name;
-    public final String value;
-
-    public Propertie(String name, String value)
+@ServiceProvider(ResourceFromHandleProvider.class)
+public class ModelLoaderProvider extends ResourceFromHandleProvider<Model[]> {
+    public ModelLoaderProvider()
     {
-        this.name = name;
-        this.value = value;
+        super(Model[].class);
+    }
+
+    @Override
+    public ResourceFromHandle<Model[]> get() {
+        return new ModelLoader();
     }
 }

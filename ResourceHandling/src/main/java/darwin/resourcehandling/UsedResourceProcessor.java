@@ -16,11 +16,9 @@
  */
 package darwin.resourcehandling;
 
-import java.io.InputStream;
-import java.net.URL;
+import darwin.resourcehandling.handle.ResourceHandle;
 import java.nio.file.*;
 import java.util.*;
-import java.util.Map.Entry;
 
 import darwin.resourcehandling.dependencies.annotation.InjectBundle;
 import darwin.resourcehandling.dependencies.annotation.InjectResource;
@@ -80,7 +78,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
                 String typeName = getFQN(e);
                 if (typeName.equals(ResourceHandle.class.getCanonicalName())) {
                     InjectResource annotation = e.getAnnotation(InjectResource.class);
-                    appendResource(annotation.prefix() + annotation.value());
+                    appendResource(annotation.file());
                 }
             }
         }
@@ -90,9 +88,9 @@ public class UsedResourceProcessor extends AbstractProcessor {
                 String typeName = getFQN(e);
                 if (typeName.equals(ResourceBundle.class.getCanonicalName())) {
                     InjectBundle annotation = e.getAnnotation(InjectBundle.class);
-                    String pp = annotation.value();
+                    String[] pp = annotation.files();
                     if (pp != null) {
-                        for (String path : pp.split(",")) {
+                        for (String path : pp) {
                             appendResource(annotation.prefix() + path);
                         }
                     }

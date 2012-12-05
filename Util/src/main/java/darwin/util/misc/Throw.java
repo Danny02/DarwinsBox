@@ -14,22 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.factory;
-
-import java.io.IOException;
-
-import darwin.resourcehandling.handle.ResourceHandle;
-import darwin.resourcehandling.handle.ResourceBundle;
+package darwin.util.misc;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceFromBundle<T> {
-
-    public T create(ResourceBundle handle) throws IOException;
-
-    public void update(ResourceBundle bundle, ResourceHandle changed, ResourceWrapper<T> wrapper);
-
-    public T getFallBack();
+public class Throw {
+    public static void unchecked(Exception ex)
+    {
+        Throw.<RuntimeException>hack(ex);
+    }
+    
+    private static <T extends Throwable> void hack(Exception ex) throws T
+    {
+        throw (T)ex;
+    }
 }

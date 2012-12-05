@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import darwin.renderer.GraphicContext;
+import darwin.resourcehandling.handle.FileHandlerFactory;
 import darwin.resourcehandling.io.TextureUtil;
-import darwin.resourcehandling.resmanagment.ResourcesLoader;
 import darwin.util.logging.InjectLogger;
 
 import com.google.inject.assistedinject.Assisted;
@@ -45,10 +45,9 @@ public class HeightMapLoadJob extends TextureLoadJob
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
-    private final ResourcesLoader loader;
-
+private FileHandlerFactory loader;
     @AssistedInject
-    public HeightMapLoadJob(GraphicContext gc, ResourcesLoader loader,
+    public HeightMapLoadJob(GraphicContext gc, FileHandlerFactory loader,
             TextureUtil util, @Assisted String path)
     {
         super(gc, util, path, -1, -1);
@@ -59,7 +58,7 @@ public class HeightMapLoadJob extends TextureLoadJob
     public Texture load()
     {
         Texture re = null;
-        try (InputStream is = loader.getRessource(getPath());) {
+        try (InputStream is = loader.create(getPath()).getStream()) {
             String[] suffix = getPath().split("\\.");
             TextureData td = TextureIO.newTextureData(gc.getGL().getGLProfile(), is,
                     GL2GL3.GL_LUMINANCE32F_ARB,

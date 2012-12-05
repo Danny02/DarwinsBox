@@ -24,7 +24,7 @@ import java.util.logging.*;
 
 import darwin.annotations.ServiceProvider;
 import darwin.resourcehandling.ResourceDependecyInspector;
-import darwin.resourcehandling.ResourceHandle;
+import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.io.ShaderUtil;
 
 import javax.swing.JOptionPane;

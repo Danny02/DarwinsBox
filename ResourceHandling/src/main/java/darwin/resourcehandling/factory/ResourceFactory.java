@@ -19,14 +19,18 @@ package darwin.resourcehandling.factory;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.ResourceHandle;
+import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.handle.ResourceBundle;
+
+import javax.inject.Singleton;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
+@Singleton
 public class ResourceFactory {
 
     public <T> ResourceWrapper<T> createResource(ResourceFromHandle<T> factory, ResourceHandle handle) {

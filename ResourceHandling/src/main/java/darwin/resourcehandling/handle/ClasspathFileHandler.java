@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
+import java.util.Objects;
 
+import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.watchservice.FileChangeListener;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
@@ -33,8 +35,9 @@ import com.google.inject.Stage;
 //TODO enable creation of handles relative to others and Path variables like ($TEXTURES, $MODELS ...)
 public class ClasspathFileHandler extends ListenerHandler {
 
-    private final Stage stage;
     public static final Path DEV_FOLDER = Paths.get("src/main/resources");
+    private final Stage stage;
+    private WatchServiceNotifier notifier;
     private final Path path;
     private final FileChangeListener fileListener = new FileChangeListener() {
         @Override
@@ -50,12 +53,18 @@ public class ClasspathFileHandler extends ListenerHandler {
     public ClasspathFileHandler(WatchServiceNotifier notifier, Stage stage,
                                 Path file) {
         this.stage = stage;
+        this.notifier = notifier;
         path = file;
+    }
+
+    @Override
+    public void registerChangeListener(ResourceChangeListener listener) {
+        super.registerChangeListener(listener);
+
         if (notifier != null) {
-            notifier.register(path, fileListener);
-            if (stage == Stage.DEVELOPMENT) {
-                notifier.register(DEV_FOLDER.resolve(path), fileListener);
-            }
+            Path p = stage == Stage.DEVELOPMENT ? DEV_FOLDER.resolve(path) : path;
+            notifier.register(p, fileListener);
+            notifier = null;
         }
     }
 
@@ -91,5 +100,27 @@ public class ClasspathFileHandler extends ListenerHandler {
                 return in;
             }
         }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.path);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ClasspathFileHandler other = (ClasspathFileHandler) obj;
+        if (!Objects.equals(this.path, other.path)) {
+            return false;
+        }
+        return true;
     }
 }

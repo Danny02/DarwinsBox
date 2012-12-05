@@ -17,9 +17,12 @@
 package darwin.tools.experimental;
 
 import java.io.*;
+import java.nio.file.Paths;
 
 import darwin.geometrie.io.*;
-import darwin.geometrie.io.obj.*;
+import darwin.geometrie.io.obj.ObjModelReader;
+import darwin.resourcehandling.handle.ClasspathFileHandler;
+
 
 /**
  *
@@ -46,7 +49,7 @@ public class ObjectCompilerTest
         int fileCount = files.length;
         for (File obj : files) {
             long time = System.currentTimeMillis();
-            try (InputStream in = ResourcesLoader.getRessource("resources/Models/" + obj.getName());) {
+            try (InputStream in = new ClasspathFileHandler(Paths.get("resources/Models/" + obj.getName())).getStream()) {
                 ModelReader mr = new ObjModelReader();
                 ModelWriter mw = new CtmModelWriter();
                 try (FileOutputStream fos = new FileOutputStream(
