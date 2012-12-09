@@ -26,7 +26,7 @@ import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.factory.ResourceFactory;
 import darwin.resourcehandling.handle.ResourceBundle;
-import darwin.resourcehandling.resmanagment.ShaderLoader;
+import darwin.resourcehandling.shader.ShaderLoader;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -78,7 +78,7 @@ public class ModelPacker {
             String[] mutations = new String[mut.size()];
             mut.toArray(mutations);
 
-            Shader s = rfac.createResource(sfac, description.merge(mutations)).get();
+            Shader s = rfac.createResource(sfac, description.merge(mutations));
 
             out[i] = factory.create(m, s);
         }

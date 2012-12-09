@@ -22,7 +22,7 @@ import javax.media.opengl.*;
 
 import darwin.renderer.opengl.FrameBuffer.*;
 import darwin.renderer.opengl.FrameBuffer.RenderBuffer.RenderBufferFactory;
-import darwin.resourcehandling.io.TextureUtil;
+import darwin.resourcehandling.texture.TextureUtil;
 
 /**
  *

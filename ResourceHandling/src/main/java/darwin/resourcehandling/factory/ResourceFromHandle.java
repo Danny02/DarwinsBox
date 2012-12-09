@@ -27,6 +27,8 @@ import darwin.resourcehandling.handle.ResourceHandle;
 public interface ResourceFromHandle<T> {
 
     public T create(ResourceHandle handle) throws IOException;
+    
+    public void update(ResourceHandle changed, T wrapper);
 
     public T getFallBack();
 }

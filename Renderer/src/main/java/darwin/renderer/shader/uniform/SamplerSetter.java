@@ -17,7 +17,6 @@
 package darwin.renderer.shader.uniform;
 
 import darwin.renderer.shader.Sampler;
-import darwin.resourcehandling.wrapper.TextureContainer;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -28,21 +27,17 @@ import com.jogamp.opengl.util.texture.Texture;
 public class SamplerSetter implements UniformSetter {
 
     private final Sampler sampler;
-    private final TextureContainer tex;
+    private final Texture tex;
 
-    public SamplerSetter(Sampler sampler, TextureContainer tex) {
+    public SamplerSetter(Sampler sampler, Texture tex) {
         assert (sampler != null);
         assert (tex != null);
         this.sampler = sampler;
         this.tex = tex;
     }
 
-    public SamplerSetter(Sampler sampler, Texture tex) {
-        this(sampler, new TextureContainer(tex));
-    }
-
     @Override
     public void set() {
-        sampler.bindTexture(tex.getTexture());
+        sampler.bindTexture(tex);
     }
 }

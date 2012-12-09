@@ -24,7 +24,7 @@ import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.uniform.MatrixSetter;
 import darwin.renderer.shader.uniform.UniformSetter;
-import darwin.resourcehandling.io.ShaderFile;
+import darwin.resourcehandling.shader.ShaderFile;
 import darwin.util.math.util.GenListener;
 import darwin.util.math.util.MatrixEvent;
 

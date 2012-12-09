@@ -14,30 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.wrapper;
+package darwin.annotations;
 
-import com.jogamp.opengl.util.texture.Texture;
 
+
+
+import java.lang.annotation.*;
 
 /**
  *
- * @author dheinrich
+ * @author daniel
  */
-public class TextureContainer {
-    private Texture texture;
-
-    public TextureContainer(Texture texture) {
-        this.texture = texture;
-    }
-
-    public TextureContainer() {
-    }
-
-    public Texture getTexture(){
-        return texture;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
+@Documented
+@Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE})
+public @interface MultiServiceProvider
+{
+    Class[] value();
 }

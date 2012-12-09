@@ -21,15 +21,11 @@ import java.util.Collection;
 
 import darwin.geometrie.unpacked.Material;
 import darwin.renderer.shader.*;
-import darwin.resourcehandling.resmanagment.texture.TextureLoadJob;
-import darwin.resourcehandling.resmanagment.texture.TextureLoadJob.TextureJobFactory;
-import darwin.resourcehandling.wrapper.TextureContainer;
 
 import com.google.common.base.Optional;
 import com.jogamp.opengl.util.texture.Texture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.media.opengl.GL;
 
 /**
  *
@@ -37,13 +33,6 @@ import javax.media.opengl.GL;
  */
 @Singleton
 public class ShaderMaterialFactory {
-
-    private final TextureJobFactory factory;
-
-    @Inject
-    public ShaderMaterialFactory(TextureJobFactory factory) {
-        this.factory = factory;
-    }
 
     public ShaderMaterial create(Shader shader, Collection<UniformSetter> setter) {
         UniformSetter[] array = new UniformSetter[setter.size()];

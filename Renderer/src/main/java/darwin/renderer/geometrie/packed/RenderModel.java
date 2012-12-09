@@ -27,11 +27,11 @@ import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Sampler;
 import darwin.renderer.shader.Shader;
 import darwin.renderer.shader.uniform.*;
-import darwin.resourcehandling.wrapper.TextureContainer;
 
 import com.google.common.base.Optional;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
  * Haelt alle Render relevanten Attribute eines 3D Modelles. Rendert ein Modell
@@ -102,7 +102,7 @@ public final class RenderModel implements Shaded, Cloneable {
         }
     }
 
-    public void addSamplerSetter(String s, TextureContainer tc) {
+    public void addSamplerSetter(String s, Texture tc) {
         Optional<Sampler> sampler = shader.getSampler(s);
         if (sampler.isPresent()) {
             uniforms.add(new SamplerSetter(sampler.get(), tc));

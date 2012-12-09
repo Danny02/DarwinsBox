@@ -89,6 +89,11 @@ public final class GraphicContext
         assert window != null : "Context is not initialized";
         return window;
     }
+    
+    public void invoke(boolean wait, GLRunnable runnable)
+    {
+        getGLWindow().invoke(wait, runnable);
+    }
 
     public boolean isInitialized()
     {

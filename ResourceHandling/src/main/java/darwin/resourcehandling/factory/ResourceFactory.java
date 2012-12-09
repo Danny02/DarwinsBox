@@ -21,10 +21,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.handle.ResourceBundle;
+import darwin.resourcehandling.handle.ResourceHandle;
 
 import javax.inject.Singleton;
+import sun.org.mozilla.javascript.internal.xml.XMLLib.Factory;
 
 /**
  *
@@ -33,59 +34,44 @@ import javax.inject.Singleton;
 @Singleton
 public class ResourceFactory {
 
-    public <T> ResourceWrapper<T> createResource(ResourceFromHandle<T> factory, ResourceHandle handle) {
+    public <T> T createResource(final ResourceFromHandle<T> factory, ResourceHandle handle) {
         try {
-            ResourceWrapper<T> wrapper = new ResourceWrapper<>(factory.create(handle));
-            handle.registerChangeListener(new ResourceUpdater(factory, wrapper));
-            return wrapper;
+            final T r = factory.create(handle);
+            handle.registerChangeListener(new ResourceChangeListener() {
+                @Override
+                public void resourceChanged(ResourceHandle handle) {
+                    factory.update(handle, r);
+                }
+            });
+            return r;
         } catch (IOException ex) {
             Logger.getLogger(ResourceFactory.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResourceWrapper<>(factory.getFallBack());
+            return factory.getFallBack();
         }
     }
 
-    public <T> ResourceWrapper<T> createResource(ResourceFromBundle<T> factory, ResourceBundle handle) {
-        ResourceWrapper<T> wrapper;
+    public <T> T createResource(ResourceFromBundle<T> factory, ResourceBundle handle) {
+        T wrapper;
         boolean fb = false;
         try {
-            wrapper = new ResourceWrapper<>(factory.create(handle));
+            wrapper = factory.create(handle);
         } catch (IOException ex) {
             Logger.getLogger(ResourceFactory.class.getName()).log(Level.SEVERE, null, ex);
-            wrapper = new ResourceWrapper<>(factory.getFallBack());
+            wrapper = factory.getFallBack();
             fb = true;
         }
-        handle.registerChangeListener(new ResourceUpdaterBundle(factory, wrapper, handle, fb));
+        handle.registerChangeListener(new ResourceUpdater(factory, wrapper, handle, fb));
         return wrapper;
     }
 
     private class ResourceUpdater<T> implements ResourceChangeListener {
 
-        private final ResourceFromHandle<T> factory;
-        private final ResourceWrapper<T> wrapper;
-
-        public ResourceUpdater(ResourceFromHandle<T> factory, ResourceWrapper<T> wrapper) {
-            this.factory = factory;
-            this.wrapper = wrapper;
-        }
-
-        @Override
-        public void resourceChanged(ResourceHandle handle) {
-            try {
-                wrapper.set(factory.create(handle));
-            } catch (IOException ex) {
-                wrapper.set(factory.getFallBack());
-            }
-        }
-    }
-
-    private class ResourceUpdaterBundle<T> implements ResourceChangeListener {
-
         private final ResourceFromBundle<T> factory;
-        private final ResourceWrapper<T> wrapper;
+        private final T wrapper;
         private final ResourceBundle bundle;
         private boolean fallback;
 
-        public ResourceUpdaterBundle(ResourceFromBundle<T> factory, ResourceWrapper<T> wrapper, ResourceBundle bundle, boolean fallback) {
+        public ResourceUpdater(ResourceFromBundle<T> factory, T wrapper, ResourceBundle bundle, boolean fallback) {
             this.factory = factory;
             this.wrapper = wrapper;
             this.bundle = bundle;
@@ -96,10 +82,10 @@ public class ResourceFactory {
         public void resourceChanged(ResourceHandle handle) {
             if (fallback) {
                 try {
-                    wrapper.set(factory.create(bundle));
+                    factory.update(bundle, handle, factory.create(bundle));
                     fallback = false;
                 } catch (IOException ex) {
-                    wrapper.set(factory.getFallBack());
+                    factory.update(bundle, handle, factory.getFallBack());
                     fallback = true;
                 }
             } else {

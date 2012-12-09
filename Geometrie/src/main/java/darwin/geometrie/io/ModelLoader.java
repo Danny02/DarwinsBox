@@ -22,12 +22,19 @@ import java.util.ServiceLoader;
 import darwin.geometrie.unpacked.Model;
 import darwin.resourcehandling.factory.ResourceFromHandle;
 import darwin.resourcehandling.handle.ResourceHandle;
+import darwin.util.logging.InjectLogger;
+
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 public class ModelLoader implements ResourceFromHandle<Model[]> {
+
+    @InjectLogger
+    Logger logger = NOPLogger.NOP_LOGGER;
 
     @Override
     public Model[] create(ResourceHandle handle) throws IOException {
@@ -49,6 +56,20 @@ public class ModelLoader implements ResourceFromHandle<Model[]> {
 
     @Override
     public Model[] getFallBack() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Model[0];
+    }
+
+    @Override
+    public void update(ResourceHandle changed, Model[] old) {
+        try {
+            Model[] create = create(changed);
+            if (create.length == old.length) {
+                System.arraycopy(create, 0, create, 0, create.length);
+            }else
+            {
+                logger.warn("Couldn't update model, because the submodel count differed!");
+            }
+        } catch (IOException ex) {
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 some
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.io;
+package darwin.resourcehandling.shader;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -22,13 +22,17 @@ import java.nio.file.Paths;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.*;
-import darwin.renderer.shader.BuildException;
-import darwin.renderer.shader.ShaderProgramBuilder;
-import darwin.resourcehandling.handle.FileHandlerFactory;
+import darwin.renderer.shader.Shader.ShaderFactory;
+import darwin.renderer.shader.*;
+import darwin.resourcehandling.dependencies.annotation.InjectBundle;
+import darwin.resourcehandling.factory.ResourceFromBundle;
+import darwin.resourcehandling.handle.*;
+import darwin.resourcehandling.shader.ShaderFile.Builder;
 import darwin.util.logging.InjectLogger;
 
+import com.google.common.base.Optional;
 import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
@@ -36,27 +40,137 @@ import static darwin.renderer.opengl.ShaderType.*;
 
 /**
  *
- * @author Daniel Heinrich
+ * @author some
  */
-@Singleton
-public class ShaderUtil {
+public class ShaderLoader implements ResourceFromBundle<Shader> {
 
+    @InjectBundle(files = {"Empty.frag", "Empty.vert"}, prefix = SHADER_PATH_PREFIX)
+    private ResourceBundle empty;
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     public static final String INCLUDE_PREFIX = "#pragma include";
     public static final String SHADER_PATH_PREFIX = "resources/shaders/";
-    public static final Path SHADER_PATH = Paths.get(ShaderUtil.SHADER_PATH_PREFIX);
+    public static final Path SHADER_PATH = Paths.get(SHADER_PATH_PREFIX);
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
-    private final GraphicContext gc;
     private final FileHandlerFactory fileFactory;
+    private final ShaderFactory shaderFactory;
+    private final GraphicContext gcontext;
 
     @Inject
-    public ShaderUtil(ShaderObjektFactory soFactory, GLClientConstants constants, GraphicContext gc, FileHandlerFactory fileFactory) {
+    public ShaderLoader(ShaderObjektFactory soFactory, GLClientConstants constants,
+                        FileHandlerFactory fileFactory, ShaderFactory shaderFactory, GraphicContext gcontext) {
         this.soFactory = soFactory;
         this.constants = constants;
-        this.gc = gc;
         this.fileFactory = fileFactory;
+        this.shaderFactory = shaderFactory;
+        this.gcontext = gcontext;
+    }
+
+    @Override
+    public Shader create(ResourceBundle bundle) throws IOException {
+        Builder builder = new Builder();
+        switch (bundle.getCount()) {
+            default:
+            case 3:
+                builder.withGeometrie(getData(bundle.get(2).getStream()));
+            case 2:
+                builder.withVertex(getData(bundle.get(1).getStream()));
+            case 1:
+                builder.withFragment(getData(bundle.get(0).getStream()));
+        }
+        builder.withName(bundle.toString()).withMutations(bundle.getOptions());
+
+        final ShaderFile file = builder.create();
+        final Shader shader = shaderFactory.create(file);
+
+        gcontext.invoke(false, new GLRunnable() {
+            @Override
+            public boolean run(GLAutoDrawable glad) {
+                try {
+                    ShaderProgramm compiledShader = compileShader(file);
+                    ShaderProgramm old = shader.getProgramm();
+                    shader.ini(compiledShader);
+                    logger.info("Shader " + file.name + " was succesfully compiled!");
+                    if (old != null) {
+                        old.delete();
+                    }
+                } catch (Throwable ex) {
+                    logger.warn(ex.getLocalizedMessage());
+                }
+                return true;
+            }
+        });
+
+        return shader;
+    }
+
+    @Override
+    public void update(final ResourceBundle bundle, ResourceHandle changed, final Shader shader) {
+        try {
+            String d = null;
+            ShaderType t = null;
+            switch (bundle.getCount()) {
+                default:
+                case 3:
+                    if (bundle.get(2) == changed) {
+                        d = getData(bundle.get(2).getStream());
+                        t = ShaderType.Geometrie;
+                        break;
+                    }
+                case 2:
+                    if (bundle.get(1) == changed) {
+                        d = getData(bundle.get(1).getStream());
+                        t = ShaderType.Vertex;
+                        break;
+                    }
+                case 1:
+                    if (bundle.get(0) == changed) {
+                        d = getData(bundle.get(0).getStream());
+                        t = ShaderType.Fragment;
+                        break;
+                    }
+            }
+
+            final ShaderType type = t;
+            final String data = d;
+            gcontext.invoke(false, new GLRunnable() {
+                @Override
+                public boolean run(GLAutoDrawable glad) {
+                    try {
+                        GL2GL3 gl = glad.getGL().getGL2GL3();
+                        ShaderObjekt so = createSObject(type, data, bundle.getOptions());
+                        int po = shader.getProgramm().getPObject();
+
+                        gl.glAttachShader(po, so.getShaderobjekt());
+                        gl.glLinkProgram(po);
+                        shader.ini(shader.getProgramm());
+
+                        Optional<String> error = shader.getProgramm().verify();
+                        if (error.isPresent()) {
+                            logger.warn(error.get());
+                            shader.ini(getFallBack().getProgramm());
+                        } else {
+                            logger.info("Shader " + bundle + " was succesfully updated!");
+                        }
+                    } catch (Throwable ex) {
+                        logger.warn(ex.getLocalizedMessage());
+                    }
+                    return true;
+                }
+            });
+        } catch (IOException ex) {
+            logger.warn(ex.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public Shader getFallBack() {
+        try {
+            return create(empty);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not load fallback shader!");
+        }
     }
 
     //TODO compile fehler vllcht auffangen, zumindestens im DEV mode?
@@ -99,7 +213,7 @@ public class ShaderUtil {
                 return new ShaderProgramBuilder().
                         with(sfile.getAttributs()).
                         with(fso).with(vso).with(gso).
-                        link(gc);
+                        link(gcontext);
             } catch (BuildException ex) {
                 exception = ex;
                 errorMessage = "while linking";

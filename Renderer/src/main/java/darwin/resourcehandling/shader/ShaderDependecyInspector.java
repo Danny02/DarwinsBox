@@ -14,20 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.resmanagment;
+package darwin.resourcehandling.shader;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.*;
 
 import darwin.annotations.ServiceProvider;
 import darwin.resourcehandling.ResourceDependecyInspector;
 import darwin.resourcehandling.handle.ResourceHandle;
-import darwin.resourcehandling.io.ShaderUtil;
-
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -46,9 +42,9 @@ public class ShaderDependecyInspector implements ResourceDependecyInspector {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if (line.startsWith(ShaderUtil.INCLUDE_PREFIX)) {
-                    String path = line.substring(ShaderUtil.INCLUDE_PREFIX.length()).trim();
-                    dependencys.add(ShaderUtil.SHADER_PATH.resolve(path));
+                if (line.startsWith(ShaderLoader.INCLUDE_PREFIX)) {
+                    String path = line.substring(ShaderLoader.INCLUDE_PREFIX.length()).trim();
+                    dependencys.add(ShaderLoader.SHADER_PATH.resolve(path));
                 }
             }
         } catch (IOException ex) {

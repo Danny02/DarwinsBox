@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.resmanagment;
+package darwin.resourcehandling.shader;
 
 import java.lang.reflect.Method;
 
@@ -43,7 +43,7 @@ public class ShaderLoaderProvider extends ResourceFromBundleProvider<Shader> {
         return getInjector().getInstance(ShaderLoader.class);
     }
 
-    public Injector getInjector() {
+    public static Injector getInjector() {
         try {
             Class<?> client = ClassLoader.getSystemClassLoader().loadClass("darwin.core.gui.Client");
             Method declaredMethod = client.getDeclaredMethod("getInjector", boolean.class);
