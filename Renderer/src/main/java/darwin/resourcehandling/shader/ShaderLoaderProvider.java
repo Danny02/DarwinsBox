@@ -20,8 +20,7 @@ import java.lang.reflect.Method;
 
 import darwin.annotations.ServiceProvider;
 import darwin.renderer.shader.Shader;
-import darwin.resourcehandling.factory.ResourceFromBundle;
-import darwin.resourcehandling.factory.ResourceFromBundleProvider;
+import darwin.resourcehandling.factory.*;
 
 import com.google.inject.Injector;
 import javax.inject.Singleton;
