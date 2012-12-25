@@ -14,22 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.dependencies.annotation;
+package darwin.resourcehandling.dependencies;
 
-import java.lang.annotation.*;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.google.inject.*;
+import com.google.inject.spi.TypeEncounter;
 
 /**
  *
  * @author daniel
  */
-@Target({FIELD})
-@Retention(RUNTIME)
-public @interface InjectResource {
+public class ResourceTypeListener implements com.google.inject.spi.TypeListener {
 
-    String file();
+    private final ResourceInjector injector;
 
-    String[] options() default {};
+    @Inject
+    public ResourceTypeListener(ResourceInjector injector) {
+        this.injector = injector;
+    }
+
+    @Override
+    public <I> void hear(TypeLiteral<I> aTypeLiteral, TypeEncounter<I> aTypeEncounter) {
+        for (MembersInjector m : injector.retriveMemberInjectors(aTypeLiteral.getRawType())) {
+            aTypeEncounter.register(m);
+        }
+    }
 }

@@ -17,8 +17,7 @@
 package darwin.resourcehandling.shader;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.*;
@@ -53,13 +52,13 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
     public static final Path SHADER_PATH = Paths.get(SHADER_PATH_PREFIX);
     private final ShaderObjektFactory soFactory;
     private final GLClientConstants constants;
-    private final FileHandlerFactory fileFactory;
+    private final FileHandleCache fileFactory;
     private final ShaderFactory shaderFactory;
     private final GraphicContext gcontext;
 
     @Inject
     public ShaderLoader(ShaderObjektFactory soFactory, GLClientConstants constants,
-                        FileHandlerFactory fileFactory, ShaderFactory shaderFactory, GraphicContext gcontext) {
+                        FileHandleCache fileFactory, ShaderFactory shaderFactory, GraphicContext gcontext) {
         this.soFactory = soFactory;
         this.constants = constants;
         this.fileFactory = fileFactory;
@@ -249,7 +248,7 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                 line = line.trim();
                 if (line.startsWith(INCLUDE_PREFIX)) {
                     String path = line.substring(INCLUDE_PREFIX.length()).trim();
-                    InputStream shader = fileFactory.create(SHADER_PATH_PREFIX + path).getStream();
+                    InputStream shader = fileFactory.get(SHADER_PATH_PREFIX + path).getStream();
                     if (shader != null) {
                         String src = getData(shader);
                         sb.append(src);

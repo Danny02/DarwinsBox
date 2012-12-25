@@ -17,15 +17,12 @@
 package darwin.resourcehandling.factory;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.handle.ResourceBundle;
-import darwin.resourcehandling.handle.ResourceHandle;
+import darwin.resourcehandling.handle.*;
 
 import javax.inject.Singleton;
-import sun.org.mozilla.javascript.internal.xml.XMLLib.Factory;
 
 /**
  *

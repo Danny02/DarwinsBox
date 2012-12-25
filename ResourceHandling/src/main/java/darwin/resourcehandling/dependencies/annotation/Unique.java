@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @Target({FIELD})
 @Retention(RUNTIME)
-public @interface InjectResource {
-
-    String file();
-
-    String[] options() default {};
+public @interface Unique{
 }

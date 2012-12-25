@@ -51,6 +51,11 @@ public class UrlHandle implements ResourceHandle {
     }
 
     @Override
+    public ResourceHandle resolve(String subPath) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 67 * hash + Objects.hashCode(this.url);

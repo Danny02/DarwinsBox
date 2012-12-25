@@ -14,24 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.dependencies.annotation;
+package darwin.resourcehandling.texture;
 
-import java.lang.annotation.*;
+import darwin.annotations.ServiceProvider;
+import darwin.resourcehandling.factory.ResourceFromHandle;
+import darwin.resourcehandling.factory.ResourceFromHandleProvider;
+import darwin.resourcehandling.shader.ShaderLoaderProvider;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-@Target({FIELD})
-@Retention(RUNTIME)
-public @interface InjectBundle {
+@ServiceProvider(ResourceFromHandleProvider.class)
+public class TextureLoaderProvider extends ResourceFromHandleProvider<Texture> {
 
-    String[] files();
+    public TextureLoaderProvider() {
+        super(Texture.class);
+    }
 
-    String prefix() default "resources/";
-    
-    String[] options() default {};
+    @Override
+    public ResourceFromHandle<Texture> get() {
+        return ShaderLoaderProvider.getInjector().getInstance(TextureLoader.class);
+    }
 }

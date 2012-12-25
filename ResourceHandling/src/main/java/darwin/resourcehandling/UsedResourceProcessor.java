@@ -16,14 +16,12 @@
  */
 package darwin.resourcehandling;
 
-import darwin.resourcehandling.handle.ResourceHandle;
 import java.nio.file.*;
 import java.util.*;
 
-import darwin.resourcehandling.dependencies.annotation.InjectBundle;
-import darwin.resourcehandling.dependencies.annotation.InjectResource;
-import darwin.resourcehandling.handle.ClasspathFileHandler;
+import darwin.resourcehandling.dependencies.annotation.*;
 import darwin.resourcehandling.handle.ResourceBundle;
+import darwin.resourcehandling.handle.*;
 
 import com.google.inject.Stage;
 import javax.annotation.processing.*;
@@ -132,7 +130,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
         ResourceDependecyInspector in = inspectors.get(extension);
         if (in != null) {
             m.printMessage(Kind.NOTE, "Inspecting resource: " + path.toString() + ", with: " + in.getClass());
-            for (Path p : in.getDependencys(new ClasspathFileHandler(null, Stage.DEVELOPMENT, path))) {
+            for (Path p : in.getDependencys(new ClasspathFileHandler(true, null, path))) {
                 appendResource(p);
             }
         }

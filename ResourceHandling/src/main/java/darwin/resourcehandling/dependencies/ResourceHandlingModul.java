@@ -16,17 +16,10 @@
  */
 package darwin.resourcehandling.dependencies;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.file.Paths;
+import darwin.resourcehandling.cache.*;
+import darwin.resourcehandling.handle.FileHandleCache;
 
-import darwin.resourcehandling.dependencies.annotation.TypeListener;
-import darwin.resourcehandling.handle.*;
-import darwin.resourcehandling.watchservice.WatchServiceNotifier;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Stage;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.*;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
 
@@ -36,28 +29,23 @@ import com.google.inject.name.Names;
  */
 public class ResourceHandlingModul extends AbstractModule {
 
-    private final WatchServiceNotifier watcher = new WatchServiceNotifier();
-
     @Override
     protected void configure() {
-        //TODO introduce annotation processor for automatic factory interface creation of @AssistedInject constructors
-        Class[] factoryClasses = new Class[]{};
+        boolean devMode = Stage.DEVELOPMENT == currentStage();
+        bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).toInstance(devMode);
+        
+        FileHandleCache factory = FileHandleCache.build()
+                .withChangeNotification(devMode)
+                .withDevFolder(devMode)
+                .create();
+        bind(FileHandleCache.class).toInstance(factory);
 
-        for (Class factory : factoryClasses) {
-            install(new FactoryModuleBuilder().build(factory));
-        }
+        final ResourceCache cache = new MapResourceCache();        
+        bind(ResourceCache.class).toInstance(cache);
 
-        boolean hotReload = Stage.DEVELOPMENT == currentStage();
-        bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).toInstance(hotReload);
+        ResourceInjector rinj = new ResourceInjector(factory, cache);
+        bind(ResourceInjector.class).toInstance(rinj);
 
-        if (hotReload) {
-            watcher.createNotifierThread().start();
-        }
-        bind(WatchServiceNotifier.class).toInstance(watcher);
-
-        FileHandlerFactory factory = new FileHandlerFactory(watcher, currentStage());
-        bind(FileHandlerFactory.class).toInstance(factory);
- 
-        bindListener(Matchers.any(), new TypeListener(factory));
+        bindListener(Matchers.any(), new ResourceTypeListener(rinj));
     }
 }

@@ -14,24 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.dependencies.annotation;
+package darwin.resourcehandling.cache;
 
-import java.lang.annotation.*;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import darwin.resourcehandling.factory.*;
+import darwin.resourcehandling.handle.*;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-@Target({FIELD})
-@Retention(RUNTIME)
-public @interface InjectBundle {
+public class NoResourceCache implements ResourceCache {
 
-    String[] files();
+    private final ResourceFactory fac = new ResourceFactory();
 
-    String prefix() default "resources/";
-    
-    String[] options() default {};
+    @Override
+    public <T> T get(ResourceFromBundle<T> factory, ResourceBundle bundle, boolean unique) {
+        return fac.createResource(factory, bundle);
+    }
+
+    @Override
+    public <T> T get(ResourceFromHandle<T> factory, ResourceHandle bundle, boolean unique) {
+        return fac.createResource(factory, bundle);
+    }
 }

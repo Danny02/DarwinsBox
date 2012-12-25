@@ -31,6 +31,7 @@ import darwin.util.math.base.vector.*;
  */
 public class ObjFileParser
 {
+    public static final String MATERIAL_LIB = "mtllib";
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private Pattern leer, slash;
@@ -89,7 +90,7 @@ public class ObjFileParser
             case "usemtl":
                 useMaterial(obj, values);
                 break;
-            case "mtllib":
+            case MATERIAL_LIB:
                 parseMtlLib(values);
                 break;
         }

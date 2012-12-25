@@ -16,8 +16,9 @@
  */
 package darwin.resourcehandling;
 
-import darwin.resourcehandling.handle.ResourceHandle;
 import java.nio.file.Path;
+
+import darwin.resourcehandling.handle.ClasspathFileHandler;
 
 /**
  *
@@ -25,7 +26,7 @@ import java.nio.file.Path;
  */
 public interface ResourceDependecyInspector {
 
-    public Iterable<Path> getDependencys(ResourceHandle resource);
+    public Iterable<Path> getDependencys(ClasspathFileHandler resource);
 
     public String[] getSupportedFileTypes();
 }

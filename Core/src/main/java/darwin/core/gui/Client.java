@@ -64,10 +64,10 @@ public class Client {
     public synchronized static Injector getInjector(boolean debug) {
         if (INJECTOR == null) {
             Stage stage = (RuntimeUtil.IS_DEBUGGING || debug) ? Stage.DEVELOPMENT : Stage.PRODUCTION;
-            INJECTOR = Guice.createInjector(stage, new Module[]{new CoreModul(),
-                                                                new RendererModul(),
-                                                                new LoggingModul(),
-                                                                new ResourceHandlingModul()});
+            INJECTOR = Guice.createInjector(stage, new CoreModul(),
+                                            new RendererModul(),
+                                            new LoggingModul(),
+                                            new ResourceHandlingModul());
         }
         return INJECTOR;
     }

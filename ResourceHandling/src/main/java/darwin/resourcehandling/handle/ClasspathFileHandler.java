@@ -36,35 +36,34 @@ import com.google.inject.Stage;
 public class ClasspathFileHandler extends ListenerHandler {
 
     public static final Path DEV_FOLDER = Paths.get("src/main/resources");
-    private final Stage stage;
-    private WatchServiceNotifier notifier;
+    private final boolean useDevFolder;
+    private final WatchServiceNotifier notifier;
+    private boolean registered;
     private final Path path;
-    private final FileChangeListener fileListener = new FileChangeListener() {
-        @Override
-        public void fileChanged(Kind kind) {
-            fireChangeEvent();
-        }
-    };
 
     public ClasspathFileHandler(Path path) {
-        this(null, Stage.PRODUCTION, path);
+        this(false, null, path);
     }
 
-    public ClasspathFileHandler(WatchServiceNotifier notifier, Stage stage,
-                                Path file) {
-        this.stage = stage;
+    public ClasspathFileHandler(boolean useDevFolder, WatchServiceNotifier notifier, Path path) {
+        this.useDevFolder = useDevFolder;
         this.notifier = notifier;
-        path = file;
+        this.path = path;
     }
 
     @Override
     public void registerChangeListener(ResourceChangeListener listener) {
         super.registerChangeListener(listener);
 
-        if (notifier != null) {
-            Path p = stage == Stage.DEVELOPMENT ? DEV_FOLDER.resolve(path) : path;
-            notifier.register(p, fileListener);
-            notifier = null;
+        if (!registered) {
+            Path p = useDevFolder ? DEV_FOLDER.resolve(path) : path;
+            notifier.register(p, new FileChangeListener() {
+                @Override
+                public void fileChanged(Kind kind) {
+                    fireChangeEvent();
+                }
+            });
+            registered = true;
         }
     }
 
@@ -78,11 +77,16 @@ public class ClasspathFileHandler extends ListenerHandler {
     }
 
     @Override
+    public ClasspathFileHandler resolve(String subPath) {
+        return new ClasspathFileHandler(useDevFolder, notifier, path.getParent().resolve(subPath));
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         Path devPath = DEV_FOLDER.resolve(path);
         if (Files.isReadable(path)) {
             return Files.newInputStream(path, StandardOpenOption.READ);
-        } else if (stage == Stage.DEVELOPMENT && Files.isReadable(devPath)) {
+        } else if (useDevFolder && Files.isReadable(devPath)) {
             return Files.newInputStream(devPath, StandardOpenOption.READ);
         } else {
             if (path.isAbsolute()) {

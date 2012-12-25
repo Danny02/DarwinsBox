@@ -14,24 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.dependencies.annotation;
+package darwin.util.dependencies;
 
-import java.lang.annotation.*;
+import java.lang.reflect.Field;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.google.inject.MembersInjector;
+import javax.inject.Provider;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-@Target({FIELD})
-@Retention(RUNTIME)
-public @interface InjectBundle {
+public class AsyncMemberInjector<T> implements MembersInjector<T> {
 
-    String[] files();
+    private final Field field;
+    private final Provider<T> prov;
 
-    String prefix() default "resources/";
-    
-    String[] options() default {};
+    public AsyncMemberInjector(Field field, Provider<T> prov) {
+        this.field = field;
+        field.setAccessible(true);
+        this.prov = prov;
+    }
+
+    @Override
+    public void injectMembers(T instance) {
+        try {
+            field.set(instance, prov.get());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

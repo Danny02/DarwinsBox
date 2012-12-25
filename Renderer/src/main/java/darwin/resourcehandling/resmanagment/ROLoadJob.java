@@ -26,7 +26,7 @@ import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.ModelPacker;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderObjekt;
-import darwin.resourcehandling.handle.FileHandlerFactory;
+import darwin.resourcehandling.handle.FileHandleCache;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -49,10 +49,10 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
     private final ModelPacker packer;
     private final ObjConfig ljob;
     private List<RenderObjekt> mcontainer;
-    private final FileHandlerFactory factory;
+    private final FileHandleCache factory;
 
     @AssistedInject
-    public ROLoadJob(ModelPacker packer, FileHandlerFactory loader, @Assisted ObjConfig ljob)
+    public ROLoadJob(ModelPacker packer, FileHandleCache loader, @Assisted ObjConfig ljob)
     {
         this.packer = packer;
         this.factory = loader;
@@ -65,7 +65,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
         String path = ljob.getPath();
         String ext = path.substring(path.lastIndexOf('.') + 1);
 
-        InputStream in = new BufferedInputStream(factory.create(path).getStream());
+        InputStream in = new BufferedInputStream(factory.get(path).getStream());
         in.mark(1024);//one kilobyte should be enough to check if the file is of the right type
 
         Model[] mo = null;

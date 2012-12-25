@@ -16,9 +16,9 @@
  */
 package darwin.resourcehandling.handle;
 
+import java.io.*;
+
 import darwin.resourcehandling.ResourceChangeListener;
-import java.io.IOException;
-import java.io.InputStream;
 
 
 /**
@@ -28,5 +28,6 @@ import java.io.InputStream;
 public interface ResourceHandle {
     public String getName();
     public InputStream getStream() throws IOException;
+    public ResourceHandle resolve(String subPath);
     public void registerChangeListener(ResourceChangeListener listener);
 }

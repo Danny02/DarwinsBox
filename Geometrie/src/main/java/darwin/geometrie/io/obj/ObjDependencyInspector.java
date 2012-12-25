@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.shader;
+package darwin.geometrie.io.obj;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
 
 import darwin.annotations.ServiceProvider;
 import darwin.resourcehandling.ResourceDependecyInspector;
@@ -29,9 +29,7 @@ import darwin.resourcehandling.handle.ClasspathFileHandler;
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @ServiceProvider(ResourceDependecyInspector.class)
-public class ShaderDependecyInspector implements ResourceDependecyInspector {
-
-    private static String[] extensions = new String[]{"frag", "vert", "geom"};
+public class ObjDependencyInspector implements ResourceDependecyInspector{
 
     @Override
     public Iterable<Path> getDependencys(ClasspathFileHandler resource) {
@@ -41,9 +39,9 @@ public class ShaderDependecyInspector implements ResourceDependecyInspector {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if (line.startsWith(ShaderLoader.INCLUDE_PREFIX)) {
-                    String path = line.substring(ShaderLoader.INCLUDE_PREFIX.length()).trim();
-                    dependencys.add(ShaderLoader.SHADER_PATH.resolve(path));
+                if (line.startsWith(ObjFileParser.MATERIAL_LIB)) {
+                    String path = line.substring(ObjFileParser.MATERIAL_LIB.length()).trim();
+                    dependencys.add(resource.resolve(path).getPath());
                 }
             }
         } catch (IOException ex) {
@@ -53,6 +51,6 @@ public class ShaderDependecyInspector implements ResourceDependecyInspector {
 
     @Override
     public String[] getSupportedFileTypes() {
-        return Arrays.copyOf(extensions, extensions.length);
-    }
+        return new String[]{"obj"};
+    }    
 }
