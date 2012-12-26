@@ -85,11 +85,19 @@ public class ResourceInjector {
     }
 
     public static ResourceFromBundle getBundleFactory(Class c) {
-        return (ResourceFromBundle) bundleProvider.get(c).get();
+        ResourceFromBundleProvider prov = bundleProvider.get(c);
+        if (prov == null) {
+            throw new RuntimeException("No ResourceLoaderProvider found for the resource " + c);
+        }
+        return (ResourceFromBundle) prov.get();
     }
 
     public static ResourceFromHandle getHandleFactory(Class c) {
-        return (ResourceFromHandle) handleProvider.get(c).get();
+        ResourceFromHandleProvider prov = handleProvider.get(c);
+        if (prov == null) {
+            throw new RuntimeException("No ResourceLoaderProvider found for the resource " + c);
+        }
+        return (ResourceFromHandle) prov.get();
     }
 
     private <T> void retriveHandleInections(Field field, ArrayList<MembersInjector<T>> list) {
