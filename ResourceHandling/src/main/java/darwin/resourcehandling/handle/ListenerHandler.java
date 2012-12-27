@@ -16,8 +16,7 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import darwin.resourcehandling.ResourceChangeListener;
 
@@ -25,7 +24,7 @@ import darwin.resourcehandling.ResourceChangeListener;
  *
  * @author daniel
  */
-abstract class ListenerHandler implements ResourceHandle {
+public abstract class ListenerHandler implements ResourceHandle {
 
     private final List<ResourceChangeListener> listeners = new LinkedList<>();
 

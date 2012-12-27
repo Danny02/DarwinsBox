@@ -16,17 +16,13 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Objects;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.watchservice.FileChangeListener;
-import darwin.resourcehandling.watchservice.WatchServiceNotifier;
-
-import com.google.inject.Stage;
+import darwin.resourcehandling.watchservice.*;
 
 /**
  *
@@ -55,7 +51,7 @@ public class ClasspathFileHandler extends ListenerHandler {
     public void registerChangeListener(ResourceChangeListener listener) {
         super.registerChangeListener(listener);
 
-        if (!registered) {
+        if (!registered && notifier != null) {
             Path p = useDevFolder ? DEV_FOLDER.resolve(path) : path;
             notifier.register(p, new FileChangeListener() {
                 @Override
