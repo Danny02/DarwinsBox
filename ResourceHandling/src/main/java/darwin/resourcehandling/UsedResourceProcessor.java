@@ -16,9 +16,11 @@
  */
 package darwin.resourcehandling;
 
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.logging.*;
 
 import darwin.resourcehandling.dependencies.annotation.*;
 import darwin.resourcehandling.handle.*;
@@ -80,7 +82,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
 
     private FilerFactory getFiler() {
         if (filer == null) {
-            filer = new FilerFactory(processingEnv.getFiler(), StandardLocation.SOURCE_PATH, StandardLocation.CLASS_OUTPUT);
+            filer = new FilerFactory(processingEnv.getFiler());
         }
         return filer;
     }

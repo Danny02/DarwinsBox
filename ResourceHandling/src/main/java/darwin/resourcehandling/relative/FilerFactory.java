@@ -17,13 +17,12 @@
 package darwin.resourcehandling.relative;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
-import darwin.util.misc.Throw;
 
 import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.JavaFileManager.Location;
+import javax.tools.*;
 
 /**
  *
@@ -32,27 +31,43 @@ import javax.tools.JavaFileManager.Location;
 public class FilerFactory implements RelativeFileFactory {
 
     private final Filer filer;
-    private final Location read, write;
     private final Map<String, FileObject> readFiles = new HashMap<>();
 
-    public FilerFactory(Filer filer, Location read, Location write) {
+    public FilerFactory(Filer filer) {
         this.filer = filer;
-        this.read = read;
-        this.write = write;
     }
 
     @Override
     public InputStream readRelative(String name) throws IOException {
-        FileObject file = readFiles.get(name);
-        if (file == null) {
-            file = filer.getResource(read, "", name);
-            readFiles.put(name, file);
-        }
-        return file.openInputStream();
+        return getReadFile(name).openInputStream();
     }
 
     @Override
     public OutputStream writeRelative(String name) throws IOException {
-        return filer.createResource(write, "", name).openOutputStream();
+        return filer.createResource(StandardLocation.CLASS_OUTPUT, "", name).openOutputStream();
+    }
+    
+    public void delete(String name) throws IOException
+    {
+        FileObject f = getReadFile(name);
+        if(!f.delete())
+        {
+            Path get = Paths.get(f.toUri());
+            Files.deleteIfExists(get);
+        }
+    }
+    
+    public FileObject getReadFile(String name) throws IOException
+    {
+        FileObject file = readFiles.get(name);
+        if (file == null) {
+            try {
+                file = filer.getResource(StandardLocation.SOURCE_PATH, "", name);
+            } catch (IOException ex) {
+                file = filer.getResource(StandardLocation.CLASS_OUTPUT, "", name);
+            }
+            readFiles.put(name, file);
+        }
+        return file;
     }
 }
