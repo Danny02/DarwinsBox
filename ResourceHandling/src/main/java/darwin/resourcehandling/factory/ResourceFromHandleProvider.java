@@ -16,19 +16,19 @@
  */
 package darwin.resourcehandling.factory;
 
-import javax.inject.Provider;
-
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public abstract class ResourceFromHandleProvider<T> implements Provider<ResourceFromHandle<T>> {
+public abstract class ResourceFromHandleProvider<T>{
 
     private final Class<T> t;
 
     protected ResourceFromHandleProvider(Class<T> t) {
         this.t = t;
     }
+    
+    public abstract ResourceFromHandle<T> get(String[] options);
 
     public Class<T> getType() {
         return t;

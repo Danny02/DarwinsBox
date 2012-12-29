@@ -14,23 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.factory;
+package darwin.resourcehandling.relative;
 
-import javax.inject.Provider;
+import java.io.*;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public abstract class ResourceFromBundleProvider<T> implements Provider<ResourceFromBundle<T>>{
-
-    private final Class<T> t;
-
-    protected ResourceFromBundleProvider(Class<T> t) {
-        this.t = t;
-    }
-
-    public Class<T> getType() {
-        return t;
-    }    
+public interface RelativeFileFactory {
+    public InputStream readRelative(String name) throws IOException;
+    public OutputStream writeRelative(String name) throws IOException;
 }

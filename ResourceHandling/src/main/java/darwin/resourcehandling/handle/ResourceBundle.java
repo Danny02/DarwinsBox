@@ -77,8 +77,9 @@ public class ResourceBundle implements Iterable<ResourceHandle> {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 73 * hash + Arrays.deepHashCode(this.handles);
+        int hash = 5;
+        hash = 89 * hash + Arrays.deepHashCode(this.handles);
+        hash = 89 * hash + Arrays.deepHashCode(this.options);
         return hash;
     }
 
@@ -92,6 +93,9 @@ public class ResourceBundle implements Iterable<ResourceHandle> {
         }
         final ResourceBundle other = (ResourceBundle) obj;
         if (!Arrays.deepEquals(this.handles, other.handles)) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.options, other.options)) {
             return false;
         }
         return true;

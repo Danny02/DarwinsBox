@@ -17,8 +17,7 @@
 package darwin.resourcehandling.texture;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.factory.ResourceFromHandle;
@@ -27,8 +26,7 @@ import darwin.resourcehandling.handle.ResourceHandle;
 import com.jogamp.common.util.IOUtil;
 import com.jogamp.opengl.util.texture.*;
 import javax.inject.Inject;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLRunnable;
+import javax.media.opengl.*;
 
 /**
  *
@@ -69,7 +67,7 @@ public class TextureLoader implements ResourceFromHandle<Texture> {
                                          true, IOUtil.getFileSuffix(changed.getName()));
         } catch (IOException ex) {
         }
-        
+
         final TextureData data = a;
         gc.invoke(false, new GLRunnable() {
             @Override

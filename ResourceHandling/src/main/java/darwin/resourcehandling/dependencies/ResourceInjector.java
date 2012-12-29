@@ -16,7 +16,6 @@
  */
 package darwin.resourcehandling.dependencies;
 
-import darwin.util.dependencies.AsyncMemberInjector;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -25,7 +24,7 @@ import darwin.resourcehandling.dependencies.annotation.*;
 import darwin.resourcehandling.factory.*;
 import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.resourcehandling.handle.*;
-import darwin.util.dependencies.SimpleMembersInjector;
+import darwin.util.dependencies.*;
 
 import com.google.inject.MembersInjector;
 import javax.inject.*;
@@ -92,12 +91,12 @@ public class ResourceInjector {
         return (ResourceFromBundle) prov.get();
     }
 
-    public static ResourceFromHandle getHandleFactory(Class c) {
+    public static ResourceFromHandleProvider getHandleFactory(Class c) {
         ResourceFromHandleProvider prov = handleProvider.get(c);
         if (prov == null) {
             throw new RuntimeException("No ResourceLoaderProvider found for the resource " + c);
         }
-        return (ResourceFromHandle) prov.get();
+        return prov;
     }
 
     private <T> void retriveHandleInections(Field field, ArrayList<MembersInjector<T>> list) {
@@ -108,12 +107,12 @@ public class ResourceInjector {
             if (field.getType() == ResourceHandle.class) {
                 list.add(new SimpleMembersInjector<T>(field, handle));
             } else {
-                final ResourceFromHandle<T> from = getHandleFactory(field.getType());
+                final ResourceFromHandle from = getHandleFactory(field.getType()).get(anno.options());
                 if (from != null) {
                     list.add(new AsyncMemberInjector<>(field, new Provider<T>() {
                         @Override
                         public T get() {
-                            return cache.get(from, handle, unique);
+                            return (T) cache.get(from, handle, unique);
                         }
                     }));
                 }

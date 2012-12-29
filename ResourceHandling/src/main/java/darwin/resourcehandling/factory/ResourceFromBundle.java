@@ -18,8 +18,7 @@ package darwin.resourcehandling.factory;
 
 import java.io.IOException;
 
-import darwin.resourcehandling.handle.ResourceBundle;
-import darwin.resourcehandling.handle.ResourceHandle;
+import darwin.resourcehandling.handle.*;
 
 /**
  *

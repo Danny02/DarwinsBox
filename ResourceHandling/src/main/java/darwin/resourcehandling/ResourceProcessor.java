@@ -14,23 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling.factory;
+package darwin.resourcehandling;
 
-import javax.inject.Provider;
+import darwin.resourcehandling.UsedResourceProcessor.ResourceTupel;
+import darwin.resourcehandling.relative.FilerFactory;
+
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public abstract class ResourceFromBundleProvider<T> implements Provider<ResourceFromBundle<T>>{
+public interface ResourceProcessor {
 
-    private final Class<T> t;
+    public void process(Iterable<ResourceTupel> resource, FilerFactory filer);
 
-    protected ResourceFromBundleProvider(Class<T> t) {
-        this.t = t;
-    }
+    public Class[] supportedResourceTypes();
 
-    public Class<T> getType() {
-        return t;
-    }    
+    public String[] supportedFileExtensions();
 }

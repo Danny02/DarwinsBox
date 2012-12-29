@@ -14,12 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.resourcehandling;
+package darwin.resourcehandling.relative;
+
+import java.io.*;
+import java.nio.file.*;
+
+import darwin.resourcehandling.handle.ClasspathFileHandler;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface Resource {
-    public boolean isInitialized();
+public class RelativeHandleFactory implements RelativeFileFactory {
+
+    private final ClasspathFileHandler handle;
+
+    public RelativeHandleFactory(ClasspathFileHandler handle) {
+        this.handle = handle;
+    }
+
+    @Override
+    public InputStream readRelative(String name) throws IOException {
+        return handle.resolve(name).getStream();
+    }
+
+    @Override
+    public OutputStream writeRelative(String name) throws IOException {
+        return Files.newOutputStream(handle.resolve(name).getPath(), StandardOpenOption.WRITE);
+    }
 }

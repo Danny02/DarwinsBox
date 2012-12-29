@@ -16,19 +16,20 @@
  */
 package darwin.resourcehandling;
 
+import java.lang.reflect.*;
 import java.nio.file.*;
 import java.util.*;
 
 import darwin.resourcehandling.dependencies.annotation.*;
-import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.resourcehandling.handle.*;
+import darwin.resourcehandling.relative.FilerFactory;
 
-import com.google.inject.Stage;
 import javax.annotation.processing.*;
 import javax.inject.Named;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.tools.Diagnostic.Kind;
+import javax.tools.*;
 
 /**
  *
@@ -37,17 +38,51 @@ import javax.tools.Diagnostic.Kind;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class UsedResourceProcessor extends AbstractProcessor {
 
-//    private static final String servicePath = "META-INF/services/";
-    private static final Set<Path> resources = new HashSet<>();
-    private static final Map<String, ResourceDependecyInspector> inspectors = new HashMap<>();
+    public static class ResourceTupel {
 
-    static {
-        for (ResourceDependecyInspector in : ServiceLoader.load(ResourceDependecyInspector.class)) {
-            for (String prefix : in.getSupportedFileTypes()) {
-                System.out.println(prefix + " -> " + in.getClass());
-                inspectors.put(prefix, in);
-            }
+        public final Path path;
+        public final String className;
+
+        public ResourceTupel(Path path, String className) {
+            this.path = path;
+            this.className = className;
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 47 * hash + Objects.hashCode(this.path);
+            hash = 47 * hash + Objects.hashCode(this.className);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ResourceTupel other = (ResourceTupel) obj;
+            if (!Objects.equals(this.path, other.path)) {
+                return false;
+            }
+            if (!Objects.equals(this.className, other.className)) {
+                return false;
+            }
+            return true;
+        }
+    }
+    private final static Map<Class<? extends ResourceProcessor>, Set<ResourceTupel>> proccesed = new HashMap<>();
+    private final Set<ResourceTupel> resources = new HashSet<>();
+    private static FilerFactory filer;
+
+    private FilerFactory getFiler() {
+        if (filer == null) {
+            filer = new FilerFactory(processingEnv.getFiler(), StandardLocation.SOURCE_PATH, StandardLocation.CLASS_OUTPUT);
+        }
+        return filer;
     }
 
     @Override
@@ -66,7 +101,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
                 String typeName = getFQN(e);
                 if (typeName.equals(ResourceHandle.class.getCanonicalName())
                     || typeName.equals(ClasspathFileHandler.class.getCanonicalName())) {
-                    appendResource(e.getAnnotation(Named.class).value());
+                    appendResource(e.getAnnotation(Named.class).value(), typeName);
                 }
             }
         }
@@ -74,33 +109,78 @@ public class UsedResourceProcessor extends AbstractProcessor {
         for (Element e : env.getElementsAnnotatedWith(InjectResource.class)) {
             if (e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.PARAMETER) {
                 String typeName = getFQN(e);
-                if (typeName.equals(ResourceHandle.class.getCanonicalName())) {
-                    InjectResource annotation = e.getAnnotation(InjectResource.class);
-                    appendResource(annotation.file());
-                }
+                InjectResource annotation = e.getAnnotation(InjectResource.class);
+                appendResource(annotation.file(), typeName);
             }
         }
 
         for (Element e : env.getElementsAnnotatedWith(InjectBundle.class)) {
             if (e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.PARAMETER) {
                 String typeName = getFQN(e);
-                if (typeName.equals(ResourceBundle.class.getCanonicalName())) {
-                    InjectBundle annotation = e.getAnnotation(InjectBundle.class);
-                    String[] pp = annotation.files();
-                    if (pp != null) {
-                        for (String path : pp) {
-                            appendResource(annotation.prefix() + path);
+                InjectBundle annotation = e.getAnnotation(InjectBundle.class);
+                String[] pp = annotation.files();
+                if (pp != null) {
+                    for (String path : pp) {
+                        appendResource(annotation.prefix() + path, typeName);
+                    }
+                }
+
+            }
+        }
+
+        Messager m = processingEnv.getMessager();
+        for (ResourceTupel tupel : resources) {
+            m.printMessage(Kind.NOTE, tupel.path.toString());
+
+            if (!Files.exists(ClasspathFileHandler.DEV_FOLDER.resolve(tupel.path))) {
+                m.printMessage(Kind.WARNING, "Could not find resource at path: " + tupel.path.toString());
+            }
+        }
+
+        int count = 0;
+        ServiceLoader<ResourceProcessor> load = createProccessingLoader(ResourceProcessor.class);
+        for (ResourceProcessor rp : load) {
+            ++count;
+            m.printMessage(Kind.NOTE, "proccesing: " + rp.getClass().toString());
+
+            Set<ResourceTupel> proc = proccesed.get(rp.getClass());
+            if (proc == null) {
+                proc = new HashSet<>();
+                proccesed.put(rp.getClass(), proc);
+            }
+
+            String[] ex = rp.supportedFileExtensions();
+            Class[] st = rp.supportedResourceTypes();
+            String[] types = new String[st.length];
+            for (int i = 0; i < st.length; i++) {
+                types[i] = st[i].getCanonicalName();
+            }
+
+            ArrayList<ResourceTupel> ts = new ArrayList<>();
+            for (ResourceTupel tupel : resources) {
+                if (ex == null || Arrays.binarySearch(ex, getFileExtension(tupel.path)) >= 0) {
+                    if (types == null || Arrays.binarySearch(types, tupel.className) >= 0) {
+                        if (!proc.contains(tupel)) {
+                            m.printMessage(Kind.NOTE, "\t->" + tupel.path);
+                            ts.add(tupel);
+                            proc.add(tupel);
                         }
                     }
                 }
             }
+
+            if (ts.size() > 0) {
+                rp.process(ts, getFiler());
+            }
         }
+        m.printMessage(Kind.NOTE, count + " proccesors finished!");
+
         return true;
     }
 
-    private void appendResource(String resourcePath) {
+    private void appendResource(String resourcePath, String type) {
         Path path = Paths.get(resourcePath);
-        appendResource(path);
+        appendResource(path, type);
     }
 
     private String getFileExtension(Path p) {
@@ -113,60 +193,48 @@ public class UsedResourceProcessor extends AbstractProcessor {
         }
     }
 
-    private void appendResource(Path path) {
-        if (path == null || resources.contains(path)) {
-            return;
+    private void appendResource(Path path, String type) {
+        ResourceTupel resourceTupel = new ResourceTupel(path, type);
+        if (path != null || !resources.contains(resourceTupel)) {
+            resources.add(resourceTupel);
         }
 
-        resources.add(path);
-        Messager m = processingEnv.getMessager();
-        m.printMessage(Kind.NOTE, path.toString());
 
-        if (!Files.exists(ClasspathFileHandler.DEV_FOLDER.resolve(path))) {
-            m.printMessage(Kind.WARNING, "Could not find resource at path: " + path.toString());
-        }
-
-        String extension = getFileExtension(path);
-        ResourceDependecyInspector in = inspectors.get(extension);
-        if (in != null) {
-            m.printMessage(Kind.NOTE, "Inspecting resource: " + path.toString() + ", with: " + in.getClass());
-            for (Path p : in.getDependencys(new ClasspathFileHandler(true, null, path))) {
-                appendResource(p);
-            }
-        }
+//    private final Map<String, ResourceDependecyInspector> inspectors = new HashMap<>();
 //
-//        String providerName = getFQN(provider).toString();
-//
-//        try {
-//            PrintWriter pw = getWriter(servicename);
-//            pw.println(providerName);
-//            pw.flush();
-//            m.printMessage(Diagnostic.Kind.NOTE, "Registered provider \""
-//                                                 + providerName + "\" to service \"" + servicename + "\"");
-//        } catch (IOException ex) {
-//            Messager messager = processingEnv.getMessager();
-//            messager.printMessage(Diagnostic.Kind.ERROR, ex.getLocalizedMessage());
-//            for (StackTraceElement ste : ex.getStackTrace()) {
-//                messager.printMessage(Diagnostic.Kind.ERROR, ste.toString());
+//    {
+//        for (ResourceDependecyInspector in :createProccessingLoader(ResourceDependecyInspector.class)) {
+//            for (String prefix : in.getSupportedFileTypes()) {
+//                inspectors.put(prefix, in);
 //            }
 //        }
+//    }
     }
 
     private String getFQN(Element e) {
         return e.asType().toString();
     }
-//    private PrintWriter getWriter(String file) throws IOException {
-//        
-//        PrintWriter pw = writer.get(file);
-//        if (pw == null) {
-//            try {
-//                FileObject fo = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", name);
-//                pw = new PrintWriter(fo.openWriter());
-//            } catch (FilerException ex) {
-//                processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, ex.getLocalizedMessage());
-//            }
-//            writer.put(name, pw);
-//        }
-//        return pw;
-//    }
+
+    private <T> ServiceLoader<T> createProccessingLoader(Class<T> claz) {
+        JavaFileManager filemanager;
+        try {
+            Field context = processingEnv.getClass().getDeclaredField("context");
+            context.setAccessible(true);
+            Object c = context.get(processingEnv);
+            Method declaredMethod = c.getClass().getDeclaredMethod("get", Class.class);
+            filemanager = (JavaFileManager) declaredMethod.invoke(c, JavaFileManager.class);
+        } catch (Throwable ex) {
+            throw new RuntimeException("could not get the JavaFileManager from the Context of the JavacProcessingEviroment");
+        }
+
+        final ClassLoader classLoader = filemanager.getClassLoader(StandardLocation.CLASS_PATH);
+        try {
+            Field par = ClassLoader.class.getDeclaredField("parent");
+            par.setAccessible(true);
+            par.set(classLoader, claz.getClassLoader());
+        } catch (Throwable t) {
+        }
+
+        return ServiceLoader.load(claz, classLoader);
+    }
 }

@@ -74,7 +74,11 @@ public class ClasspathFileHandler extends ListenerHandler {
 
     @Override
     public ClasspathFileHandler resolve(String subPath) {
-        return new ClasspathFileHandler(useDevFolder, notifier, path.getParent().resolve(subPath));
+        Path parent = path.getParent();
+        if (parent == null) {
+            parent = Paths.get(".");
+        }
+        return new ClasspathFileHandler(useDevFolder, notifier, parent.resolve(subPath));
     }
 
     @Override

@@ -18,8 +18,7 @@ package darwin.geometrie.io;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.unpacked.Model;
-import darwin.resourcehandling.factory.ResourceFromHandle;
-import darwin.resourcehandling.factory.ResourceFromHandleProvider;
+import darwin.resourcehandling.factory.*;
 
 /**
  *
@@ -33,7 +32,7 @@ public class ModelLoaderProvider extends ResourceFromHandleProvider<Model[]> {
     }
 
     @Override
-    public ResourceFromHandle<Model[]> get() {
+    public ResourceFromHandle<Model[]> get(String[] options) {
         return new ModelLoader();
     }
 }
