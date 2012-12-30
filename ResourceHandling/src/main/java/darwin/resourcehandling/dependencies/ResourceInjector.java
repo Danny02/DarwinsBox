@@ -73,6 +73,17 @@ public class ResourceInjector {
             mi.injectMembers(object);
         }
     }
+    
+    public <T> T get(ResourceFromHandle<T> loader, String resourceName)
+    {
+        ClasspathFileHandler get = factory.get(resourceName);
+        return cache.get(loader, get, false);
+    }
+    
+    public <T> T get(ResourceFromBundle<T> loader, ResourceBundle bundle)
+    {
+        return cache.get(loader, bundle, false);
+    }
 
     <T> Iterable<MembersInjector<T>> retriveMemberInjectors(Class<T> c) {
         ArrayList<MembersInjector<T>> list = new ArrayList<>();
