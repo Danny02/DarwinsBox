@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 import darwin.annotations.ServiceProvider;
+import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.ResourceDependecyInspector;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
 
@@ -29,9 +30,12 @@ import darwin.resourcehandling.handle.ClasspathFileHandler;
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @ServiceProvider(ResourceDependecyInspector.class)
-public class ShaderDependecyInspector implements ResourceDependecyInspector {
+public class ShaderDependecyInspector extends ResourceDependecyInspector {
 
-    private static String[] extensions = new String[]{"frag", "vert", "geom"};
+    public ShaderDependecyInspector()
+    {
+        super(Shader.class);
+    }
 
     @Override
     public Iterable<Path> getDependencys(ClasspathFileHandler resource) {
@@ -49,10 +53,5 @@ public class ShaderDependecyInspector implements ResourceDependecyInspector {
         } catch (IOException ex) {
         }
         return dependencys;
-    }
-
-    @Override
-    public String[] getSupportedFileTypes() {
-        return Arrays.copyOf(extensions, extensions.length);
     }
 }

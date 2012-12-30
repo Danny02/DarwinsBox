@@ -46,19 +46,16 @@ public class FilerFactory implements RelativeFileFactory {
     public OutputStream writeRelative(String name) throws IOException {
         return filer.createResource(StandardLocation.CLASS_OUTPUT, "", name).openOutputStream();
     }
-    
-    public void delete(String name) throws IOException
-    {
+
+    public void delete(String name) throws IOException {
         FileObject f = getReadFile(name);
-        if(!f.delete())
-        {
+        if (!f.delete()) {
             Path get = Paths.get(f.toUri());
             Files.deleteIfExists(get);
         }
     }
-    
-    public FileObject getReadFile(String name) throws IOException
-    {
+
+    private FileObject getReadFile(String name) throws IOException {
         FileObject file = readFiles.get(name);
         if (file == null) {
             try {

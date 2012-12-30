@@ -24,9 +24,17 @@ import darwin.resourcehandling.handle.ClasspathFileHandler;
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceDependecyInspector {
+public abstract class ResourceDependecyInspector<T> {
 
-    public Iterable<Path> getDependencys(ClasspathFileHandler resource);
+    private final Class<T> t;
 
-    public String[] getSupportedFileTypes();
+    protected ResourceDependecyInspector(Class<T> t) {
+        this.t = t;
+    }
+
+    public Class<T> getType() {
+        return t;
+    }
+
+    public abstract Iterable<Path> getDependencys(ClasspathFileHandler resource);
 }

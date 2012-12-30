@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import darwin.annotations.ServiceProvider;
+import darwin.geometrie.unpacked.Model;
 import darwin.resourcehandling.ResourceDependecyInspector;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
 
@@ -29,28 +30,38 @@ import darwin.resourcehandling.handle.ClasspathFileHandler;
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @ServiceProvider(ResourceDependecyInspector.class)
-public class ObjDependencyInspector implements ResourceDependecyInspector{
+public class ObjDependencyInspector extends ResourceDependecyInspector {
+
+    public ObjDependencyInspector() {
+        super(new Model[0].getClass());
+    }
 
     @Override
     public Iterable<Path> getDependencys(ClasspathFileHandler resource) {
         ArrayList<Path> dependencys = new ArrayList<>();
-        try (InputStream stream = resource.getStream()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.startsWith(ObjFileParser.MATERIAL_LIB)) {
-                    String path = line.substring(ObjFileParser.MATERIAL_LIB.length()).trim();
-                    dependencys.add(resource.resolve(path).getPath());
+        if (getFileExtension(resource.getName()).equalsIgnoreCase("obj")) {
+            try (InputStream stream = resource.getStream()) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (line.startsWith(ObjFileParser.MATERIAL_LIB)) {
+                        String path = line.substring(ObjFileParser.MATERIAL_LIB.length()).trim();
+                        dependencys.add(resource.resolve(path).getPath());
+                    }
                 }
+            } catch (IOException ex) {
             }
-        } catch (IOException ex) {
         }
         return dependencys;
     }
 
-    @Override
-    public String[] getSupportedFileTypes() {
-        return new String[]{"obj"};
-    }    
+    private String getFileExtension(String fn) {
+        String[] parts = fn.split("\\.");
+        if (parts.length > 1) {
+            return parts[parts.length - 1];
+        } else {
+            return "";
+        }
+    }
 }

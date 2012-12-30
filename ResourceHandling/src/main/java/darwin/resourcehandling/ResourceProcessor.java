@@ -16,8 +16,9 @@
  */
 package darwin.resourcehandling;
 
-import darwin.resourcehandling.UsedResourceProcessor.ResourceTupel;
-import darwin.resourcehandling.relative.FilerFactory;
+import java.util.Collection;
+
+import darwin.resourcehandling.relative.RelativeFileFactory;
 
 
 /**
@@ -26,9 +27,29 @@ import darwin.resourcehandling.relative.FilerFactory;
  */
 public interface ResourceProcessor {
 
-    public void process(Iterable<ResourceTupel> resource, FilerFactory filer);
+    /**
+     * 
+     * @param resource
+     * The resources which should get processed
+     * @param filer
+     * @return 
+     * a optional list of resources which aren't needed any more and can be deleted from the build
+     */
+    public Collection<ResourceTupel> process(Collection<ResourceTupel> resource, RelativeFileFactory filer);
 
+    /**
+     * 
+     * @return 
+     * list of resource types for which this processor should be used
+     * null if for every type
+     */
     public Class[] supportedResourceTypes();
 
+    /**
+     * 
+     * @return 
+     * list of file extensions for which this processor should be used
+     * null if for every extension
+     */
     public String[] supportedFileExtensions();
 }
