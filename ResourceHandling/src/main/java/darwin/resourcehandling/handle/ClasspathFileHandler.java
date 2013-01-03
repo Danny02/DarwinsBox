@@ -52,13 +52,17 @@ public class ClasspathFileHandler extends ListenerHandler {
         super.registerChangeListener(listener);
 
         if (!registered && notifier != null) {
-            Path p = useDevFolder ? DEV_FOLDER.resolve(path) : path;
-            notifier.register(p, new FileChangeListener() {
+            FileChangeListener fileChangeListener = new FileChangeListener() {
                 @Override
                 public void fileChanged(Kind kind) {
                     fireChangeEvent();
                 }
-            });
+            };
+            
+            notifier.register(path, fileChangeListener);
+            if (useDevFolder) {
+                notifier.register(DEV_FOLDER.resolve(path), fileChangeListener);
+            }
             registered = true;
         }
     }
