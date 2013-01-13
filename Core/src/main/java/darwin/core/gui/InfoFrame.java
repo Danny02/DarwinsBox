@@ -25,11 +25,13 @@ public class InfoFrame extends JFrame implements PerformanceView
         setVisible(true);
     }
 
+    @Override
     public void setFPS(double fps) {
 
         panel.setFPS(fps);
     }
 
+    @Override
     public void setMemInfo(MemoryInfo meminfo) {
         panel.setMemInfo(meminfo);
     }

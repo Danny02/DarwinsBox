@@ -247,7 +247,6 @@ public class GenericVector extends Vector<GenericVector>
     @Override
     public Vector3 toVector3()
     {
-        int d = getDimension();
         return new Vector3(coords[0], coords[1], getDimension() > 2 ? coords[2] : 0);
     }
 

@@ -66,10 +66,12 @@ public final class TransformationStack extends SimpleTransformation
     public ModelMatrix getModelMatrix() {
         if (listsize == transform.size()) {
             long hash = 0;
-            for (Matrix4 m : transform)
+            for (Matrix4 m : transform) {
                 hash = 23 * hash + m.hashCode();
-            if (hash == matrizenhash)
+            }
+            if (hash == matrizenhash) {
                 return packed;
+            }
             matrizenhash = hash;
         }
         listsize = transform.size();
@@ -85,19 +87,19 @@ public final class TransformationStack extends SimpleTransformation
         return packed;
     }
 
-    @SuppressWarnings("unchecked")
-    private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
-        transform = (List<ModelMatrix>) in.readObject();
-        matrix = (ModelMatrix) in.readObject();
-        packed = new ModelMatrix();
-        listsize = 0;
-        matrizenhash = 0;
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out)
-            throws IOException {
-        out.writeObject(transform);
-        out.writeObject(matrix);
-    }
+//    @SuppressWarnings("unchecked")
+//    private void readObject(java.io.ObjectInputStream in)
+//            throws IOException, ClassNotFoundException {
+//        transform = (List<ModelMatrix>) in.readObject();
+//        matrix = (ModelMatrix) in.readObject();
+//        packed = new ModelMatrix();
+//        listsize = 0;
+//        matrizenhash = 0;
+//    }
+//
+//    private void writeObject(java.io.ObjectOutputStream out)
+//            throws IOException {
+//        out.writeObject(transform);
+//        out.writeObject(matrix);
+//    }
 }

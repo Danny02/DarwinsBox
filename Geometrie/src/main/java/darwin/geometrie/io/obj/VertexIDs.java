@@ -49,17 +49,22 @@ public class VertexIDs{
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final VertexIDs other = (VertexIDs) obj;
-        if (this.position != other.position)
+        if (this.position != other.position) {
             return false;
-        if (this.normal != other.normal)
+        }
+        if (this.normal != other.normal) {
             return false;
-        if (this.texcoord != other.texcoord)
+        }
+        if (this.texcoord != other.texcoord) {
             return false;
+        }
         return true;
     }
 

@@ -122,7 +122,7 @@ public final class Line<E extends Vector<E>> {
     }
 
     public double distanceTo(ImmutableVector<E> p) {
-        return Math.sqrt(distanceTo(p));
+        return Math.sqrt(distanceToSquared(p));
     }
 
     public double distanceTo(Line<E> g) {

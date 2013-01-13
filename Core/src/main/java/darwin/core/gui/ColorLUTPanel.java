@@ -27,10 +27,12 @@ public class ColorLUTPanel extends JPanel
         for (int z = 0; z < size; ++z) {
             int xs = size * (z % width);
             int ys = size * (z / width);
-            for (int x = 0; x < size; ++x)
-                for (int y = 0; y < size; ++y)
+            for (int x = 0; x < size; ++x) {
+                for (int y = 0; y < size; ++y) {
                     r.setPixel(xs + x, ys + y,
                                new int[]{x * mul, y * mul, z * mul});
+                }
+            }
         }
     }
 

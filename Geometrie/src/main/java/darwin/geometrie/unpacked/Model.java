@@ -41,15 +41,19 @@ public class Model
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final Model other = (Model) obj;
-        if (this.mesh != other.mesh && (this.mesh == null || !this.mesh.equals(other.mesh)))
+        if (this.mesh != other.mesh && (this.mesh == null || !this.mesh.equals(other.mesh))) {
             return false;
-        if (this.mat != other.mat && (this.mat == null || !this.mat.equals(other.mat)))
+        }
+        if (this.mat != other.mat && (this.mat == null || !this.mat.equals(other.mat))) {
             return false;
+        }
         return true;
     }
 

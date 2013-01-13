@@ -51,7 +51,7 @@ public class Halton
         base++;
 
         // expected iterations: 1.5
-        while (true)
+        while (true) {
             if ((base & m) == d) {
                 base += a;          // force carry into next 2-bit digit
                 value -= step * s;
@@ -65,12 +65,14 @@ public class Halton
                 value += s;     // we know digit n has gone from a to a + 1
                 break;
             }
+        }
     }
 
     private long nextHigher(long k) {
         k--;
-        for (int i = 1; i < Long.SIZE - 1; i <<= 1)
+        for (int i = 1; i < Long.SIZE - 1; i <<= 1) {
             k = k | k >> i;
+        }
         return k + 1;
     }
 

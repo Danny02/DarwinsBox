@@ -49,10 +49,12 @@ public class HaltonSerie2f extends HaltonSerie
         // diff will be of the form 0*1+, i.e. one bits up until the last carry.
         // expected iterations = 1 + 0.5 + 0.25 + ... = 2
         do {
-            if ((oldBase2 & 1) != 0)
+            if ((oldBase2 & 1) != 0) {
                 x -= s;
-            else
+            }
+            else {
                 x += s;
+            }
 
             s *= 0.5f;
 
@@ -71,7 +73,7 @@ public class HaltonSerie2f extends HaltonSerie
         base3++;
 
         // expected iterations: 1.5
-        while (true)
+        while (true) {
             if ((base3 & mask) == mask) {
                 base3 += add;          // force carry into next 2-bit digit
                 y -= 2 * s;
@@ -84,6 +86,7 @@ public class HaltonSerie2f extends HaltonSerie
                 y += s;     // we know digit n has gone from a to a + 1
                 break;
             }
+        }
 
         return base2; // return the index of this sequence point
     }

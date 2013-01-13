@@ -16,8 +16,8 @@
  */
 package darwin.util.math.container;
 
+import darwin.util.math.base.Quaternion;
 import darwin.util.math.base.matrix.Matrix4;
-import darwin.util.math.base.*;
 import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.ModelMatrix;
 

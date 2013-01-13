@@ -49,8 +49,9 @@ public class ModelMatrix extends Matrix4
      */
     public Matrix getNormalMatrix(){
         Matrix m = getMinor(3, 3);
-        if(!homogeneous)
+        if(!homogeneous) {
             m.transpose().inverse();
+        }
         return m;
     }
 

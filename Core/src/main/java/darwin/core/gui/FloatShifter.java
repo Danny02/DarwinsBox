@@ -47,6 +47,7 @@ public class FloatShifter extends JSlider
         addChangeListener(new ChangeListener()
         {
 
+            @Override
             public void stateChanged(ChangeEvent e)
             {
                 int val = ((JSlider) e.getSource()).getValue();

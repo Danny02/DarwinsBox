@@ -20,36 +20,32 @@ package darwin.util.math.base.matrix;
  *
  * @author daniel
  */
-public abstract class Matrix<E extends Matrix<E>> extends ImmutableMatrix<E>
-{
+public abstract class Matrix<E extends Matrix<E>> extends ImmutableMatrix<E> {
 
-    public E loadIdentity()
-    {
+    public E loadIdentity() {
         int mod = getDimension() + 1;
         for (int i = 0; i < getArray().length; ++i) {
             getArray()[i] = i % mod == 0 ? 1f : 0f;
         }
-        return (E)this;
+        return (E) this;
     }
 
     /**
      * Multipliziert die GenericMatrix mit einem Scalaren Faktor
      */
-    public E mult(float v)
-    {
+    public E mult(float v) {
         for (int i = 0; i < getArray().length; i++) {
             getArray()[i] *= v;
         }
 
-        return (E)this;
+        return (E) this;
     }
 
     /**
      * Einfache Matrizen Multiplikation
      */
     //TODO schauen das es mit matrizen unterschiedlicher dimensionen geht?
-    public E mult(ImmutableMatrix<E> multi)
-    {
+    public E mult(ImmutableMatrix<E> multi) {
         float[] temp = new float[getDimension() * getDimension()];
 
         for (int i = 0; i < getDimension(); i++) {
@@ -64,36 +60,33 @@ public abstract class Matrix<E extends Matrix<E>> extends ImmutableMatrix<E>
 
         setMat(temp);
 
-        return (E)this;
+        return (E) this;
     }
 
-    public E add(ImmutableMatrix<E> sum)
-    {
+    public E add(ImmutableMatrix<E> sum) {
         float[] su = sum.getArray();
 
         for (int i = 0; i < su.length; ++i) {
             getArray()[i] += su[i];
         }
 
-        return (E)this;
+        return (E) this;
     }
 
-    public E sub(ImmutableMatrix<E> sum)
-    {
+    public E sub(ImmutableMatrix<E> sum) {
         float[] su = sum.getArray();
 
         for (int i = 0; i < su.length; ++i) {
             getArray()[i] -= su[i];
         }
 
-        return (E)this;
+        return (E) this;
     }
 
     /**
      * Transponiert die GenericMatrix
      */
-    public E transpose()
-    {
+    public E transpose() {
         final float[] f = new float[getDimension() * getDimension()];
         for (int i = 0; i < getDimension(); i++) {
             for (int j = 0; j < getDimension(); j++) {
@@ -103,11 +96,10 @@ public abstract class Matrix<E extends Matrix<E>> extends ImmutableMatrix<E>
 
         setMat(f);
 
-        return (E)this;
+        return (E) this;
     }
 
-    public E adjunkt()
-    {
+    public E adjunkt() {
         final float[] f = new float[getDimension() * getDimension()];
         for (int i = 0, n = 1; i < getDimension(); i++) {
             for (int j = 0; j < getDimension(); j++, n *= -1) {
@@ -121,15 +113,14 @@ public abstract class Matrix<E extends Matrix<E>> extends ImmutableMatrix<E>
         setMat(f);
         transpose();
 
-        return (E)this;
+        return (E) this;
     }
 
     /**
      * Ersetzt die GenericMatrix mit ihrer Inversen
      */
     //TODO durch womoeglich schneller version ersetzten(unten auskommentierte)
-    public E inverse()
-    {
+    public E inverse() {
 //        var inv = [];
 //
 //        inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] +
@@ -180,7 +171,7 @@ public abstract class Matrix<E extends Matrix<E>> extends ImmutableMatrix<E>
         adjunkt();
         mult(1f / getDeterminate());
 
-        return (E)this;
+        return (E) this;
     }
 
     public abstract void setMat(float[] mat);

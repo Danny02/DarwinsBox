@@ -86,8 +86,9 @@ public class GaussBlurOp implements BufferedImageOp
         }
 
         float sum = 0;
-        for(float b : a)
+        for(float b : a) {
             sum += b;
+        }
 
         for (int i = 0; i < a.length; i++) {
             a[i] /= sum;

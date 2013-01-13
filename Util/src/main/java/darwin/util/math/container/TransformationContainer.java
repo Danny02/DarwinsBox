@@ -16,10 +16,8 @@
  */
 package darwin.util.math.container;
 
+import darwin.util.math.base.Quaternion;
 import darwin.util.math.base.matrix.Matrix4;
-import java.io.Serializable;
-
-import darwin.util.math.base.*;
 import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.ModelMatrix;
 
@@ -27,7 +25,7 @@ import darwin.util.math.composits.ModelMatrix;
  *
  * @author dheinrich
  */
-public interface TransformationContainer extends Serializable{
+public interface TransformationContainer{
     /**
      * @return
      * position-vector in world coordinates

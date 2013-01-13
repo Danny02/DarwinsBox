@@ -30,8 +30,9 @@ public class GenHaltonSerie extends  HaltonSerie
     public GenHaltonSerie(int dimensions) {
         dim = dimensions;
         haltons = new Halton[dim - 1];
-        for (int i = 0; i < dim - 1; ++i)
+        for (int i = 0; i < dim - 1; ++i) {
             haltons[i] = new Halton(i + 2);
+        }
     }
 
     public GenHaltonSerie(int ... dimesions) {
@@ -61,10 +62,12 @@ public class GenHaltonSerie extends  HaltonSerie
         // diff will be of the form 0*1+, i.e. one bits up until the last carry.
         // expected iterations = 1 + 0.5 + 0.25 + ... = 2
         do {
-            if ((oldBase2 & 1) != 0)
+            if ((oldBase2 & 1) != 0) {
                 firstval -= s;
-            else
+            }
+            else {
                 firstval += s;
+            }
 
             s *= 0.5f;
 
@@ -72,8 +75,9 @@ public class GenHaltonSerie extends  HaltonSerie
             oldBase2 = oldBase2 >> 1;
         } while (diff != 0);
 
-        for (Halton h : haltons)
+        for (Halton h : haltons) {
             h.inc();
+        }
 
         return base2; // return the index of this sequence point
     }
@@ -82,8 +86,9 @@ public class GenHaltonSerie extends  HaltonSerie
     public float[] getValues() {
         float[] ret = new float[dim];
         ret[0] = firstval;
-        for (int i = 0; i < haltons.length; i++)
+        for (int i = 0; i < haltons.length; i++) {
             ret[i + 1] = haltons[i].getValue();
+        }
         return ret;
     }
 
@@ -91,8 +96,9 @@ public class GenHaltonSerie extends  HaltonSerie
     public float[] getValues(long index) {
         float[] ret = new float[dim];
         ret[0] = getHalton(index, 2);
-        for (int i = 0; i < haltons.length; i++)
+        for (int i = 0; i < haltons.length; i++) {
             ret[i + 1] = getHalton(index, haltons[i].getBase());
+        }
         return ret;
     }
 
@@ -103,7 +109,8 @@ public class GenHaltonSerie extends  HaltonSerie
     public void reset() {
         base2 = 0;
         firstval = 0f;
-        for (int i = 0; i < dim - 1; ++i)
+        for (int i = 0; i < dim - 1; ++i) {
             haltons[i] = new Halton(i + 2);
+        }
     }
 }

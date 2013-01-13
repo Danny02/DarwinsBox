@@ -52,13 +52,16 @@ public class Quad {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final Quad other = (Quad) obj;
-        if (!Arrays.equals(this.vertice, other.vertice))
+        if (!Arrays.equals(this.vertice, other.vertice)) {
             return false;
+        }
         return true;
     }
 

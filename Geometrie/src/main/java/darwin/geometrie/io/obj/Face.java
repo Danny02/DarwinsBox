@@ -48,13 +48,16 @@ public class Face implements Externalizable
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final Face other = (Face) obj;
-        if (!Arrays.deepEquals(this.vertice, other.vertice))
+        if (!Arrays.deepEquals(this.vertice, other.vertice)) {
             return false;
+        }
         return true;
     }
 
@@ -65,6 +68,7 @@ public class Face implements Externalizable
         return hash;
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeByte(vertice.length);
         for (VertexIDs id : vertice) {
@@ -74,10 +78,12 @@ public class Face implements Externalizable
         }
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         byte len = in.readByte();
         vertice = new VertexIDs[len];
-        for (int i = 0; i < len; ++i)
+        for (int i = 0; i < len; ++i) {
             vertice[i] = new VertexIDs(in.readInt(), in.readInt(), in.readInt());
+        }
     }
 }

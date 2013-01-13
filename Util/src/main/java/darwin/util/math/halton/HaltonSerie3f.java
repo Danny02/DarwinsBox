@@ -46,7 +46,7 @@ public class HaltonSerie3f extends HaltonSerie2f
         base5++;
 
         // expected iterations: 1.25
-        while (true)
+        while (true) {
             if ((base5 & mask) == dmax) {
                 base5 += add;          // force carry into next 3-bit digit
                 z -= 4 * s;
@@ -60,6 +60,7 @@ public class HaltonSerie3f extends HaltonSerie2f
                 z += s;     // we know digit n has gone from a to a + 1
                 break;
             }
+        }
 
         return base2; // return the index of this sequence point
     }
