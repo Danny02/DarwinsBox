@@ -19,7 +19,6 @@
         <module>Geometrie</module>
         <module>AnnotationsProcessing</module>
         <module>Util</module>
-        <module>JOpenCTM</module>
     </modules>
 
     <issueManagement>
