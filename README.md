@@ -9,10 +9,18 @@ Some stuff:
 - 3D Math libary
 - a lot of OpenGL utility 
 - JOpenCTM
-
-stuff to come(ideas)
 - perfect :) resource managment framework
 - resource compilation/build tools
+
+stuff to come(ideas)
 - webGl crosscompiler(based on GWT)
+
+latest release on maven-central:
+
+    <dependency>
+        <groupId>com.github.danny02</groupId>
+        <artifactId>DarwinsBox</artifactId>
+        <version>2.1</version>
+    </dependency>
 
 
