@@ -15,6 +15,7 @@
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
+                <version>2.1.0</version>
                 <executions>
                     <execution>
                         <id>process</id>
@@ -54,7 +55,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>AnnotationsProcessing</artifactId>
-            <version>1.1</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>

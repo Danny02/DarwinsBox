@@ -21,6 +21,7 @@ package darwin.resourcehandling.handle;
 import java.nio.file.*;
 import java.util.*;
 
+import darwin.resourcehandling.factory.ResourceHandleFactory;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import javax.inject.*;
@@ -34,11 +35,13 @@ public class FileHandleCache {
 
     private final WatchServiceNotifier notifier;
     private final boolean devMode;
-    private Map<Path, ClasspathFileHandler> handle = new HashMap<>();
+    private final ResourceHandleFactory factory;
+    private Map<Path, ResourceHandle> handle = new HashMap<>();
 
     public static class Builder {
 
         private boolean withNotify, dev;
+        private ResourceHandleFactory factory = new ClasspathFileHandler.Factory();
 
         public Builder withChangeNotification() {
             return withChangeNotification(true);
@@ -58,13 +61,18 @@ public class FileHandleCache {
             return this;
         }
 
+        public Builder withHandelFactory(ResourceHandleFactory factory) {
+            this.factory = factory;
+            return this;
+        }
+
         public FileHandleCache create() {
             WatchServiceNotifier n = null;
             if (withNotify) {
                 n = new WatchServiceNotifier();
                 n.createNotifierThread().start();
             }
-            return new FileHandleCache(n, dev);
+            return new FileHandleCache(n, dev, factory);
         }
     }
 
@@ -72,22 +80,19 @@ public class FileHandleCache {
         return new Builder();
     }
 
-    public FileHandleCache() {
-        this(null, false);
-    }
-
     @Inject
-    public FileHandleCache(WatchServiceNotifier notifier, boolean devMode) {
+    public FileHandleCache(WatchServiceNotifier notifier, boolean devMode, ResourceHandleFactory factory) {
         this.notifier = notifier;
         this.devMode = devMode;
+        this.factory = factory;
     }
 
-    public ClasspathFileHandler get(String file) {
+    public ResourceHandle get(String file) {
         return get(Paths.get(file));
     }
 
-    public ClasspathFileHandler get(Path file) {
-        ClasspathFileHandler fh = handle.get(file);
+    public ResourceHandle get(Path file) {
+        ResourceHandle fh = handle.get(file);
         if (fh == null) {
             fh = new ClasspathFileHandler(devMode, notifier, file);
             handle.put(file, fh);

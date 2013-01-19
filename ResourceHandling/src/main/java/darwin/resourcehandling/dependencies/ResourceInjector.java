@@ -76,7 +76,7 @@ public class ResourceInjector {
     
     public <T> T get(ResourceFromHandle<T> loader, String resourceName)
     {
-        ClasspathFileHandler get = factory.get(resourceName);
+        ResourceHandle get = factory.get(resourceName);
         return cache.get(loader, get, false);
     }
     

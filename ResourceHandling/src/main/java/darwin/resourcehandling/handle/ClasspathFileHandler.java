@@ -22,6 +22,7 @@ import java.nio.file.WatchEvent.Kind;
 import java.util.Objects;
 
 import darwin.resourcehandling.ResourceChangeListener;
+import darwin.resourcehandling.factory.ResourceHandleFactory;
 import darwin.resourcehandling.watchservice.*;
 
 /**
@@ -36,6 +37,13 @@ public class ClasspathFileHandler extends ListenerHandler {
     private final WatchServiceNotifier notifier;
     private boolean registered;
     private final Path path;
+
+    public static class Factory implements ResourceHandleFactory {
+        @Override
+        public ResourceHandle createHandle(boolean useDevFolder, WatchServiceNotifier notifier, Path path) {
+            return new ClasspathFileHandler(useDevFolder, notifier, path);
+        }
+    }
 
     public ClasspathFileHandler(Path path) {
         this(false, null, path);
@@ -58,7 +66,7 @@ public class ClasspathFileHandler extends ListenerHandler {
                     fireChangeEvent();
                 }
             };
-            
+
             notifier.register(path, fileChangeListener);
             if (useDevFolder) {
                 notifier.register(DEV_FOLDER.resolve(path), fileChangeListener);
