@@ -1,4 +1,5 @@
-**Darwins Box**
+Darwins Box
+===========
 
 My little toolbox which I use for developing game related stuff.
 The goal is to build a wide range of utility and framework code which is needed for 3D - OpenGL Applications. I also try to use good software engineering practices.
@@ -27,7 +28,7 @@ stuff to come(ideas)
 **To use the latest snapshot build, use this in your pom:**
 
         <dependency>
-            <groupId>com.github.danny02</groupId>
+            <groupId>com.github.danny02.darwin</groupId>
             <artifactId>DarwinsBox</artifactId>
             <version>2.2-SNAPSHOT</version>
         </dependency>
