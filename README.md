@@ -27,6 +27,8 @@ stuff to come(ideas)
         
 **To use the latest snapshot build, use this in your pom:**
 
+[![Build Status](https://danny02.ci.cloudbees.com/job/DarwinsBox/badge/icon)](https://danny02.ci.cloudbees.com/job/DarwinsBox/)
+
         <dependency>
             <groupId>com.github.danny02.darwin</groupId>
             <artifactId>DarwinsBox</artifactId>
