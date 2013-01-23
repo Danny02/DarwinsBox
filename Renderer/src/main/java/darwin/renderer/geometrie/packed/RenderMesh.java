@@ -16,12 +16,6 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import javax.annotation.concurrent.Immutable;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2ES2;
-
 import darwin.renderer.GraphicContext;
 import darwin.renderer.geometrie.attributs.VertexAttributs;
 import darwin.renderer.geometrie.attributs.VertexAttributs.VAttributsFactory;
@@ -29,22 +23,21 @@ import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
 
+import com.google.inject.assistedinject.*;
 import javax.annotation.Nullable;
+import javax.media.opengl.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO Mesh organisation verbessern das verschiedenen shader genutzt werden können
-@Immutable
-public class RenderMesh implements Cloneable
-{
+public class RenderMesh implements Cloneable {
 
-    public interface RenderMeshFactory
-    {
+    public interface RenderMeshFactory {
 
         public RenderMesh create(Shader shader, int primitivtype,
-                BufferObject indice, VertexBO... vertexdata);
+                                 BufferObject indice, VertexBO... vertexdata);
 
         public RenderMesh create(Shader shader, BufferObject indice, VertexBO... vertexdata);
     }
@@ -57,14 +50,12 @@ public class RenderMesh implements Cloneable
 
     @AssistedInject
     public RenderMesh(GraphicContext gcontex,
-            VAttributsFactory vfactory,
-            @Assisted Shader shader,
-            @Assisted int primitivtype,
-            @Assisted @Nullable BufferObject indice,
-            @Assisted VertexBO... vertexdata)
-    {
-        if(!shader.isInitialized())
-        {
+                      VAttributsFactory vfactory,
+                      @Assisted Shader shader,
+                      @Assisted int primitivtype,
+                      @Nullable @Assisted BufferObject indice,
+                      @Assisted VertexBO... vertexdata) {
+        if (!shader.isInitialized()) {
             throw new RuntimeException("Shader must be initialized");
         }
         gc = gcontex;
@@ -78,32 +69,27 @@ public class RenderMesh implements Cloneable
 
     @AssistedInject
     public RenderMesh(GraphicContext gcontex,
-            VAttributsFactory vfactory,
-            @Assisted Shader shader,
-            @Assisted @Nullable BufferObject indice,
-            @Assisted VertexBO... vertexdata)
-    {
+                      VAttributsFactory vfactory,
+                      @Assisted Shader shader,
+                      @Assisted @Nullable BufferObject indice,
+                      @Assisted VertexBO... vertexdata) {
         this(gcontex, vfactory, shader, GL.GL_TRIANGLES, indice, vertexdata);
     }
 
-    public int getIndexcount()
-    {
+    public int getIndexcount() {
         return asarray ? vertexcount : indice.getSize() / 4; // Integer 4 byte;
     }
 
     //TODO subsets auch erlauben, nicht nur genaue übereinstimmungen
-    public boolean isCompatible(Shader shader)
-    {
+    public boolean isCompatible(Shader shader) {
         return attributs.isCompatible(shader);
     }
 
-    public void render()
-    {
+    public void render() {
         renderRange(0, getIndexcount());
     }
 
-    public void renderRange(int offset, int length)
-    {
+    public void renderRange(int offset, int length) {
         attributs.bind();
         if (asarray) {
             gc.getGL().glDrawArrays(primitivtype, offset, length);
@@ -114,14 +100,11 @@ public class RenderMesh implements Cloneable
     }
 
     @Override
-    public RenderMesh clone()
-    {
-        RenderMesh rm = null;
+    public RenderMesh clone() {
         try {
-            rm =
-                    (RenderMesh) super.clone();
+            return (RenderMesh) super.clone();
         } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex);
         }
-        return rm;
     }
 }

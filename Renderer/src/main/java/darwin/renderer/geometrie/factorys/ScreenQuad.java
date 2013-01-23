@@ -16,28 +16,23 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.concurrent.Immutable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.media.opengl.GL;
-
-import darwin.geometrie.data.Element;
-import darwin.geometrie.data.VertexBuffer;
+import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.shader.Shader;
 
-import static darwin.renderer.opengl.GLSLType.*;
+import javax.inject.*;
+import javax.media.opengl.GL;
+
+import static darwin.renderer.opengl.GLSLType.VEC2;
 
 /**
  * Initialisiert ein einzelnes Quad das als Screen Quad genutzt werden kann
  * <p/>
  * @author Daniel Heinrich
  */
-@Immutable
 @Singleton
 public class ScreenQuad implements GeometryFactory
 {
@@ -46,7 +41,6 @@ public class ScreenQuad implements GeometryFactory
     private final RenderMeshFactory factory;
 
     @Inject
-    @ParametersAreNonnullByDefault
     public ScreenQuad(RenderMeshFactory rmFactory, VBOFactoy factoy)
     {
         factory = rmFactory;

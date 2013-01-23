@@ -16,7 +16,6 @@
  */
 package darwin.resourcehandling.factory;
 
-import java.io.IOException;
 
 import darwin.resourcehandling.handle.*;
 
@@ -24,11 +23,6 @@ import darwin.resourcehandling.handle.*;
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public interface ResourceFromBundle<T> {
-
-    public T create(ResourceBundle handle) throws IOException;
-
+public interface ResourceFromBundle<T> extends ResourceFrom<ResourceBundle, T> {
     public void update(ResourceBundle bundle, ResourceHandle changed, T wrapper);
-
-    public T getFallBack();
 }

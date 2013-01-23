@@ -62,17 +62,16 @@ public class ServiceProcessor extends AbstractProcessor {
                 e.getAnnotation(ServiceProvider.class).value().getCanonicalName();
             } catch (MirroredTypeException ex) {
                 appendProvider(ex.getTypeMirror().toString(), e);
-            }
+            }catch(Throwable t){}
         }
         for (Element e : env.getElementsAnnotatedWith(MultiServiceProvider.class)) {
-            MultiServiceProvider sp = e.getAnnotation(MultiServiceProvider.class);
             try {
-                sp.value();
+                e.getAnnotation(MultiServiceProvider.class).value();
             } catch (MirroredTypesException ex) {
                 for (TypeMirror tm : ex.getTypeMirrors()) {
                     appendProvider(tm.toString(), e);
                 }
-            }
+            }catch(Throwable t){}
         }
         return true;
     }

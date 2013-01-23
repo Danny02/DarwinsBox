@@ -24,13 +24,11 @@ import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
-import darwin.renderer.shader.Sampler;
-import darwin.renderer.shader.Shader;
+import darwin.renderer.shader.*;
 import darwin.renderer.shader.uniform.*;
 
 import com.google.common.base.Optional;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import com.google.inject.assistedinject.*;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
@@ -48,15 +46,15 @@ public final class RenderModel implements Shaded, Cloneable {
         public RenderModel create(RenderMesh rbuffer, Shader shader, Material mat);
     }
     private final ShaderMaterialFactory factory;
-    private Material material;
+     private Material material;
     private RenderMesh rbuffer;
-    private Shader shader;
+     private Shader shader;
     private final Set<UniformSetter> uniforms = new HashSet<>();
 
     @AssistedInject
     public RenderModel(ShaderMaterialFactory factory,
                        @Assisted RenderMesh rbuffer, @Assisted Shader shader,
-                       @Assisted Material mat) {
+                       @Assisted  Material mat) {
         this.factory = factory;
         this.rbuffer = rbuffer;
         material = mat;

@@ -17,19 +17,15 @@
 package darwin.resourcehandling.resmanagment;
 
 import java.io.*;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 
-import darwin.geometrie.io.ModelReader;
-import darwin.geometrie.io.WrongFileTypeException;
+import darwin.geometrie.io.*;
 import darwin.geometrie.unpacked.Model;
 import darwin.renderer.geometrie.ModelPacker;
-import darwin.renderer.geometrie.packed.RenderModel;
-import darwin.renderer.geometrie.packed.RenderObjekt;
+import darwin.renderer.geometrie.packed.*;
 import darwin.resourcehandling.handle.FileHandleCache;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import com.google.inject.assistedinject.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
@@ -48,7 +44,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
     private Logger logger = NOPLogger.NOP_LOGGER;
     private final ModelPacker packer;
     private final ObjConfig ljob;
-    private List<RenderObjekt> mcontainer;
+     private List<RenderObjekt> mcontainer;
     private final FileHandleCache factory;
 
     @AssistedInject
@@ -104,7 +100,7 @@ public class ROLoadJob implements LoadJob<RenderModel[]>
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals( Object obj)
     {
         if (obj == null) {
             return false;

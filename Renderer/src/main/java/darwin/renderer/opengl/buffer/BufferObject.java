@@ -16,14 +16,13 @@
  */
 package darwin.renderer.opengl.buffer;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import com.jogamp.opengl.util.GLBuffers;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import javax.media.opengl.GLProfile;
+import java.nio.*;
 
 import darwin.renderer.GraphicContext;
+
+import com.google.inject.assistedinject.*;
+import com.jogamp.opengl.util.GLBuffers;
+import javax.media.opengl.GLProfile;
 
 /**
  *
@@ -169,7 +168,7 @@ public final class BufferObject
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals( Object obj)
     {
         if (obj == null) {
             return false;

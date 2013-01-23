@@ -16,7 +16,6 @@
  */
 package darwin.util.image;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import darwin.util.math.base.tupel.Tupel2;

@@ -5,10 +5,9 @@
 package darwin.core.gui;
 
 import java.awt.Dimension;
-import javax.swing.JFrame;
 
-import darwin.renderer.util.memory.MemoryInfo;
-import darwin.renderer.util.memory.PerformanceView;
+import darwin.renderer.util.memory.*;
+import javax.swing.JFrame;
 
 /**
  *

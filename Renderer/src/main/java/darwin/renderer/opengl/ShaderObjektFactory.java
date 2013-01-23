@@ -17,11 +17,12 @@
 package darwin.renderer.opengl;
 
 import java.io.*;
-import javax.inject.Inject;
-import javax.media.opengl.*;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.shader.BuildException;
+
+import javax.inject.Inject;
+import javax.media.opengl.*;
 
 import static java.lang.Integer.parseInt;
 
@@ -58,10 +59,10 @@ public class ShaderObjektFactory {
     private void handleError(int shader, String[] sources) throws BuildException {
         GL2GL3 gl = gc.getGL().getGL2GL3();
 
-        int[] error = new int[1];
+        int[] error = new int[]{-1};
         gl.glGetShaderiv(shader, GL2ES2.GL_COMPILE_STATUS, error, 0);
 
-        if (error[0] == GL.GL_FALSE) {
+        if (error[0] != GL.GL_TRUE) {
             int[] len = new int[1];
             gl.glGetShaderiv(shader, GL2ES2.GL_INFO_LOG_LENGTH, len, 0);
             if (len[0] == 0) {
@@ -87,7 +88,7 @@ public class ShaderObjektFactory {
                     String[] er = line.split(":");
                     if (er.length >= 4) {
                         try {
-                            int file = parseInt(er[1].trim());//because we add the version tag infont of everything
+                            int file = parseInt(er[1].trim());//because we add the version tag infront of everything
                             int fLine = parseInt(er[0].split("\\(")[0]) - 1;//don'T know why
                             String sline = texts[file][fLine];
                             sb.append("\t\t").append(sline).append('\n');

@@ -16,19 +16,15 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.concurrent.Immutable;
-import javax.media.opengl.GL2ES2;
-import javax.media.opengl.GLProfile;
-
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.buffer.BufferObject;
+
+import javax.media.opengl.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-@Immutable
 class BufferConfigs
 {
 
@@ -39,7 +35,6 @@ class BufferConfigs
     private final BufferObject buffer;
     private final AttributConfig[] configs;
 
-    @ParametersAreNonnullByDefault
     public BufferConfigs(GraphicContext gcontext, BufferObject buffer,
             AttributConfig[] configs)
     {

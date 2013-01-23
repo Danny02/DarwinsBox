@@ -14,6 +14,9 @@
 
 #define NORMALIZE_8BIT 0.003921569 // 1/255
 
+#define HexColor(x) (vec3((x>>16)&0xFF,(x>>8)&0xFF,(x)&0xFF) * NORMALIZE_8BIT)
+#define RGBColor(r, g, b) (vec3(r, g, b) * NORMALIZE_8BIT)
+
 #define fma(a, b, c) (a*b+c)
 #define fnms(a, b, c) (-(a * b - c))
 #define fast_lerp(t, a, b) fma(t, b, fnms(t, a, a))
@@ -35,20 +38,20 @@ float rand(vec2 n) {
 }
 
 // Packing a [0-1] float value into a 4D vector where each component will be a 8-bits integer
-vec4 packFloatToVec4i(float value)
-{
-   vec4 bitSh = vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0);
-   vec4 bitMsk = vec4(0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0);
-   vec4 res = fract(value * bitSh);
-   res -= res.xxyz * bitMsk;
-   return res;
+
+vec4 packFloatToVec4i(float value) {
+    vec4 bitSh = vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0);
+    vec4 bitMsk = vec4(0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0);
+    vec4 res = fract(value * bitSh);
+    res -= res.xxyz * bitMsk;
+    return res;
 }
- 
+
 // Unpacking a [0-1] float value from a 4D vector where each component was a 8-bits integer
-float unpackFloatFromVec4i(vec4 value)
-{
-   const vec4 bitSh = vec4(1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0);
-   return dot(value, bitSh);
+
+float unpackFloatFromVec4i(vec4 value) {
+    const vec4 bitSh = vec4(1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0);
+    return dot(value, bitSh);
 }
 
 // unpack three positive normalized values from a 32-bit float
@@ -58,20 +61,20 @@ float unpackFloatFromVec4i(vec4 value)
 #define Unpack3PNFromFP32(fFloatFromFP32) Unpack3PNFromUINT(floatBitsToInt(fFloatFromFP32))
 #else
 // Packing a [0-1] float value into a 4D vector where each component will be a 8-bits integer
-vec3 packFloatToVec3i(float value)
-{
-   vec3 bitSh = vec3(256.0 * 256.0, 256.0,1.0);
-   vec3 bitMsk = vec3(0.0, 1.0 / 256.0, 1.0 / 256.0);
-   vec3 res = fract(value * bitSh);
-   res -= res.xxyz * bitMsk;
-   return res;
+
+vec3 packFloatToVec3i(float value) {
+    vec3 bitSh = vec3(256.0 * 256.0, 256.0, 1.0);
+    vec3 bitMsk = vec3(0.0, 1.0 / 256.0, 1.0 / 256.0);
+    vec3 res = fract(value * bitSh);
+    res -= res.xxyz * bitMsk;
+    return res;
 }
- 
+
 // Unpacking a [0-1] float value from a 4D vector where each component was a 8-bits integer
-float unpackFloatFromVec3i(vec3 value)
-{
-   const vec4 bitSh = vec3(1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0);
-   return dot(value, bitSh);
+
+float unpackFloatFromVec3i(vec3 value) {
+    const vec4 bitSh = vec3(1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0);
+    return dot(value, bitSh);
 }
 #endif
 #endif

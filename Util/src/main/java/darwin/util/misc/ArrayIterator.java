@@ -16,8 +16,7 @@
  */
 package darwin.util.misc;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  *

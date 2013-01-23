@@ -27,18 +27,20 @@ import static java.lang.Math.*;
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO add functions
-public class AABB
-{
+public class AABB {
+
     private final Vector3 start, dimension;
 
-    public AABB(ImmutableVector<Vector3> start, ImmutableVector<Vector3> dimension)
-    {
+    public AABB(ImmutableVector<Vector3> start, ImmutableVector<Vector3> dimension) {
         this.start = start.clone();
         this.dimension = dimension.clone();
     }
 
-    public Vector3[] getCorners()
-    {
+    public static AABB fromMinMax(Vector3 min, Vector3 max) {
+        return new AABB(min.clone(), max.clone().sub(min));
+    }
+
+    public Vector3[] getCorners() {
         float[] c = dimension.getCoords();
         Vector3[] corners = new Vector3[8];
         for (int i = 0; i < 8; i++) {
@@ -52,13 +54,11 @@ public class AABB
         return corners;
     }
 
-    public AABB tranform(Matrix4 mat)
-    {
+    public AABB tranform(Matrix4 mat) {
         return new AABB(mat.fastMult(start), mat.fastMult(dimension));
     }
 
-    public Vector3 clamp(ImmutableVector<Vector3> point)
-    {
+    public Vector3 clamp(ImmutableVector<Vector3> point) {
         Vector3 rel = point.clone().sub(start);
         float[] r = rel.getCoords();
         float[] d = dimension.getCoords();
@@ -76,20 +76,23 @@ public class AABB
         return rel;
     }
 
-    public boolean isInside(ImmutableVector<Vector3> point)
-    {
+    public boolean isInside(ImmutableVector<Vector3> point) {
         Vector3 rel = point.clone().sub(start);
         float[] r = rel.getCoords();
         float[] d = dimension.getCoords();
 
         return insideIntervall(r[0], d[0])
-                && insideIntervall(r[1], d[1])
-                && insideIntervall(r[2], d[2]);
+               && insideIntervall(r[1], d[1])
+               && insideIntervall(r[2], d[2]);
     }
 
-    private boolean insideIntervall(double value, double end)
-    {
+    private boolean insideIntervall(double value, double end) {
         double len = abs(value - end);
         return abs(value) <= end && len <= end;
+    }
+
+    @Override
+    public String toString() {
+        return "AABB{start: " + start + ", size: " + dimension + "}";
     }
 }

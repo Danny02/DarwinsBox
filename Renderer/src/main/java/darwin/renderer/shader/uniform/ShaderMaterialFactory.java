@@ -16,15 +16,13 @@
  */
 package darwin.renderer.shader.uniform;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 import darwin.geometrie.unpacked.Material;
 import darwin.renderer.shader.*;
 
 import com.google.common.base.Optional;
 import com.jogamp.opengl.util.texture.Texture;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -75,14 +73,14 @@ public class ShaderMaterialFactory {
     }
 
     private void add2List(Collection<UniformSetter> list, Optional<? extends UniformSetter> s) {
-        if (s != null) {
+        if (s.isPresent()) {
             list.add(s.get());
         }
     }
 
     private Optional<FloatSetter> createSetter(Shader shader, String name, float... values) {
         Optional<ShaderUniform> u = shader.getUniform(name);
-        if (u.isPresent() && values != null && values.length != 0) {
+        if (u.isPresent() && values.length > 0) {
             return Optional.of(new FloatSetter(u.get(), values));
         } else {
             return Optional.absent();
@@ -96,7 +94,7 @@ public class ShaderMaterialFactory {
 //            TextureContainer tc = loader.getTexture(tlj);
 //            return Optional.of(new SamplerSetter(s.get(), tc));
 //        } else {
-            return Optional.absent();
+        return Optional.absent();
 //        }
     }
 }

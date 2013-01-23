@@ -16,13 +16,10 @@
  */
 package darwin.renderer.util;
 
-import com.jogamp.opengl.util.texture.Texture;
-import javax.inject.Inject;
-import javax.media.opengl.*;
-
-import darwin.renderer.opengl.FrameBuffer.*;
-import darwin.renderer.opengl.FrameBuffer.RenderBuffer.RenderBufferFactory;
+import darwin.renderer.opengl.framebuffer.RenderBuffer.RenderBufferFactory;
 import darwin.resourcehandling.texture.TextureUtil;
+
+import javax.inject.Inject;
 
 /**
  *

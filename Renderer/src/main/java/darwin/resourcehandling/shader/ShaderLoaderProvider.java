@@ -42,6 +42,7 @@ public class ShaderLoaderProvider extends ResourceFromBundleProvider<Shader> {
         return getInjector().getInstance(ShaderLoader.class);
     }
 
+    @SuppressWarnings("nullness")
     public static Injector getInjector() {
         try {
             Class<?> client = ClassLoader.getSystemClassLoader().loadClass("darwin.core.gui.Client");

@@ -17,10 +17,10 @@
 package darwin.resourcehandling.watchservice;
 
 import java.io.IOException;
-import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
-import java.util.*;
+import java.nio.file.*;
 import java.util.Map.Entry;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import darwin.util.logging.InjectLogger;
@@ -45,7 +45,7 @@ public class WatchServiceNotifier implements Runnable {
     //And each written chunck causes a file modified event.
     private static final int EVENT_MERGE_TIMEOUT = 100;
     private final Map<Path, FileChangeListener> callbacks = new HashMap<>();
-    private final WatchService service;
+     private final WatchService service;
 
     public WatchServiceNotifier() {
         WatchService a;
@@ -64,27 +64,26 @@ public class WatchServiceNotifier implements Runnable {
             return;
         }
         try {
-            Map<FileChangeListener, Set<Kind<Path>>> listener = new HashMap<>();
+            Map<FileChangeListener, Set<Kind<?>>> listener = new HashMap<>();
             for (;;) {
-                WatchKey watchKey = service.poll(EVENT_MERGE_TIMEOUT, TimeUnit.MILLISECONDS);
+                 WatchKey watchKey = service.poll(EVENT_MERGE_TIMEOUT, TimeUnit.MILLISECONDS);
 
                 if (watchKey == null) {
-                    for (Entry<FileChangeListener, Set<Kind<Path>>> entry : listener.entrySet()) {
-                        for (Kind<Path> kind : entry.getValue()) {
+                    for (Entry<FileChangeListener, Set<Kind<?>>> entry : listener.entrySet()) {
+                        for (Kind<?> kind : entry.getValue()) {
                             entry.getKey().fileChanged(kind);
                         }
                         listener.remove(entry.getKey());
                     }
                     watchKey = service.take();
                 }
-
-                List<WatchEvent<?>> events = watchKey.pollEvents();
-                for (WatchEvent event : events) {
+                
+                for (WatchEvent<?> event :  watchKey.pollEvents()) {
                     Path c = (Path) event.context();
                     Path file = ((Path) watchKey.watchable()).resolve(c);
                     FileChangeListener l = callbacks.get(file.toAbsolutePath());
                     if (l != null) {
-                        Set<Kind<Path>> eventTyps = listener.get(l);
+                        Set<Kind<?>> eventTyps = listener.get(l);
                         if (eventTyps == null) {
                             eventTyps = new HashSet<>();
                             listener.put(l, eventTyps);

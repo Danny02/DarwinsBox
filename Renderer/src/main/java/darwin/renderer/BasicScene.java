@@ -21,17 +21,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import darwin.renderer.dependencies.MemoryInfoProvider;
 import darwin.renderer.geometrie.packed.*;
-import darwin.renderer.shader.Shader;
-import darwin.renderer.shader.ShaderUniform;
-import darwin.renderer.util.memory.MemoryInfo;
-import darwin.renderer.util.memory.PerformanceView;
+import darwin.renderer.shader.*;
+import darwin.renderer.util.memory.*;
 import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector3;
-import darwin.util.math.composits.ProjectionMatrix;
-import darwin.util.math.composits.ViewMatrix;
-import darwin.util.math.util.MatType;
-import darwin.util.math.util.MatrixCache;
+import darwin.util.math.base.vector.*;
+import darwin.util.math.composits.*;
+import darwin.util.math.util.*;
 
 import com.google.common.base.Optional;
 import javax.inject.Inject;
@@ -44,8 +39,7 @@ import org.slf4j.helpers.NOPLogger;
  * <p/>
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class BasicScene implements GLEventListener
-{
+public class BasicScene implements GLEventListener {
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
@@ -63,8 +57,7 @@ public class BasicScene implements GLEventListener
     private ImmutableVector<Vector3> lightDir = new Vector3(0, -1, 0);
 
     @Inject
-    public BasicScene(GraphicContext gc)
-    {
+    public BasicScene(GraphicContext gc) {
         this.gc = gc;
         matrices = new MatrixCache(new ProjectionMatrix());
         half = new LinkedList<>();
@@ -72,13 +65,11 @@ public class BasicScene implements GLEventListener
         animated = new LinkedList<>();
     }
 
-    protected void customRender()
-    {
+    protected void customRender() {
         renderObjects();
     }
 
-    protected void renderObjects()
-    {
+    protected void renderObjects() {
         Iterator<RenderObjekt> iter = needini.iterator();
         while (iter.hasNext()) {
             RenderModel[] rms = iter.next().getModels();
@@ -95,8 +86,7 @@ public class BasicScene implements GLEventListener
     }
 
     @Override
-    public void init(GLAutoDrawable drawable)
-    {
+    public void init(GLAutoDrawable drawable) {
         //TODO Debug und Trace GL einbauen
         GL gl = gc.getGL();
         logger.info("INIT GL IS: " + gl.getClass().getName());
@@ -112,8 +102,7 @@ public class BasicScene implements GLEventListener
     }
 
     @Override
-    public final void display(GLAutoDrawable drawable)
-    {
+    public final void display(GLAutoDrawable drawable) {
         if (!drawable.getContext().isCurrent()) {
             return;
         }
@@ -126,7 +115,7 @@ public class BasicScene implements GLEventListener
         GLAnimatorControl ani = drawable.getAnimator();
 //TODO GameTime updates einbaun
         logger.trace(String.format("%d Objects took %dms  to render; fps:%f",
-                robjekts.size(), ani.getLastFPSPeriod(), ani.getLastFPS()));
+                                   robjekts.size(), ani.getLastFPSPeriod(), ani.getLastFPS()));
         if (info != null) {
             info.setFPS(ani.getTotalFPS());
         }
@@ -143,34 +132,29 @@ public class BasicScene implements GLEventListener
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-            int height)
-    {
+                        int height) {
         final float ratio = (float) height / Math.min(1, width);
         matrices.getProjektion().perspective(50, ratio, 0.001, 1000);
         matrices.fireChange(MatType.PROJECTION);
     }
 
     @Override
-    public void dispose(GLAutoDrawable drawable)
-    {
+    public void dispose(GLAutoDrawable drawable) {
         robjekts.clear();
         shaders.clear();
     }
 
-    public void addSceneObject(RenderObjekt ro)
-    {
+    public void addSceneObject(RenderObjekt ro) {
         needini.add(ro);
         robjekts.add(new RenderWrapper(ro, matrices));
     }
 
-    public void addSceneObject(Shaded r)
-    {
+    public void addSceneObject(Shaded r) {
         robjekts.add(r);
         addShader(r.getShader());
     }
 
-    public void addShader(Shader shader)
-    {
+    public void addShader(Shader shader) {
         if (shaders.add(shader)) {
             Optional<ShaderUniform> h = shader.getUniform("halfvector");
             if (h.isPresent()) {
@@ -189,28 +173,23 @@ public class BasicScene implements GLEventListener
         }
     }
 
-    protected void iniShader(Shader shader)
-    {
+    protected void iniShader(Shader shader) {
     }
 
-    public void removeSceneObject(Renderable wo)
-    {
+    public void removeSceneObject(Renderable wo) {
         robjekts.remove(wo);
     }
 
-    public void removeSceneObject(RenderObjekt ro)
-    {
-        robjekts.remove(new RenderWrapper(ro, null));
+    public void removeSceneObject(RenderObjekt ro) {
+        robjekts.remove(new RenderWrapper(ro, matrices));
     }
 
-    public void setLightDir(ImmutableVector<Vector3> lightDir)
-    {
+    public void setLightDir(ImmutableVector<Vector3> lightDir) {
         this.lightDir = lightDir.clone();
         updateLight(lightDir);
     }
 
-    private void updateLight(ImmutableVector<Vector3> lightdir)
-    {
+    private void updateLight(ImmutableVector<Vector3> lightdir) {
         getMatrices().setLight(lightdir.clone());
         Vector3 light = matrices.getView().fastMult(lightdir.clone());
         light.normalize();
@@ -220,8 +199,7 @@ public class BasicScene implements GLEventListener
         setLightUniforms(light, halfvector);
     }
 
-    private void setLightUniforms(Vector3 ldir, Vector3 half)
-    {
+    private void setLightUniforms(Vector3 ldir, Vector3 half) {
         for (ShaderUniform su : this.lightdir) {
             su.setData(ldir.getCoords());
         }
@@ -231,29 +209,24 @@ public class BasicScene implements GLEventListener
         }
     }
 
-    public void setViewMatrix(ViewMatrix mv)
-    {
+    public void setViewMatrix(ViewMatrix mv) {
         matrices.setView(mv);
     }
 
-    public void viewChanged()
-    {
+    public void viewChanged() {
         matrices.fireChange(MatType.VIEW);
         updateLight(lightDir);
     }
 
-    public MatrixCache getMatrices()
-    {
+    public MatrixCache getMatrices() {
         return matrices;
     }
 
-    protected Iterator<Shader> getShaders()
-    {
+    protected Iterator<Shader> getShaders() {
         return shaders.iterator();
     }
 
-    public void setInfoDisplay(PerformanceView info)
-    {
+    public void setInfoDisplay(PerformanceView info) {
         this.info = info;
     }
 }

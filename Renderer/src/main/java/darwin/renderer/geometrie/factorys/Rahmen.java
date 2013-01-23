@@ -16,11 +16,6 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.concurrent.Immutable;
-
 import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
@@ -30,14 +25,15 @@ import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.shader.Shader;
 
-import static darwin.geometrie.data.DataLayout.Format.*;
+import com.google.inject.assistedinject.*;
+
+import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE;
 import static darwin.renderer.opengl.GLSLType.*;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-@Immutable
 public class Rahmen implements GeometryFactory
 {
 
@@ -51,7 +47,6 @@ public class Rahmen implements GeometryFactory
     private final RenderMesh.RenderMeshFactory factory;
 
     @AssistedInject
-    @ParametersAreNonnullByDefault
     public Rahmen(RenderMeshFactory rmFactory, VBOFactoy vFactoy,
             BufferFactory bFactory, @Assisted float inset)
     {

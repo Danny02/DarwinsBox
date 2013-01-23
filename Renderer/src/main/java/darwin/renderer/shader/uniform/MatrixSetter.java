@@ -29,7 +29,7 @@ public class MatrixSetter implements UniformSetter,
         GenListener<MatrixEvent> {
 
     private boolean m, v, p, l;
-    private MatrixCache matricen;
+     private MatrixCache matricen;
     private final Collection<UniformSetter> setter = new LinkedList<>();
 
     public MatrixSetter() {

@@ -21,15 +21,14 @@ import java.util.Arrays;
 
 import darwin.geometrie.unpacked.Material;
 
-import static java.lang.Math.*;
+import static java.lang.Math.min;
 
 /**
  * H�lt alle Werte eines in einem MTL File definierten Materials
  * <p/>
  * @author Daniel Heinrich
  */
-public final class ObjMaterial implements Externalizable, Cloneable
-{
+public final class ObjMaterial implements Externalizable, Cloneable {
 
     /**
      * Ns exponent
@@ -109,22 +108,19 @@ public final class ObjMaterial implements Externalizable, Cloneable
     transient private String bumpTex;     //bump
     transient private String name;
 
-    public ObjMaterial()
-    {
+    public ObjMaterial() {
     }
 
-    public ObjMaterial(String name)
-    {
+    public ObjMaterial(String name) {
         this.name = name;
     }
 
     public ObjMaterial(float[] diffuse, float[] ambient, float[] emission,
-            float[] specular,
-            float optical_density, float sharpness, float alpha,
-            byte illum, String ambientTex, String diffuseTex,
-            String specularTex, String normalTex, String alphaTex,
-            String bumpTex, String name)
-    {
+                       float[] specular,
+                       float optical_density, float sharpness, float alpha,
+                       byte illum, String ambientTex, String diffuseTex,
+                       String specularTex, String normalTex, String alphaTex,
+                       String bumpTex, String name) {
         setDiffuse(diffuse);
         setAmbient(ambient);
         setEmission(emission);
@@ -142,20 +138,18 @@ public final class ObjMaterial implements Externalizable, Cloneable
         this.name = name;
     }
 
-    public Material creatGameMaterial()
-    {
+    public Material creatGameMaterial() {
         String nt = getNormalTex();
         if (nt == null) {
             nt = getBumbTex();
         }
-        return new Material(name, getDiffuse(), getAmbient(), getSepcular(),
-                getSpecularExponent(), getDiffuseTex(), getSpecularTex(),
-                nt, getAlphaTex());
+        return new Material(name, getSpecularExponent(), getDiffuse(), getAmbient(),
+                            getSepcular(), getDiffuseTex(), getSpecularTex(),
+                            nt, getAlphaTex());
 
     }
 
-    private float[] forceThreeElements(float[] arr)
-    {
+    private float[] forceThreeElements(float[] arr) {
         float[] res = new float[3];
         int min = min(3, arr.length);
         int i = 0;
@@ -168,181 +162,147 @@ public final class ObjMaterial implements Externalizable, Cloneable
         return res;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public float getAlpha()
-    {
+    public float getAlpha() {
         return alpha;
     }
 
-    public void setAlpha(float alpha)
-    {
+    public void setAlpha(float alpha) {
         this.alpha = alpha;
     }
 
-    public String getAlphaTex()
-    {
+    public String getAlphaTex() {
         return alphaTex;
     }
 
-    public void setAlphaTex(String alphaTex)
-    {
+    public void setAlphaTex(String alphaTex) {
         this.alphaTex = alphaTex;
     }
 
-    public float[] getAmbient()
-    {
+    public float[] getAmbient() {
         return ambient;
     }
 
-    public void setAmbient(float[] ambient)
-    {
+    public void setAmbient(float[] ambient) {
         this.ambient = forceThreeElements(ambient);
     }
 
-    public String getAmbientTex()
-    {
+    public String getAmbientTex() {
         return ambientTex;
     }
 
-    public void setAmbientTex(String ambientTex)
-    {
+    public void setAmbientTex(String ambientTex) {
         this.ambientTex = ambientTex;
     }
 
-    public String getBumbTex()
-    {
+    public String getBumbTex() {
         return bumpTex;
     }
 
-    public void setBumbTex(String bumbTex)
-    {
+    public void setBumbTex(String bumbTex) {
         this.bumpTex = bumbTex;
     }
 
-    public float[] getDiffuse()
-    {
+    public float[] getDiffuse() {
         return diffuse;
     }
 
-    public void setDiffuse(float[] diffuse)
-    {
+    public void setDiffuse(float[] diffuse) {
         this.diffuse = forceThreeElements(diffuse);
     }
 
-    public String getDiffuseTex()
-    {
+    public String getDiffuseTex() {
         return diffuseTex;
     }
 
-    public void setDiffuseTex(String diffuseTex)
-    {
+    public void setDiffuseTex(String diffuseTex) {
         this.diffuseTex = diffuseTex;
     }
 
-    public float[] getEmission()
-    {
+    public float[] getEmission() {
         return emission;
     }
 
-    public void setEmission(float[] emission)
-    {
+    public void setEmission(float[] emission) {
         this.emission = forceThreeElements(emission);
     }
 
-    public byte getIllum()
-    {
+    public byte getIllum() {
         return illum;
     }
 
-    public void setIllum(byte illum)
-    {
+    public void setIllum(byte illum) {
         this.illum = illum;
     }
 
-    public String getNormalTex()
-    {
+    public String getNormalTex() {
         return normalTex;
     }
 
-    public void setNormalTex(String normalTex)
-    {
+    public void setNormalTex(String normalTex) {
         this.normalTex = normalTex;
     }
 
-    public float getOptical_density()
-    {
+    public float getOptical_density() {
         return optical_density;
     }
 
-    public void setOptical_density(float optical_density)
-    {
+    public void setOptical_density(float optical_density) {
         this.optical_density = optical_density;
     }
 
-    public float[] getSepcular()
-    {
+    public float[] getSepcular() {
         return sepcular;
     }
 
-    public void setSepcular(float[] sepcular)
-    {
+    public void setSepcular(float[] sepcular) {
         this.sepcular = forceThreeElements(sepcular);
     }
 
-    public float getSharpness()
-    {
+    public float getSharpness() {
         return sharpness;
     }
 
-    public void setSharpness(float sharpness)
-    {
+    public void setSharpness(float sharpness) {
         this.sharpness = sharpness;
     }
 
-    public String getSpecularTex()
-    {
+    public String getSpecularTex() {
         return specularTex;
     }
 
-    public void setSpecularTex(String specularTex)
-    {
+    public void setSpecularTex(String specularTex) {
         this.specularTex = specularTex;
     }
 
-    public float getSpecularExponent()
-    {
+    public float getSpecularExponent() {
         return specular_exponent;
     }
 
-    public void setSpecular_exponent(float specular_exponent)
-    {
+    public void setSpecular_exponent(float specular_exponent) {
         this.specular_exponent = specular_exponent;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 
     @Override
-    public ObjMaterial clone()
-    {
+    public ObjMaterial clone() {
         return new ObjMaterial(diffuse.clone(), ambient.clone(),
-                emission.clone(), sepcular.clone(),
-                optical_density, sharpness, alpha, illum,
-                ambientTex,
-                diffuseTex, specularTex, normalTex, alphaTex,
-                bumpTex, name);
+                               emission.clone(), sepcular.clone(),
+                               optical_density, sharpness, alpha, illum,
+                               ambientTex,
+                               diffuseTex, specularTex, normalTex, alphaTex,
+                               bumpTex, name);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -400,8 +360,7 @@ public final class ObjMaterial implements Externalizable, Cloneable
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 3;
         hash = 29 * hash + Float.floatToIntBits(this.specular_exponent);
         hash = 29 * hash + Float.floatToIntBits(this.optical_density);
@@ -413,23 +372,22 @@ public final class ObjMaterial implements Externalizable, Cloneable
         hash = 29 * hash + Arrays.hashCode(this.sepcular);
         hash = 29 * hash + Arrays.hashCode(this.emission);
         hash =
-                29 * hash + (this.ambientTex != null ? this.ambientTex.hashCode() : 0);
+        29 * hash + (this.ambientTex != null ? this.ambientTex.hashCode() : 0);
         hash =
-                29 * hash + (this.diffuseTex != null ? this.diffuseTex.hashCode() : 0);
+        29 * hash + (this.diffuseTex != null ? this.diffuseTex.hashCode() : 0);
         hash =
-                29 * hash + (this.specularTex != null ? this.specularTex.hashCode() : 0);
+        29 * hash + (this.specularTex != null ? this.specularTex.hashCode() : 0);
         hash =
-                29 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
+        29 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
         hash =
-                29 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
+        29 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
         hash = 29 * hash + (this.bumpTex != null ? this.bumpTex.hashCode() : 0);
         hash = 29 * hash + (this.name != null ? this.name.hashCode() : 0);
         return hash;
     }
 
     @Override
-    public void writeExternal(ObjectOutput out) throws IOException
-    {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeFloat(specular_exponent);
         out.writeFloat(optical_density);
         out.writeFloat(sharpness);
@@ -474,8 +432,7 @@ public final class ObjMaterial implements Externalizable, Cloneable
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
-    {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         specular_exponent = in.readFloat();
         optical_density = in.readFloat();
         sharpness = in.readFloat();

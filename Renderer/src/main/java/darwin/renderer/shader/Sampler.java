@@ -24,13 +24,12 @@ package darwin.renderer.shader;
  * General Public License * along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import com.jogamp.opengl.util.texture.Texture;
-import javax.media.opengl.GL;
-
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
+
+import com.google.inject.assistedinject.*;
+import com.jogamp.opengl.util.texture.Texture;
+import javax.media.opengl.GL;
 
 /**
  *
@@ -67,7 +66,7 @@ public final class Sampler {
         return textureUnit;
     }
 
-    public void bindTexture(Texture tex) {
+    public void bindTexture( Texture tex) {
         GL gl = gc.getGL();
         gl.glActiveTexture(textureUnit);
         if (!isActive() || tex == null) {

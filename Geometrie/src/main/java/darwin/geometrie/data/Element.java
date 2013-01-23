@@ -20,42 +20,36 @@ package darwin.geometrie.data;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Element
-{
+public class Element {
+
     private final VectorType vectorType;
     private final String bezeichnung;
 
-    public Element(VectorType type, String bezeichnung)
-    {
+    public Element(VectorType type, String bezeichnung) {
         this.vectorType = type;
         this.bezeichnung = bezeichnung;
     }
 
-    public DataType getDataType()
-    {
+    public DataType getDataType() {
         return vectorType.getDataType();
     }
 
-    public VectorType getVectorType()
-    {
+    public VectorType getVectorType() {
         return vectorType;
     }
 
-    public String getBezeichnung()
-    {
+    public String getBezeichnung() {
         return bezeichnung;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return bezeichnung + " - " + vectorType.getDataType().name()
-                + vectorType.getElementCount();
+               + vectorType.getElementCount();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -64,7 +58,7 @@ public class Element
         }
         final Element other = (Element) obj;
         if (this.vectorType != other.vectorType && (this.vectorType == null || !this.vectorType.equals(
-                other.vectorType))) {
+                                                    other.vectorType))) {
             return false;
         }
         if ((this.bezeichnung == null) ? (other.bezeichnung != null) : !this.bezeichnung.equals(other.bezeichnung)) {
@@ -74,12 +68,11 @@ public class Element
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         hash = 97 * hash + (this.vectorType != null ? this.vectorType.hashCode() : 0);
         hash =
-                97 * hash + (this.bezeichnung != null ? this.bezeichnung.hashCode() : 0);
+        97 * hash + (this.bezeichnung != null ? this.bezeichnung.hashCode() : 0);
         return hash;
     }
 }

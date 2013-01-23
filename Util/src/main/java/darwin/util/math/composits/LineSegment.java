@@ -17,8 +17,7 @@
 package darwin.util.math.composits;
 
 import darwin.util.math.base.Line;
-import darwin.util.math.base.vector.ImmutableVector;
-import darwin.util.math.base.vector.Vector;
+import darwin.util.math.base.vector.*;
 
 /**
  *

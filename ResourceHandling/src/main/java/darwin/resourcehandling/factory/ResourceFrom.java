@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2013 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,35 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.opengl.FrameBuffer;
+package darwin.resourcehandling.factory;
 
-import javax.inject.*;
-
-import darwin.renderer.GraphicContext;
+import java.io.IOException;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-@Singleton
-public class DefaultFrameBuffer extends FrameBufferObject
-{
+public interface ResourceFrom<F extends ChangeableResource, T> {
 
-    @Inject
-    public DefaultFrameBuffer(GraphicContext gc)
-    {
-        super(gc, 0);
-    }
+    public T create(F handle) throws IOException;
 
-    @Override
-    public int getWidth()
-    {
-        return gc.getGLWindow().getWidth();
-    }
-
-    @Override
-    public int getHeight()
-    {
-        return gc.getGLWindow().getHeight();
-    }
+    public T getFallBack();
 }

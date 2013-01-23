@@ -16,7 +16,6 @@
  */
 package darwin.util.math.base.vector;
 
-import java.util.Arrays;
 import darwin.util.math.base.tupel.Tupel;
 
 import static darwin.util.math.util.MathUtil.almostEqual;
@@ -42,7 +41,7 @@ public abstract class ImmutableVector<E extends Vector<E>> implements Tupel, Clo
         try {
             return (E) super.clone();
         } catch (CloneNotSupportedException ex) {
-            return null;
+            throw new RuntimeException(ex);
         }
     }
 

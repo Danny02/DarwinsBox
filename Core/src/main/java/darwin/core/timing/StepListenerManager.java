@@ -20,8 +20,7 @@ package darwin.core.timing;
  *
  * @author daniel
  */
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 class StepListenerManager {

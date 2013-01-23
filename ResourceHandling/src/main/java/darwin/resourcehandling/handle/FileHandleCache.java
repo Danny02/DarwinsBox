@@ -40,7 +40,7 @@ public class FileHandleCache {
 
     public static class Builder {
 
-        private boolean withNotify, dev;
+        private boolean withNotify = false, dev = false;
         private ResourceHandleFactory factory = new ClasspathFileHandler.Factory();
 
         public Builder withChangeNotification() {
@@ -81,7 +81,8 @@ public class FileHandleCache {
     }
 
     @Inject
-    public FileHandleCache(WatchServiceNotifier notifier, boolean devMode, ResourceHandleFactory factory) {
+    public FileHandleCache( WatchServiceNotifier notifier,
+                           boolean devMode, ResourceHandleFactory factory) {
         this.notifier = notifier;
         this.devMode = devMode;
         this.factory = factory;
@@ -94,7 +95,7 @@ public class FileHandleCache {
     public ResourceHandle get(Path file) {
         ResourceHandle fh = handle.get(file);
         if (fh == null) {
-            fh = new ClasspathFileHandler(devMode, notifier, file);
+            fh = factory.createHandle(devMode, notifier, file);
             handle.put(file, fh);
         }
         return fh;

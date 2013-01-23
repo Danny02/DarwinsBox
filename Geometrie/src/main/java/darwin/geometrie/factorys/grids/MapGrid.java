@@ -16,7 +16,6 @@
  */
 package darwin.geometrie.factorys.grids;
 
-import java.util.Vector;
 import darwin.geometrie.data.DataLayout.Format;
 import darwin.geometrie.data.*;
 import darwin.geometrie.factorys.*;

@@ -23,19 +23,17 @@ import java.util.Arrays;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Material implements Serializable
-{
+public class Material implements Serializable {
 
     public final String name;
-    private final float[] diffuse, ambient, specular;
+     private final float[] diffuse, ambient, specular;
     public final float specular_exponet;
-    public final String diffuseTex;
-    public final String specularTex;
-    public final String normalTex;
-    public final String alphaTex;
+     public final String diffuseTex, specularTex, normalTex, alphaTex;
 
-    public Material(String name, float[] diffuse, float[] ambient, float[] specular, float specular_exponet, String diffuseTex, String specularTex, String normalTex, String alphaTex)
-    {
+    public Material(String name, float specular_exponet,
+                     float[] diffuse,  float[] ambient,  float[] specular,
+                     String diffuseTex,  String specularTex,
+                     String normalTex,  String alphaTex) {
         this.name = name;
         this.diffuse = diffuse;
         this.ambient = ambient;
@@ -47,24 +45,20 @@ public class Material implements Serializable
         this.alphaTex = alphaTex;
     }
 
-    public float[] getDiffuse()
-    {
+    public float[] getDiffuse() {
         return diffuse;
     }
 
-    public float[] getAmbient()
-    {
+    public float[] getAmbient() {
         return ambient;
     }
 
-    public float[] getSpecular()
-    {
+    public float[] getSpecular() {
         return specular;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals( Object obj) {
         if (obj == null) {
             return false;
         }
@@ -100,21 +94,20 @@ public class Material implements Serializable
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 5;
         hash = 97 * hash + Arrays.hashCode(this.diffuse);
         hash = 97 * hash + Arrays.hashCode(this.ambient);
         hash = 97 * hash + Arrays.hashCode(this.specular);
         hash = 97 * hash + Float.floatToIntBits(this.specular_exponet);
         hash =
-                97 * hash + (this.diffuseTex != null ? this.diffuseTex.hashCode() : 0);
+        97 * hash + (this.diffuseTex != null ? this.diffuseTex.hashCode() : 0);
         hash =
-                97 * hash + (this.specularTex != null ? this.specularTex.hashCode() : 0);
+        97 * hash + (this.specularTex != null ? this.specularTex.hashCode() : 0);
         hash =
-                97 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
+        97 * hash + (this.normalTex != null ? this.normalTex.hashCode() : 0);
         hash =
-                97 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
+        97 * hash + (this.alphaTex != null ? this.alphaTex.hashCode() : 0);
         return hash;
     }
 }

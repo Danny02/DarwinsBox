@@ -132,22 +132,22 @@ public class Matrix4 extends Matrix<Matrix4>
         float[] data = getArray();
         float x, y, z;
 
-        x = data[0];
-        x += data[1];
-        x += data[2];
-        x += data[3];
+        x = data[0] * vec.getX();
+        x += data[4] * vec.getY();
+        x += data[8] * vec.getZ();
+        x += data[12];
 
-        y = data[4];
-        y += data[5];
-        y += data[6];
-        y += data[7];
+        y = data[1] * vec.getX();
+        y += data[5] * vec.getY();
+        y += data[9] * vec.getZ();
+        y += data[13];
 
-        z = data[8];
-        z += data[9];
-        z += data[10];
-        z += data[11];
+        z = data[2] * vec.getX();
+        z += data[6] * vec.getY();
+        z += data[10] * vec.getZ();
+        z += data[14];
 
-        return new Vector3(x * vec.getX(), y * vec.getY(), z * vec.getZ());
+        return new Vector3(x, y, z);
     }
 
     /**

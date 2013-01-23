@@ -27,5 +27,5 @@ import darwin.resourcehandling.watchservice.WatchServiceNotifier;
  */
 public interface ResourceHandleFactory {
 
-    public ResourceHandle createHandle(boolean useDevFolder, WatchServiceNotifier notifier, Path path);
+    public ResourceHandle createHandle(boolean useDevFolder,  WatchServiceNotifier notifier, Path path);
 }

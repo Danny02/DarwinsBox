@@ -16,10 +16,10 @@
  */
 package darwin.renderer.util.memory;
 
+import darwin.renderer.GraphicContext;
+
 import javax.inject.Inject;
 import javax.media.opengl.*;
-
-import darwin.renderer.GraphicContext;
 
 /**
  *

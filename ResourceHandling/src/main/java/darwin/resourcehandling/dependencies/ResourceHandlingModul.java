@@ -39,7 +39,7 @@ public class ResourceHandlingModul extends AbstractModule {
                 .withDevFolder(devMode)
                 .create();
         bind(FileHandleCache.class).toInstance(factory);
-
+        
         final ResourceCache cache = new MapResourceCache();        
         bind(ResourceCache.class).toInstance(cache);
 

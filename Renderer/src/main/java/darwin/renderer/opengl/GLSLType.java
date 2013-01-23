@@ -16,8 +16,7 @@
  */
 package darwin.renderer.opengl;
 
-import darwin.geometrie.data.DataType;
-import darwin.geometrie.data.VectorType;
+import darwin.geometrie.data.*;
 
 /**
  *
@@ -25,21 +24,28 @@ import darwin.geometrie.data.VectorType;
  */
 public class GLSLType implements VectorType {
 
-    public static final GLSLType FLOAT = new GLSLType(DataType.FLOAT, 1, false),
-            INT = new GLSLType(DataType.INT, 1, false),
-            VEC2 = new GLSLType(DataType.FLOAT, 2, false),
-            VEC3 = new GLSLType(DataType.FLOAT, 3, false),
-            VEC4 = new GLSLType(DataType.FLOAT, 4, false),
-            MAT3 = new GLSLType(DataType.FLOAT, 9, true),
-            MAT4 = new GLSLType(DataType.FLOAT, 16, true);
+    public static final GLSLType FLOAT = new GLSLType(DataType.FLOAT, 1),
+            INT = new GLSLType(DataType.INT, 1),
+            VEC2 = new GLSLType(DataType.FLOAT, 2),
+            VEC3 = new GLSLType(DataType.FLOAT, 3),
+            VEC4 = new GLSLType(DataType.FLOAT, 4),
+            MAT3 = new GLSLType(DataType.FLOAT, 3, 3),
+            MAT4 = new GLSLType(DataType.FLOAT, 4, 4);
     private final int size;
+    private int rows, columns;
     private final DataType datatype;
-    private final boolean ismatrix;
 
-    private GLSLType(DataType type, int size, boolean ismatrix) {
+    public GLSLType(DataType type, int size) {
         this.datatype = type;
         this.size = size;
-        this.ismatrix = ismatrix;
+        this.rows = 0;
+        this.columns = 0;
+    }
+
+    public GLSLType(DataType type, int columns, int rows) {
+        this(type, columns * rows);
+        this.rows = rows;
+        this.columns = columns;
     }
 
     @Override
@@ -58,7 +64,15 @@ public class GLSLType implements VectorType {
     }
 
     public boolean isMatrix() {
-        return ismatrix;
+        return rows > 0;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
     }
 
     @Override
@@ -84,9 +98,6 @@ public class GLSLType implements VectorType {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 47 * hash + this.size;
-        hash = 47 * hash + (this.datatype != null ? this.datatype.hashCode() : 0);
-        return hash;
+        return GenericVector.hash(datatype, size);
     }
 }

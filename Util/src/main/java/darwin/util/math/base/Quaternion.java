@@ -16,6 +16,7 @@
  */
 package darwin.util.math.base;
 
+import java.util.Arrays;
 import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.vector.*;
 
@@ -25,21 +26,19 @@ import static java.lang.Math.*;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class Quaternion implements Cloneable
-{
+public class Quaternion implements Cloneable {
+
     private float w;
     private ImmutableVector<Vector3> vec;
 
-    public Quaternion()
-    {
+    public Quaternion() {
         w = 1;
         vec = new Vector3();
     }
 
-    public Quaternion(float w, ImmutableVector<Vector3> vec)
-    {
+    public Quaternion(float w, ImmutableVector<Vector3> vec) {
         this.w = w;
-        this.vec = vec.clone().normalize();
+        this.vec = vec.clone();
     }
 
     /**
@@ -48,8 +47,7 @@ public class Quaternion implements Cloneable
      * @param xyz rotation vektor
      * @param phi rotation angle in GRAD
      */
-    public void setAxisAngle(ImmutableVector<Vector3> xyz, float phi)
-    {
+    public void setAxisAngle(ImmutableVector<Vector3> xyz, float phi) {
         ini(xyz, phi * Matrix4.GRAD2RAD);
     }
 
@@ -61,8 +59,7 @@ public class Quaternion implements Cloneable
      * @param angle
      */
     public void setSphericalAngles(double latitude, double longitude,
-                                   double angle)
-    {
+                                   double angle) {
         angle *= Matrix4.GRAD2RAD;
         double sin_a = sin(angle / 2);
         double cos_a = cos(angle / 2);
@@ -83,11 +80,10 @@ public class Quaternion implements Cloneable
      * initializes the quaternion wiht Eular Angles
      * <p/>
      * @param pitch X axis angle in GRAD
-     * @param yaw   Y axis angle in GRAD
-     * @param roll  Z axis angle in GRAD
+     * @param yaw Y axis angle in GRAD
+     * @param roll Z axis angle in GRAD
      */
-    public void setEularAngles(double pitch, double yaw, double roll)
-    {
+    public void setEularAngles(double pitch, double yaw, double roll) {
         //from http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
         double pi = pitch * Matrix4.GRAD2RAD;
         double ya = yaw * Matrix4.GRAD2RAD;
@@ -113,11 +109,10 @@ public class Quaternion implements Cloneable
     /**
      * initializes a Quaternion which maps a Vector on another.
      * <p/>
-     * @param old  Source Vector which gets mapped.
+     * @param old Source Vector which gets mapped.
      * @param map2 Destination Vector which the source Vector gets mapped to.
      */
-    public void mapVector(ImmutableVector<Vector3> old, ImmutableVector<Vector3> map2)
-    {
+    public void mapVector(ImmutableVector<Vector3> old, ImmutableVector<Vector3> map2) {
         Vector3 o = old.clone().normalize();
         Vector3 m = map2.clone().normalize();
 
@@ -125,8 +120,7 @@ public class Quaternion implements Cloneable
         ini(o.cross(m), p);
     }
 
-    private void ini(ImmutableVector<Vector3> axis, float angle)
-    {
+    private void ini(ImmutableVector<Vector3> axis, float angle) {
 
         float[] c = axis.clone().normalize().getCoords();
 
@@ -141,59 +135,48 @@ public class Quaternion implements Cloneable
         w = (float) cos(half);
     }
 
-    public Quaternion conjugate()
-    {
+    public Quaternion conjugate() {
         return new Quaternion(w, vec.clone().mul(-1));
     }
 
-    public float magnitute()
-    {
+    public float magnitute() {
         return (float) sqrt(magnituteSqr());//normaly conjungate . quaternion, but shortened version
     }
 
-    public float magnituteSqr()
-    {
+    public float magnituteSqr() {
         return vec.dot(vec) + w * w;//normaly conjungate . quaternion, but shortened version
     }
 
-    public Quaternion normalize()
-    {
+    public Quaternion normalize() {
         float mag = 1f / magnitute();
         return mult(mag);
     }
 
-    public Quaternion inverse()
-    {
-        return conjugate();
-//        return res.mul(1. / magnituteSqr(), res);
+    public Quaternion inverse() {
+        return mult(1f / magnituteSqr()).conjugate();
     }
 
-    public Quaternion mult(float a)
-    {
+    public Quaternion mult(float a) {
         return new Quaternion(w * a, vec.clone().mul(a));
     }
 
-    public Quaternion mult(Quaternion q)
-    {
-        float[] q1 = vec.getCoords();
-        float[] q2 = q.vec.getCoords();
+    public Quaternion mult(Quaternion q) {
+        float[] a = vec.getCoords();
+        float[] b = q.vec.getCoords();
 
-        float ww = w * q.w - q1[0] * q.w - q1[1] * q2[1] - q1[2] * q2[2];
-        float x = w * q2[0] + q1[0] * q.w + q1[1] * q2[2] - q1[2] * q2[1];
-        float y = w * q2[1] + q1[1] * q.w + q1[2] * q2[0] - q1[0] * q2[2];
-        float z = w * q2[2] + q1[2] * q.w + q1[0] * q2[1] - q1[1] * q2[0];
-
+        float ww = w * q.w - a[0] * b[0] - a[1] * b[1] - a[2] * b[2];
+        float x = w * b[0] + a[0] * q.w + a[1] * b[2] - a[2] * b[1];
+        float y = w * b[1] - a[0] * b[2] + a[1] * q.w + a[2] * b[0];
+        float z = w * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * q.w;
+        
         return new Quaternion(ww, new Vector3(x, y, z));
     }
 
-    public Vector3 mult(Vector3 a)
-    {
-        Quaternion b = new Quaternion(0, a);
-        return mult(b).mult(inverse()).vec.clone();
+    public Vector3 mult(Vector3 a) {
+        return mult(new Quaternion(0, a)).mult(inverse()).vec.clone();
     }
 
-    public Quaternion getInterpolated(float delta)
-    {
+    public Quaternion getInterpolated(float delta) {
         Quaternion res = clone();
         Vector3 a = res.getRotationAxis();
         float phi = res.getPhi();
@@ -201,13 +184,11 @@ public class Quaternion implements Cloneable
         return res;
     }
 
-    public float getPhi()
-    {
+    public float getPhi() {
         return (float) (acos(w) * 2);
     }
 
-    public Vector3 getRotationAxis()
-    {
+    public Vector3 getRotationAxis() {
         Quaternion q = normalize();
 
         double sin_a = sqrt(1. - w * w);
@@ -218,8 +199,7 @@ public class Quaternion implements Cloneable
         return q.vec.clone().mul((float) (1. / sin_a));
     }
 
-    public Matrix4 getRotationMatrix()
-    {
+    public Matrix4 getRotationMatrix() {
 
         Matrix4 res = new Matrix4();
         float[] mat = res.getArray();
@@ -250,15 +230,37 @@ public class Quaternion implements Cloneable
         return res;
     }
 
-    @Override
-    protected Quaternion clone()
-    {
-        return new Quaternion(w, vec);
+    public Quaternion[] toDualQuaternion(ImmutableVector<Vector3> translation) {
+        Quaternion[] dual = new Quaternion[]{this, null};
+
+        float[] q0 = vec.getCoords();
+        float[] t = translation.getCoords();
+
+        float x = -0.5f * (t[0] * q0[1] + t[1] * q0[2] + t[2] * w);
+        float y = 0.5f * (t[0] * q0[0] + t[1] * w - t[2] * q0[2]);
+        float z = 0.5f * (-t[0] * w + t[1] * q0[0] + t[2] * q0[1]);
+        float ww = 0.5f * (t[0] * q0[2] - t[1] * q0[1] + t[2] * q0[0]);
+
+        dual[1] = new Quaternion(ww, new Vector3(x, y, z));
+
+        return dual;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    protected Quaternion clone() {
+        return new Quaternion(w, vec);
+    }
+
+    public float[] toArray() {
+        float[] coords = vec.getCoords();
+        float[] copyOf = new float[4];
+        System.arraycopy(coords, 0, copyOf, 1, 3);
+        copyOf[0] = w;
+        return copyOf;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -270,25 +272,44 @@ public class Quaternion implements Cloneable
             return false;
         }
         if (this.vec != other.vec && (this.vec == null || !this.vec.equals(
-                other.vec))) {
+                                      other.vec))) {
             return false;
         }
         return true;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 5;
         hash =
-                37 * hash + (int) (Double.doubleToLongBits(this.w) ^ (Double.doubleToLongBits(this.w) >>> 32));
+        37 * hash + (int) (Double.doubleToLongBits(this.w) ^ (Double.doubleToLongBits(this.w) >>> 32));
         hash = 37 * hash + (this.vec != null ? this.vec.hashCode() : 0);
         return hash;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Quaternion( Phi: " + getPhi() * Matrix4.RAD2GRAD + "°,  " + getRotationAxis() + ')';
+    }
+
+    public static void main(String... args) {
+
+        Matrix4 m = new Matrix4();
+        m.loadIdentity();
+        m.rotateEuler(0, 0, 45);
+
+        Quaternion q = m.getRotation();
+        q = new Quaternion();
+        q.setEularAngles(0, 0, 45);
+        
+        System.out.println(q.magnitute());
+        q = q.normalize();
+        System.out.println(q.magnitute());
+        Vector3 a = new Vector3(1, 0, 0);
+
+        System.out.println(m.fastMult(a));
+        System.out.println(q.mult(a));
+        Vector3 add = q.vec.clone().cross(q.vec.clone().cross(a).add(a.clone().mul(q.w))).mul(2).add(a);
+        System.out.println(add);
     }
 }

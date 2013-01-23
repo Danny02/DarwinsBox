@@ -19,11 +19,12 @@ package darwin.geometrie.io.obj;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.helpers.NOPLogger;
 
 import darwin.util.logging.InjectLogger;
 import darwin.util.math.base.vector.*;
+
+import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 /**
  *

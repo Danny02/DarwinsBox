@@ -1,10 +1,3 @@
-package darwin.resourcehandling.cache;
-
-import java.util.*;
-import darwin.resourcehandling.factory.*;
-import darwin.resourcehandling.handle.*;
-import darwin.resourcehandling.handle.ResourceBundle;
-
 /*
  * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
@@ -21,50 +14,40 @@ import darwin.resourcehandling.handle.ResourceBundle;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package darwin.resourcehandling.cache;
+
+
+import darwin.resourcehandling.factory.*;
+
+import com.google.common.collect.*;
+
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 public class MapResourceCache implements ResourceCache {
 
-    private final Map<Object, Map> resources = new HashMap<>();
-    private final ResourceFactory con = new ResourceFactory();
+    private static class Wrapper<F extends ChangeableResource, T> {
 
-    @Override
-    public <T> T get(ResourceFromBundle<T> factory, ResourceBundle bundle, boolean unique) {
-        if (unique) {
-            return con.createResource(factory, bundle);
-        } else {
-            Map m = resources.get(factory);
-            if (m == null) {
-                m = new HashMap();
-                resources.put(factory, m);
-            }
-            T r = (T) m.get(bundle);
-            if (r == null) {
-                r = con.createResource(factory, bundle);
-                m.put(bundle, r);
-            }
-            return r;
-        }
+        private final Table<ResourceFrom<F, T>, F, T> resources = HashBasedTable.create();
     }
+    private final Wrapper wrapper = new Wrapper<>();
+    private final ResourceBuilder builder = new ResourceBuilder();
 
     @Override
-    public <T> T get(ResourceFromHandle<T> factory, ResourceHandle bundle, boolean unique) {
+    public <F extends ChangeableResource, T> T get(ResourceFrom<F, T> factory, F from, boolean unique) {
         if (unique) {
-            return con.createResource(factory, bundle);
+            return builder.createResource(factory, from);
         } else {
-            Map m = resources.get(factory);
-            if (m == null) {
-                m = new HashMap();
-                resources.put(factory, m);
+            Wrapper<F, T> w = wrapper;
+            T r = w.resources.get(factory, from);
+            if (r != null) {
+                return r;
+            } else {
+                T rr = builder.createResource(factory, from);
+                w.resources.put(factory, from, rr);
+                return rr;
             }
-            T r = (T) m.get(bundle);
-            if (r == null) {
-                r = con.createResource(factory, bundle);
-                m.put(bundle, r);
-            }
-            return r;
         }
     }
 }

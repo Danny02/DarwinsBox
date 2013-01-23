@@ -17,23 +17,19 @@
 package darwin.geometrie.io;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.zip.*;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
-import darwin.geometrie.unpacked.Mesh;
-import darwin.geometrie.unpacked.Model;
-import darwin.jopenctm.compression.MeshEncoder;
-import darwin.jopenctm.compression.RawEncoder;
+import darwin.geometrie.unpacked.*;
+import darwin.jopenctm.compression.*;
 import darwin.jopenctm.data.AttributeData;
 import darwin.jopenctm.errorhandling.InvalidDataException;
 import darwin.jopenctm.io.CtmFileWriter;
 
 import javax.media.opengl.GL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import static darwin.geometrie.data.DataType.FLOAT;
 import static darwin.geometrie.io.CtmModelReader.*;

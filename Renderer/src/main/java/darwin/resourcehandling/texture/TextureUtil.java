@@ -16,14 +16,13 @@
  */
 package darwin.resourcehandling.texture;
 
-import java.io.*;
 
 import darwin.renderer.GraphicContext;
 import darwin.util.logging.InjectLogger;
 
-import com.google.inject.Inject;
 import com.jogamp.opengl.util.texture.*;
-import javax.media.opengl.*;
+import javax.inject.Inject;
+import javax.media.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 

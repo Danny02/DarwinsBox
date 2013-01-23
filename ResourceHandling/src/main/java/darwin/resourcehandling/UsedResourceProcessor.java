@@ -25,6 +25,7 @@ import darwin.resourcehandling.dependencies.annotation.*;
 import darwin.resourcehandling.handle.*;
 import darwin.resourcehandling.relative.FilerFactory;
 
+import com.google.common.collect.*;
 import javax.annotation.processing.*;
 import javax.inject.Named;
 import javax.lang.model.SourceVersion;
@@ -39,17 +40,20 @@ import javax.tools.*;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class UsedResourceProcessor extends AbstractProcessor {
 
-    private final static Map<Class<? extends ResourceProcessor>, Set<ResourceTupel>> processed = new HashMap<>();
+    private final static Multimap<Class<? extends ResourceProcessor>, ResourceTupel> processed = HashMultimap.create();
     private final Set<ResourceTupel> resources = new HashSet<>();
-    private static FilerFactory filer;
-    private static Map<String, ResourceDependecyInspector> inspectors;
+     private static FilerFactory filer;
+     private static Map<String, ResourceDependecyInspector> inspectors;
 
     private Map<String, ResourceDependecyInspector> getInspectors() {
         if (inspectors == null) {
             inspectors = new HashMap<>();
 
             for (ResourceDependecyInspector in : createProccessingLoader(ResourceDependecyInspector.class)) {
-                inspectors.put(in.getType().getCanonicalName(), in);
+                String name = in.getType().getCanonicalName();
+                if (name != null) {
+                    inspectors.put(name, in);
+                }
             }
         }
         return inspectors;
@@ -62,12 +66,12 @@ public class UsedResourceProcessor extends AbstractProcessor {
         return filer;
     }
 
-    @Override
+    @Override @SuppressWarnings("nullness")
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new HashSet<>();
-        annotations.add(Named.class.getCanonicalName());
-        annotations.add(InjectResource.class.getCanonicalName());
-        annotations.add(InjectBundle.class.getCanonicalName());
+        for (Class a : new Class[]{Named.class, InjectResource.class, InjectBundle.class}) {
+            annotations.add(a.getCanonicalName());
+        }
         return annotations;
     }
 
@@ -94,7 +98,8 @@ public class UsedResourceProcessor extends AbstractProcessor {
         appendResource(path, type);
     }
 
-    private String getFileExtension(Path p) {
+    private 
+    String getFileExtension(Path p) {
         String fn = p.toFile().getName();
         String[] parts = fn.split("\\.");
         if (parts.length > 1) {
@@ -104,9 +109,9 @@ public class UsedResourceProcessor extends AbstractProcessor {
         }
     }
 
-    private void appendResource(Path path, String type) {
+    private void appendResource(Path path,  String type) {
         ResourceTupel resourceTupel = new ResourceTupel(path, type);
-        if (path != null || !resources.contains(resourceTupel)) {
+        if (!resources.contains(resourceTupel)) {
             resources.add(resourceTupel);
             ResourceDependecyInspector<?> get = getInspectors().get(type);
             if (get != null) {
@@ -127,6 +132,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
             Field context = processingEnv.getClass().getDeclaredField("context");
             context.setAccessible(true);
             Object c = context.get(processingEnv);
+            assert c != null : "@SuppressWarnings nullness";
             Method declaredMethod = c.getClass().getDeclaredMethod("get", Class.class);
             filemanager = (JavaFileManager) declaredMethod.invoke(c, JavaFileManager.class);
         } catch (Throwable ex) {
@@ -167,16 +173,14 @@ public class UsedResourceProcessor extends AbstractProcessor {
             if (e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.PARAMETER) {
                 String typeName = getFQN(e);
                 InjectBundle annotation = e.getAnnotation(InjectBundle.class);
-                String[] pp = annotation.files();
-                if (pp != null) {
-                    for (String path : pp) {
-                        appendResource(annotation.prefix() + path, typeName);
-                    }
+                for (String path : annotation.files()) {
+                    appendResource(annotation.prefix() + path, typeName);
                 }
             }
         }
     }
 
+    @SuppressWarnings("nullness")
     private void processResources() {
         Set<ResourceTupel> stay = new HashSet<>();
 
@@ -187,28 +191,14 @@ public class UsedResourceProcessor extends AbstractProcessor {
             ++count;
             m.printMessage(Kind.NOTE, "proccesing: " + rp.getClass().toString());
 
-            Set<ResourceTupel> proc = processed.get(rp.getClass());
-            if (proc == null) {
-                proc = new HashSet<>();
-                processed.put(rp.getClass(), proc);
-            }
-
-            String[] ex = rp.supportedFileExtensions();
-            Class[] st = rp.supportedResourceTypes();
-            String[] types = new String[st.length];
-            for (int i = 0; i < st.length; i++) {
-                types[i] = st[i].getCanonicalName();
-            }
-
+            Collection<ResourceTupel> proc = processed.get(rp.getClass());
             Set<ResourceTupel> ts = new HashSet<>();
             for (ResourceTupel tupel : resources) {
-                if (ex == null || Arrays.binarySearch(ex, getFileExtension(tupel.path)) >= 0) {
-                    if (types == null || Arrays.binarySearch(types, tupel.className) >= 0) {
-                        if (!proc.contains(tupel)) {
-                            m.printMessage(Kind.NOTE, "\t->" + tupel.path);
-                            ts.add(tupel);
-                            proc.add(tupel);
-                        }
+                if (isExtensionSupported(rp, tupel.path) && isClassSupported(rp, tupel.className)) {
+                    if (!proc.contains(tupel)) {
+                        m.printMessage(Kind.NOTE, "\t->" + tupel.path);
+                        ts.add(tupel);
+                        proc.add(tupel);
                     }
                 }
             }
@@ -230,5 +220,28 @@ public class UsedResourceProcessor extends AbstractProcessor {
             }
             m.printMessage(Kind.NOTE, "deleted: " + resourceTupel.path.toString());
         }
+    }
+
+    private boolean isClassSupported(ResourceProcessor processor,  String className) {
+         String[] types = null;
+        if (processor.supportedResourceTypes() != null) {
+            Class[] st = processor.supportedResourceTypes();
+            types = new String[st.length];
+            for (int i = 0; i < st.length; i++) {
+                types[i] = st[i].getCanonicalName();
+            }
+        }
+
+        return types == null || (className != null && Arrays.binarySearch(types, className) >= 0);
+    }
+
+    private boolean isExtensionSupported(ResourceProcessor processor, Path path) {
+
+        String[] ex = processor.supportedFileExtensions();
+        if (ex != null) {
+            String extension = getFileExtension(path);
+            return extension != null && Arrays.binarySearch(ex, extension) >= 0;
+        }
+        return true;
     }
 }

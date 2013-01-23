@@ -16,28 +16,24 @@
  */
 package darwin.renderer.geometrie.attributs;
 
-import com.google.inject.assistedinject.*;
-import javax.annotation.*;
-import javax.annotation.concurrent.Immutable;
-import javax.media.opengl.GLProfile;
-
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.buffer.BufferObject;
 import darwin.renderer.shader.Shader;
 
+import com.google.inject.assistedinject.*;
+import javax.media.opengl.GLProfile;
+
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-@Immutable
-public final class VAOAttributs implements AttributsConfigurator
-{
-    public interface VAOAttributsFactory
-    {
-        @ParametersAreNonnullByDefault
+public final class VAOAttributs implements AttributsConfigurator {
+
+    public interface VAOAttributsFactory {
+
         public VAOAttributs create(Shader shader, VertexBO[] vbuffers,
-                                   @Nullable BufferObject indice);
+                                   BufferObject indice);
     }
 
     static {
@@ -47,12 +43,10 @@ public final class VAOAttributs implements AttributsConfigurator
     private final int id;
 
     @AssistedInject
-    @ParametersAreNonnullByDefault
     public VAOAttributs(GraphicContext gcontext,
                         @Assisted Shader shader,
                         @Assisted VertexBO[] vbuffers,
-                        @Assisted @Nullable BufferObject indice)
-    {
+                        @Assisted  BufferObject indice) {
         gc = gcontext;
 
         int[] i = new int[1];
@@ -68,14 +62,12 @@ public final class VAOAttributs implements AttributsConfigurator
     }
 
     @Override
-    public void prepare()
-    {
+    public void prepare() {
         gc.getGL().getGL2GL3().glBindVertexArray(id);
     }
 
     @Override
-    public void disable()
-    {
+    public void disable() {
         gc.getGL().getGL2GL3().glBindVertexArray(0);
     }
 }

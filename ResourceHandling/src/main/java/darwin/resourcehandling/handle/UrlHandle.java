@@ -16,8 +16,7 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Objects;
 
@@ -63,7 +62,7 @@ public class UrlHandle implements ResourceHandle {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals( Object obj) {
         if (obj == null) {
             return false;
         }

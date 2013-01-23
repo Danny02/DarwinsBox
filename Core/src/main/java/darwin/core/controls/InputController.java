@@ -18,13 +18,11 @@ package darwin.core.controls;
 
 import darwin.util.math.base.Line;
 import darwin.util.math.base.matrix.Matrix4;
-import darwin.util.math.base.vector.GenericVector;
-import darwin.util.math.base.vector.Vector;
+import darwin.util.math.base.vector.*;
 import darwin.util.math.util.MatrixCache;
 
 import com.jogamp.newt.Window;
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.MouseListener;
+import com.jogamp.newt.event.*;
 
 /**
  *

@@ -56,7 +56,8 @@ public class Circle {
      * <p/>
      * @return <b>null</b> if the line does not intersect with the circle
      */
-    public LineSegment<Vector2> getIntersection(Line<Vector2> line) {
+    public 
+    LineSegment<Vector2> getIntersection(Line<Vector2> line) {
         assert !contains(line.getStartingPoint());
 
         Vector2 toCircle = center.clone().sub(line.getStartingPoint());

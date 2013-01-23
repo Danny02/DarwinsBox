@@ -16,17 +16,14 @@
  */
 package darwin.renderer.shader;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 
 import darwin.renderer.GraphicContext;
-import darwin.renderer.opengl.ShaderObjekt;
-import darwin.renderer.opengl.ShaderProgramm;
+import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException.BuildError;
 
 import com.google.common.base.Optional;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2GL3;
+import javax.media.opengl.*;
 
 /**
  *
@@ -38,16 +35,12 @@ public class ShaderProgramBuilder {
     private final Collection<ShaderAttribute> attributs = new LinkedList<>();
 
     public ShaderProgramBuilder with(ShaderObjekt object) {
-        if (object != null) {
-            objects.add(object);
-        }
+        objects.add(object);
         return this;
     }
 
     public ShaderProgramBuilder with(Collection<ShaderAttribute> attribute) {
-        if (attribute != null) {
-            attributs.addAll(attribute);
-        }
+        attributs.addAll(attribute);
         return this;
     }
 
@@ -56,7 +49,9 @@ public class ShaderProgramBuilder {
         int programObject = gl.glCreateProgram();
 
         for (ShaderObjekt so : objects) {
-            gl.glAttachShader(programObject, so.getShaderobjekt());
+            if (so != null) {
+                gl.glAttachShader(programObject, so.getShaderobjekt());
+            }
         }
 
         //TODO GL Treiber Constanten in einen Globalen Constanten-Pool verfrachten
@@ -71,7 +66,7 @@ public class ShaderProgramBuilder {
             }
             //Loggen wenn zeug ned geht
         }
-        
+
         gl.glProgramParameteri(programObject, GL2GL3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL.GL_TRUE);
 
         gl.glLinkProgram(programObject);

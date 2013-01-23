@@ -14,28 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.shader.uniform;
+package darwin.renderer.opengl.framebuffer;
 
-import darwin.renderer.shader.Sampler;
+import darwin.renderer.GraphicContext;
 
-import com.jogamp.opengl.util.texture.Texture;
+import javax.inject.*;
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author daniel
  */
-public class SamplerSetter implements UniformSetter {
+@Singleton
+public class DefaultFrameBuffer extends FrameBufferObject
+{
 
-    private final Sampler sampler;
-    private final Texture tex;
-
-    public SamplerSetter(Sampler sampler, Texture tex) {
-        this.sampler = sampler;
-        this.tex = tex;
+    @Inject
+    public DefaultFrameBuffer(GraphicContext gc)
+    {
+        super(gc, 0);
     }
 
     @Override
-    public void set() {
-        sampler.bindTexture(tex);
+    public int getWidth()
+    {
+        return gc.getGLWindow().getWidth();
+    }
+
+    @Override
+    public int getHeight()
+    {
+        return gc.getGLWindow().getHeight();
     }
 }

@@ -20,39 +20,33 @@ package darwin.geometrie.data;
  *
  * @author daniel
  */
-public class GenericVector implements VectorType
-{
+public class GenericVector implements VectorType {
 
     private final DataType type;
     private final int elementCount;
 
-    public GenericVector(DataType type, int elementCount)
-    {
+    public GenericVector(DataType type, int elementCount) {
         this.type = type;
         this.elementCount = elementCount;
     }
 
     @Override
-    public DataType getDataType()
-    {
+    public DataType getDataType() {
         return type;
     }
 
     @Override
-    public int getElementCount()
-    {
+    public int getElementCount() {
         return elementCount;
     }
 
     @Override
-    public int getByteSize()
-    {
+    public int getByteSize() {
         return type.getByteSize() * getElementCount();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -69,12 +63,15 @@ public class GenericVector implements VectorType
         return true;
     }
 
-    @Override
-    public int hashCode()
-    {
+    public static int hash(DataType t, int count) {
         int hash = 7;
-        hash = 29 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 29 * hash + this.elementCount;
+        hash = 29 * hash + (t != null ? t.hashCode() : 0);
+        hash = 29 * hash + count;
         return hash;
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(type, elementCount);
     }
 }

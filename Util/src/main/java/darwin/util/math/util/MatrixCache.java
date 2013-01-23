@@ -38,8 +38,8 @@ public class MatrixCache {
     private final ProjectionMatrix projektion;
     private ImmutableVector<Vector3> light = new Vector3();
 //    private ShadowUtil sutil;
-    private Matrix4 vm, pv, pvi, pvm, s;
-    private Matrix vn, n;
+     private Matrix4 vm, pv, pvi, pvm, s;
+     private Matrix vn, n;
     private final Collection<GenListener<MatrixEvent>> listener;
     //TODO boeser boeser schneller umschalter für schatten umbedigt besser loesen
 //    private boolean normal = true;

@@ -22,7 +22,7 @@ import java.nio.file.WatchEvent;
  *
  * @author daniel
  */
-public interface FileChangeListener<E> {
+public interface FileChangeListener {
 
-    public void fileChanged(WatchEvent.Kind<E> kind);
+    public void fileChanged(WatchEvent.Kind<?> kind);
 }

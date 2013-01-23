@@ -25,7 +25,7 @@ import darwin.util.math.container.TransformationContainer;
  */
 public class RenderObjekt
 {
-    private RenderModel[] models;
+     private RenderModel[] models;
     private final TransformationContainer transf;
 
     public RenderObjekt(TransformationContainer t) {

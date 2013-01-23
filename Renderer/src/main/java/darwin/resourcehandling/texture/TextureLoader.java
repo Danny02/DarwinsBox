@@ -61,21 +61,19 @@ public class TextureLoader implements ResourceFromHandle<Texture> {
 
     @Override
     public void update(ResourceHandle changed, final Texture old) {
-        TextureData a = null;
         try {
-            a = TextureIO.newTextureData(gc.getGL().getGLProfile(), changed.getStream(),
-                                         true, IOUtil.getFileSuffix(changed.getName()));
+            final TextureData data = TextureIO.newTextureData(gc.getGL().getGLProfile(), changed.getStream(),
+                                                              true, IOUtil.getFileSuffix(changed.getName()));
+
+            gc.invoke(false, new GLRunnable() {
+                @Override
+                public boolean run(GLAutoDrawable glad) {
+                    old.updateImage(glad.getGL(), data);
+                    return true;
+                }
+            });
         } catch (IOException ex) {
         }
-
-        final TextureData data = a;
-        gc.invoke(false, new GLRunnable() {
-            @Override
-            public boolean run(GLAutoDrawable glad) {
-                old.updateImage(glad.getGL(), data);
-                return true;
-            }
-        });
     }
 
     @Override

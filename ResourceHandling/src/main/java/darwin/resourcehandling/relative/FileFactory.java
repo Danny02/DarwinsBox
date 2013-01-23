@@ -28,7 +28,7 @@ public class FileFactory implements RelativeFileFactory {
     private final Path root;
 
     public FileFactory(File root) {
-        this.root = root.toPath();
+        this.root = Paths.get(root.toURI());
     }
 
     public FileFactory(Path root) {

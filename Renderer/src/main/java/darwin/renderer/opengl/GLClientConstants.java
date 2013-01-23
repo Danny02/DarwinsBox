@@ -18,51 +18,44 @@ package darwin.renderer.opengl;
 
 import darwin.renderer.GraphicContext;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.inject.*;
 import javax.media.opengl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 /**
  *
  * @author daniel
  */
 @Singleton
-public class GLClientConstants
-{
+public class GLClientConstants {
+
     private final GraphicContext gc;
-    private String glslVersion;
-    private int maxSamples;
-    private int maxColorAttachments;
-    private boolean initialize;
+     private String glslVersion;
+    private int maxSamples, maxColorAttachments;
+    private boolean initialize = false;
 
     @Inject
-    public GLClientConstants(GraphicContext gc)
-    {
+    public GLClientConstants(GraphicContext gc) {
         this.gc = gc;
     }
 
-    private void initialize()
-    {
+    private void initialize() {
         Retriver retriver = new Retriver(this);
         gc.getGLWindow().invoke(true, retriver);
         initialize = true;
     }
 
-    private class Retriver implements GLRunnable
-    {
+    private class Retriver implements GLRunnable {
+
         private final Logger logger = LoggerFactory.getLogger(GLRunnable.class);
         GLClientConstants cons;
 
-        public Retriver(GLClientConstants cons)
-        {
+        public Retriver(GLClientConstants cons) {
             this.cons = cons;
         }
 
         @Override
-        public boolean run(GLAutoDrawable drawable)
-        {
+        public boolean run(GLAutoDrawable drawable) {
             GL gl = drawable.getGL();
             int[] container = new int[1];
 
@@ -86,8 +79,7 @@ public class GLClientConstants
             return true;
         }
 
-        private String retriveGlslVersionString(GL gl)
-        {
+        private String retriveGlslVersionString(GL gl) {
 
             int v = 120;
             try {
@@ -105,24 +97,21 @@ public class GLClientConstants
         }
     }
 
-    public String getGlslVersion()
-    {
+    public String getGlslVersion() {
         if (!initialize) {
             initialize();
         }
         return glslVersion;
     }
 
-    public int getMaxColorAttachments()
-    {
+    public int getMaxColorAttachments() {
         if (!initialize) {
             initialize();
         }
         return maxColorAttachments;
     }
 
-    public int getMaxSamples()
-    {
+    public int getMaxSamples() {
         if (!initialize) {
             initialize();
         }

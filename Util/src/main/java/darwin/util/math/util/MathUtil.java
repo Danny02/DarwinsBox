@@ -16,7 +16,7 @@
  */
 package darwin.util.math.util;
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
 
 /**
  *

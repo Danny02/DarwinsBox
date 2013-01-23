@@ -18,6 +18,7 @@ package darwin.resourcehandling.dependencies;
 
 import com.google.inject.*;
 import com.google.inject.spi.TypeEncounter;
+import javax.inject.Inject;
 
 /**
  *
@@ -34,7 +35,7 @@ public class ResourceTypeListener implements com.google.inject.spi.TypeListener 
 
     @Override
     public <I> void hear(TypeLiteral<I> aTypeLiteral, TypeEncounter<I> aTypeEncounter) {
-        for (MembersInjector m : injector.retriveMemberInjectors(aTypeLiteral.getRawType())) {
+        for (MembersInjector<? super I> m : injector.retriveMemberInjectors(aTypeLiteral.getRawType())) {
             aTypeEncounter.register(m);
         }
     }

@@ -16,8 +16,7 @@
  */
 package darwin.geometrie.data;
 
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
+import java.nio.*;
 
 /**
  * Proxy Klasse um ein einzelens Vertex aus einem VertexBuffer editieren zu
@@ -48,30 +47,31 @@ public final class Vertex
         ele.getDataType().put(vb.buffer, id, values);
     }
 
-    public void setAttribute(Element ele, ByteBuffer values)
-    {
-        DataAttribut al = vb.layout.getAttribut(ele);
-        assert al != null : "This Attribute doesn't exist in the VertexBuffer";
-        assert (values.remaining() >= ele.getVectorType().getByteSize()) :
-                "not enough data in the buffer!";
-
-        int old = vb.buffer.position();
-        {
-            int id = ind * al.stride + al.offset;
-            vb.buffer.position(id);
-            int oldLim = values.limit();
-            {
-                int newLim = values.position() + ele.getVectorType().getByteSize();
-                if (newLim > oldLim) {
-                    throw new BufferOverflowException();
-                }
-                values.limit(newLim);
-                vb.buffer.put(values);
-            }
-            values.limit(oldLim);
-        }
-        vb.buffer.position(old);
-    }
+    //buggy
+//    public void setAttribute(Element ele, ByteBuffer values)
+//    {
+//        DataAttribut al = vb.layout.getAttribut(ele);
+//        assert al != null : "This Attribute doesn't exist in the VertexBuffer";
+//        assert (values.remaining() >= ele.getVectorType().getByteSize()) :
+//                "not enough data in the buffer!";
+//
+//        int old = vb.buffer.position();
+//        {
+//            int id = ind * al.stride + al.offset;
+//            vb.buffer.position(id);
+//            int oldLim = values.limit();
+//            {
+//                int newLim = values.position() + ele.getVectorType().getByteSize();
+//                if (newLim > oldLim) {
+//                    throw new BufferOverflowException();
+//                }
+//                values.limit(newLim);
+//                vb.buffer.put(values);
+//            }
+//            values.limit(oldLim);
+//        }
+//        vb.buffer.position(old);
+//    }
 
     public Number[] getAttribute(Element ele)
     {
@@ -83,23 +83,23 @@ public final class Vertex
 
         return values;
     }
-
-    public void getAttribute(Element ele, ByteBuffer values)
-    {
-        DataAttribut al = vb.layout.getAttribut(ele);
-        assert al != null : "This Attribute doesn't exist in the VertexBuffer";
-        assert (values.remaining() >= ele.getVectorType().getByteSize()) :
-                "not enough data in the buffer!";
-
-        int old = vb.buffer.position();
-        int oldl = vb.buffer.limit();
-        {
-            int id = ind * al.stride + al.offset;
-            vb.buffer.position(id * ele.getDataType().byteSize);
-            vb.buffer.limit(vb.buffer.position() + ele.getVectorType().getByteSize());
-            values.put(vb.buffer);
-        }
-        vb.buffer.position(old);
-        vb.buffer.limit(oldl);
-    }
+//buggy?
+//    public void getAttribute(Element ele, ByteBuffer values)
+//    {
+//        DataAttribut al = vb.layout.getAttribut(ele);
+//        assert al != null : "This Attribute doesn't exist in the VertexBuffer";
+//        assert (values.remaining() >= ele.getVectorType().getByteSize()) :
+//                "not enough data in the buffer!";
+//
+//        int old = vb.buffer.position();
+//        int oldl = vb.buffer.limit();
+//        {
+//            int id = ind * al.stride + al.offset;
+//            vb.buffer.position(id * ele.getDataType().byteSize);
+//            vb.buffer.limit(vb.buffer.position() + ele.getVectorType().getByteSize());
+//            values.put(vb.buffer);
+//        }
+//        vb.buffer.position(old);
+//        vb.buffer.limit(oldl);
+//    }
 }

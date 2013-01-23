@@ -16,8 +16,6 @@
  */
 package darwin.renderer.util.memory;
 
-import javax.inject.Singleton;
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>

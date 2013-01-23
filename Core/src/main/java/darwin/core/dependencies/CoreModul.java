@@ -24,11 +24,10 @@ import com.google.inject.*;
  *
  * @author some
  */
-public class CoreModul extends AbstractModule{
+public class CoreModul extends AbstractModule {
 
     @Override
     protected void configure() {
         bind(Stage.class).toInstance(currentStage());
     }
-    
 }

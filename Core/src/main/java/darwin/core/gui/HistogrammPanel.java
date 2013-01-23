@@ -5,8 +5,8 @@
 package darwin.core.gui;
 
 import java.awt.*;
-import java.nio.*;
-import javax.swing.*;
+import java.nio.ByteBuffer;
+import javax.swing.JPanel;
 
 /**
  *

@@ -18,16 +18,15 @@ package darwin.resourcehandling.shader;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
+
+import darwin.geometrie.data.DataType;
+import darwin.renderer.opengl.*;
+import darwin.renderer.shader.*;
+import darwin.util.logging.InjectLogger;
+
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
-
-import darwin.renderer.opengl.GLSLType;
-import darwin.renderer.opengl.GlElement;
-import darwin.renderer.shader.ShaderAttribute;
-import darwin.renderer.shader.ShaderUniform;
-import darwin.util.logging.InjectLogger;
 
 /**
  *
@@ -54,7 +53,8 @@ public class ShaderFile implements Serializable {
     private Logger logger = NOPLogger.NOP_LOGGER;
     private static final long serialVersionUID = -5822433543998474334L;
     //
-    public final String name, vertex, fragment, geometrie;
+    public final String name;
+    public final String vertex, fragment, geometrie;
     public final String[] mutations;
     private List<ShaderUniform> uniforms = new ArrayList<>();
     private List<ShaderAttribute> attributs = new ArrayList<>();
@@ -62,18 +62,15 @@ public class ShaderFile implements Serializable {
 
     public static class Builder {
 
-        private String name, vertex, fragment, geometrie;
+        private String name;
+        private String vertex, fragment, geometrie;
         private String[] mutations;
-
-        public Builder() {
-        }
 
         public static Builder create(String name) {
             return new Builder().withName(name);
         }
-        
-        public Builder withName(String n)
-        {
+
+        public Builder withName(String n) {
             name = n;
             return this;
         }
@@ -109,7 +106,7 @@ public class ShaderFile implements Serializable {
         this.vertex = vertex;
         this.fragment = fragment;
         this.geometrie = geometrie;
-        this.mutations = mutations == null? new String[0] : mutations;
+        this.mutations = mutations == null ? new String[0] : mutations;
 
         gatherAttributs(vertex);
 
@@ -140,30 +137,33 @@ public class ShaderFile implements Serializable {
 
     private void parseUniform(Matcher m) {
         while (m.find()) {
-            List<String> n = parseNames(m.group(2));
-            List<String> b = parseNames(m.group(3));
-
             String type = m.group(1);
-            if (type.startsWith("sampler")) {
-                for (String na : n) {
-                    sampler.add(na);
+            String names = m.group(2);
+            String bezeichnungen = m.group(3);
+            if (type != null && names != null) {
+                List<String> n = parseNames(names);
+                if (type.startsWith("sampler")) {
+                    for (String na : n) {
+                        sampler.add(na);
+                    }
+                } else {
+                    List<String> b = parseNames(bezeichnungen);
+                    GLSLType gtype = parseType(type);
+                    for (int i = 0; i < n.size(); ++i) {
+                        String bez = null;
+                        if (b.size() > i) {
+                            bez = b.get(i);
+                        }
+                        GlElement ele = parseElement(gtype, bez);
+                        uniforms.add(new ShaderUniform(n.get(i), ele));
+                    }
                 }
-                continue;
-            }
-
-            GLSLType gtype = parseType(m.group(1));
-            for (int i = 0; i < n.size(); ++i) {
-                String bez = null;
-                if (b.size() > i) {
-                    bez = b.get(i);
-                }
-                GlElement ele = parseElement(gtype, bez);
-                uniforms.add(new ShaderUniform(n.get(i), ele));
+            } else {
+                //TODO possible warn that it could not parse
             }
         }
     }
 
-    @SuppressWarnings("empty-statement")
     private void gatherAttributs(String source) {
         if (source == null) {
             return;
@@ -172,37 +172,42 @@ public class ShaderFile implements Serializable {
         BitSet set = new BitSet();
 
         while (m.find()) {
+            String type = m.group(1);
+            String names = m.group(2);
+            String bezeichnungen = m.group(3);
+            if (names != null) {
+                List<String> n = parseNames(names);
+                List<NVP> b = parseTags(bezeichnungen);
 
-            List<String> n = parseNames(m.group(2));
-            List<NVP> b = parseTags(m.group(3));
-
-            GLSLType gtype = parseType(m.group(1));
-            for (int i = 0; i < n.size(); ++i) {
-                String bez = null;
-                Integer ind = null;
-                if (b.size() > i) {
-                    NVP nvp = b.get(i);
-                    bez = nvp.name;
-                    ind = nvp.index;
-                }
-
-                GlElement ele = parseElement(gtype, bez);
-                if (ind != null) {
-                    if (set.get(ind)) {
-                        logger.warn("Eine Attribut(" + n.get(i)
-                                    + ") Location(" + ind
-                                    + ") wurde mehr als einmal zugewiesen."
-                                    + " Dies kann zu Link Fehler führen.");
+                GLSLType gtype = parseType(type);
+                for (int i = 0; i < n.size(); ++i) {
+                    String bez = null;
+                    Integer ind = null;
+                    if (b.size() > i) {
+                        NVP nvp = b.get(i);
+                        bez = nvp.name;
+                        ind = nvp.index;
                     }
-                    set.set(set.nextClearBit(ind));
+
+                    GlElement ele = parseElement(gtype, bez);
+                    if (ind != null) {
+                        if (set.get(ind)) {
+                            logger.warn("Eine Attribut(" + n.get(i)
+                                        + ") Location(" + ind
+                                        + ") wurde mehr als einmal zugewiesen."
+                                        + " Dies kann zu Link Fehler führen.");
+                        }
+                        set.set(set.nextClearBit(ind));
+                    }
+                    String wtf = n.get(i);
+                    attributs.add(new ShaderAttribute(wtf, ele, ind));
                 }
-                attributs.add(new ShaderAttribute(n.get(i), ele, ind));
             }
         }
     }
 
     private List<String> parseNames(String names) {
-        List<String> ret = new ArrayList<>(5);
+        List<String> ret = new ArrayList<>();
         if (names != null) {
             Matcher m = elenames.matcher(names);
             while (m.find()) {
@@ -213,7 +218,7 @@ public class ShaderFile implements Serializable {
     }
 
     private List<NVP> parseTags(String names) {
-        List<NVP> ret = new ArrayList<>(5);
+        List<NVP> ret = new ArrayList<>();
         if (names != null) {
             Matcher m = tagnames.matcher(names);
             while (m.find()) {
@@ -252,11 +257,16 @@ public class ShaderFile implements Serializable {
             case "int":
                 return GLSLType.INT;
             default:
-                //TODO gscheite fehler behandlung, eigenen exception
+                if (name.startsWith("mat") && name.length() == 6) {
+                    try {
+                        int c = Integer.parseInt(name.substring(3, 4));
+                        int r = Integer.parseInt(name.substring(5, 6));
+                        return new GLSLType(DataType.FLOAT, c, r);
+                    } catch (NumberFormatException ex) {
+                    }
+                }
                 throw new RuntimeException("GLSL Typ konnte nicht aufgelöst "
                                            + "werden. ( Typ: " + name + " )");
-
-
         }
     }
 

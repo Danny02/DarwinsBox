@@ -16,8 +16,9 @@
  */
 package darwin.renderer;
 
+import java.util.Objects;
+
 import com.jogamp.newt.opengl.GLWindow;
-import javax.annotation.Nullable;
 import javax.inject.*;
 import javax.media.opengl.*;
 
@@ -30,15 +31,14 @@ import javax.media.opengl.*;
  * @author daniel
  */
 @Singleton
-public final class GraphicContext
-{
-    private final String glProfil;
-    private GLWindow window;
+public final class GraphicContext {
+
+     private final String glProfil;
+     private GLWindow window;
     private boolean initialized = false;
 
     @Inject
-    public GraphicContext(@Nullable @Named("GL_Profile") String profil)
-    {
+    public GraphicContext( @Named("GL_Profile") String profil) {
         glProfil = profil;
     }
 
@@ -46,11 +46,10 @@ public final class GraphicContext
      * Tries to create a OpenGL Context.
      * <p/>
      * @throws GLException when anything prevents the creation, the exception
-     *                     holds the underlying problem in its "Throwable" field.
+     * holds the underlying problem in its "Throwable" field.
      */
-    synchronized public void iniContext() throws GLException
-    {
-        assert initialized == false : "The Context is already initialized!";
+    synchronized public void iniContext() throws GLException {
+        assert !isInitialized() : "The Context is already initialized!";
 
         GLProfile.initSingleton();
         GLProfile profile = null;
@@ -73,9 +72,8 @@ public final class GraphicContext
      * <p/>
      * @return
      */
-    public GL getGL()
-    {
-        assert window != null : "Context is not initialized";
+    public GL getGL() {
+        Objects.requireNonNull(window, "Context is not initialized");
         return window.getGL();
     }
 
@@ -84,24 +82,20 @@ public final class GraphicContext
      * <p/>
      * @return
      */
-    public GLWindow getGLWindow()
-    {
-        assert window != null : "Context is not initialized";
+    public GLWindow getGLWindow() {
+        Objects.requireNonNull(window, "Context is not initialized");
         return window;
     }
-    
-    public void invoke(boolean wait, GLRunnable runnable)
-    {
+
+    public void invoke(boolean wait, GLRunnable runnable) {
         getGLWindow().invoke(wait, runnable);
     }
 
-    public boolean isInitialized()
-    {
+    public boolean isInitialized() {
         return initialized;
     }
 
-    private static GLCapabilitiesImmutable getCapabilities(GLProfile profile)
-    {
+    private static GLCapabilitiesImmutable getCapabilities(GLProfile profile) {
         GLCapabilities capabilitys = new GLCapabilities(profile);
 //        c.setSampleBuffers(true);
 //        c.setNumSamples(16);

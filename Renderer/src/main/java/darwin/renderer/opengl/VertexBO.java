@@ -16,13 +16,11 @@
  */
 package darwin.renderer.opengl;
 
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-
-import darwin.geometrie.data.DataLayout;
-import darwin.geometrie.data.VertexBuffer;
+import darwin.geometrie.data.*;
 import darwin.renderer.opengl.buffer.BufferObject.BufferFactory;
 import darwin.renderer.opengl.buffer.*;
+
+import com.google.inject.assistedinject.*;
 
 /**
  *

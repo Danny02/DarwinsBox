@@ -16,16 +16,16 @@
  */
 package darwin.geometrie.unpacked;
 
+import darwin.geometrie.data.GenericVector;
+import darwin.geometrie.data.*;
+import darwin.util.logging.InjectLogger;
+import darwin.util.math.base.vector.*;
+
 import javax.media.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
-import darwin.geometrie.data.*;
-import darwin.geometrie.data.GenericVector;
-import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.vector.*;
-
-import static darwin.geometrie.data.DataType.*;
+import static darwin.geometrie.data.DataType.FLOAT;
 
 /**
  *

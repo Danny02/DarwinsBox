@@ -17,7 +17,6 @@
 package darwin.resourcehandling.cache;
 
 import darwin.resourcehandling.factory.*;
-import darwin.resourcehandling.handle.*;
 
 /**
  *
@@ -25,15 +24,10 @@ import darwin.resourcehandling.handle.*;
  */
 public class NoResourceCache implements ResourceCache {
 
-    private final ResourceFactory fac = new ResourceFactory();
+    private final ResourceBuilder fac = new ResourceBuilder();
 
     @Override
-    public <T> T get(ResourceFromBundle<T> factory, ResourceBundle bundle, boolean unique) {
-        return fac.createResource(factory, bundle);
-    }
-
-    @Override
-    public <T> T get(ResourceFromHandle<T> factory, ResourceHandle bundle, boolean unique) {
-        return fac.createResource(factory, bundle);
+    public <F extends ChangeableResource, T> T get(ResourceFrom<F, T> factory, F from, boolean unique) {
+        return fac.createResource(factory, from);
     }
 }

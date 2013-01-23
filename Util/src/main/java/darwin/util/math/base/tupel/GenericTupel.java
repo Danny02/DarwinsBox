@@ -16,8 +16,6 @@
  */
 package darwin.util.math.base.tupel;
 
-import darwin.util.math.base.tupel.Tupel;
-
 /**
  *
  * @author daniel

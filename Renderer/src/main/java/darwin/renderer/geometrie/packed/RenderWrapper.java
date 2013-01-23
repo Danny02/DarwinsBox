@@ -18,10 +18,11 @@ package darwin.renderer.geometrie.packed;
 
 import darwin.util.math.util.MatrixCache;
 
-/** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+/**
+ * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class RenderWrapper implements Renderable
-{
+public class RenderWrapper implements Renderable {
+
     private final RenderObjekt object;
     private final MatrixCache smatrices;
 
@@ -35,22 +36,27 @@ public class RenderWrapper implements Renderable
         RenderModel[] rms = object.getModels();
         if (rms != null) {
             smatrices.setModel(object.getTransf().getModelMatrix());
-            for (RenderModel rm : rms)
+            for (RenderModel rm : rms) {
                 rm.render();
+            }
         }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals( Object obj) {
+        if (obj == null) {
             return false;
-        if(obj == this)
-        	return true;
-        if (getClass() != obj.getClass())
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final RenderWrapper other = (RenderWrapper) obj;
-        if (this.object != other.object && (this.object == null || !this.object.equals(other.object)))
+        if (this.object != other.object && (this.object == null || !this.object.equals(other.object))) {
             return false;
+        }
         return true;
     }
 
@@ -60,5 +66,4 @@ public class RenderWrapper implements Renderable
         hash = 23 * hash + (this.object != null ? this.object.hashCode() : 0);
         return hash;
     }
-
 }

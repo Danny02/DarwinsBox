@@ -18,8 +18,7 @@ package darwin.geometrie.io.obj;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import darwin.resourcehandling.handle.ClasspathFileHandler;
 import darwin.util.logging.InjectLogger;

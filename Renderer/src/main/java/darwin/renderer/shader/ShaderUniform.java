@@ -16,11 +16,9 @@
  */
 package darwin.renderer.shader;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 
-import darwin.renderer.opengl.GlElement;
-import darwin.renderer.opengl.ShaderProgramm;
+import darwin.renderer.opengl.*;
 
 import com.jogamp.opengl.util.GLBuffers;
 import javax.media.opengl.GLUniformData;
@@ -39,14 +37,12 @@ public class ShaderUniform implements ShaderElement {
     public ShaderUniform(String name, GlElement element) {
         this.name = name;
         this.element = element;
-
-        int eleCount = element.getVectorType().getElementCount();
+        GLSLType ele = element.getVectorType();
         if (element.isMatrix()) {
-            int s = (int) Math.sqrt(eleCount);
-            data = new GLUniformData(name, s, s,
-                                     GLBuffers.newDirectFloatBuffer(eleCount));
+            data = new GLUniformData(name, ele.getRows(), ele.getColumns(),
+                                     GLBuffers.newDirectFloatBuffer(ele.getElementCount()));
         } else {
-            data = new GLUniformData(name, eleCount, (FloatBuffer) null);
+            data = new GLUniformData(name, ele.getElementCount(), (FloatBuffer) null);
         }
     }
 

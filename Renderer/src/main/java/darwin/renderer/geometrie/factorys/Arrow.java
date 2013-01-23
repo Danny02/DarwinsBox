@@ -16,27 +16,22 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.concurrent.Immutable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import darwin.geometrie.data.Element;
-import darwin.geometrie.data.VertexBuffer;
+import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
 import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
 import darwin.renderer.shader.Shader;
 
+import javax.inject.*;
 import javax.media.opengl.GL2ES2;
-import static darwin.renderer.opengl.GLSLType.*;
+
+import static darwin.renderer.opengl.GLSLType.VEC3;
 
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-@Immutable
 @Singleton
 public final class Arrow implements GeometryFactory
 {
@@ -45,7 +40,6 @@ public final class Arrow implements GeometryFactory
     private final RenderMeshFactory factory;
 
     @Inject
-    @ParametersAreNonnullByDefault
     public Arrow(RenderMeshFactory rmFactory, VBOFactoy factoy)
     {
         factory = rmFactory;

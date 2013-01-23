@@ -19,16 +19,18 @@ package darwin.geometrie.data;
 import java.io.Serializable;
 import java.util.*;
 
+import com.google.common.base.Optional;
+
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class DataLayout implements Serializable
-{
+public class DataLayout implements Serializable {
+
     private static final long serialVersionUID = 8468234920530037630L;
 
-    public enum Format
-    {
+    public enum Format {
+
         /**
          * Erweitert die größe eines Vertex auf ein vielfaches von 2bit
          */
@@ -46,13 +48,11 @@ public class DataLayout implements Serializable
     private final int bytesize;
     private final Format format;
 
-    public DataLayout(Element... elements)
-    {
+    public DataLayout(Element... elements) {
         this(Format.AUTO, elements);
     }
 
-    public DataLayout(Format format, Element... elements)
-    {
+    public DataLayout(Format format, Element... elements) {
         if (elements.length == 1) {
             this.format = Format.INTERLEAVE;
         } else {
@@ -64,7 +64,7 @@ public class DataLayout implements Serializable
         }
 
         int stride = offsets[offsets.length - 1]
-                + elements[elements.length - 1].getVectorType().getByteSize();
+                     + elements[elements.length - 1].getVectorType().getByteSize();
 
         if (elements.length > 1) {
             stride = calcStride(format, stride);
@@ -77,14 +77,12 @@ public class DataLayout implements Serializable
         bytesize = stride;
     }
 
-    public DataLayout(DataLayout layout, Element... elements)
-    {
+    public DataLayout(DataLayout layout, Element... elements) {
         this(layout.format, collect(layout.getElements(), elements));
     }
 
     private static Element[] collect(Collection<Element> ele,
-                                     Element... elements)
-    {
+                                     Element... elements) {
         Element[] re = new Element[ele.size() + elements.length];
         ele.toArray(re);
         System.arraycopy(elements, 0, re, ele.size(), elements.length);
@@ -92,8 +90,7 @@ public class DataLayout implements Serializable
     }
 
     @SuppressWarnings("fallthrough")
-    private int calcStride(Format f, int stride)
-    {
+    private int calcStride(Format f, int stride) {
         int mod = stride % 32;
         switch (f) {
             case INTERLEAVE:
@@ -114,39 +111,41 @@ public class DataLayout implements Serializable
         return 0;
     }
 
-    public int getBytesize()
-    {
+    public int getBytesize() {
         return bytesize;
     }
 
-    public Collection<DataAttribut> getAttributs()
-    {
+    public Collection<DataAttribut> getAttributs() {
         return alignments.values();
     }
 
-    public DataAttribut getAttribut(Element a)
-    {
+    public DataAttribut getAttribut(Element a) {
         return alignments.get(a);
     }
 
-    public boolean hasElement(Element e)
-    {
+    public Optional<Element> getElementByName(String name) {
+        for (Element element : getElements()) {
+            if (name.equals(element.getBezeichnung())) {
+                return Optional.of(element);
+            }
+        }
+        return Optional.absent();
+    }
+
+    public boolean hasElement(Element e) {
         return alignments.containsKey(e);
     }
 
-    public Collection<Element> getElements()
-    {
+    public Collection<Element> getElements() {
         return alignments.keySet();
     }
 
-    public int getElementCount()
-    {
+    public int getElementCount() {
         return getElements().size();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -170,8 +169,7 @@ public class DataLayout implements Serializable
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         hash = 19 * hash + Objects.hashCode(this.alignments);
         hash = 19 * hash + this.bytesize;

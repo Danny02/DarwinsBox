@@ -29,7 +29,6 @@ public class FloatSetter implements UniformSetter{
     private final FloatBuffer value;
 
     public FloatSetter(ShaderUniform uni, float... value) {
-        assert uni != null && value != null;
         this.uni = uni;
         this.value = FloatBuffer.wrap(value);
     }

@@ -16,7 +16,6 @@
  */
 package darwin.util.math.container;
 
-import java.io.IOException;
 import java.util.*;
 
 import darwin.util.math.base.matrix.Matrix4;

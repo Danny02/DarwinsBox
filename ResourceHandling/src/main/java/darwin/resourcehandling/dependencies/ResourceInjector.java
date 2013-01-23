@@ -26,6 +26,7 @@ import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.resourcehandling.handle.*;
 import darwin.util.dependencies.*;
 
+import com.google.common.base.*;
 import com.google.inject.MembersInjector;
 import javax.inject.*;
 
@@ -36,7 +37,7 @@ import javax.inject.*;
 @Singleton
 public class ResourceInjector {
 
-    private final FileHandleCache factory;
+    private final FileHandleCache fileCache;
     private final ResourceCache cache;
     private final Map<Class, Iterable<MembersInjector>> injectors = new HashMap<>();
     private static final Map<Class, ResourceFromBundleProvider> bundleProvider;
@@ -57,36 +58,36 @@ public class ResourceInjector {
 
     @Inject
     public ResourceInjector(FileHandleCache factory, ResourceCache cache) {
-        this.factory = factory;
+        this.fileCache = factory;
         this.cache = cache;
     }
 
-    public <T> void injectResources(T object) {
+    @SuppressWarnings("nullness")
+    public void injectResources(Object object) {
+
         Class clz = object.getClass();
-        Iterable<MembersInjector> inj = injectors.get(clz);
+         Iterable<MembersInjector> inj = injectors.get(clz);
         if (inj == null) {
             inj = retriveMemberInjectors(clz);
             injectors.put(clz, inj);
         }
 
-        for (MembersInjector mi : inj) {
+        for (MembersInjector<Object> mi : inj) {
             mi.injectMembers(object);
         }
     }
-    
-    public <T> T get(ResourceFromHandle<T> loader, String resourceName)
-    {
-        ResourceHandle get = factory.get(resourceName);
+
+    public <T> T get(ResourceFromHandle<T> loader, String resourceName) {
+        ResourceHandle get = fileCache.get(resourceName);
         return cache.get(loader, get, false);
     }
-    
-    public <T> T get(ResourceFromBundle<T> loader, ResourceBundle bundle)
-    {
+
+    public <T> T get(ResourceFromBundle<T> loader, ResourceBundle bundle) {
         return cache.get(loader, bundle, false);
     }
 
-    <T> Iterable<MembersInjector<T>> retriveMemberInjectors(Class<T> c) {
-        ArrayList<MembersInjector<T>> list = new ArrayList<>();
+    Iterable<MembersInjector> retriveMemberInjectors(Class c) {
+        ArrayList<MembersInjector> list = new ArrayList<>();
         for (Field field : c.getDeclaredFields()) {
             retriveHandleInections(field, list);
             retriveBundleInjections(field, list);
@@ -94,36 +95,43 @@ public class ResourceInjector {
         return list;
     }
 
-    public static ResourceFromBundle getBundleFactory(Class c) {
-        ResourceFromBundleProvider prov = bundleProvider.get(c);
-        if (prov == null) {
-            throw new RuntimeException("No ResourceLoaderProvider found for the resource " + c);
-        }
-        return (ResourceFromBundle) prov.get();
+    @SuppressWarnings("nullness")
+    public static Optional<ResourceFromBundle<Object>> getBundleFactory(Class c) {
+        Optional<ResourceFromBundleProvider> o = Optional.fromNullable(bundleProvider.get(c));
+        return o.transform(new Function<ResourceFromBundleProvider, ResourceFromBundle<Object>>() {
+            @Override
+            public ResourceFromBundle apply(ResourceFromBundleProvider input) {
+                //generic bullshit
+                return ((ResourceFromBundleProvider<?>) input).get();
+            }
+        });
     }
 
-    public static ResourceFromHandleProvider getHandleFactory(Class c) {
-        ResourceFromHandleProvider prov = handleProvider.get(c);
-        if (prov == null) {
-            throw new RuntimeException("No ResourceLoaderProvider found for the resource " + c);
-        }
-        return prov;
+    @SuppressWarnings("nullness")
+    public static Optional<ResourceFromHandle<Object>> getHandleFactory(Class c, final String[] options) {
+        Optional<ResourceFromHandleProvider> o = Optional.fromNullable(handleProvider.get(c));
+        return o.transform(new Function<ResourceFromHandleProvider, ResourceFromHandle<Object>>() {
+            @Override
+            public ResourceFromHandle apply(ResourceFromHandleProvider input) {
+                return input.get(options);
+            }
+        });
     }
 
-    private <T> void retriveHandleInections(Field field, ArrayList<MembersInjector<T>> list) {
+    private void retriveHandleInections(Field field, ArrayList<MembersInjector> list) {
         final boolean unique = field.getAnnotation(Unique.class) != null;
-        InjectResource anno = field.getAnnotation(InjectResource.class);
+         InjectResource anno = field.getAnnotation(InjectResource.class);
         if (anno != null) {
-            final ResourceHandle handle = factory.get(anno.file());
+            final ResourceHandle handle = fileCache.get(anno.file());
             if (field.getType() == ResourceHandle.class) {
-                list.add(new SimpleMembersInjector<T>(field, handle));
+                list.add(new SimpleMembersInjector(field, handle));
             } else {
-                final ResourceFromHandle from = getHandleFactory(field.getType()).get(anno.options());
-                if (from != null) {
-                    list.add(new AsyncMemberInjector<>(field, new Provider<T>() {
+                final Optional<ResourceFromHandle<Object>> factory = getHandleFactory(field.getType(), anno.options());
+                if (factory.isPresent()) {
+                    list.add(new AsyncMemberInjector(field, new Provider<Object>() {
                         @Override
-                        public T get() {
-                            return (T) cache.get(from, handle, unique);
+                        public Object get() {
+                            return cache.get(factory.get(), handle, unique);
                         }
                     }));
                 }
@@ -131,32 +139,33 @@ public class ResourceInjector {
         }
     }
 
-    private <T> void retriveBundleInjections(Field field, ArrayList<MembersInjector<T>> list) {
+    private void retriveBundleInjections(Field field, ArrayList<MembersInjector> list) {
         final boolean unique = field.getAnnotation(Unique.class) != null;
-        InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
+         InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
         if (anno2 != null) {
             String[] pp = anno2.files();
-            if (pp != null) {
-                ResourceHandle[] handles = new ResourceHandle[pp.length];
-                for (int i = 0; i < pp.length; ++i) {
-                    handles[i] = factory.get(anno2.prefix() + pp[i].trim());
-                }
+             ResourceHandle[] handles = new ResourceHandle[pp.length];
+            for (int i = 0; i < pp.length; ++i) {
+                handles[i] = fileCache.get(anno2.prefix() + pp[i].trim());
+            }
 
-                final ResourceBundle bundle = new ResourceBundle(handles, anno2.options());
-                if (field.getType() == ResourceBundle.class) {
-                    list.add(new SimpleMembersInjector<T>(field, bundle));
-                } else {
-                    final ResourceFromBundle<T> from = getBundleFactory(field.getType());
-                    if (from != null) {
-                        list.add(new AsyncMemberInjector<>(field, new Provider<T>() {
-                            @Override
-                            public T get() {
-                                return cache.get(from, bundle, unique);
-                            }
-                        }));
-                    }
+            @SuppressWarnings("nullness")
+            final ResourceBundle bundle = new ResourceBundle(handles, anno2.options());
+
+            if (field.getType() == ResourceBundle.class) {
+                list.add(new SimpleMembersInjector(field, bundle));
+            } else {
+                final Optional<ResourceFromBundle<Object>> factory = getBundleFactory(field.getType());
+                if (factory.isPresent()) {
+                    list.add(new AsyncMemberInjector(field, new Provider<Object>() {
+                        @Override
+                        public Object get() {
+                            return cache.get(factory.get(), bundle, unique);
+                        }
+                    }));
                 }
             }
+
         }
     }
 }

@@ -16,8 +16,9 @@
  */
 package darwin.geometrie.data;
 
-import com.jogamp.opengl.util.GLBuffers;
 import java.nio.ByteBuffer;
+
+import com.jogamp.opengl.util.GLBuffers;
 import javax.media.opengl.*;
 
 /**

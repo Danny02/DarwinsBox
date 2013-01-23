@@ -34,7 +34,7 @@ import javax.media.opengl.*;
 public class CompiledShader implements Externalizable {
 
     public static final String EXTENSION_STRING = "GL_ARB_get_program_binary";
-    private static int[] formats;
+     private static int[] formats;
     private int format;
     private ByteBuffer data;
 

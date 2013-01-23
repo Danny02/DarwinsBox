@@ -16,20 +16,16 @@
  */
 package darwin.geometrie.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
+import java.io.*;
+import java.nio.*;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;
-import darwin.geometrie.unpacked.Mesh;
-import darwin.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.jopenctm.data.AttributeData;
-import darwin.jopenctm.errorhandling.BadFormatException;
-import darwin.jopenctm.errorhandling.InvalidDataException;
+import darwin.jopenctm.errorhandling.*;
 import darwin.jopenctm.io.CtmFileReader;
 
 import javax.media.opengl.GL;
@@ -54,7 +50,11 @@ public class CtmModelReader implements ModelReader {
     }
 
     @Override
-    public Model[] readModel(InputStream source) throws WrongFileTypeException, IOException {
+    public Model[] readModel(InputStream source) throws IOException, WrongFileTypeException {
+        return new Model[]{readSingleModel(source)};
+    }
+
+    public Model[] readZipedModels(InputStream source) throws WrongFileTypeException, IOException {
         ZipInputStream zip = new ZipInputStream(source);
 
         List<Model> models = new ArrayList<>();
@@ -81,7 +81,7 @@ public class CtmModelReader implements ModelReader {
 
     @Override
     public boolean isSupported(String fileExtension) {
-        return fileExtension.toLowerCase().equals("cmt");
+        return fileExtension.toLowerCase().equals("ctm");
     }
 
     public static Model convertMesh(darwin.jopenctm.data.Mesh mesh) {
@@ -92,15 +92,15 @@ public class CtmModelReader implements ModelReader {
             elements.add(NORMAL);
         }
 
-        Element[] uvEle = new Element[mesh.getUVCount() - 1];
+        Element[] uvEle = new Element[mesh.getUVCount()];
         if (mesh.getUVCount() > 0) {
             elements.add(TEX_COORD);
             if (mesh.getUVCount() > 1) {
                 VectorType float2 = new GenericVector(FLOAT, 2);
                 for (int i = 1; i < mesh.texcoordinates.length; i++) {
                     AttributeData ad = mesh.texcoordinates[i];
-                    uvEle[i - 1] = new Element(float2, ad.name);
-                    elements.add(uvEle[i - 1]);
+                    uvEle[i] = new Element(float2, ad.name);
+                    elements.add(uvEle[i]);
                 }
             }
         }
@@ -115,9 +115,9 @@ public class CtmModelReader implements ModelReader {
         Element[] elar = new Element[elements.size()];
         elements.toArray(elar);
         DataLayout layout = new DataLayout(INTERLEAVE32, elar);
+
         int vcount = mesh.getVertexCount();
         VertexBuffer vb = new VertexBuffer(layout, vcount);
-
         vb.fullyInitialize();
 
         fillElement(vb, POSITION, mesh.vertices);
@@ -133,7 +133,7 @@ public class CtmModelReader implements ModelReader {
                 for (int i = 1; i < mesh.texcoordinates.length; i++) {
                     AttributeData ad = mesh.texcoordinates[i];
                     elements.add(new Element(float2, ad.name));
-                    fillElement(vb, uvEle[i - 1], mesh.texcoordinates[i].values);
+                    fillElement(vb, uvEle[i], mesh.texcoordinates[i].values);
                 }
             }
         }
@@ -149,13 +149,15 @@ public class CtmModelReader implements ModelReader {
     }
 
     public static void fillElement(VertexBuffer vb, Element e, float[] data) {
-        ByteBuffer b = ByteBuffer.allocateDirect(4 * data.length);
-        FloatBuffer buffer = b.asFloatBuffer();
-        buffer.put(data);
-        buffer.rewind();
+//        ByteBuffer b = ByteBuffer.allocateDirect(4 * data.length);
+//        FloatBuffer buffer = b.asFloatBuffer();
+//        buffer.put(data);
+//        buffer.rewind();
 
+        int i = 0;
         for (Vertex v : vb) {
-            v.setAttribute(e, b);
+            v.setAttribute(e, data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+            i++;
         }
     }
 }

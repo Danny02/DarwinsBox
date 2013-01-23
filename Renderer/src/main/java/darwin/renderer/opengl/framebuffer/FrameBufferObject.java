@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.opengl.FrameBuffer;
+package darwin.renderer.opengl.framebuffer;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.GLClientConstants;
@@ -70,7 +70,7 @@ public class FrameBufferObject {
     private final int id;
     private int width, height;
     private final Object[] color_attachment;
-    private Object depth_attachment, stencil_attachment;
+     private Object depth_attachment, stencil_attachment;
     protected final GraphicContext gc;
 
     /**
@@ -89,7 +89,7 @@ public class FrameBufferObject {
 
     FrameBufferObject(GraphicContext gc, int a) {
         this.gc = gc;
-        color_attachment = null;
+        color_attachment = new Object[0];
         id = a;
         if (id != 0) {
             throw new UnsupportedOperationException("Other framebuffer then the Default(id=0) arn't supported yet!");
@@ -135,7 +135,8 @@ public class FrameBufferObject {
      * @return Gibt die an das Color Attachtment gebundene Textur zur�ck. NULL
      * wenn anstatt einer Textur ein Renderbuffer gebunden ist oder das
      * Attachment noch frei ist.
-     */    
+     */
+    
     public Texture getColorAttachmentTexture(int nummber) {
         assert (id != 0);
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
@@ -153,12 +154,14 @@ public class FrameBufferObject {
      * NULL wenn anstatt eines Renderbuffers eine Textur gebunden ist oder das
      * Attachment noch frei ist.
      */
+    
     public RenderBuffer getColorAttachmentBuffer(int nummber) {
         assert (id != 0);
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
         return (RenderBuffer) color_attachment[nummber];
     }
 
+    
     public Class<? extends Object> getColorAttachmentType(int nummber) {
         assert (id != 0);
         assert (nummber < GL2GL3.GL_MAX_COLOR_ATTACHMENTS);
@@ -172,7 +175,7 @@ public class FrameBufferObject {
      * <p/>
      * @param rb <br> Der Renderbuffer der gebunden werden soll.
      */
-    public void setDepth_Attachment(RenderBuffer rb) {
+    public void setDepthAttachment(RenderBuffer rb) {
         bindRenderBuffer(rb, GL.GL_DEPTH_ATTACHMENT);
         depth_attachment = rb;
     }
@@ -182,7 +185,7 @@ public class FrameBufferObject {
      * <p/>
      * @param tex <br> Die Textur die gebunden werden soll.
      */
-    public void setDepth_Attachment(Texture tex) {
+    public void setDepthAttachment(Texture tex) {
         bindTexture(tex, GL.GL_DEPTH_ATTACHMENT);
         depth_attachment = tex;
     }
@@ -194,9 +197,10 @@ public class FrameBufferObject {
      * anstatt einer Textur ein Renderbuffer gebunden ist oder das Attachment
      * noch frei ist.
      */
-    public Texture getDepth_AttachmentTexture() {
+    
+    public Texture getDepthAttachmentTexture() {
         assert (id != 0);
-        return getDepth_Attachment(Texture.class);
+        return getDepthAttachment(Texture.class);
     }
 
     /**
@@ -206,13 +210,14 @@ public class FrameBufferObject {
      * NULL wenn anstatt einer Textur ein Renderbuffer gebunden ist oder das
      * Attachment noch frei ist.
      */
-    public RenderBuffer getDepth_AttachmentBuffer() {
+    
+    public RenderBuffer getDepthAttachmentBuffer() {
         assert (id != 0);
-        return getDepth_Attachment(RenderBuffer.class);
+        return getDepthAttachment(RenderBuffer.class);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T getDepth_Attachment(Class<T> cl) {
+    @SuppressWarnings("unchecked") 
+    private <T> T getDepthAttachment(Class<T> cl) {
         assert (id != 0);
         if (cl.isInstance(depth_attachment)) {
             return (T) depth_attachment;
@@ -226,7 +231,7 @@ public class FrameBufferObject {
      * <p/>
      * @param rb <br> Der Renderbuffer der gebunden werden soll.
      */
-    public void setStencil_Attachment(RenderBuffer rb) {
+    public void setStencilAttachment(RenderBuffer rb) {
         bindRenderBuffer(rb, GL.GL_STENCIL_ATTACHMENT);
         stencil_attachment = rb;
     }
@@ -236,7 +241,7 @@ public class FrameBufferObject {
      * <p/>
      * @param tex <br> Die Textur die gebunden werden soll.
      */
-    public void setStencil_Attachment(Texture tex) {
+    public void setStencilAttachment(Texture tex) {
         bindTexture(tex, GL.GL_STENCIL_ATTACHMENT);
         stencil_attachment = tex;
     }
@@ -248,7 +253,8 @@ public class FrameBufferObject {
      * anstatt einer Textur ein Renderbuffer gebunden ist oder das Attachment
      * noch frei ist.
      */
-    public Texture getStencil_AttachmentTexture() {
+    
+    public Texture getStencilAttachmentTexture() {
         assert (id != 0);
         return getStencil_Attachment(Texture.class);
     }
@@ -261,7 +267,8 @@ public class FrameBufferObject {
      * NULL wenn anstatt einer Textur ein Renderbuffer gebunden ist oder das
      * Attachment noch frei ist.
      */
-    public RenderBuffer getStencil_AttachmentBuffer() {
+    
+    public RenderBuffer getStencilAttachmentBuffer() {
         assert (id != 0);
         return getStencil_Attachment(RenderBuffer.class);
     }
@@ -277,7 +284,7 @@ public class FrameBufferObject {
                                              GL.GL_RENDERBUFFER, 0);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") 
     private <T> T getStencil_Attachment(Class<T> cl) {
         assert (id != 0);
         if (cl.isInstance(stencil_attachment)) {
@@ -287,7 +294,6 @@ public class FrameBufferObject {
     }
 
     private void bindTexture(Texture tex, int glType) {
-        assert (tex != null);
         assert (currdraw == id);
         boolean size = checkSize(tex.getWidth(), tex.getHeight());
         assert (size);
@@ -300,7 +306,6 @@ public class FrameBufferObject {
     }
 
     private void bindRenderBuffer(RenderBuffer rb, int glType) {
-        assert (rb != null);
         assert (currdraw == id);
         assert (checkSize(rb.getWidth(), rb.getHeight()));
         assert (id != 0);
@@ -322,15 +327,12 @@ public class FrameBufferObject {
     }
 
     /**
-     * Saves the current FBO OpenGL state so that the state can be 
-     * restored after this FBO was used
-     * 
-     * @return 
-     * Returns a Closable which when closed resets the OpenGL FBO state to before
-     * this method was called.
-     * Can be used with the new JRE 7 try block, like:
-     * <br>
-     * <code>
+     * Saves the current FBO OpenGL state so that the state can be restored
+     * after this FBO was used
+     *
+     * @return Returns a Closable which when closed resets the OpenGL FBO state
+     * to before this method was called. Can be used with the new JRE 7 try
+     * block, like: <br>      <code>
      * try(SaveClosable c = fbo.use())<br>
      * {<br>
      * _____draw something_____<br>

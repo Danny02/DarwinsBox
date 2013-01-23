@@ -95,7 +95,7 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                         old.delete();
                     }
                 } catch (Throwable ex) {
-                    logger.warn(ex.getLocalizedMessage());
+                    logger.warn("" + ex.getLocalizedMessage());
                 }
                 return true;
             }
@@ -129,6 +129,8 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                         t = ShaderType.Fragment;
                         break;
                     }
+                case 0:
+                    return;//TODO right thing to do?
             }
 
             final ShaderType type = t;
@@ -140,6 +142,21 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                         GL2GL3 gl = glad.getGL().getGL2GL3();
                         ShaderObjekt so = createSObject(type, data, bundle.getOptions());
                         int po = shader.getProgramm().getPObject();
+                        
+                        int[] ret= new int[1];
+                        gl.glGetProgramiv(po, GL2ES2.GL_ATTACHED_SHADERS, ret, 0);
+                        int[] shaderNames = new int[ret[0]];
+                        gl.glGetAttachedShaders(po, ret[0], ret, 0, shaderNames, 0);
+                        
+                        for (int i : shaderNames) {
+                            gl.glGetShaderiv(i, GL2ES2.GL_SHADER_TYPE, ret, 0);
+                            if(ret[0] == so.getType().glConst)
+                            {
+                                gl.glDetachShader(po, i);
+                                gl.glDeleteShader(i);
+                                break;
+                            }
+                        }
 
                         gl.glAttachShader(po, so.getShaderobjekt());
                         gl.glLinkProgram(po);
@@ -153,13 +170,13 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                             logger.info("Shader " + bundle + " was succesfully updated!");
                         }
                     } catch (Throwable ex) {
-                        logger.warn(ex.getLocalizedMessage());
+                        logger.warn("" + ex.getLocalizedMessage());
                     }
                     return true;
                 }
             });
         } catch (IOException ex) {
-            logger.warn(ex.getLocalizedMessage());
+            logger.warn("" + ex.getLocalizedMessage());
         }
     }
 

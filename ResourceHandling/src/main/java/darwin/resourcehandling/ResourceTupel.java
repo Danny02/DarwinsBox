@@ -25,15 +25,17 @@ import java.util.Objects;
  */
 public class ResourceTupel {
 
-    public final Path path;
+    
     public final String className;
+    public final Path path;
 
-    public ResourceTupel(Path path, String className) {
+    public ResourceTupel(Path path,  String className) {
         this.path = path;
         this.className = className;
     }
 
     @Override
+    @SuppressWarnings("nullness")
     public int hashCode() {
         int hash = 3;
         hash = 47 * hash + Objects.hashCode(this.path);
@@ -42,7 +44,8 @@ public class ResourceTupel {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    @SuppressWarnings("nullness")
+    public boolean equals( Object obj) {
         if (obj == null) {
             return false;
         }

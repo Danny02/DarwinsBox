@@ -16,10 +16,9 @@
  */
 package darwin.geometrie.data;
 
-import com.jogamp.opengl.util.GLBuffers;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
+import com.jogamp.opengl.util.GLBuffers;
 
 import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE;
 import static java.lang.Math.max;

@@ -16,19 +16,17 @@
  */
 package darwin.geometrie.io.obj;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.DataLayout.Format;
+import darwin.geometrie.data.GenericVector;
 import darwin.geometrie.data.*;
 import darwin.geometrie.io.ModelReader;
-import darwin.geometrie.unpacked.Mesh;
-import darwin.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.util.logging.InjectLogger;
-import darwin.util.math.base.vector.Vector2;
-import darwin.util.math.base.vector.Vector3;
+import darwin.util.math.base.vector.*;
 
 import javax.media.opengl.GL;
 import org.slf4j.Logger;

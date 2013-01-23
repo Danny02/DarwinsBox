@@ -17,13 +17,11 @@
 package darwin.resourcehandling.cache;
 
 import darwin.resourcehandling.factory.*;
-import darwin.resourcehandling.handle.*;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 public interface ResourceCache {
-    public <T> T get(ResourceFromBundle<T> factory, ResourceBundle bundle, boolean unique);
-    public <T> T get(ResourceFromHandle<T> factory, ResourceHandle bundle, boolean unique);
+    public <F extends ChangeableResource, T> T get(ResourceFrom<F, T> factory, F bundle, boolean unique);
 }

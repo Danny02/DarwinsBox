@@ -91,17 +91,21 @@ public class ShaderProgramm {
             disable();
         }
     }
-    
-    public Optional<String> verify()
-    {
+
+    public Optional<String> verify() {
         GL2ES2 gl = gc.getGL().getGL2ES2();
         gl.glValidateProgram(programObject);
         int[] error = new int[]{-1};
         gl.glGetProgramiv(programObject, GL2GL3.GL_LINK_STATUS, error, 0);
-        if (error[0] == GL.GL_FALSE) {
-            int[] len = new int[]{512};
-            byte[] errormessage = new byte[512];
-            gl.glGetProgramInfoLog(programObject, 512, len, 0, errormessage, 0);
+        if (error[0] != GL.GL_TRUE) {
+            int[] len = new int[1];
+            gl.glGetProgramiv(programObject, GL2ES2.GL_INFO_LOG_LENGTH, len, 0);
+            if (len[0] == 0) {
+                return Optional.absent();
+            }
+
+            byte[] errormessage = new byte[len[0]];
+            gl.glGetProgramInfoLog(programObject, len[0], len, 0, errormessage, 0);
             return Optional.of(new String(errormessage, 0, len[0]));
         }
         return Optional.absent();

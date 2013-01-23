@@ -22,17 +22,13 @@ import darwin.geometrie.data.Element;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
 import darwin.renderer.shader.Sampler.SamplerFactory;
-import darwin.renderer.shader.uniform.MatrixSetter;
-import darwin.renderer.shader.uniform.UniformSetter;
+import darwin.renderer.shader.uniform.*;
 import darwin.resourcehandling.shader.ShaderFile;
-import darwin.util.math.util.GenListener;
-import darwin.util.math.util.MatrixEvent;
+import darwin.util.math.util.*;
 
 import com.google.common.base.Optional;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2ES2;
+import com.google.inject.assistedinject.*;
+import javax.media.opengl.*;
 
 /**
  *
@@ -52,7 +48,7 @@ public class Shader implements GenListener<MatrixEvent> {
     private final Map<String, ShaderUniform> uniformMap;
     private final Map<String, Sampler> samplerMap;
     private final MatrixSetter matricen;
-    private ShaderProgramm programm;
+     private ShaderProgramm programm;
     private int attrhash;
     private List<UniformSetter> usetter = new LinkedList<>();
 
@@ -96,7 +92,7 @@ public class Shader implements GenListener<MatrixEvent> {
 
         ini(attributrMap);
         ini(uniformMap);
-        
+
         attrhash = buildAttrHash();
 
         for (Sampler s : samplerMap.values()) {
@@ -106,7 +102,7 @@ public class Shader implements GenListener<MatrixEvent> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked, nullness")
     private void ini(Map<?, ? extends ShaderElement> map) {
         for (ShaderElement se : map.values()) {
             se.ini(programm);
@@ -124,12 +120,13 @@ public class Shader implements GenListener<MatrixEvent> {
     }
 
     public void bind() {
+        assert isInitialized();
         programm.use();
     }
 
     public void updateUniformData() {
         bind();
-        
+
         matricen.set();
 
         for (UniformSetter us : usetter) {
@@ -152,15 +149,16 @@ public class Shader implements GenListener<MatrixEvent> {
         return programm != null;
     }
 
+    
     public ShaderProgramm getProgramm() {
         return programm;
     }
 
-    public Optional<ShaderUniform> getUniform(String name) {
+    public Optional</**/ ShaderUniform> getUniform(String name) {
         return Optional.fromNullable(uniformMap.get(name));
     }
 
-    public Optional<ShaderAttribute> getAttribut(Element ele) {
+    public Optional</**/ ShaderAttribute> getAttribut(Element ele) {
         return Optional.fromNullable(attributrMap.get(ele));
     }
 
@@ -168,7 +166,7 @@ public class Shader implements GenListener<MatrixEvent> {
         return attributrMap.keySet();
     }
 
-    public Optional<Sampler> getSampler(String name) {
+    public Optional</**/ Sampler> getSampler(String name) {
         return Optional.fromNullable(samplerMap.get(name));
     }
 

@@ -19,8 +19,7 @@ package darwin.util.logging;
 import java.lang.reflect.Field;
 
 import com.google.inject.TypeLiteral;
-import com.google.inject.spi.TypeEncounter;
-import com.google.inject.spi.TypeListener;
+import com.google.inject.spi.*;
 import org.slf4j.Logger;
 
 /**

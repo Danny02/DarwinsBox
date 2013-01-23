@@ -6,7 +6,8 @@ package darwin.core.gui;
 
 import java.awt.*;
 import java.awt.image.*;
-import javax.swing.*;
+
+import javax.swing.JPanel;
 
 /**
  *

@@ -23,18 +23,15 @@ import darwin.core.dependencies.CoreModul;
 import darwin.renderer.GraphicContext;
 import darwin.renderer.dependencies.RendererModul;
 import darwin.resourcehandling.dependencies.ResourceHandlingModul;
-import darwin.util.logging.InjectLogger;
-import darwin.util.logging.LoggingModul;
+import darwin.util.logging.*;
 import darwin.util.misc.RuntimeUtil;
 
 import com.google.inject.*;
 import com.jogamp.newt.Window;
 import com.jogamp.newt.event.MouseListener;
-import com.jogamp.opengl.util.Animator;
-import com.jogamp.opengl.util.AnimatorBase;
+import com.jogamp.opengl.util.*;
 import javax.inject.Inject;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
+import javax.media.opengl.*;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 

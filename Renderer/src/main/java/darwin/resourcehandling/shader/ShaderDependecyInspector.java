@@ -18,7 +18,7 @@ package darwin.resourcehandling.shader;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
 
 import darwin.annotations.ServiceProvider;
 import darwin.renderer.shader.Shader;

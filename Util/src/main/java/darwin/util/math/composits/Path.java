@@ -29,7 +29,8 @@ public class Path<E extends Vector<E>> implements Iterable<E> {
     public Iterator<LineSegment<E>> getLineSegmentIterator() {
         return new Iterator<LineSegment<E>>() {
             Iterator<E> iter = positions.iterator();
-            E prev, next = iter.next();
+             E prev;
+            E next = iter.next();
 
             @Override
             public boolean hasNext() {

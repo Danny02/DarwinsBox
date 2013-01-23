@@ -16,8 +16,7 @@
  */
 package darwin.geometrie.io;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import darwin.geometrie.unpacked.Model;
 

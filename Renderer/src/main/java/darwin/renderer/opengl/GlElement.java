@@ -22,19 +22,21 @@ import darwin.geometrie.data.Element;
  *
  * @author daniel
  */
+public class GlElement extends Element {
 
-public class GlElement extends Element
-{
     private final GLSLType type;
 
-    public GlElement(GLSLType type, String bezeichnung)
-    {
+    public GlElement(GLSLType type, String bezeichnung) {
         super(type, bezeichnung);
         this.type = type;
     }
 
-    public boolean isMatrix()
-    {
+    public boolean isMatrix() {
         return type.isMatrix();
+    }
+
+    @Override
+    public GLSLType getVectorType() {
+        return type;
     }
 }

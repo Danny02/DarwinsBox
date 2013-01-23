@@ -118,12 +118,12 @@ public abstract class ImmutableMatrix<E extends Matrix<E>> implements Cloneable
         try {
             return (E)super.clone();
         } catch (CloneNotSupportedException ex) {
-            return null;
+            throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals( Object obj)
     {
         if (obj == null) {
             return false;

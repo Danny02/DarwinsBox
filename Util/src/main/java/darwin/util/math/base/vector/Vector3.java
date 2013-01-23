@@ -24,7 +24,7 @@ import darwin.util.math.base.tupel.Tupel3;
  */
 public final class Vector3 extends Vector<Vector3> implements Tupel3 {
 
-    private float x, y, z;
+    public float x, y, z;
 
     public Vector3(float x, float y, float z) {
         this.x = x;
@@ -33,6 +33,10 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3 {
     }
 
     public Vector3() {
+    }
+
+    public Vector3(float val) {
+        this(val, val, val);
     }
 
 //    @Override

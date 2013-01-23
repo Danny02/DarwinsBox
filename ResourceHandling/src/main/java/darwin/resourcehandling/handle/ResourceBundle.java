@@ -19,13 +19,15 @@ package darwin.resourcehandling.handle;
 import java.util.*;
 
 import darwin.resourcehandling.ResourceChangeListener;
+import darwin.resourcehandling.factory.ChangeableResource;
+import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.util.misc.ArrayIterator;
 
 /**
  *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
-public class ResourceBundle implements Iterable<ResourceHandle> {
+public class ResourceBundle implements Iterable<ResourceHandle>, ChangeableResource {
 
     private final ResourceHandle[] handles;
     private final String[] options;
@@ -34,14 +36,15 @@ public class ResourceBundle implements Iterable<ResourceHandle> {
         this.handles = handles;
         this.options = options;
     }
-    
-    public ResourceBundle merge(String... op)
-    {
-        String[] osp = Arrays.copyOf(options, options.length+op.length);
+
+    @SuppressWarnings("nullness")
+    public ResourceBundle merge(String... op) {
+        String[] osp = Arrays.copyOf(options, options.length + op.length);
         System.arraycopy(op, 0, osp, options.length, op.length);
         return new ResourceBundle(handles, osp);
     }
 
+    @Override
     public void registerChangeListener(ResourceChangeListener listener) {
         for (ResourceHandle h : handles) {
             h.registerChangeListener(listener);
@@ -55,15 +58,15 @@ public class ResourceBundle implements Iterable<ResourceHandle> {
     public int getCount() {
         return handles.length;
     }
-    
-    public String[] getOptions()
-    {
+
+    @SuppressWarnings("nullness")
+    public String[] getOptions() {
         return Arrays.copyOf(options, options.length);
     }
 
     @Override
     public Iterator<ResourceHandle> iterator() {
-        return new ArrayIterator(handles);
+        return new ArrayIterator<>(handles);
     }
 
     @Override
@@ -84,7 +87,7 @@ public class ResourceBundle implements Iterable<ResourceHandle> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals( Object obj) {
         if (obj == null) {
             return false;
         }

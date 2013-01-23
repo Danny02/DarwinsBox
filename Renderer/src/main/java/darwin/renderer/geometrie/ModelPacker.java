@@ -16,20 +16,17 @@
  */
 package darwin.renderer.geometrie;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
-import darwin.geometrie.unpacked.Material;
-import darwin.geometrie.unpacked.Model;
+import darwin.geometrie.unpacked.*;
 import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.renderer.shader.Shader;
-import darwin.resourcehandling.factory.ResourceFactory;
+import darwin.resourcehandling.factory.ResourceBuilder;
 import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.resourcehandling.shader.ShaderLoader;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.inject.*;
 
 /**
  *
@@ -39,11 +36,11 @@ import javax.inject.Singleton;
 public class ModelPacker {
 
     private final RenderModelFactory factory;
-    private final ResourceFactory rfac;
+    private final ResourceBuilder rfac;
     private final ShaderLoader sfac;
 
     @Inject
-    public ModelPacker(RenderModelFactory factory, ResourceFactory rfac, ShaderLoader sfac) {
+    public ModelPacker(RenderModelFactory factory, ResourceBuilder rfac, ShaderLoader sfac) {
         this.factory = factory;
         this.rfac = rfac;
         this.sfac = sfac;

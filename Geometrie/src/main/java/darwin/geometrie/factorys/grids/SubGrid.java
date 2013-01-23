@@ -16,10 +16,9 @@
  */
 package darwin.geometrie.factorys.grids;
 
-import com.jogamp.opengl.util.GLBuffers;
 import java.nio.IntBuffer;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import com.jogamp.opengl.util.GLBuffers;
 
 /**
  *

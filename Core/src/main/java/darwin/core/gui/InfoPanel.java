@@ -5,12 +5,10 @@
 package darwin.core.gui;
 
 import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-import darwin.renderer.util.memory.MemoryInfo;
-import darwin.renderer.util.memory.PerformanceView;
+import darwin.renderer.util.memory.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
 /**
  *
