@@ -18,6 +18,7 @@ package darwin.geometrie.data;
 
 import java.nio.ByteBuffer;
 import java.util.*;
+
 import com.jogamp.opengl.util.GLBuffers;
 
 import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE;
@@ -32,17 +33,17 @@ public final class VertexBuffer implements Iterable<Vertex> {
 
     public final ByteBuffer buffer;
     public final DataLayout layout;
-    private int size;
+    private int capacity;
     private int vcount = 0;
 
-    public VertexBuffer(Element e, int size) {
-        this(new DataLayout(INTERLEAVE, e), size);
+    public VertexBuffer(Element e, int capacity) {
+        this(new DataLayout(INTERLEAVE, e), capacity);
     }
 
-    public VertexBuffer(DataLayout layout, int size) {
-        this.size = size;
+    public VertexBuffer(DataLayout layout, int capacity) {
+        this.capacity = capacity;
         this.layout = layout;
-        buffer = GLBuffers.newDirectByteBuffer(size * layout.getBytesize());
+        buffer = GLBuffers.newDirectByteBuffer(capacity * layout.getBytesize());
         buffer.limit(0);
     }
 
@@ -62,14 +63,23 @@ public final class VertexBuffer implements Iterable<Vertex> {
             throw new IllegalArgumentException("The data size is not an excate multiple of the data layout size!");
         }
 
-        setVCount(size);
+        setVCount(capacity);
         buffer.asFloatBuffer().put(data);
     }
 
+    /**
+     * sets the vertex count to the capacity
+     */
     public void fullyInitialize() {
-        setVCount(size);
+        setVCount(capacity);
     }
 
+    /**
+     * @param ind
+     * @throws IndexOutOfBoundsException if ind is >= then the current vertex
+     * count
+     * @return a vertex view for the index
+     */
     public Vertex getVertex(int ind) {
         if (ind >= getVcount()) {
             throw new IndexOutOfBoundsException("Vertexcount: " + getVcount()
@@ -78,24 +88,46 @@ public final class VertexBuffer implements Iterable<Vertex> {
         return new Vertex(this, ind);
     }
 
+    /**
+     * increments the vertex count by one
+     *
+     * @return
+     */
     public int addVertex() {
-        assert (vcount < size) : "No new vertices can be added to this vertex buffer!";
+        assert (vcount < capacity) : "No new vertices can be added to this vertex buffer!";
         int vid = vcount;
         setVCount(vcount + 1);
         return vid;
     }
 
+    /**
+     * Increments the vertex count
+     *
+     * @return the vertex view of the newly added vertex
+     */
     public Vertex newVertex() {
         return getVertex(addVertex());
     }
 
+    /**
+     * set the vertex count
+     */
     private void setVCount(int vc) {
         vcount = vc;
         buffer.limit(vcount * layout.getBytesize());
     }
 
+    /**
+     * Copys all vertices of this buffer into the other. Copying is done in the
+     * way that only vertex attributs which are supported by the other buffer
+     * are copyed. Also the datalayout of the other buffer is respected.
+     *
+     * @param offset the vertex id offset in the other buffer, were to staret
+     * the copying
+     * @param vbuffer
+     */
     public void copyInto(int offset, VertexBuffer vbuffer) {
-        assert (size >= vbuffer.vcount + offset) :
+        assert (capacity >= vbuffer.vcount + offset) :
                 "Destination Buffer not large enough";
         assert (offset <= vcount) :
                 "Offset:" + offset + " vcount:" + vcount + "  (offset>vcount)";
@@ -114,6 +146,14 @@ public final class VertexBuffer implements Iterable<Vertex> {
         }
     }
 
+    /**
+     * Copy a vertex to another buffer. only the attributes which are supported
+     * by the other buffer are copied.
+     *
+     * @param id
+     * @param offset
+     * @param vbuffer
+     */
     public void copyVertex(int id, int offset, VertexBuffer vbuffer) {
         assert (id + offset < vcount) : "The destination vertex is not in bound of the destination buffer";
         if (layout.equals(vbuffer.layout)) {
@@ -137,16 +177,19 @@ public final class VertexBuffer implements Iterable<Vertex> {
         }
     }
 
-    public int getSize() {
-        return size;
+    public int getCapacity() {
+        return capacity;
     }
 
     public int getVcount() {
         return vcount;
     }
 
+    /**
+     * @return the remaining amount of verticies this buffer can hold
+     */
     public int remaining() {
-        return getSize() - getVcount();
+        return getCapacity() - getVcount();
     }
 
     /**
@@ -212,7 +255,7 @@ public final class VertexBuffer implements Iterable<Vertex> {
         int hash = 5;
         hash = 53 * hash + Objects.hashCode(this.buffer);
         hash = 53 * hash + Objects.hashCode(this.layout);
-        hash = 53 * hash + this.size;
+        hash = 53 * hash + this.capacity;
         hash = 53 * hash + this.vcount;
         return hash;
     }

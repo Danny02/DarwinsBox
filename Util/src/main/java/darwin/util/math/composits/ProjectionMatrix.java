@@ -18,14 +18,16 @@ package darwin.util.math.composits;
 
 import darwin.util.math.base.matrix.Matrix4;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.tan;
 
 /**
  * 4x4 Matrix mit Projektion Matrix typischen Funktionen
+ *
  * @author Daniel Heinrich
  */
-public class ProjectionMatrix extends Matrix4
-{
+public class ProjectionMatrix extends Matrix4 {
+
     private static final long serialVersionUID = -6583528848204388790L;
 
     /**
@@ -35,8 +37,8 @@ public class ProjectionMatrix extends Matrix4
                             double zfar) {
         double top = tan(fovy * PI / 360.) * znear;
         double bottom = -top;
-        double left = aspect * bottom;
         double right = aspect * top;
+        double left = -right;
         frustum(left, right, bottom, top, znear, zfar);
     }
 
@@ -95,5 +97,10 @@ public class ProjectionMatrix extends Matrix4
         mat[13] = (float) (-(top + bottom) / tb);
         mat[14] = (float) (-(far + near) / fn);
         mat[15] = 1f;
+    }
+
+    @Override
+    public ProjectionMatrix loadIdentity() {
+        return (ProjectionMatrix) super.loadIdentity();
     }
 }

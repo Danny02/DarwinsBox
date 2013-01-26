@@ -27,6 +27,7 @@ import darwin.resourcehandling.dependencies.annotation.InjectBundle;
 import darwin.resourcehandling.factory.ResourceFromBundle;
 import darwin.resourcehandling.handle.*;
 import darwin.resourcehandling.shader.ShaderFile.Builder;
+import darwin.resourcehandling.shader.brdf.*;
 import darwin.util.logging.InjectLogger;
 
 import com.google.common.base.Optional;
@@ -48,6 +49,8 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     public static final String INCLUDE_PREFIX = "#pragma include";
+    public static final String BRDF_PREFIX = "#pragma brdf";
+    public static final String BRDF_PATH_PREFIX = "resources/brdfs/";
     public static final String SHADER_PATH_PREFIX = "resources/shaders/";
     public static final Path SHADER_PATH = Paths.get(SHADER_PATH_PREFIX);
     private final ShaderObjektFactory soFactory;
@@ -142,16 +145,15 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                         GL2GL3 gl = glad.getGL().getGL2GL3();
                         ShaderObjekt so = createSObject(type, data, bundle.getOptions());
                         int po = shader.getProgramm().getPObject();
-                        
-                        int[] ret= new int[1];
+
+                        int[] ret = new int[1];
                         gl.glGetProgramiv(po, GL2ES2.GL_ATTACHED_SHADERS, ret, 0);
                         int[] shaderNames = new int[ret[0]];
                         gl.glGetAttachedShaders(po, ret[0], ret, 0, shaderNames, 0);
-                        
+
                         for (int i : shaderNames) {
                             gl.glGetShaderiv(i, GL2ES2.GL_SHADER_TYPE, ret, 0);
-                            if(ret[0] == so.getType().glConst)
-                            {
+                            if (ret[0] == so.getType().glConst) {
                                 gl.glDetachShader(po, i);
                                 gl.glDeleteShader(i);
                                 break;
@@ -257,6 +259,7 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
         }
         String out;
         StringBuilder sb = new StringBuilder();
+        StringBuilder end = new StringBuilder();
         try {
             Reader fr = new InputStreamReader(file);
             BufferedReader br = new BufferedReader(fr);
@@ -275,6 +278,17 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                         }
                     }
                     continue;
+                } else if (line.startsWith(BRDF_PREFIX)) {
+                    String brdfName = line.substring(BRDF_PREFIX.length()).trim();
+                    try {
+                        InputStream stream = fileFactory.get(BRDF_PATH_PREFIX + brdfName + ".brdf").getStream();
+                        BRDF brdf = BrdfReader.readBrdf(stream, brdfName);
+                        sb.append(brdf.getFunctionTemplate());
+                        end.append(getData(new ByteArrayInputStream(brdf.getCode().getBytes())));
+                    } catch (IOException ex) {
+                        logger.warn("Could not find BRDF: " + brdfName);
+                    }
+                    continue;
                 } else if (line.startsWith("#version")) {
                     continue;
                 }
@@ -284,7 +298,7 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
             logger.error("Fehler beim laden eines Shader Source Strings: "
                          + ex.getLocalizedMessage());
         }
-        out = sb.toString();
+        out = sb.append(end).toString();
         try {
             file.close();
         } catch (IOException ex) {

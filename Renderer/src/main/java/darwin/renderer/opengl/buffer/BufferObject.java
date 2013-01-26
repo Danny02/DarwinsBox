@@ -22,7 +22,7 @@ import darwin.renderer.GraphicContext;
 
 import com.google.inject.assistedinject.*;
 import com.jogamp.opengl.util.GLBuffers;
-import javax.media.opengl.GLProfile;
+import javax.media.opengl.*;
 
 /**
  *
@@ -51,7 +51,8 @@ public final class BufferObject
         gc = gcont;
         this.target = target;
         int[] ids = new int[1];
-        gc.getGL().glGenBuffers(1, ids, 0);
+        GL gL = gc.getGL();
+        gL.glGenBuffers(1, ids, 0);
         id = ids[0];
         System.out.println("Generate Buffer with ID: " + id);
     }

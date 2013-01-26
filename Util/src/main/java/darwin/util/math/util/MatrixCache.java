@@ -48,12 +48,13 @@ public class MatrixCache {
 //        this.normal = normal;
 //    }
     public MatrixCache() {
-        this(new ProjectionMatrix());
+        this(new ProjectionMatrix().loadIdentity());
     }
 
     public MatrixCache(ProjectionMatrix pro) {
         view = new ViewMatrix();
         view.loadIdentity();
+        model.loadIdentity();
         projektion = pro;
         listener = new LinkedList<>();
 

@@ -25,6 +25,7 @@ import darwin.geometrie.data.*;
 public class GLSLType implements VectorType {
 
     public static final GLSLType FLOAT = new GLSLType(DataType.FLOAT, 1),
+            BOOL = new GLSLType(DataType.INT, 1),
             INT = new GLSLType(DataType.INT, 1),
             VEC2 = new GLSLType(DataType.FLOAT, 2),
             VEC3 = new GLSLType(DataType.FLOAT, 3),

@@ -1,4 +1,4 @@
-vec3 PackFloat(float f)
+vec3 unpackFloat(float f)
 {
   vec3 rgb;
 
@@ -9,7 +9,7 @@ vec3 PackFloat(float f)
   return rgb;
 }
 
-float UnpackFloat(vec3 rgb)
+float packFloat(vec3 rgb)
 {
   return dot(rgb, vec3(1.0, 1.0 / 256.0, 1.0 / 256.0 / 256.0) * 255.0 / 128.0);
 }

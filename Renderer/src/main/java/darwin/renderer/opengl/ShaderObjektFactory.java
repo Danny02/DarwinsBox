@@ -17,9 +17,14 @@
 package darwin.renderer.opengl;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.*;
+import java.util.logging.*;
+import java.util.regex.*;
 
 import darwin.renderer.GraphicContext;
 import darwin.renderer.shader.BuildException;
+import darwin.util.misc.*;
 
 import javax.inject.Inject;
 import javax.media.opengl.*;
@@ -76,6 +81,7 @@ public class ShaderObjektFactory {
             BufferedReader errors = new BufferedReader(new StringReader(tmp));
 
             //TODO build a Shader error parser for all graphic cards and so on
+            Pattern location = Pattern.compile("(\\d):(\\d+)");
             StringBuilder sb = new StringBuilder("<");
             try {
                 String[][] texts = new String[sources.length][];
@@ -85,11 +91,11 @@ public class ShaderObjektFactory {
                 String line;
                 while ((line = errors.readLine()) != null) {
                     sb.append("-\t").append(line).append('\n');
-                    String[] er = line.split(":");
-                    if (er.length >= 4) {
+                    Matcher er = location.matcher(line);
+                    if (er.find()) {
                         try {
-                            int file = parseInt(er[1].trim());//because we add the version tag infront of everything
-                            int fLine = parseInt(er[0].split("\\(")[0]) - 1;//don'T know why
+                            int file = parseInt(er.group(1));//because we add the version tag infront of everything
+                            int fLine = parseInt(er.group(2)) - 1;//don'T know why
                             String sline = texts[file][fLine];
                             sb.append("\t\t").append(sline).append('\n');
                         } catch (Throwable t) {
@@ -98,7 +104,29 @@ public class ShaderObjektFactory {
                 }
             } catch (IOException ex) {
             }
-            throw new BuildException(sb.append(">").toString(), BuildException.BuildError.CompileTime);
+            sb.append(">");
+            String file = writeSourceFile(sources);
+            if (file != null) {
+                sb.append(" source: ").append(writeSourceFile(sources));
+            }
+
+            throw new BuildException(sb.toString(), BuildException.BuildError.CompileTime);
         }
+    }
+
+    private String writeSourceFile(String[] sources) {
+        try {
+            CompositIterator<String> c = new CompositIterator<>();
+            for (String s : sources) {
+                c.add(new ArrayIterator<>(s.split("\n")));
+            }
+            Iterable<String> lines = new IterableFacade(c);
+
+            Path tmp = Files.createTempFile(null, null);
+            Files.write(tmp, lines, Charset.defaultCharset());
+            return tmp.toAbsolutePath().toString();
+        } catch (IOException ex) {
+        }
+        return null;
     }
 }

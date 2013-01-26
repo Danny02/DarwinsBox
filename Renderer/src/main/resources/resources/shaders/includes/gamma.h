@@ -14,8 +14,8 @@ uconst float gamma = GAMMA_VAL;
 #endif
 
 #ifdef GAMMA
-    #define toLinear(x) pow(x, gamma)
-    #define toGamma(x) pow(x, invgamma)
+    #define toLinear(x) pow(x, vec4(gamma))
+    #define toGamma(x) pow(x, vec4(invgamma))
 #else
     #define toLinear(x) x
     #define toGamma(x) x

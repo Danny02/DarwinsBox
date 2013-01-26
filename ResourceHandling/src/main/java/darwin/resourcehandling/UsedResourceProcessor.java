@@ -183,6 +183,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
     @SuppressWarnings("nullness")
     private void processResources() {
         Set<ResourceTupel> stay = new HashSet<>();
+        Set<ResourceTupel> remove = new HashSet<>();
 
         Messager m = processingEnv.getMessager();
         int count = 0;
@@ -206,20 +207,21 @@ public class UsedResourceProcessor extends AbstractProcessor {
             if (ts.size() > 0) {
                 Collection<ResourceTupel> p = rp.process(ts, getFiler());
                 ts.removeAll(p);
+                remove.addAll(p);
                 stay.addAll(ts);
             }
         }
         m.printMessage(Kind.NOTE, count + " proccesors finished!");
 
-        Set<ResourceTupel> delete = new HashSet<>(resources);
-        delete.removeAll(stay);
-        for (ResourceTupel resourceTupel : delete) {
+        remove.removeAll(stay);        
+        for (ResourceTupel resourceTupel : remove) {
             try {
                 getFiler().delete(resourceTupel.path.toString());
             } catch (IOException ex) {
             }
             m.printMessage(Kind.NOTE, "deleted: " + resourceTupel.path.toString());
         }
+        
     }
 
     private boolean isClassSupported(ResourceProcessor processor,  String className) {

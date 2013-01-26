@@ -256,6 +256,8 @@ public class ShaderFile implements Serializable {
                 return GLSLType.MAT4;
             case "int":
                 return GLSLType.INT;
+            case "bool":
+                return GLSLType.BOOL;
             default:
                 if (name.startsWith("mat") && name.length() == 6) {
                     try {
