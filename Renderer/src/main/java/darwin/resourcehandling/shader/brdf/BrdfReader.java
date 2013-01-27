@@ -92,6 +92,6 @@ public class BrdfReader {
 
     private static Option parseBoolOption(String line) {
         String[] p = line.split(" ");
-        return new BoolOption(p[1], Boolean.parseBoolean(p[2]));
+        return new BoolOption(p[1], p[2].equals("1") ? true : false);
     }
 }

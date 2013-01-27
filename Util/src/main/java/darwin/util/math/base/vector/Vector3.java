@@ -72,9 +72,9 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3 {
 
     @Override
     public Vector3 add(float b) {
-        x -= b;
-        y -= b;
-        z -= b;
+        x += b;
+        y += b;
+        z += b;
         return this;
     }
 
