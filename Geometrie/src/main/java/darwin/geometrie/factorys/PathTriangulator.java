@@ -30,6 +30,8 @@ import darwin.util.math.composits.*;
 
 import javax.media.opengl.GL;
 
+import static darwin.geometrie.io.ModelReader.*;
+
 
 /**
  *
@@ -37,7 +39,7 @@ import javax.media.opengl.GL;
  */
 public class PathTriangulator {
     public Mesh buildPathMesh(Path<Vector3> path) {
-        Element pos = new Element(new GenericVector(DataType.FLOAT, 3), "Position");
+        Element pos = new Element(new GenericVector(DataType.FLOAT, 3), POSITION_ATTRIBUTE);
         VertexBuffer vb = new VertexBuffer(pos, path.size());
         vb.fullyInitialize();
 
@@ -67,7 +69,7 @@ public class PathTriangulator {
         int polyVertCount = poly.size();
         int pathVertCount = path.size();
 
-        Element pos = new Element(new GenericVector(DataType.FLOAT, 3), "Position");
+        Element pos = new Element(new GenericVector(DataType.FLOAT, 3), POSITION_ATTRIBUTE);
         VertexBuffer vb = new VertexBuffer(pos, polyVertCount * 2);
 
         for (ImmutableVector<Vector2> vector : poly) {

@@ -29,6 +29,7 @@ import javax.inject.*;
 import javax.media.opengl.GL;
 
 import static darwin.renderer.opengl.GLSLType.VEC3;
+import static darwin.geometrie.io.ModelReader.*;
 
 /**
  *
@@ -46,7 +47,7 @@ public class CoordAxis implements GeometryFactory
     public CoordAxis(RenderMeshFactory rmFactory, VBOFactoy vFactoy, BufferFactory bFactory)
     {
         factory = rmFactory;
-        vbo = vFactoy.create(new VertexBuffer(new Element(VEC3, "Position"),
+        vbo = vFactoy.create(new VertexBuffer(new Element(VEC3, POSITION_ATTRIBUTE),
                 0, 0, 0,
                 1, 0, 0,
                 0, 1, 0,

@@ -27,6 +27,7 @@ import javax.inject.*;
 import javax.media.opengl.GL2ES2;
 
 import static darwin.renderer.opengl.GLSLType.VEC3;
+import static darwin.geometrie.io.ModelReader.*;
 
 /**
  *
@@ -43,7 +44,7 @@ public final class Arrow implements GeometryFactory
     public Arrow(RenderMeshFactory rmFactory, VBOFactoy factoy)
     {
         factory = rmFactory;
-        vbo = factoy.create(new VertexBuffer(new Element(VEC3, "Position"),
+        vbo = factoy.create(new VertexBuffer(new Element(VEC3, POSITION_ATTRIBUTE),
                 0, 0, 0,
                 1, 1, 0,
                 1, .75f, 0,

@@ -28,6 +28,7 @@ import darwin.util.misc.RuntimeUtil;
 
 import com.google.inject.*;
 import com.jogamp.newt.Window;
+import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.util.*;
 import javax.inject.Inject;
@@ -48,6 +49,7 @@ public class Client {
     private final GraphicContext gc;
     private final List<GLEventListener> glListeners = new ArrayList<>();
     private final List<MouseListener> mouseListeners = new ArrayList<>();
+    private final List<KeyListener> keyListeners = new ArrayList<>();
     private static Injector INJECTOR;
 
     public static Client createClient() {
@@ -82,6 +84,9 @@ public class Client {
             }
             for (MouseListener l : mouseListeners) {
                 gc.getGLWindow().addMouseListener(l);
+            }
+            for (KeyListener l : keyListeners) {
+                gc.getGLWindow().addKeyListener(l);
             }
         } catch (GLException ex) {
             logger.error("Couldn't Initialize a graphic context!", ex);
@@ -146,6 +151,14 @@ public class Client {
             gc.getGLWindow().addMouseListener(controller);
         } else {
             mouseListeners.add(controller);
+        }
+    }
+    
+    public void addKeyListener(KeyListener controller) {
+        if (gc.isInitialized()) {
+            gc.getGLWindow().addKeyListener(controller);
+        } else {
+            keyListeners.add(controller);
         }
     }
 

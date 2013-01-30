@@ -28,6 +28,10 @@ import darwin.geometrie.unpacked.Model;
  */
 public interface ModelReader
 {
+    public static final String POSITION_ATTRIBUTE = "Position";
+    public static final String NORMAL_ATTRIBUTE = "Normal";
+    public static final String TANGENT_ATTRIBUTE = "Tangent";
+    public static final String TEXTURE_ATTRIBUTE = "TexCoord";
 
     /**
      *

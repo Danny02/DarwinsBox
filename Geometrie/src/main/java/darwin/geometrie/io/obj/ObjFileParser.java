@@ -80,7 +80,7 @@ public class ObjFileParser
                 break;
             case "vt":
                 float[] vals = parseFloats(values);
-                if (vals.length != 2) {
+                if (vals.length < 2) {
                     throw new IOException("The Texture Coordinats of the OBJ file must be of only 2 elements!");
                 }
                 obj.getTexcoords().add(new Vector2(vals[0], vals[1]));

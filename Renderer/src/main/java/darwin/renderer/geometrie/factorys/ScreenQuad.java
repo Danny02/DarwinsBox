@@ -27,6 +27,7 @@ import javax.inject.*;
 import javax.media.opengl.GL;
 
 import static darwin.renderer.opengl.GLSLType.VEC2;
+import static darwin.geometrie.io.ModelReader.*;
 
 /**
  * Initialisiert ein einzelnes Quad das als Screen Quad genutzt werden kann
@@ -44,7 +45,7 @@ public class ScreenQuad implements GeometryFactory
     public ScreenQuad(RenderMeshFactory rmFactory, VBOFactoy factoy)
     {
         factory = rmFactory;
-        vbo = factoy.create(new VertexBuffer(new Element(VEC2, "Position"),
+        vbo = factoy.create(new VertexBuffer(new Element(VEC2, POSITION_ATTRIBUTE),
                 -1, -1,
                 1, -1,
                 -1, 1,

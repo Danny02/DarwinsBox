@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 
 import static darwin.geometrie.data.DataType.FLOAT;
+import static darwin.geometrie.io.ModelReader.*;
 
 /**
  *
@@ -36,10 +37,10 @@ public class TangendCreator implements MeshModifier
 
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
-    private final Element tangent = new Element(new GenericVector(FLOAT, 3), "Tangent");
-    private final Element position = new Element(new GenericVector(FLOAT, 4), "Position");
-    private final Element texcoord = new Element(new GenericVector(FLOAT, 2), "TexCoord");
-    private final Element normal = new Element(new GenericVector(FLOAT, 3), "Normal");
+    private static final Element tangent = new Element(new GenericVector(FLOAT, 3), TANGENT_ATTRIBUTE);
+    private static final Element position = new Element(new GenericVector(FLOAT, 4), POSITION_ATTRIBUTE);
+    private static final Element texcoord = new Element(new GenericVector(FLOAT, 2), TEXTURE_ATTRIBUTE);
+    private static final Element normal = new Element(new GenericVector(FLOAT, 3), NORMAL_ATTRIBUTE);
 
     @Override
     public Mesh modifie(Mesh m) {

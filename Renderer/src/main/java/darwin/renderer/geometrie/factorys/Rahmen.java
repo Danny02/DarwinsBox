@@ -29,6 +29,7 @@ import com.google.inject.assistedinject.*;
 
 import static darwin.geometrie.data.DataLayout.Format.INTERLEAVE;
 import static darwin.renderer.opengl.GLSLType.*;
+import static darwin.geometrie.io.ModelReader.*;
 
 /**
  *
@@ -51,7 +52,7 @@ public class Rahmen implements GeometryFactory
             BufferFactory bFactory, @Assisted float inset)
     {
         factory = rmFactory;
-        Element pos = new Element(VEC2, "Position");
+        Element pos = new Element(VEC2, POSITION_ATTRIBUTE);
         Element alpha = new Element(FLOAT, "Alpha");
         DataLayout dl = new DataLayout(INTERLEAVE, pos, alpha);
 

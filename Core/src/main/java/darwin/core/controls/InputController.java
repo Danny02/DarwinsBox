@@ -19,6 +19,7 @@ package darwin.core.controls;
 import darwin.util.math.base.Line;
 import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.vector.*;
+import darwin.util.math.util.MatType;
 import darwin.util.math.util.MatrixCache;
 
 import com.jogamp.newt.Window;
@@ -73,6 +74,7 @@ public class InputController implements MouseListener
         if (view != null) {
             view.dragged(x, y);
         }
+        matrice.fireChange(MatType.VIEW);
     }
 
     @Override

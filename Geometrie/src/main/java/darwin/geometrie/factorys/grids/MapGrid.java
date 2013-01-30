@@ -23,6 +23,8 @@ import darwin.util.math.base.matrix.Matrix4;
 import darwin.util.math.base.tupel.*;
 import darwin.util.math.base.vector.Vector2;
 
+import static darwin.geometrie.io.ModelReader.*;
+
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
@@ -66,9 +68,9 @@ public class MapGrid
         cells = factory.getCells();
 
         VectorType float2 = new GenericVector(DataType.FLOAT, 2);
-        final Element pos = new Element(float2, "Position");
-        final Element tex = new Element(float2, "TexCoord");
-        final Element tex2 = new Element(float2, "TexCoordLocal");
+        final Element pos = new Element(float2, POSITION_ATTRIBUTE);
+        final Element tex = new Element(float2, TEXTURE_ATTRIBUTE);
+        final Element tex2 = new Element(float2, TEXTURE_ATTRIBUTE+"Local");
 
         vertice = new VertexBuffer(new DataLayout(Format.AUTO, pos, tex, tex2),
                                    factory.getVertexCount());
@@ -170,7 +172,7 @@ public class MapGrid
     private int getCellID(int x, int y)
     {
         assert y < getHeight();
-        assert y >= 0 && x >= 0 : "x&y must be positiv(" + x + "," + y + ')';
+        assert y >= 0 && x >= 0 : "x & y must be positiv(" + x + "," + y + ')';
 
         int offset;
         if (y % 2 == 0) {

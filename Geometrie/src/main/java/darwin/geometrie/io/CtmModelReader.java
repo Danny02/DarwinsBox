@@ -17,7 +17,6 @@
 package darwin.geometrie.io;
 
 import java.io.*;
-import java.nio.*;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 
@@ -44,10 +43,12 @@ public class CtmModelReader implements ModelReader {
     public static final Element POSITION, TEX_COORD, NORMAL;
 
     static {
-        POSITION = new Element(new GenericVector(FLOAT, CTM_POSITION_ELEMENT_COUNT), "Position");
-        TEX_COORD = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), "TexCoord");
-        NORMAL = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), "Normal");
+        POSITION = new Element(new GenericVector(FLOAT, CTM_POSITION_ELEMENT_COUNT), POSITION_ATTRIBUTE);
+        TEX_COORD = new Element(new GenericVector(FLOAT, CTM_UV_ELEMENT_COUNT), TEXTURE_ATTRIBUTE);
+        NORMAL = new Element(new GenericVector(FLOAT, CTM_NORMAL_ELEMENT_COUNT), NORMAL_ATTRIBUTE);
     }
+    
+    public static final VectorType FLOAT4 = new GenericVector(FLOAT, CTM_ATTR_ELEMENT_COUNT);
 
     @Override
     public Model[] readModel(InputStream source) throws IOException, WrongFileTypeException {
@@ -105,10 +106,9 @@ public class CtmModelReader implements ModelReader {
             }
         }
 
-        VectorType float4 = new GenericVector(FLOAT, 4);
         Element[] attEle = new Element[mesh.getAttrCount()];
         for (int i = 0; i < mesh.attributs.length; ++i) {
-            attEle[i] = new Element(float4, mesh.attributs[i].name);
+            attEle[i] = new Element(FLOAT4, mesh.attributs[i].name);
             elements.add(attEle[i]);
         }
 
@@ -148,16 +148,7 @@ public class CtmModelReader implements ModelReader {
         return new Model(m, null);
     }
 
-    public static void fillElement(VertexBuffer vb, Element e, float[] data) {
-//        ByteBuffer b = ByteBuffer.allocateDirect(4 * data.length);
-//        FloatBuffer buffer = b.asFloatBuffer();
-//        buffer.put(data);
-//        buffer.rewind();
-
-        int i = 0;
-        for (Vertex v : vb) {
-            v.setAttribute(e, data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-            i++;
-        }
+    private static void fillElement(VertexBuffer vb, Element e, float[] data) {
+        vb.copyInto(0, new VertexBuffer(e, data));
     }
 }

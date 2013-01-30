@@ -202,7 +202,7 @@ public class CtmModelWriter implements ModelWriter {
                 copyToBuffer(values, k, v, TEX_COORD);
                 k += CTM_UV_ELEMENT_COUNT;
             }
-            texcoords[0] = new AttributeData("TexCoord", matName,
+            texcoords[0] = new AttributeData(TEXTURE_ATTRIBUTE, matName,
                                              AttributeData.STANDARD_UV_PRECISION, values);
         }
 

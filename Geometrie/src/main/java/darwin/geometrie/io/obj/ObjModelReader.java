@@ -49,9 +49,9 @@ public class ObjModelReader implements ModelReader
     private Logger logger = NOPLogger.NOP_LOGGER;
 
     static {
-        position = new Element(new GenericVector(FLOAT, 3), "Position");
-        texcoord = new Element(new GenericVector(FLOAT, 2), "TexCoord");
-        normal = new Element(new GenericVector(FLOAT, 3), "Normal");
+        position = new Element(new GenericVector(FLOAT, 3), POSITION_ATTRIBUTE);
+        texcoord = new Element(new GenericVector(FLOAT, 2), TEXTURE_ATTRIBUTE);
+        normal = new Element(new GenericVector(FLOAT, 3), NORMAL_ATTRIBUTE);
         elements = new Element[]{position, texcoord, normal};
     }
 

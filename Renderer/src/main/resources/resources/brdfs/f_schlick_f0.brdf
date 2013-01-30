@@ -23,7 +23,7 @@ float Fresnel(float f0, float u)
 vec3 BRDF( vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y )
 {
     vec3 H = normalize(L+V);
-    float F = Fresnel(f0, dot(L,H));
+    float F = Fresnel(f0, min(1,max(0,dot(L,H))));
     return vec3(F);
 }
 
