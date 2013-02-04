@@ -29,7 +29,7 @@ import static java.lang.Math.*;
 public class Quaternion implements Cloneable {
 
     private float w;
-    private ImmutableVector<Vector3> vec;
+    private Vector3 vec;
 
     public Quaternion() {
         w = 1;
@@ -84,26 +84,29 @@ public class Quaternion implements Cloneable {
      * @param roll Z axis angle in GRAD
      */
     public void setEularAngles(double pitch, double yaw, double roll) {
-        //from http://etclab.mie.utoronto.ca/people/david_dir/GEMS/GEMS.html
-        double pi = pitch * Matrix4.GRAD2RAD;
-        double ya = yaw * Matrix4.GRAD2RAD;
-        double ro = roll * Matrix4.GRAD2RAD;
+        double angle;
+        double sinY, sinZ, sinX, cosY, cosZ, cosX;
+        angle = roll * Matrix4.GRAD2RAD * 0.5f;
+        sinZ = sin(angle);
+        cosZ = cos(angle);
+        angle = yaw * Matrix4.GRAD2RAD * 0.5f;
+        sinY = sin(angle);
+        cosY = cos(angle);
+        angle = pitch * Matrix4.GRAD2RAD * 0.5f;
+        sinX = sin(angle);
+        cosX = cos(angle);
 
-        double sinPitch = sin(pi * 0.5);
-        double cosPitch = cos(pi * 0.5F);
-        double sinYaw = sin(ya * 0.5F);
-        double cosYaw = cos(ya * 0.5F);
-        double sinRoll = sin(ro * 0.5F);
-        double cosRoll = cos(ro * 0.5F);
-        double cosPitchCosYaw = cosPitch * cosYaw;
-        double sinPitchSinYaw = sinPitch * sinYaw;
+        // variables used to reduce multiplication calls.
+        double cosYXcosZ = cosY * cosZ;
+        double sinYXsinZ = sinY * sinZ;
+        double cosYXsinZ = cosY * sinZ;
+        double sinYXcosZ = sinY * cosZ;
 
-        double x = sinRoll * cosPitchCosYaw - cosRoll * sinPitchSinYaw;
-        double y = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
-        double z = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
-
-        vec = new Vector3((float) x, (float) y, (float) z).normalize();
-        w = (float) (cosRoll * cosPitchCosYaw + sinRoll * sinPitchSinYaw);
+        w = (float) (cosYXcosZ * cosX - sinYXsinZ * sinX);
+        vec = new Vector3((float) (cosYXcosZ * sinX + sinYXsinZ * cosX),
+                          (float) (sinYXcosZ * cosX + cosYXsinZ * sinX),
+                          (float) (cosYXsinZ * cosX - sinYXcosZ * sinX));
+        normalize();
     }
 
     /**
@@ -157,7 +160,16 @@ public class Quaternion implements Cloneable {
     }
 
     public Quaternion mult(float a) {
-        return new Quaternion(w * a, vec.clone().mul(a));
+        w *= a;
+        vec.mul(a);
+        return this;
+    }
+    
+    public Quaternion add(Quaternion o)
+    {
+        w += o.w;
+        vec.add(o.vec);
+        return this;
     }
 
     public Quaternion mult(Quaternion q) {
@@ -168,8 +180,10 @@ public class Quaternion implements Cloneable {
         float x = w * b[0] + a[0] * q.w + a[1] * b[2] - a[2] * b[1];
         float y = w * b[1] - a[0] * b[2] + a[1] * q.w + a[2] * b[0];
         float z = w * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * q.w;
-        
-        return new Quaternion(ww, new Vector3(x, y, z));
+
+        w = ww;
+        vec = new Vector3(x, y, z);
+        return this;
     }
 
     public Vector3 mult(Vector3 a) {
@@ -290,26 +304,5 @@ public class Quaternion implements Cloneable {
     @Override
     public String toString() {
         return "Quaternion( Phi: " + getPhi() * Matrix4.RAD2GRAD + "°,  " + getRotationAxis() + ')';
-    }
-
-    public static void main(String... args) {
-
-        Matrix4 m = new Matrix4();
-        m.loadIdentity();
-        m.rotateEuler(0, 0, 45);
-
-        Quaternion q = m.getRotation();
-        q = new Quaternion();
-        q.setEularAngles(0, 0, 45);
-        
-        System.out.println(q.magnitute());
-        q = q.normalize();
-        System.out.println(q.magnitute());
-        Vector3 a = new Vector3(1, 0, 0);
-
-        System.out.println(m.fastMult(a));
-        System.out.println(q.mult(a));
-        Vector3 add = q.vec.clone().cross(q.vec.clone().cross(a).add(a.clone().mul(q.w))).mul(2).add(a);
-        System.out.println(add);
     }
 }
