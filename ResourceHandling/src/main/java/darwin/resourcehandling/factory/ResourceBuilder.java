@@ -20,6 +20,7 @@ import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.handle.*;
 
 import javax.inject.Singleton;
+import org.slf4j.*;
 
 /**
  *
@@ -28,11 +29,16 @@ import javax.inject.Singleton;
 @Singleton
 public class ResourceBuilder {
 
+    private Logger logger = LoggerFactory.getLogger(ResourceBuilder.class);
+
     @SuppressWarnings("nullness")
     public <F extends ChangeableResource, T> T createResource(ResourceFrom<F, T> factory, F from) {
-         T wrapper;
+        T wrapper;
         try {
+            long time = System.currentTimeMillis();
             wrapper = factory.create(from);
+            time = System.currentTimeMillis() - time;
+            logger.info("Loaded following resource in " + time + "ms (" + from.toString() + ')');
         } catch (Throwable ex) {
             ex.printStackTrace();
             wrapper = factory.getFallBack();

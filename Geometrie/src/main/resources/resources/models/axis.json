@@ -1,0 +1,17 @@
+{
+    "name":"CoordAxis",
+    "type":"GL_LINE_STRIP",
+    "data":[{
+        "element":{
+            "tag":"Position",
+            "type":"float",
+            "count":3
+        },
+        "values":
+        [0, 0, 0,
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1]
+    }],
+    "indices":[1, 0, 2, 0, 3]
+}

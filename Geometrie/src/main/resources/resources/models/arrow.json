@@ -1,0 +1,17 @@
+{
+    "name":"Arrow",
+    "type":"GL_LINE_STRIP",
+    "data":[{
+        "element":{
+            "tag":"Position",
+            "type":"float",
+            "count":3
+        },
+        "values":
+        [0, 0, 0,
+        1, 1, 0,
+        1, 0.75, 0,
+        1, 1, 0,
+        0.75, 1, 0]
+    }]
+}

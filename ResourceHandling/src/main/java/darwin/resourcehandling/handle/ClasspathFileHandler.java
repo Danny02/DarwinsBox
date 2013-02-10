@@ -34,7 +34,7 @@ public class ClasspathFileHandler extends ListenerHandler {
 
     public static final Path DEV_FOLDER = Paths.get("src/main/resources");
     private final boolean useDevFolder;
-     private final WatchServiceNotifier notifier;
+    private final WatchServiceNotifier notifier;
     private boolean registered = false;
     private final Path path;
 
@@ -42,7 +42,7 @@ public class ClasspathFileHandler extends ListenerHandler {
 
         @Override
         public ResourceHandle createHandle(boolean useDevFolder,
-                                            WatchServiceNotifier notifier,
+                                           WatchServiceNotifier notifier,
                                            Path path) {
             return new ClasspathFileHandler(useDevFolder, notifier, path);
         }
@@ -52,7 +52,7 @@ public class ClasspathFileHandler extends ListenerHandler {
         this(false, null, path);
     }
 
-    public ClasspathFileHandler(boolean useDevFolder,  WatchServiceNotifier notifier, Path path) {
+    public ClasspathFileHandler(boolean useDevFolder, WatchServiceNotifier notifier, Path path) {
         this.useDevFolder = useDevFolder;
         this.notifier = notifier;
         this.path = path;
@@ -89,7 +89,7 @@ public class ClasspathFileHandler extends ListenerHandler {
 
     @Override
     public ClasspathFileHandler resolve(String subPath) {
-         Path parent = path.getParent();
+        Path parent = path.getParent();
         if (parent == null) {
             parent = Paths.get(".");
         }
@@ -122,6 +122,11 @@ public class ClasspathFileHandler extends ListenerHandler {
     }
 
     @Override
+    public String toString() {
+        return getName();
+    }
+
+    @Override
     public int hashCode() {
         int hash = 3;
         hash = 97 * hash + Objects.hashCode(this.path);
@@ -129,7 +134,7 @@ public class ClasspathFileHandler extends ListenerHandler {
     }
 
     @Override
-    public boolean equals( Object obj) {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
