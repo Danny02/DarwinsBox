@@ -40,8 +40,7 @@ public class ObjDependencyInspector extends ResourceDependecyInspector {
     public Iterable<Path> getDependencys(ClasspathFileHandler resource) {
         ArrayList<Path> dependencys = new ArrayList<>();
         if (getFileExtension(resource.getName()).equalsIgnoreCase("obj")) {
-            try (InputStream stream = resource.getStream()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     line = line.trim();

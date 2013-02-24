@@ -25,7 +25,7 @@ import com.google.common.base.Optional;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class DataLayout implements Serializable {
+public class DataLayout {
 
     private static final long serialVersionUID = 8468234920530037630L;
 
@@ -153,7 +153,7 @@ public class DataLayout implements Serializable {
             return false;
         }
         final DataLayout other = (DataLayout) obj;
-        alignments.keySet().equals(other.alignments.keySet());
+//        alignments.keySet().equals(other.alignments.keySet());
         for (Element e : alignments.keySet()) {
             DataAttribut d1 = alignments.get(e);
             DataAttribut d2 = other.alignments.get(e);

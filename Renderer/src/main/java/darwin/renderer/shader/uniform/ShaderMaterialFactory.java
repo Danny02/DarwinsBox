@@ -88,7 +88,7 @@ public class ShaderMaterialFactory {
     }
 
     private Optional<SamplerSetter> createSetter(Shader shader, String name, String path) {
-        Optional<Sampler> s = shader.getSampler(name);
+//        Optional<Sampler> s = shader.getSampler(name);
 //        if (s.isPresent()) {
 //            TextureLoadJob tlj = factory.create(path, GL.GL_LINEAR, GL.GL_REPEAT);
 //            TextureContainer tc = loader.getTexture(tlj);

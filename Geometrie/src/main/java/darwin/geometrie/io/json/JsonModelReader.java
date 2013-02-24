@@ -20,8 +20,6 @@ package darwin.geometrie.io.json;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import darwin.annotations.ServiceProvider;
 import darwin.geometrie.data.*;

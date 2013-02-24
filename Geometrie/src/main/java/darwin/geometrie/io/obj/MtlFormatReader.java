@@ -48,7 +48,6 @@ public class MtlFormatReader
 
     public Map<String, ObjMaterial> loadMaterials() throws IOException
     {
-
         if (materials == null) {
             materials = new HashMap<>();
             InputStream is = new ClasspathFileHandler(Paths.get(modelfolder + path)).getStream();

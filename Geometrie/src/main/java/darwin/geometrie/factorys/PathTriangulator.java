@@ -24,6 +24,7 @@ import darwin.geometrie.data.GenericVector;
 import darwin.geometrie.data.*;
 import darwin.geometrie.unpacked.Mesh;
 import darwin.util.math.base.Line;
+import darwin.util.math.base.matrix.Matrix4.Axis;
 import darwin.util.math.base.vector.Vector;
 import darwin.util.math.base.vector.*;
 import darwin.util.math.composits.*;
@@ -199,7 +200,7 @@ public class PathTriangulator {
     private <E extends Vector<E>> E[] generateExtrudedEndPoints(
             ImmutableVector<E> end, ImmutableVector<E> other, float extrude) {
         Vector<E> dir = other.clone().sub(end);
-        ImmutableVector<E> ex = dir.clone().rotateCCW(2).normalize();
+        ImmutableVector<E> ex = dir.clone().rotateCCW(Axis.Y).normalize();
         return toArray(
                 ex.clone().mul(extrude).add(end),
                 ex.clone().mul(-extrude).add(end));
@@ -213,7 +214,7 @@ public class PathTriangulator {
         ImmutableVector<E> dir1 = mid.clone().sub(first);
         ImmutableVector<E> dir2 = last.clone().sub(mid);
 
-        ImmutableVector<E> left = dir1.clone().rotateCCW(2).normalize().mul(extrude);
+        ImmutableVector<E> left = dir1.clone().rotateCCW(Axis.Y).normalize().mul(extrude);
         ImmutableVector<E> right = left.clone().mul(-1);
 
         if (dir1.isParrallelTo(dir2)) {
@@ -223,7 +224,7 @@ public class PathTriangulator {
         Line<E> firstLeft = Line.fromPoints(first.clone().add(left), mid.clone().add(left));
         Line<E> firstRight = Line.fromPoints(first.clone().add(right), mid.clone().add(right));
 
-        left = dir2.clone().rotateCCW(2).normalize().mul(extrude);
+        left = dir2.clone().rotateCCW(Axis.Y).normalize().mul(extrude);
         right = left.clone().mul(-1);
 
         Line<E> secondLeft = Line.fromPoints(last.clone().add(left), mid.clone().add(left));
