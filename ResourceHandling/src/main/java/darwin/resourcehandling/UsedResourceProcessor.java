@@ -45,7 +45,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
      private static FilerFactory filer;
      private static Map<String, ResourceDependecyInspector> inspectors;
 
-    private Map<String, ResourceDependecyInspector> getInspectors() {
+    private synchronized Map<String, ResourceDependecyInspector> getInspectors() {
         if (inspectors == null) {
             inspectors = new HashMap<>();
 
@@ -59,7 +59,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
         return inspectors;
     }
 
-    private FilerFactory getFiler() {
+    private synchronized FilerFactory getFiler() {
         if (filer == null) {
             filer = new FilerFactory(processingEnv.getFiler());
         }

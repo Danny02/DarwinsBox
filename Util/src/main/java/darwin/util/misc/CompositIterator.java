@@ -56,6 +56,9 @@ public class CompositIterator<E> implements Iterator<E> {
 
     @Override
     public void remove() {
+        if (current == null) {
+            throw new IllegalStateException("no current item to remove");
+        }
         current.remove();
     }
 }

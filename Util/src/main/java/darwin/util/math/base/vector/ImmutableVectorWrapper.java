@@ -16,6 +16,8 @@
  */
 package darwin.util.math.base.vector;
 
+import darwin.util.math.base.matrix.Matrix4.Axis;
+
 /**
  *
  * @author daniel
@@ -89,12 +91,12 @@ class ImmutableVectorWrapper<E extends Vector<E>> extends Vector<E> {
     }
 
     @Override
-    public E rotateCCW(int axis) {
+    public E rotateCCW(Axis axis) {
         return vec.clone().rotateCCW(axis);
     }
 
     @Override
-    public E rotateCW(int axis) {
+    public E rotateCW(Axis axis) {
         return vec.clone().rotateCW(axis);
     }
 

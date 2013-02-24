@@ -16,6 +16,8 @@
  */
 package darwin.util.math.base.vector;
 
+import darwin.util.math.base.matrix.Matrix4.Axis;
+
 /**
  *
  * @author daniel
@@ -46,9 +48,9 @@ public abstract class Vector<E extends Vector<E>> extends ImmutableVector<E> {
 
     public abstract E max(float b);
 
-    public abstract E rotateCCW(int axis);
+    public abstract E rotateCCW(Axis axis);
 
-    public abstract E rotateCW(int axis);
+    public abstract E rotateCW(Axis axis);
 
     public E reflect(ImmutableVector<E> normal) {
         E n = normal.clone();

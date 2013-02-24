@@ -33,7 +33,7 @@ import org.slf4j.helpers.NOPLogger;
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO: Uniform/Attribut arrays parsen
-public class ShaderFile implements Serializable {
+public class ShaderFile{
 
     private static final Pattern attribut = Pattern.compile(
             "\\n[^(?://)\\n]*in\\s+(\\w+)\\s+(\\w.*;)(?:.*//<(.+>))?");

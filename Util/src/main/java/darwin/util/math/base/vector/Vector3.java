@@ -16,6 +16,7 @@
  */
 package darwin.util.math.base.vector;
 
+import darwin.util.math.base.matrix.Matrix4.Axis;
 import darwin.util.math.base.tupel.Tupel3;
 
 /**
@@ -185,19 +186,20 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3 {
     }
 
     @Override
-    public Vector3 rotateCW(int axis) {
+    public Vector3 rotateCW(Axis axis) {
         float tmp;
         switch (axis) {
-            case 0://X
+            case X:
                 tmp = y;
                 y = -z;
                 z = tmp;
-            case 1://Y
+                break;
+            case Y:
                 tmp = x;
                 x = -z;
                 z = tmp;
                 break;
-            case 2://Z
+            case Z:
                 tmp = y;
                 y = -x;
                 x = tmp;
@@ -208,19 +210,20 @@ public final class Vector3 extends Vector<Vector3> implements Tupel3 {
     }
 
     @Override
-    public Vector3 rotateCCW(int axis) {
+    public Vector3 rotateCCW(Axis axis) {
         float tmp;
         switch (axis) {
-            case 0://X
+            case X:
                 tmp = z;
                 z = -y;
                 y = tmp;
-            case 1://Y
+                break;
+            case Y:
                 tmp = z;
                 z = -x;
                 x = tmp;
                 break;
-            case 2://Z
+            case Z:
                 tmp = x;
                 x = -y;
                 y = tmp;

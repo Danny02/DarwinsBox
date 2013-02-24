@@ -45,7 +45,7 @@ public class GLClientConstants {
         initialize = true;
     }
 
-    private class Retriver implements GLRunnable {
+    private static class Retriver implements GLRunnable {
 
         private final Logger logger = LoggerFactory.getLogger(GLRunnable.class);
         GLClientConstants cons;

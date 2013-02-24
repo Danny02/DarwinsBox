@@ -82,8 +82,8 @@ public class Matrix4 extends Matrix<Matrix4>
     @Override
     public Matrix4 clone()
     {
-        Matrix4 a = new Matrix4();
-        a.setMat(data);
+        Matrix4 a = super.clone();
+        a.setMat(getArray().clone());
         return a;
     }
 

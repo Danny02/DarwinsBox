@@ -59,8 +59,8 @@ public class GenericMatrix extends Matrix<GenericMatrix>
     @Override
     public GenericMatrix clone()
     {
-        GenericMatrix a = new GenericMatrix(dimension);
-        a.setMat(data);
+        GenericMatrix a = super.clone();
+        a.setMat(getArray().clone());
         return a;
     }
 

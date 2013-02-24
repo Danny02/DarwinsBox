@@ -28,7 +28,6 @@ import darwin.renderer.opengl.framebuffer.*;
 import darwin.renderer.opengl.framebuffer.RenderBuffer.RenderBufferFactory;
 import darwin.renderer.shader.Sampler.SamplerFactory;
 import darwin.renderer.shader.Shader.ShaderFactory;
-import darwin.resourcehandling.resmanagment.ROLoadJob.ROJobFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -57,7 +56,6 @@ public class RendererModul extends AbstractModule
             VBOFactoy.class,
             RahmenFactory.class,
             SamplerFactory.class,
-            ROJobFactory.class,
             ShaderFactory.class,
             RenderBufferFactory.class,
         };

@@ -16,6 +16,7 @@
  */
 package darwin.util.math.base.vector;
 
+import darwin.util.math.base.matrix.Matrix4.Axis;
 import darwin.util.math.base.tupel.Tupel2;
 
 /**
@@ -180,7 +181,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2 {
     }
 
     @Override
-    public Vector2 rotateCCW(int axis) {
+    public Vector2 rotateCCW(Axis axis) {
         float tmp = x;
         x = -y;
         y = tmp;
@@ -189,7 +190,7 @@ public final class Vector2 extends Vector<Vector2> implements Tupel2 {
     }
 
     @Override
-    public Vector2 rotateCW(int axis) {
+    public Vector2 rotateCW(Axis axis) {
         float tmp = y;
         y = -x;
         x = tmp;

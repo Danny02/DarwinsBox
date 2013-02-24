@@ -16,6 +16,7 @@
  */
 package darwin.renderer.shader;
 
+import java.io.Serializable;
 import java.nio.*;
 
 import darwin.renderer.opengl.*;
@@ -27,7 +28,7 @@ import javax.media.opengl.GLUniformData;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ShaderUniform implements ShaderElement {
+public class ShaderUniform implements ShaderElement{
 
     private final String name;
     private final GlElement element;

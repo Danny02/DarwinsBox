@@ -29,8 +29,8 @@ import com.google.common.collect.Lists;
  */
 public class BRDF {
 
-    private final static String HEADER = "#ifndef %1$s_BRDF\n#define %1$s_BRDF\n#pragma include includes/misc.h\n";
-    private final static String FUNCTION_TEMPLATE = "vec3 %s( vec3 L, vec3 V, vec3 N );\n";
+    private final static String HEADER = "#ifndef %1$s_BRDF%n#define %1$s_BRDF%n#pragma include includes/misc.h%n";
+    private final static String FUNCTION_TEMPLATE = "vec3 %s( vec3 L, vec3 V, vec3 N );%n";
     private final String name, function;
     private final List<Option> options;
 

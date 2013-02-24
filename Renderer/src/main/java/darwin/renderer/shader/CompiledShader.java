@@ -34,9 +34,12 @@ import javax.media.opengl.*;
 public class CompiledShader implements Externalizable {
 
     public static final String EXTENSION_STRING = "GL_ARB_get_program_binary";
-     private static int[] formats;
+    private static int[] formats;
     private int format;
     private ByteBuffer data;
+
+    public CompiledShader() {
+    }
 
     public CompiledShader(int format, ByteBuffer data) {
         this.format = format;
@@ -131,7 +134,8 @@ public class CompiledShader implements Externalizable {
         format = in.readInt();
         int len = in.readInt();
         byte[] d = new byte[len];
-        in.read(d);
+        if(in.read(d) == -1)
+            throw new IOException("EOF while reading data");
         data = ByteBuffer.wrap(d);
     }
 

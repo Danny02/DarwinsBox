@@ -58,7 +58,7 @@ public class MatrixCache {
         projektion = pro;
         listener = new LinkedList<>();
 
-        AABB scene = new AABB(new Vector3(), new Vector3());
+//        AABB scene = new AABB(new Vector3(), new Vector3());
 //        sutil = new ShadowUtil(scene);
 //        addListener(sutil);
 //        sutil.changeOccured(new MatrixEvent(this, VIEW));
@@ -98,7 +98,9 @@ public class MatrixCache {
     }
 
     public void setModel(ModelMatrix model) {
-        if (mhash != model.hashCode()) {
+        int hash = model.hashCode();
+        if (mhash != hash) {
+            mhash = hash;
             this.model = model;
             fireChange(MODEL);
         }

@@ -18,6 +18,8 @@ package darwin.util.math.base.vector;
 
 import java.util.Arrays;
 
+import darwin.util.math.base.matrix.Matrix4.Axis;
+
 /**
  * <p/>
  * @author Daniel Heinrich
@@ -258,13 +260,13 @@ public class GenericVector extends Vector<GenericVector>
 
     //TODO implementieren
     @Override
-    public GenericVector rotateCCW(int axis)
+    public GenericVector rotateCCW(Axis axis)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public GenericVector rotateCW(int axis)
+    public GenericVector rotateCW(Axis axis)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
