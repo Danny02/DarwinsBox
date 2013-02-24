@@ -1,0 +1,36 @@
+{
+    "name":"Rahmen",
+    "type":"GL_TRIANGLES",
+    "data":[{
+        "element":{
+            "tag":"Position",
+            "type":"vec2"
+        },
+        "values": 
+        [-1, -1,
+        -1, 1,
+        1, 1,
+        1, -1,
+        "negIns", "negIns",
+        "negIns", "posIns",
+        "posIns", "posIns",
+        "posIns", "negIns"]
+    },
+    {
+        "element":{
+            "tag":"Alpha",
+            "type":"float"
+        },
+        "values":
+        [1, 1, 1, 1,
+        0, 0, 0, 0]
+    }],
+    "indices":[0, 4, 1,
+    4, 5, 1,//left
+    5, 2, 1,
+    5, 6, 2,//top
+    6, 3, 2,
+    6, 7, 3,//right
+    7, 0, 3,
+    7, 4, 0]
+}

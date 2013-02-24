@@ -1,0 +1,16 @@
+{
+    "name":"ScreeQuad",
+    "type":"GL_TRIANGLE_STRIP",
+    "data":[{
+        "element":{
+            "tag":"Position",
+            "type":"float",
+            "count":2
+        },
+        "values":
+        [-1, -1,
+        1, -1,
+        -1, 1,
+        1, 1]
+    }]
+}
