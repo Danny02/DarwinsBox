@@ -40,9 +40,9 @@ public class ResourceBuilder {
 
         ResourceChangeListener l = null;
         if (factory instanceof ResourceFromBundle) {
-            l = new ResourceBundleUpdater<>((ResourceFromBundle<T>) factory, wrapper, (ResourceBundle) from);
+            l = new ResourceBundleUpdater((ResourceFromBundle) factory, wrapper, (ResourceBundle) from);
         } else if (factory instanceof ResourceFromHandle) {
-            l = new ResourceHandleUpdater<>((ResourceFromHandle<T>) factory, wrapper);
+            l = new ResourceHandleUpdater((ResourceFromHandle) factory, wrapper);
         }
         if (l != null) {
             from.registerChangeListener(l);
@@ -50,7 +50,7 @@ public class ResourceBuilder {
         return wrapper;
     }
 
-    private class ResourceHandleUpdater<T> implements ResourceChangeListener {
+    private static class ResourceHandleUpdater<T> implements ResourceChangeListener {
 
         private final ResourceFromHandle<T> factory;
         private final T wrapper;
@@ -66,7 +66,7 @@ public class ResourceBuilder {
         }
     }
 
-    private class ResourceBundleUpdater<T> implements ResourceChangeListener {
+    private static class ResourceBundleUpdater<T> implements ResourceChangeListener {
 
         private final ResourceFromBundle<T> factory;
         private final T wrapper;
