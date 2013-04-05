@@ -30,9 +30,6 @@ public class ProjectionMatrix extends Matrix4 {
 
     private static final long serialVersionUID = -6583528848204388790L;
 
-    /**
-     * iplementierung der alten gl.perspectiv(...) funktion
-     */
     public void perspective(double fovy, double aspect, double znear,
                             double zfar) {
         double top = tan(fovy * PI / 360.) * znear;
