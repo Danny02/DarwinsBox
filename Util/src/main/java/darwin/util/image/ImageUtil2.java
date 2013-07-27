@@ -54,20 +54,35 @@ public class ImageUtil2 {
     //TODO sehr komische ergebnisse bei Bilder vom Type USHORT_GRAY (bilder haben nur noch 3-4 graustufen)
     public static BufferedImage getScaledImage(BufferedImage image, int targetWidth,
                                                int targetHeight, boolean highQuality) {
-        int accWidth, accHeight;
+        assert targetHeight > 0 || targetWidth > 0;
+        
+        int accWidth, accHeight, targetW, targetH;
+        
+        float aspect = (float)image.getWidth() / image.getHeight();
+        
+        if(targetHeight > 0)
+            targetH = targetHeight;
+        else
+            targetH = (int) (targetWidth / aspect);
+        
+        if(targetWidth > 0)
+            targetW = targetWidth;
+        else
+            targetW = (int) (targetHeight * aspect);
+        
         if (highQuality) {
             accHeight = image.getHeight();
             accWidth = image.getWidth();
         } else {
-            accHeight = targetHeight;
-            accWidth = targetWidth;
+            accHeight = targetH;
+            accWidth = targetW;
         }
 
         BufferedImage result = image;
         do {
             if (highQuality) {
-                accHeight = Math.max(accHeight / 2, targetHeight);
-                accWidth = Math.max(accWidth / 2, targetWidth);
+                accHeight = Math.max(accHeight / 2, targetH);
+                accWidth = Math.max(accWidth / 2, targetW);
             }
             BufferedImage tmp = new BufferedImage(accWidth, accHeight, image.getType());
 
@@ -83,7 +98,7 @@ public class ImageUtil2 {
             g2.drawImage(result, 0, 0, accWidth, accHeight, null);
 
             result = tmp;
-        } while (accHeight != targetHeight && accWidth != targetWidth);
+        } while (accHeight != targetH && accWidth != targetW);
 
         return result;
     }

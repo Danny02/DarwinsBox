@@ -18,6 +18,7 @@ package darwin.geometrie.unpacked;
 
 import java.util.Arrays;
 
+import darwin.geometrie.data.DataLayout;
 import darwin.geometrie.data.VertexBuffer;
 
 /**
@@ -25,59 +26,55 @@ import darwin.geometrie.data.VertexBuffer;
  * <p/>
  * @author Daniel Heinrich
  */
-public class Mesh
-{
+public class Mesh {
+
     private int[] indicies;     // Primitve indicies
     private VertexBuffer vertices;  // Vertex Data
     private int primitiv_typ;
 
-    public Mesh(int[] indicies, VertexBuffer vb, int primitiv_typ)
-    {
+    public Mesh(int[] indicies, int primitiv_typ) {
+        this(indicies, new VertexBuffer(new DataLayout(), 0), primitiv_typ);
+    }
+
+    public Mesh(int[] indicies, VertexBuffer vb, int primitiv_typ) {
         this.indicies = indicies;
         vertices = vb;
         this.primitiv_typ = primitiv_typ;
     }
 
-    public int getVertexCount()
-    {
+    public int getVertexCount() {
         return getVertices().getVcount();
     }
 
-    public int getIndexCount()
-    {
+    public int getIndexCount() {
         return getIndicies() != null ? getIndicies().length : 0;
     }
 
-    public int[] getIndicies()
-    {
+    public int[] getIndicies() {
         return indicies;
     }
 
-    public int getPrimitiv_typ()
-    {
+    public int getPrimitiv_typ() {
         return primitiv_typ;
     }
 
-    public VertexBuffer getVertices()
-    {
+    public VertexBuffer getVertices() {
         return vertices;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         hash =
-                19 * hash + (this.indicies != null ? Arrays.hashCode(indicies) : 0);
+        19 * hash + (this.indicies != null ? Arrays.hashCode(indicies) : 0);
         hash =
-                19 * hash + (this.vertices != null ? this.vertices.hashCode() : 0);
+        19 * hash + (this.vertices != null ? this.vertices.hashCode() : 0);
         hash = 19 * hash + this.primitiv_typ;
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }

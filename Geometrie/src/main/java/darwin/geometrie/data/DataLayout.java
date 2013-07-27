@@ -63,9 +63,11 @@ public class DataLayout {
             offsets[i + 1] = offsets[i] + elements[i].getVectorType().getByteSize();
         }
 
-        int stride = offsets[offsets.length - 1]
-                     + elements[elements.length - 1].getVectorType().getByteSize();
-
+        int stride = 0;
+        if (elements.length > 0) {
+            stride = offsets[offsets.length - 1] + elements[elements.length - 1].getVectorType().getByteSize();
+        }
+        
         if (elements.length > 1) {
             stride = calcStride(format, stride);
         }

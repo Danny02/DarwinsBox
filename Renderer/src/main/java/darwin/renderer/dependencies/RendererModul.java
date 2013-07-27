@@ -67,7 +67,7 @@ public class RendererModul extends AbstractModule
 //        bind(ConfiguratorFactory.class).to(VAOAttributsFactory.class);
 
         bind(String.class).annotatedWith(Names.named("GL_Profile")).
-                toInstance(GLProfile.GL2ES2);
+                toInstance(GLProfile.GL3bc);
 //                toProvider(Providers.of((String)null));//null is highest available
 
         //TODO wieder verfuegbar machen, geht nicht da der Provider ausgefuehrt wird bevor der Graphic Context initialisiert wurde

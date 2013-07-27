@@ -27,10 +27,10 @@ import com.google.inject.assistedinject.*;
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 //TODO Sinn dieser Klasse ueberdenken
-public class VertexBO
-{
-    public interface VBOFactoy
-    {
+public class VertexBO {
+
+    public interface VBOFactoy {
+
         public VertexBO create(VertexBuffer vb);
     }
     public final DataLayout layout;
@@ -54,6 +54,7 @@ public class VertexBO
     }
 
     public int getVertexCount() {
-        return buffer.getSize() / layout.getBytesize();
+        int bs = buffer.getSize();
+        return bs != 0 ? bs / layout.getBytesize() : 0;
     }
 }

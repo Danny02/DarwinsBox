@@ -30,6 +30,8 @@ public class ImageFrame extends JFrame {
     private final Container main;
 
     public ImageFrame(int width, int height) throws HeadlessException {
+        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+
         main = new JPanel();
         main.setLayout(new BoxLayout(main, BoxLayout.X_AXIS));
         ScrollPane scroll = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
@@ -44,10 +46,14 @@ public class ImageFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public Container addImage(BufferedImage image) {
+    public Container addImage(Image image) {
         Container img = new JLabel(new ImageIcon(image));
         main.add(img);
         pack();
         return img;
+    }
+
+    public Container getMain() {
+        return main;
     }
 }
