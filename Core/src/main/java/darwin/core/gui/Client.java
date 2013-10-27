@@ -153,7 +153,7 @@ public class Client {
             mouseListeners.add(controller);
         }
     }
-    
+
     public void addKeyListener(KeyListener controller) {
         if (gc.isInitialized()) {
             gc.getGLWindow().addKeyListener(controller);

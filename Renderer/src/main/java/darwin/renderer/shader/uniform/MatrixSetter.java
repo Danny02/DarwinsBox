@@ -26,10 +26,10 @@ import darwin.util.math.util.*;
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 public class MatrixSetter implements UniformSetter,
-        GenListener<MatrixEvent> {
+                                     GenListener<MatrixEvent> {
 
     private boolean m, v, p, l;
-     private MatrixCache matricen;
+    private MatrixCache matricen;
     private final Collection<UniformSetter> setter = new LinkedList<>();
 
     public MatrixSetter() {
@@ -41,7 +41,6 @@ public class MatrixSetter implements UniformSetter,
         switch (matType) {
             case "M":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (m) {
@@ -52,7 +51,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "MV":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (m || v) {
@@ -63,7 +61,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "MVP":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (m || v || p) {
@@ -75,7 +72,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "N":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (m) {
@@ -87,7 +83,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "NV":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (m || v) {
@@ -99,7 +94,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "P":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (p) {
@@ -111,7 +105,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "V":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (v) {
@@ -122,7 +115,6 @@ public class MatrixSetter implements UniformSetter,
                 break;
             case "VP":
                 setter.add(new UniformSetter() {
-
                     @Override
                     public void set() {
                         if (v || p) {
@@ -132,7 +124,7 @@ public class MatrixSetter implements UniformSetter,
                     }
                 });
                 break;
-                //TODO reactivate shadow stuff
+            //TODO reactivate shadow stuff
 //            case "S":
 //                setter.add(new UniformSetter() {
 //
@@ -145,6 +137,8 @@ public class MatrixSetter implements UniformSetter,
 //                    }
 //                });
 //                break;
+            default:
+                System.err.println("Unknown Matrix Type: " + matType);
         }
     }
 

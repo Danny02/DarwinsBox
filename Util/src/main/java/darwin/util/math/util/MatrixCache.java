@@ -32,15 +32,20 @@ import static darwin.util.math.util.MatType.*;
 public class MatrixCache {
 
     private ModelMatrix model = new ModelMatrix();
+    private ViewMatrix view = new ViewMatrix();
+
+    {
+        view.loadIdentity();
+        model.loadIdentity();
+    }
     //TODO testen ob das überhaupt was bringt
     private int mhash;
-    private ViewMatrix view;
     private final ProjectionMatrix projektion;
     private ImmutableVector<Vector3> light = new Vector3();
 //    private ShadowUtil sutil;
-     private Matrix4 vm, pv, pvi, pvm, s;
-     private Matrix vn, n;
-    private final Collection<GenListener<MatrixEvent>> listener;
+    private Matrix4 vm, pv, pvi, pvm, s;
+    private Matrix vn, n;
+    private final Collection<GenListener<MatrixEvent>> listener = new LinkedList<>();
     //TODO boeser boeser schneller umschalter für schatten umbedigt besser loesen
 //    private boolean normal = true;
 
@@ -52,11 +57,7 @@ public class MatrixCache {
     }
 
     public MatrixCache(ProjectionMatrix pro) {
-        view = new ViewMatrix();
-        view.loadIdentity();
-        model.loadIdentity();
         projektion = pro;
-        listener = new LinkedList<>();
 
 //        AABB scene = new AABB(new Vector3(), new Vector3());
 //        sutil = new ShadowUtil(scene);
@@ -141,7 +142,7 @@ public class MatrixCache {
 
     public Matrix4 getViewProjection() {
         if (pv == null) {
-            pv = projektion.clone().mult(view);
+            pv = getProjektion().clone().mult(view);
         }
         return pv;
 //        return normal ? pv : getShadowProjection();
@@ -165,21 +166,21 @@ public class MatrixCache {
 
     public Matrix4 getModelView() {
         if (vm == null) {
-            vm = view.clone().mult(model);
+            vm = getView().clone().mult(model);
         }
         return vm;
     }
 
     public Matrix getNormalView() {
         if (vn == null) {
-            vn = view.getMinor(3, 3).mult(getNormal());
+            vn = getView().getMinor(3, 3).mult(getNormal());
         }
         return vn;
     }
 
     public Matrix getNormal() {
         if (n == null) {
-            n = model.getNormalMatrix();
+            n = getModel().getNormalMatrix();
         }
         return n;
     }

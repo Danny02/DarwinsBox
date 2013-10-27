@@ -26,6 +26,10 @@ import static java.lang.Math.*;
  * @author daniel
  */
 public abstract class ImmutableVector<E extends Vector<E>> implements Tupel, Cloneable {
+    
+    public static final ImmutableVector<Vector3> POS_X = new Vector3(1, 0, 0);
+    public static final ImmutableVector<Vector3> POS_Y = new Vector3(0, 1, 0);
+    public static final ImmutableVector<Vector3> POS_Z = new Vector3(0, 0, 1);
 
     public abstract Vector3 toVector3();
 

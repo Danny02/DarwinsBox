@@ -95,7 +95,7 @@ public class ShaderObjektFactory {
                     if (er.find()) {
                         try {
                             int file = parseInt(er.group(1));//because we add the version tag infront of everything
-                            int fLine = parseInt(er.group(2)) - 1;//don'T know why
+                            int fLine = parseInt(er.group(2));
                             String sline = texts[file][fLine];
                             sb.append("\t\t").append(sline).append('\n');
                         } catch (Throwable t) {

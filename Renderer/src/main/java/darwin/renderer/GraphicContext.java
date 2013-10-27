@@ -33,12 +33,12 @@ import javax.media.opengl.*;
 @Singleton
 public final class GraphicContext {
 
-     private final String glProfil;
-     private GLWindow window;
+    private final String glProfil;
+    private GLWindow window;
     private boolean initialized = false;
 
     @Inject
-    public GraphicContext( @Named("GL_Profile") String profil) {
+    public GraphicContext(@Named("GL_Profile") String profil) {
         glProfil = profil;
     }
 

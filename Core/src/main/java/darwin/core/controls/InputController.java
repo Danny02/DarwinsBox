@@ -29,27 +29,25 @@ import com.jogamp.newt.event.*;
  *
  * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class InputController implements MouseListener
-{
+public class InputController implements MouseListener {
+
     private int lastX, lastY;
     private final ViewModel view;
     private final WorldModel world;
     private final MatrixCache matrice;
 
-    public InputController(ViewModel view, WorldModel world, MatrixCache matrice)
-    {
+    public InputController(ViewModel view, WorldModel world, MatrixCache matrice) {
         this.view = view;
         this.world = world;
         this.matrice = matrice;
     }
 
     @Override
-    public void mouseClicked(MouseEvent e)
-    {
+    public void mouseClicked(MouseEvent e) {
         if (world == null) {
             return;
         }
-        Window w = (Window)e.getSource();
+        Window w = (Window) e.getSource();
         float x = 2f * e.getX() / w.getWidth() - 1f;
         float y = -2f * e.getY() / w.getHeight() - 1f;
 
@@ -65,50 +63,44 @@ public class InputController implements MouseListener
     }
 
     @Override
-    public void mouseDragged(MouseEvent e)
-    {
-        Window w = (Window)e.getSource();
-        float x = (float) (lastX - e.getX()) / w.getWidth();
-        float y = (float) (lastY - e.getY()) / w.getHeight();
-        mouseMoved(e);
+    public void mouseDragged(MouseEvent e) {
         if (view != null) {
+            Window w = (Window) e.getSource();
+            float x = (float) (lastX - e.getX()) / w.getWidth();
+            float y = (float) (lastY - e.getY()) / w.getHeight();
             view.dragged(x, y);
+            matrice.fireChange(MatType.VIEW);
         }
-        matrice.fireChange(MatType.VIEW);
+        mouseMoved(e);
     }
 
     @Override
-    public void mouseMoved(MouseEvent e)
-    {
+    public void mouseMoved(MouseEvent e) {
         lastX = e.getX();
         lastY = e.getY();
     }
 
     @Override
-    public void mouseWheelMoved(MouseEvent e)
-    {
+    public void mouseWheelMoved(MouseEvent e) {
         if (view != null) {
             view.steps(e.getWheelRotation(), e.isControlDown(), e.isShiftDown());
+            matrice.fireChange(MatType.VIEW);
         }
     }
 
     @Override
-    public void mouseEntered(MouseEvent arg0)
-    {
+    public void mouseEntered(MouseEvent arg0) {
     }
 
     @Override
-    public void mouseExited(MouseEvent arg0)
-    {
+    public void mouseExited(MouseEvent arg0) {
     }
 
     @Override
-    public void mousePressed(MouseEvent arg0)
-    {
+    public void mousePressed(MouseEvent arg0) {
     }
 
     @Override
-    public void mouseReleased(MouseEvent arg0)
-    {
+    public void mouseReleased(MouseEvent arg0) {
     }
 }

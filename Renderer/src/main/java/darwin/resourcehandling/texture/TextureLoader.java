@@ -52,10 +52,14 @@ public class TextureLoader implements ResourceFromHandle<Texture> {
                 try {
                     a[0] = TextureIO.newTexture(handle.getStream(), true, IOUtil.getFileSuffix(handle.getName()));
                 } catch (IOException ex) {
+                    ex.printStackTrace();
+                    return false;
                 }
                 return true;
             }
         });
+        if(a[0] == null)
+            throw new RuntimeException("Somehow the GLContext did not load this texture.");
         return a[0];
     }
 

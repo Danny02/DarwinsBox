@@ -49,7 +49,8 @@ public class ShaderLoaderProvider extends ResourceFromBundleProvider<Shader> {
             Method declaredMethod = client.getDeclaredMethod("getInjector", boolean.class);
             return (Injector) declaredMethod.invoke(null, false);
         } catch (Throwable ex) {
-            throw new RuntimeException("can't find app injector!");
+            ex.printStackTrace();
+            throw new RuntimeException("ShaderLoaderProvider: can't find app injector!\n"+ex.getMessage());
         }
     }
 }

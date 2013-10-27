@@ -89,6 +89,9 @@ public class ViewMatrix extends Matrix4 {
 
     @Override
     public ViewMatrix clone() {
-        return (ViewMatrix) super.clone();
-    }
+        ViewMatrix a = new ViewMatrix();
+        a.setMat(getArray());
+        return a;
+    }   
+    
 }
