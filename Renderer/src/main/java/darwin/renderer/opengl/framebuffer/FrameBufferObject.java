@@ -16,7 +16,6 @@
  */
 package darwin.renderer.opengl.framebuffer;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.GLClientConstants;
 import darwin.util.misc.SaveClosable;
 

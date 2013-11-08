@@ -16,8 +16,6 @@
  */
 package darwin.renderer.util.memory;
 
-import darwin.renderer.GraphicContext;
-
 import javax.media.opengl.*;
 
 /**

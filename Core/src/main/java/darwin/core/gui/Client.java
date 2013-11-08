@@ -19,14 +19,8 @@ package darwin.core.gui;
 import java.util.*;
 
 import darwin.core.controls.InputController;
-import darwin.core.dependencies.CoreModul;
-import darwin.renderer.GraphicContext;
-import darwin.renderer.dependencies.RendererModul;
-import darwin.resourcehandling.dependencies.ResourceHandlingModul;
 import darwin.util.logging.*;
-import darwin.util.misc.RuntimeUtil;
 
-import com.google.inject.*;
 import com.jogamp.newt.Window;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
@@ -50,26 +44,6 @@ public class Client {
     private final List<GLEventListener> glListeners = new ArrayList<>();
     private final List<MouseListener> mouseListeners = new ArrayList<>();
     private final List<KeyListener> keyListeners = new ArrayList<>();
-    private static Injector INJECTOR;
-
-    public static Client createClient() {
-        return getInjector(false).getInstance(Client.class);
-    }
-
-    public static Client createClient(boolean debug) {
-        return getInjector(debug).getInstance(Client.class);
-    }
-
-    public synchronized static Injector getInjector(boolean debug) {
-        if (INJECTOR == null) {
-            Stage stage = (RuntimeUtil.IS_DEBUGGING || debug) ? Stage.DEVELOPMENT : Stage.PRODUCTION;
-            INJECTOR = Guice.createInjector(stage, new CoreModul(),
-                                            new RendererModul(),
-                                            new LoggingModul(),
-                                            new ResourceHandlingModul());
-        }
-        return INJECTOR;
-    }
 
     @Inject
     public Client(GraphicContext gc) {
@@ -114,12 +88,6 @@ public class Client {
 
     public void removeShutdownListner(ShutdownListener lister) {
         shutdownlistener.remove(lister);
-    }
-
-    public <T extends GLEventListener> T addGLEventListener(Class<T> listener) {
-        T t = INJECTOR.getInstance(listener);
-        addGLEventListener(t);
-        return t;
     }
 
     public void addGLEventListener(GLEventListener listener) {

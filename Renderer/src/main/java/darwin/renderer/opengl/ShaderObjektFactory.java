@@ -19,10 +19,8 @@ package darwin.renderer.opengl;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.util.logging.*;
 import java.util.regex.*;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.shader.BuildException;
 import darwin.util.misc.*;
 

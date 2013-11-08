@@ -19,7 +19,6 @@ package darwin.resourcehandling.shader;
 import java.io.*;
 import java.nio.file.*;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.Shader.ShaderFactory;
 import darwin.renderer.shader.*;

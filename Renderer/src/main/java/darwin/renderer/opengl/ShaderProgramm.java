@@ -16,7 +16,6 @@
  */
 package darwin.renderer.opengl;
 
-import darwin.renderer.GraphicContext;
 import darwin.util.logging.InjectLogger;
 
 import com.google.common.base.Optional;

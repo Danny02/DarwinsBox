@@ -14,37 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.shader.uniform;
+package darwin.renderer.opengl
 
-
-import darwin.renderer.shader.Shader;
+import darwin.geometrie.data._
+import darwin.renderer.opengl.buffer._
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-//TODO besseres Material System
-public class ShaderMaterial
-{
+trait VBOComponent {
+  this: BufferObjectComponent =>
 
-    private final Shader shader;
-    private final UniformSetter[] setter;
-
-    public ShaderMaterial(Shader shader, UniformSetter... setter)
-    {
-        this.shader = shader;
-        this.setter = setter;
+  def createVBO(vb: VertexBuffer) = {
+    val buffer = createBuffer(Target.ARRAY)
+    buffer.use {
+      buffer.bufferData(vb.buffer, Type.STATIC, Usage.DRAW)
     }
+    VertexBO(buffer, vb.layout)
+  }
 
-    public void prepareShader()
-    {
-        for (UniformSetter us : setter) {
-            us.set();
-        }
-    }
+  case class VertexBO(buffer: BufferObject, layout: DataLayout) {
+    def getVertexCount: Int = buffer.size / layout.getBytesize
+  }
 
-    public UniformSetter[] getSetter()
-    {
-        return setter;
-    }
 }

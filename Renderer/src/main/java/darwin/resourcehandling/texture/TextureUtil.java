@@ -17,7 +17,6 @@
 package darwin.resourcehandling.texture;
 
 
-import darwin.renderer.GraphicContext;
 import darwin.util.logging.InjectLogger;
 
 import com.jogamp.opengl.util.texture.*;

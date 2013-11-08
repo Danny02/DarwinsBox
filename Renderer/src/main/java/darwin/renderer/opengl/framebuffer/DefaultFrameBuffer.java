@@ -16,8 +16,6 @@
  */
 package darwin.renderer.opengl.framebuffer;
 
-import darwin.renderer.GraphicContext;
-
 import javax.inject.*;
 
 /**

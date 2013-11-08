@@ -16,9 +16,6 @@
  */
 package darwin.renderer.geometrie.factorys;
 
-import darwin.renderer.geometrie.packed.RenderMesh;
-import darwin.renderer.shader.Shader;
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>

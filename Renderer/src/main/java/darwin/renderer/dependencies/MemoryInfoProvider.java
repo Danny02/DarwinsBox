@@ -16,7 +16,6 @@
  */
 package darwin.renderer.dependencies;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.util.memory.*;
 
 import javax.inject.*;

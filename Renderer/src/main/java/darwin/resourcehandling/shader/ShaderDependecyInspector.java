@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import darwin.annotations.ServiceProvider;
-import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.ResourceDependecyInspector;
 import darwin.resourcehandling.handle.ClasspathFileHandler;
 

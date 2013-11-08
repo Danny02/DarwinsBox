@@ -19,7 +19,6 @@ package darwin.resourcehandling.texture;
 import java.io.IOException;
 import java.nio.file.*;
 
-import darwin.renderer.GraphicContext;
 import darwin.resourcehandling.factory.ResourceFromHandle;
 import darwin.resourcehandling.handle.ResourceHandle;
 

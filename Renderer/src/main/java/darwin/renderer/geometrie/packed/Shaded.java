@@ -16,8 +16,6 @@
  */
 package darwin.renderer.geometrie.packed;
 
-import darwin.renderer.shader.Shader;
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>

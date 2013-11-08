@@ -12,3 +12,6 @@
 /glslopt/nbproject/private/
 /AnnotationsProcessing/target/
 /target/
+*.iml
+.idea
+*~

@@ -18,7 +18,6 @@ package darwin.renderer.shader;
 
 import java.util.*;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.*;
 import darwin.renderer.shader.BuildException.BuildError;
 

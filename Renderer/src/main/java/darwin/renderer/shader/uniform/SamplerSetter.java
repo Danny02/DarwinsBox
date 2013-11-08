@@ -16,8 +16,6 @@
  */
 package darwin.renderer.shader.uniform;
 
-import darwin.renderer.shader.Sampler;
-
 import com.jogamp.opengl.util.texture.Texture;
 
 /**

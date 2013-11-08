@@ -16,8 +16,6 @@
  */
 package darwin.renderer.opengl;
 
-import darwin.renderer.GraphicContext;
-
 import javax.inject.*;
 import javax.media.opengl.*;
 import org.slf4j.*;

@@ -20,7 +20,6 @@ import java.io.*;
 import java.nio.*;
 import java.util.Arrays;
 
-import darwin.renderer.GraphicContext;
 import darwin.renderer.opengl.ShaderProgramm;
 
 import com.google.common.base.Optional;

@@ -19,9 +19,7 @@ package darwin.renderer.geometrie;
 import java.util.*;
 
 import darwin.geometrie.unpacked.*;
-import darwin.renderer.geometrie.packed.RenderModel;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
-import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.factory.ResourceBuilder;
 import darwin.resourcehandling.handle.ResourceBundle;
 import darwin.resourcehandling.shader.ShaderLoader;

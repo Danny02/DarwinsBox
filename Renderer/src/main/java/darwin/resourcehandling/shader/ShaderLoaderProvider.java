@@ -19,7 +19,6 @@ package darwin.resourcehandling.shader;
 import java.lang.reflect.Method;
 
 import darwin.annotations.ServiceProvider;
-import darwin.renderer.shader.Shader;
 import darwin.resourcehandling.factory.*;
 
 import com.google.inject.Injector;

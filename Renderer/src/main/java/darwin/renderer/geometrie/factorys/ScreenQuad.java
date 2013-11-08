@@ -17,11 +17,8 @@
 package darwin.renderer.geometrie.factorys;
 
 import darwin.geometrie.data.*;
-import darwin.renderer.geometrie.packed.RenderMesh;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;
-import darwin.renderer.opengl.VertexBO;
 import darwin.renderer.opengl.VertexBO.VBOFactoy;
-import darwin.renderer.shader.Shader;
 
 import javax.inject.*;
 import javax.media.opengl.GL;
