@@ -18,7 +18,6 @@ package darwin.resourcehandling.texture;
 
 import darwin.annotations.ServiceProvider;
 import darwin.resourcehandling.factory.ResourceFromHandleProvider;
-import darwin.resourcehandling.shader.ShaderLoaderProvider;
 
 import com.jogamp.opengl.util.texture.Texture;
 

@@ -31,7 +31,7 @@ import darwin.renderer.opengl.buffer.BufferObjectComponent
  * @author Daniel Heinrich
  */
 trait RenderModelComponent {
-  this: VBOComponent with BufferObjectComponent with RenderMeshComponent =>
+  this: VBOComponent with BufferObjectComponent with RenderMeshComponent with ShaderComponent with SamplerComponent=>
 
   def create(model: Model, shader: Shader): RenderModel = {
     val material = model.getMat
@@ -69,10 +69,8 @@ trait RenderModelComponent {
     def getShader = shader
 
     def addSamplerSetter(s: String, tc: Texture) {
-      val sampler: Optional[Sampler] = shader.getSampler(s)
-      if (sampler.isPresent) {
-        uniforms :+= new SamplerSetter(sampler.get, tc)
-      }
+      val sampler = shader.getSampler(s)
+      sampler.foreach(s =>  uniforms :+= (() => s.bindTexture(tc)))
     }
 
     def addUniformSetter(us: ShaderMaterial.UniformSetter) {

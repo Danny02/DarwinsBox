@@ -1,9 +1,9 @@
 package darwin.renderer.geometrie.attributs
 
-import darwin.renderer.shader.Shader
 import darwin.renderer.opengl.VBOComponent
 import darwin.renderer.opengl.buffer.BufferObjectComponent
 import darwin.renderer.Bindable
+import darwin.renderer.shader.ShaderComponent
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +14,7 @@ import darwin.renderer.Bindable
  */
 
 trait VertexAttributeComponent {
-  this: VBOComponent with BufferObjectComponent =>
+  this: VBOComponent with BufferObjectComponent with ShaderComponent =>
   def createAttributes(shader: Shader, vbuffers: Seq[VertexBO], indice: Option[BufferObject]): Bindable
 }
 

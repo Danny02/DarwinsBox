@@ -18,7 +18,7 @@ package darwin.renderer.geometrie.attributs
 
 import darwin.renderer.{GProfile, Bindable}
 import darwin.renderer.opengl.GLResource
-import darwin.renderer.shader.Shader
+import darwin.renderer.shader.ShaderComponent
 import javax.media.opengl.GL2GL3
 import darwin.renderer.dependencies.Components
 
@@ -27,7 +27,7 @@ import darwin.renderer.dependencies.Components
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 trait VAOComponent extends StdAttributesComponent {
-  this: Components#VBO with GProfile[GL2GL3] =>
+  this: Components#VBO with GProfile[GL2GL3] with ShaderComponent=>
 
   import context._
 

@@ -22,7 +22,6 @@ import darwin.geometrie.unpacked.*;
 import darwin.renderer.geometrie.packed.RenderModel.RenderModelFactory;
 import darwin.resourcehandling.factory.ResourceBuilder;
 import darwin.resourcehandling.handle.ResourceBundle;
-import darwin.resourcehandling.shader.ShaderLoader;
 
 import javax.inject.*;
 

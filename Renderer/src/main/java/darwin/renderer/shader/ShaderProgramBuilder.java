@@ -43,8 +43,7 @@ public class ShaderProgramBuilder {
         return this;
     }
 
-    public ShaderProgramm link(GraphicContext gc) throws BuildException {
-        GL2GL3 gl = gc.getGL().getGL2GL3();
+    public ShaderProgramm link(GL2GL3 gl) throws BuildException {
         int programObject = gl.glCreateProgram();
 
         for (ShaderObjekt so : objects) {
@@ -70,7 +69,7 @@ public class ShaderProgramBuilder {
 
         gl.glLinkProgram(programObject);
 
-        ShaderProgramm prog = new ShaderProgramm(gc, programObject);
+        ShaderProgramm prog = new ShaderProgramm(programObject);
         Optional<String> error = prog.verify();
         if (error.isPresent()) {
             throw new BuildException(error.get(), BuildError.LinkTime);

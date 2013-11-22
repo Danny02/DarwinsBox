@@ -16,8 +16,7 @@
  */
 package darwin.renderer.opengl.framebuffer
 
-import darwin.renderer.opengl.{GLResource, GLClientConstants}
-import com.google.inject.assistedinject._
+import darwin.renderer.opengl.GLResource
 import javax.media.opengl._
 import darwin.renderer.{GProfile, GraphicComponent, Bindable}
 
@@ -50,8 +49,8 @@ trait MultiSampledRBufferComponent extends RenderBufferComponent {
    *                  GL_RGBA8, GL_RGB10_A2, GL_RGBA12, GL_RGBA16
    *                  <p/>
    */
-  def createRB(constants: GLClientConstants, samples: Int, width: Int, height: Int, texformat: Int) {
-    val samp = Math.min(samples, constants.getMaxSamples)
+  def createRB(samples: Int, width: Int, height: Int, texformat: Int) {
+    val samp = Math.min(samples, maxSamples)
 
     val rb = RenderBuffer(genId(), width, height, texformat, samp)
 

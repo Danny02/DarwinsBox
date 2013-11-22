@@ -16,18 +16,18 @@
  */
 package darwin.renderer.geometrie.packed
 
-import darwin.renderer.shader.Shader
 import javax.media.opengl._
 import darwin.renderer.Bindable
 import darwin.renderer.geometrie.attributs.VertexAttributeComponent
 import darwin.renderer.dependencies.Components
+import darwin.renderer.shader.ShaderComponent
 
 /**
  *
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 trait RenderMeshComponent {
-  this: Components#VBO with VertexAttributeComponent =>
+  this: Components#VBO with VertexAttributeComponent with ShaderComponent =>
 
   import context._
 

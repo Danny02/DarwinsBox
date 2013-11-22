@@ -16,6 +16,8 @@
  */
 package darwin.renderer.opengl;
 
+import darwin.resourcehandling.shader.ShaderFile;
+
 import javax.media.opengl.GL2;
 
 /**
@@ -24,14 +26,27 @@ import javax.media.opengl.GL2;
  */
 public enum ShaderType
 {
-
-    Fragment(GL2.GL_FRAGMENT_SHADER),
-    Vertex(GL2.GL_VERTEX_SHADER),
-    Geometrie(GL2.GL_GEOMETRY_SHADER_ARB);
+    Fragment(GL2.GL_FRAGMENT_SHADER){
+        public String extract(ShaderFile file){
+            return file.fragment;
+        }
+    },
+    Vertex(GL2.GL_VERTEX_SHADER){
+        public String extract(ShaderFile file){
+            return file.vertex;
+        }
+    },
+    Geometrie(GL2.GL_GEOMETRY_SHADER_ARB){
+        public String extract(ShaderFile file){
+            return file.geometrie;
+        }
+    };
     public final int glConst;
 
     private ShaderType(int glConst)
     {
         this.glConst = glConst;
     }
+
+    public abstract String extract(ShaderFile file);
 }

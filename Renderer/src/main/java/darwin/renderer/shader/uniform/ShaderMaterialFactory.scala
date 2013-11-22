@@ -26,7 +26,6 @@ import com.jogamp.opengl.util.texture.Texture
  * @author daniel
  */
 object ShaderMaterial {
-  type UniformSetter = () => Unit
 
   def create(shader: Shader, material: Material, setter: Seq[UniformSetter] = Seq()): UniformSetter = {
     val s = Seq(("mat_diffuse", material.getDiffuse),

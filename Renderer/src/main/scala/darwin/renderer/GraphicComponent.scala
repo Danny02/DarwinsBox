@@ -2,6 +2,8 @@ package darwin.renderer
 
 import javax.media.opengl._
 import com.jogamp.newt.opengl.GLWindow
+import scala.Predef.String
+import darwin.util.logging.LoggingComponent
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +15,7 @@ import com.jogamp.newt.opengl.GLWindow
 
 
 trait GraphicComponent {
-  this: GProfile[_] =>
+  this: GProfile[_] with LoggingComponent =>
 
   def capabilities(c: GLCapabilities) {}
 
@@ -47,6 +49,33 @@ trait GraphicComponent {
     })
   }
 
+  val glslVersion = {
+    var v: Int = 120
+    try {
+      val ver: String = context.gl.glGetString(GL2ES2.GL_SHADING_LANGUAGE_VERSION)
+      val s = ver.split(" ")(0).substring(0, 4)
+      val d = s.substring(0, 4).toDouble
+      v = Math.round(d * 100).toInt
+    }
+    catch {
+      case ex: Throwable => {
+        logger.warn(ex.getLocalizedMessage)
+      }
+    }
+    "#version " + v + '\n'
+  }
+
+  val maxSamples = {
+    val container = new Array[Int](1)
+    context.gl.glGetIntegerv(GL2GL3.GL_MAX_SAMPLES, container, 0)
+    container(0)
+  }
+
+  val maxColorAttachments = {
+    val container = new Array[Int](1)
+    context.gl.glGetIntegerv(GL2ES2.GL_MAX_COLOR_ATTACHMENTS, container, 0)
+    container(0)
+  }
 }
 
 trait GProfile[+T <: GL] {
@@ -57,25 +86,21 @@ trait GProfile[+T <: GL] {
 
   trait GL2Profile extends GProfile[GL2] {
     val profile = GLProfile.GL2
-
     implicit def toSpecific(gl: GL) = gl.getGL2
   }
 
   trait GL2GL3Profile extends GProfile[GL2GL3] {
     val profile = GLProfile.GL2GL3
-
     implicit def toSpecific(gl: GL) = gl.getGL2GL3
   }
 
   trait GL2ES1Profile extends GProfile[GL2ES1] {
     val profile = GLProfile.GL2ES1
-
     implicit def toSpecific(gl: GL) = gl.getGL2ES1
   }
 
   trait GL2ES2Profile extends GProfile[GL2ES2] {
     val profile = GLProfile.GL2ES2
-
     implicit def toSpecific(gl: GL) = gl.getGL2ES2
   }
 }

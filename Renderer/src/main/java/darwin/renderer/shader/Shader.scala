@@ -25,6 +25,8 @@ import darwin.util.math.util.MatrixEvent
 import javax.media.opengl.GL
 import javax.media.opengl.GL2ES2
 import darwin.renderer.{GProfile, GraphicComponent}
+import darwin.renderer.geometrie.packed.Renderable
+import scala.collection.JavaConversions._
 
 /**
  *
@@ -34,7 +36,8 @@ trait ShaderComponent {
   this: SamplerComponent with GraphicComponent with GProfile[GL2ES2] =>
 
   import context._
-  import scala.collection.JavaConversions._
+
+  type UniformSetter = () => Unit
 
   def createShader(sf: ShaderFile) = new Shader(sf.getAttributs, sf.getUniforms, sf.getSampler)
 
@@ -55,7 +58,7 @@ trait ShaderComponent {
 
     private var programm: ShaderProgramm = null
     private var attrhash: Int = 0
-    private var usetter = Seq[ShaderMaterial.UniformSetter]()
+    private var usetter = Seq[UniformSetter]()
 
     def ini(prog: ShaderProgramm): Shader = {
       programm = prog
@@ -92,7 +95,7 @@ trait ShaderComponent {
     def updateUniformData {
       bind
       matricen.set
-      usetter foreach(_.apply())
+      usetter foreach (_.apply())
       for (su <- uniformMap.values) {
         if (su.wasChanged) {
           gl.glUniform(su.getData)
@@ -100,11 +103,12 @@ trait ShaderComponent {
       }
     }
 
-    def addUSetter(uss: ShaderMaterial.UniformSetter) {
+    def addUSetter(uss: UniformSetter) {
       usetter :+= uss
     }
 
     def isInitialized: Boolean = programm != null
+
     def getProgramm: ShaderProgramm = programm
 
     def getUniform(name: String) = uniformMap.get(name)
@@ -122,6 +126,10 @@ trait ShaderComponent {
     def changeOccured(t: MatrixEvent) {
       matricen.changeOccured(t)
     }
+  }
+
+  trait Shaded extends Renderable {
+    def getShader: Shader
   }
 
 }

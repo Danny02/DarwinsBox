@@ -30,7 +30,7 @@ import darwin.renderer.dependencies.Components
  */
 
 trait StdAttributesComponent extends VertexAttributeComponent {
-  this: Components#VBO with GProfile[GL2ES2] =>
+  this: Components#VBO with GProfile[GL2ES2] with ShaderComponent=>
   import context._
 
   def createAttributes(shader: Shader, vbuffers: Seq[VertexBO], indices: Option[BufferObject]): Bindable = {
@@ -43,7 +43,7 @@ trait StdAttributesComponent extends VertexAttributeComponent {
     val configs = {
       for (buf <- vbuffers) yield {
         val a = buf.layout.getElements.map(de => (shader.getAttribut(de), buf.layout.getAttribut(de)))
-        val configs = for ((sa, la) <- a if sa.isPresent) yield new AttributConfig(sa.get, la)
+        val configs = for ((osa, la) <- a; sa <- osa) yield new AttributConfig(sa, la)
 
         new BufferConfigs(buf.buffer, configs.toSeq)
       }
