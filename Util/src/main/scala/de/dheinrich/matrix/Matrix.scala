@@ -6,6 +6,7 @@ import nat._
 import ops.nat._
 
 object Matrix {
+
   trait Builder[X <: Nat, Y <: Nat, +M <: Matrix[X, Y]] {
     def buildEmpty(): M
 
@@ -16,32 +17,25 @@ object Matrix {
 
   def apply[X <: Nat, Y <: Nat] = new {
     def apply[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b.buildEmpty
-  }
-
-  def builder[X <: Nat, Y <: Nat] = new {
-    def apply[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b
+    def from[M <: Matrix[X, Y]](f: (Int, Int) => Float)(implicit b: Builder[X, Y, M]): M = b.build(f)
   }
 
   def identity[X <: Nat, Y <: Nat] = new {
-    def apply[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b.build((x,y) => if (x == y) 1f else 0f)
+    def apply[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b.build((x, y) => if (x == y) 1f else 0f)
   }
 
   type Row[N <: Nat] = Matrix[N, _1] with Vector[N]
   type Column[N <: Nat] = Matrix[_1, N] with Vector[N]
 
   implicit class TransformOps[X <: Nat, Y <: Nat, M <: Column[Y]](m: Matrix[X, Y])(implicit ev: LT[_3, X], ev2: LT[_2, Y],
-                                                                   ix: ToInt[X], iy: ToInt[Y],
-                                                                   b: Vector.Builder[Y, M]) {
+                                                                                   ix: ToInt[X], iy: ToInt[Y],
+                                                                                   b: Vector.Builder[Y, M]) {
 
     private val w = ix()
     private val h = iy()
 
-    def translate(v: ColumnVector[X]) {
-      translation = m mult v
-    }
-
-    def worldTranslate(v: Vector[Y]) {
-      translation += v
+    def translate(v: Column[X]) {
+      translation = m * v
     }
 
     def translation = b.build(m(w - 1, _))
@@ -77,47 +71,35 @@ object Matrix {
     }
   }
 
-  def rotX(a: Radian) = {
-    val sin = a.sinF
-    val cos = a.cosF
+  implicit class VectorOps[N <: Nat](v: Vector[N]) {
+    def asColumn[M <: Column[N]](implicit b: Builder[_1, N, M]) = v match {
+      case cv : M => cv
+      case _ => b.build((x, y) => v(y))
+    }
 
-    val m = Matrix[_4, _4]()
-    m(3, 3) = 1
-    m(0, 0) = 1
-    m(1, 1) = cos
-    m(2, 2) = cos
-    m(1, 2) = -sin
-    m(2, 1) = sin
+    def asRow[M <: Row[N]](implicit b: Builder[N, _1, M]) = v match {
+      case rv: M => rv
+      case _ => b.build((x, y) => v(x))
+    }
+  }
+
+  private def iniRot[X <: Nat, Y <: Nat](m: Matrix[X, Y], r: Radian, a: Int, b: Int) = {
+    val sin = r.sinF
+    val cos = r.cosF
+
+    m(a, a) = cos
+    m(b, b) = cos
+    m(a, b) = -sin
+    m(b, a) = sin
     m
   }
 
-  def rotY(a: Radian) = {
-    val sin = a.sinF
-    val cos = a.cosF
+  def rotX[X <: Nat, M <: Matrix[X, X]](a: Radian)(implicit b: Builder[X, X, M], ev: LT[_1, X]) = iniRot(identity[X, X](), a, 0, 1)
 
-    val m = Matrix[_4, _4]()
-    m(3, 3) = 1
-    m(0, 0) = cos
-    m(1, 1) = 1
-    m(2, 2) = cos
-    m(2, 0) = -sin
-    m(0, 2) = sin
-    m
-  }
+  def rotY[X <: Nat, M <: Matrix[X, X]](a: Radian)(implicit b: Builder[X, X, M], ev: LT[_2, X]) = iniRot(identity[X, X](), a, 0, 1)
 
-  def rotZ(a: Radian) = {
-    val sin = a.sinF
-    val cos = a.cosF
+  def rotZ[X <: Nat, M <: Matrix[X, X]](a: Radian)(implicit b: Builder[X, X, M], ev: LT[_2, X]) = iniRot(identity[X, X](), a, 0, 1)
 
-    val m = Matrix[_4, _4]()
-    m(3, 3) = 1
-    m(0, 0) = cos
-    m(1, 1) = cos
-    m(2, 2) = 1
-    m(0, 1) = -sin
-    m(1, 0) = sin
-    m
-  }
 }
 
 trait Matrix[X <: Nat, Y <: Nat] {
@@ -134,8 +116,8 @@ trait Matrix[X <: Nat, Y <: Nat] {
 
   def row[M <: Row[X]](n: Int)(implicit b: Builder[X, _1, M]) = b.build((x, y) => this(x, n))
 
-  def mult[T <: Nat, M <: Matrix[T, Y], R <: Row[X], C <: Column[X]](o: Matrix[T, X])(implicit b: Builder[T, Y, M],
-                                                                                      b2: Builder[X, _1, R], b3: Vector.Builder[X, C]) = {
+  def *[T <: Nat, M <: Matrix[T, Y], R <: Row[X], C <: Column[X]](o: Matrix[T, X])(implicit b: Builder[T, Y, M],
+                                                                                   b2: Builder[X, _1, R], b3: Vector.Builder[X, C]) = {
     b.build(o.column(_) dot row(_))
   }
 
