@@ -75,7 +75,7 @@ Values of type Tuple<N> can be converted implicitly to a Vector.
 ```scala
 val v: Vector[_3] = Vector(2, 4, 6)
 val y: Float = v dot (1, 1, 1) // 12f
-val y: Float = (2, 2, 2).asVec cross (1, 1, 1) // Vector(0, 0, 0)
+val y: Float = (2, 2, 2) cross (1, 1, 1) // Vector(0, 0, 0)
 
 ```
 
