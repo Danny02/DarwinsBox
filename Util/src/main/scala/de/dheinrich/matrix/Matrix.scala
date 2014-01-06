@@ -17,10 +17,14 @@ object Matrix {
 
   def apply[X <: Nat, Y <: Nat] = new {
     def apply[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b.buildEmpty
+  }
 
-    def from[M <: Matrix[X, Y]](f: (Int, Int) => Float)(implicit b: Builder[X, Y, M]): M = b.build(f)
+  def identity[X <: Nat, Y <: Nat] = new {
+    def apply[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b.build((x, y) => if (x == y) 1f else 0f)
+  }
 
-    def identity[M <: Matrix[X, Y]]()(implicit b: Builder[X, Y, M]) = b.build((x, y) => if (x == y) 1f else 0f)
+  def from[X <: Nat, Y <: Nat] = new {
+    def apply[M <: Matrix[X, Y]](f: (Int, Int) => Float)(implicit b: Builder[X, Y, M]): M = b.build(f)
   }
 
   type Row[N <: Nat] = Matrix[N, _1] with Vector[N]
@@ -72,7 +76,7 @@ object Matrix {
 
   implicit class VectorOps[N <: Nat](v: Vector[N]) {
     def asColumn[M <: Column[N]](implicit b: Builder[_1, N, M]) = v match {
-      case cv: M => cv
+      case cv : M => cv
       case _ => b.build((x, y) => v(y))
     }
 
