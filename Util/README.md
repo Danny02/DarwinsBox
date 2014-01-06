@@ -6,7 +6,7 @@ A vector/matrix library in Scala with typesafe arity (`darwin.util.blas`).
 This lib has still an experimental status. It works greate as a proof of concept, but still lacks a lot of standard
 functionality(std. matrix funcs, not sure about im/mutability, quaternions ...). 
 Another point is performance, which is not as good as it could be, but I'm confident that this
-framworks has a lot of optimization opertunities.
+framwork has a lot of optimization opertunities.
 The Next step will be macro generated optimized classes for the most common arities of some sorts.
 
 ## Basic Concepts
@@ -24,12 +24,12 @@ This feature has some very nice properties:
 ### Matrix
 To create a Matrix the following factory methods are provided:
 * `val m = Matrix[_4, _3]()`
-* `val n = Matrix.identity[_4, _3]()`
-* `val o = Matrix.from[_4, _3]((x,y) => x*y)`
+* `val n = Matrix.identity[_3, _3]()`
+* `val o = Matrix.from[_2, _3]((x,y) => x*y)`
 
 #### Rotations
 The factories to create rotation matrices are a little special case. A rotation matrix is always uniform(i.e. 3x3) 
-and the factory methods can inferr the needed arity. So you can write the following:
+and the factory methods can infer the needed arity. So you can write the following:
 ```scala
 import Matrix._
 val m = identity[_3, _2] * rotZ(0.5)
@@ -47,13 +47,14 @@ def rotN(a: Radian)
 //so instead of
 rotX(0.3)
 //one could write
+import Angles._
 rotX(45.degrees)
 ```
 
 ### Vector
 There are only two simple vector factories. The first is a special case, because the arity can be ommited.
 * `val v = Vector(3, 2, 1)`
-* `val u = Vector.zero[_4()`
+* `val u = Vector.zero[_4]()`
 
 ##Macros
 Macros will be used in the future for more complex optimisation for which the type-system is not enough. 
