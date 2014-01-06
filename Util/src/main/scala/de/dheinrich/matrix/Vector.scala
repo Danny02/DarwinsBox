@@ -4,7 +4,6 @@ import darwin.util.blas.Matrix.Column
 import shapeless._
 import shapeless.nat._
 import scala.language.experimental.macros
-import scala.reflect.ClassTag
 import shapeless.ops.tuple.Length
 
 
@@ -25,20 +24,18 @@ object Vector {
   def apply[M <: Column[_4]](x: Float, y: Float, z: Float, w: Float)(implicit b: Builder[_4, M]) = b.build(Seq(x, y, z, w)(_))
 
   def apply[N <: Nat] = new {
-      def apply[M <: Column[N]](t: Float*)(implicit b: Builder[N, M]) = b.build(t(_))
+    def apply[M <: Column[N]](t: Float*)(implicit b: Builder[N, M]) = b.build(t(_))
+
+    def zero[M <: Column[N]]()(implicit b: Builder[N, M]) = b.buildEmpty()
   }
 
   def builder[N <: Nat] = new {
     def apply[M <: Column[N]]()(implicit b: Builder[N, M]) = b
   }
 
-  def zero[N <: Nat] = new {
-    def apply[M <: Column[N]]()(implicit b: Builder[N, M]) = b.buildEmpty()
-  }
+  implicit def tuple2Vector[T <: Product, N <: Nat](tuple: T)(implicit l: Length.Aux[T, N]): Column[N] = macro VectorMacros.tupleBuilder[T]
 
-  implicit def tuple2Vector[T<:Product, N <: Nat](tuple: T)(implicit l: Length.Aux[T, N]): Column[N] = macro VectorMacros.tupleBuilder[T]
-
-  implicit class Tuple2Vector[N <: Nat, T<:Product](val t: T)(implicit l: Length.Aux[T, N]) {
+  implicit class Tuple2Vector[N <: Nat, T <: Product](val t: T)(implicit l: Length.Aux[T, N]) {
     def asVec[M <: Column[N]](implicit b: Builder[N, M]): M = macro VectorMacros.prefixTupleBuilder[T]
   }
 
@@ -53,6 +50,7 @@ object Vector {
 }
 
 trait Vector[N <: Nat] extends BaseVector[N] {
+
   import Vector._
 
   val size: Int
@@ -89,37 +87,69 @@ trait Vector[N <: Nat] extends BaseVector[N] {
     b.build(x => -this(x))
   }
 
-  def -[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o){_-_}
+  def -[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o) {
+    _ - _
+  }
 
-  def -[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o){_-_}
+  def -[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o) {
+    _ - _
+  }
 
-  def subI(o: Vector[N]) = inplace(o){_-_}
+  def subI(o: Vector[N]) = inplace(o) {
+    _ - _
+  }
 
-  def subI(o: Float) = inplace(o){_-_}
+  def subI(o: Float) = inplace(o) {
+    _ - _
+  }
 
-  def +[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o){_+_}
+  def +[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o) {
+    _ + _
+  }
 
-  def +[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o){_+_}
+  def +[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o) {
+    _ + _
+  }
 
-  def addI(o: Vector[N]) = inplace(o){_+_}
+  def addI(o: Vector[N]) = inplace(o) {
+    _ + _
+  }
 
-  def addI(o: Float) = inplace(o){_+_}
+  def addI(o: Float) = inplace(o) {
+    _ + _
+  }
 
-  def *[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o){_*_}
+  def *[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o) {
+    _ * _
+  }
 
-  def *[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o){_*_}
+  def *[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o) {
+    _ * _
+  }
 
-  def mulI(o: Vector[N]) = inplace(o){_*_}
+  def mulI(o: Vector[N]) = inplace(o) {
+    _ * _
+  }
 
-  def mulI(o: Float) = inplace(o){_*_}
+  def mulI(o: Float) = inplace(o) {
+    _ * _
+  }
 
-  def /[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o){_/_}
+  def /[M <: ColumnVector[N]](o: Vector[N])(implicit b: Builder[N, M]) = onCopy(o) {
+    _ / _
+  }
 
-  def /[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o){_/_}
+  def /[M <: ColumnVector[N]](o: Float)(implicit b: Builder[N, M]) = onCopy(o) {
+    _ / _
+  }
 
-  def divI(o: Vector[N]) = inplace(o){_/_}
+  def divI(o: Vector[N]) = inplace(o) {
+    _ / _
+  }
 
-  def divI(o: Float) = inplace(o){_/_}
+  def divI(o: Float) = inplace(o) {
+    _ / _
+  }
 
   def dot(o: Vector[N]) = {
     var d = 0f
