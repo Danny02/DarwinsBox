@@ -64,9 +64,8 @@ public class ResourceInjector {
 
     @SuppressWarnings("nullness")
     public void injectResources(Object object) {
-
         Class clz = object.getClass();
-         Iterable<MembersInjector> inj = injectors.get(clz);
+        Iterable<MembersInjector> inj = injectors.get(clz);
         if (inj == null) {
             inj = retriveMemberInjectors(clz);
             injectors.put(clz, inj);
@@ -120,7 +119,7 @@ public class ResourceInjector {
 
     private void retriveHandleInections(Field field, ArrayList<MembersInjector> list) {
         final boolean unique = field.getAnnotation(Unique.class) != null;
-         InjectResource anno = field.getAnnotation(InjectResource.class);
+        InjectResource anno = field.getAnnotation(InjectResource.class);
         if (anno != null) {
             final ResourceHandle handle = fileCache.get(anno.file());
             if (field.getType() == ResourceHandle.class) {
@@ -141,10 +140,10 @@ public class ResourceInjector {
 
     private void retriveBundleInjections(Field field, ArrayList<MembersInjector> list) {
         final boolean unique = field.getAnnotation(Unique.class) != null;
-         InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
+        InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
         if (anno2 != null) {
             String[] pp = anno2.files();
-             ResourceHandle[] handles = new ResourceHandle[pp.length];
+            ResourceHandle[] handles = new ResourceHandle[pp.length];
             for (int i = 0; i < pp.length; ++i) {
                 handles[i] = fileCache.get(anno2.prefix() + pp[i].trim());
             }

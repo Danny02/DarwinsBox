@@ -21,7 +21,6 @@ import darwin.resourcehandling.handle.FileHandleCache;
 
 import com.google.inject.*;
 import com.google.inject.matcher.Matchers;
-import com.google.inject.name.Names;
 
 /**
  *
@@ -32,15 +31,14 @@ public class ResourceHandlingModul extends AbstractModule {
     @Override
     protected void configure() {
         boolean devMode = Stage.DEVELOPMENT == currentStage();
-        bind(boolean.class).annotatedWith(Names.named("HOT_RELOAD")).toInstance(devMode);
-        
+
         FileHandleCache factory = FileHandleCache.build()
                 .withChangeNotification(devMode)
                 .withDevFolder(devMode)
                 .create();
         bind(FileHandleCache.class).toInstance(factory);
-        
-        final ResourceCache cache = new MapResourceCache();        
+
+        final ResourceCache cache = new MapResourceCache();
         bind(ResourceCache.class).toInstance(cache);
 
         ResourceInjector rinj = new ResourceInjector(factory, cache);

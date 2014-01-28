@@ -29,7 +29,6 @@ import darwin.resourcehandling.watchservice.*;
  *
  * @author daniel
  */
-//TODO enable creation of handles relative to others and Path variables like ($TEXTURES, $MODELS ...)
 public class ClasspathFileHandler extends ListenerHandler {
 
     public static final Path DEV_FOLDER = Paths.get("src/main/resources");
@@ -105,16 +104,17 @@ public class ClasspathFileHandler extends ListenerHandler {
             return Files.newInputStream(devPath, StandardOpenOption.READ);
         } else {
             if (path.isAbsolute()) {
-                throw new IOException("Could not find absolute file. " + path);
+                throw new IOException("Could not find absolute file: " + path);
             }
 
             String f = path.toString();
             if (!f.startsWith("/")) {
                 f = "/" + f;
             }
+            
             InputStream in = ClasspathFileHandler.class.getResourceAsStream(f);
             if (in == null) {
-                throw new IOException("Could not find file in classpath." + path);
+                throw new IOException("Could not find file in classpath: " + path);
             } else {
                 return in;
             }
