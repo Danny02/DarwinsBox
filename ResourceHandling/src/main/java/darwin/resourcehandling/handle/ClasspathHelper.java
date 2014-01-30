@@ -98,10 +98,8 @@ public class ClasspathHelper {
 
         @Override
         public FileVisitResult visitFile(Path path, BasicFileAttributes mainAtts) throws IOException {
-            if (path.startsWith(root)) {
-                System.out.println(path);
+            if (path.startsWith(root))
                 collected.add(path.toUri().toURL());
-            }
             return FileVisitResult.CONTINUE;
         }
     }
