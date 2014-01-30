@@ -55,11 +55,12 @@ public class ClasspathHelper {
                 }
             }
         }
-        FileCollector collector = new FileCollector();
         for (URL url : Iterables.filter(getClasspath(), Folder)) {
-            Files.walkFileTree(Paths.get(url.toURI()), collector);
+            Path root = Paths.get(url.toURI());
+            FileCollector collector = new FileCollector(root.resolve(folder));
+            Files.walkFileTree(root, collector);
+            elements.addAll(collector.collected);
         }
-        elements.addAll(collector.collected);
 
         return elements;
     }
@@ -89,10 +90,18 @@ public class ClasspathHelper {
     private static class FileCollector extends SimpleFileVisitor<Path> {
 
         private final List<URL> collected = new ArrayList<>();
+        private final Path root;
+
+        private FileCollector(Path resolve) {
+            root = resolve;
+        }
 
         @Override
         public FileVisitResult visitFile(Path path, BasicFileAttributes mainAtts) throws IOException {
-            collected.add(path.toUri().toURL());
+            if (path.startsWith(root)) {
+                System.out.println(path);
+                collected.add(path.toUri().toURL());
+            }
             return FileVisitResult.CONTINUE;
         }
     }
