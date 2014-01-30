@@ -17,7 +17,6 @@
 package darwin.resourcehandling.dependencies;
 
 import java.lang.reflect.Field;
-import java.util.*;
 
 import darwin.resourcehandling.cache.ResourceCache;
 import darwin.resourcehandling.dependencies.annotation.*;
@@ -28,6 +27,11 @@ import darwin.util.dependencies.*;
 
 import com.google.common.base.*;
 import com.google.inject.MembersInjector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
 import javax.inject.*;
 
 /**

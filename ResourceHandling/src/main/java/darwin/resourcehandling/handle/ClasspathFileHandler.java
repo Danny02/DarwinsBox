@@ -24,6 +24,7 @@ import java.util.Objects;
 import darwin.resourcehandling.ResourceChangeListener;
 import darwin.resourcehandling.factory.ResourceHandleFactory;
 import darwin.resourcehandling.watchservice.*;
+import java.net.URL;
 
 /**
  *
@@ -31,30 +32,28 @@ import darwin.resourcehandling.watchservice.*;
  */
 public class ClasspathFileHandler extends ListenerHandler {
 
-    public static final Path DEV_FOLDER = Paths.get("src/main/resources");
-    private final boolean useDevFolder;
+//    public static final Path DEV_FOLDER = Paths.get("src/main/resources");
+//    private final boolean useDevFolder;
     private final WatchServiceNotifier notifier;
     private boolean registered = false;
-    private final Path path;
+    private final URL file;
 
     public static class Factory implements ResourceHandleFactory {
 
         @Override
-        public ResourceHandle createHandle(boolean useDevFolder,
-                                           WatchServiceNotifier notifier,
-                                           Path path) {
-            return new ClasspathFileHandler(useDevFolder, notifier, path);
+        public ResourceHandle createHandle(WatchServiceNotifier notifier,
+                                           URL path) {
+            return new ClasspathFileHandler(notifier, path);
         }
     }
 
-    public ClasspathFileHandler(Path path) {
-        this(false, null, path);
+    public ClasspathFileHandler(URL path) {
+        this(null, path);
     }
 
-    public ClasspathFileHandler(boolean useDevFolder, WatchServiceNotifier notifier, Path path) {
-        this.useDevFolder = useDevFolder;
+    public ClasspathFileHandler(WatchServiceNotifier notifier, URL path) {
         this.notifier = notifier;
-        this.path = path;
+        this.file = path;
     }
 
     @Override
@@ -69,9 +68,9 @@ public class ClasspathFileHandler extends ListenerHandler {
                 }
             };
 
-            notifier.register(path, fileChangeListener);
+            notifier.register(file, fileChangeListener);
             if (useDevFolder) {
-                notifier.register(DEV_FOLDER.resolve(path), fileChangeListener);
+                notifier.register(DEV_FOLDER.resolve(file), fileChangeListener);
             }
             registered = true;
         }
@@ -79,42 +78,40 @@ public class ClasspathFileHandler extends ListenerHandler {
 
     @Override
     public String getName() {
-        return path.toString();
-    }
-
-    public Path getPath() {
-        return path;
+        return file.toString();
     }
 
     @Override
     public ClasspathFileHandler resolve(String subPath) {
-        Path parent = path.getParent();
+        Paths.get(file.getPath()
+        
+        Path parent = file.getParent();
         if (parent == null) {
             parent = Paths.get(".");
         }
-        return new ClasspathFileHandler(useDevFolder, notifier, parent.resolve(subPath));
+        return new ClasspathFileHandler(notifier, parent.resolve(subPath));
     }
 
     @Override
     public InputStream getStream() throws IOException {
-        Path devPath = DEV_FOLDER.resolve(path);
-        if (Files.isReadable(path)) {
-            return Files.newInputStream(path, StandardOpenOption.READ);
+        Path devPath = DEV_FOLDER.resolve(file);
+        if (Files.isReadable(file)) {
+            return Files.newInputStream(file, StandardOpenOption.READ);
         } else if (useDevFolder && Files.isReadable(devPath)) {
             return Files.newInputStream(devPath, StandardOpenOption.READ);
         } else {
-            if (path.isAbsolute()) {
-                throw new IOException("Could not find absolute file: " + path);
+            if (file.isAbsolute()) {
+                throw new IOException("Could not find absolute file: " + file);
             }
 
-            String f = path.toString();
+            String f = file.toString();
             if (!f.startsWith("/")) {
                 f = "/" + f;
             }
             
             InputStream in = ClasspathFileHandler.class.getResourceAsStream(f);
             if (in == null) {
-                throw new IOException("Could not find file in classpath: " + path);
+                throw new IOException("Could not find file in classpath: " + file);
             } else {
                 return in;
             }
@@ -129,7 +126,7 @@ public class ClasspathFileHandler extends ListenerHandler {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.path);
+        hash = 97 * hash + Objects.hashCode(this.file);
         return hash;
     }
 
@@ -142,7 +139,7 @@ public class ClasspathFileHandler extends ListenerHandler {
             return false;
         }
         final ClasspathFileHandler other = (ClasspathFileHandler) obj;
-        if (!Objects.equals(this.path, other.path)) {
+        if (!Objects.equals(this.file, other.file)) {
             return false;
         }
         return true;

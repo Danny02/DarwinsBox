@@ -21,6 +21,12 @@ import java.net.URL;
 import java.util.Objects;
 
 import darwin.resourcehandling.ResourceChangeListener;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
+import java.util.HashMap;
 
 /**
  *
@@ -74,5 +80,12 @@ public class UrlHandle implements ResourceHandle {
             return false;
         }
         return true;
+    }
+    
+    public static void main(String[] args) throws MalformedURLException, URISyntaxException, IOException{
+        URI u = new URI("jar:file:/J:/projecte/DarwinsBox/ResourceHandling/target/ResourceHandling-2.2-SNAPSHOT.jar!/META-INF/MANIFEST.mf");
+        System.out.println(Paths.get(u));        
+        System.out.println(u.getPath());        
+        System.out.println(u.getRawPath());        
     }
 }
