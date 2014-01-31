@@ -17,14 +17,16 @@
 package darwin.resourcehandling.handle;
 
 import java.io.*;
+import java.net.*;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Objects;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.factory.ResourceHandleFactory;
 import darwin.resourcehandling.watchservice.*;
-import java.net.URL;
+
+import com.google.common.base.*;
+import com.google.common.collect.*;
 
 /**
  *
@@ -32,35 +34,51 @@ import java.net.URL;
  */
 public class ClasspathFileHandler extends ListenerHandler {
 
-//    public static final Path DEV_FOLDER = Paths.get("src/main/resources");
-//    private final boolean useDevFolder;
     private final WatchServiceNotifier notifier;
     private boolean registered = false;
-    private final URL file;
+    private final URI file;
 
-    public static class Factory implements ResourceHandleFactory {
-
-        @Override
-        public ResourceHandle createHandle(WatchServiceNotifier notifier,
-                                           URL path) {
-            return new ClasspathFileHandler(notifier, path);
-        }
-    }
-
-    public ClasspathFileHandler(URL path) {
-        this(null, path);
-    }
-
-    public ClasspathFileHandler(WatchServiceNotifier notifier, URL path) {
+    public ClasspathFileHandler(WatchServiceNotifier notifier, final URI file) {
         this.notifier = notifier;
-        this.file = path;
+
+        this.file = file;
     }
 
     @Override
     public void registerChangeListener(ResourceChangeListener listener) {
         super.registerChangeListener(listener);
+        iniNotifier();
+    }
 
-        if (!registered && notifier != null) {
+    @Override
+    public String getName() {
+        return file.getPath();
+    }
+
+    @Override
+    public ClasspathFileHandler resolve(String subPath) {
+        return new ClasspathFileHandler(notifier, file.resolve(subPath));
+    }
+
+    public URI getFile() {
+        return file;
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        if (file.isAbsolute()) {
+            return file.toURL().openStream();
+        } else {
+            InputStream in = ClassLoader.getSystemResourceAsStream(file.getPath());
+            if (in == null) {
+                throw new IOException("Could not find file in classpath: " + file);
+            }
+            return in;
+        }
+    }
+
+    private void iniNotifier() {
+        if (!registered && notifier != null && !file.isAbsolute()) {
             FileChangeListener fileChangeListener = new FileChangeListener() {
                 @Override
                 public void fileChanged(Kind kind) {
@@ -68,53 +86,22 @@ public class ClasspathFileHandler extends ListenerHandler {
                 }
             };
 
-            notifier.register(file, fileChangeListener);
-            if (useDevFolder) {
-                notifier.register(DEV_FOLDER.resolve(file), fileChangeListener);
+            Function<URI, Path> toPath = new Function<URI, Path>() {
+                @Override
+                public Path apply(URI f) {
+                    return Paths.get(f.resolve(file));
+                }
+            };
+
+            ImmutableSet<Path> folders = ClasspathHelper.getClasspathFolders()
+                    .transform(toPath)
+                    .toSet();
+
+            for (Path path : folders) {
+                notifier.register(path, fileChangeListener);
             }
+
             registered = true;
-        }
-    }
-
-    @Override
-    public String getName() {
-        return file.toString();
-    }
-
-    @Override
-    public ClasspathFileHandler resolve(String subPath) {
-        Paths.get(file.getPath()
-        
-        Path parent = file.getParent();
-        if (parent == null) {
-            parent = Paths.get(".");
-        }
-        return new ClasspathFileHandler(notifier, parent.resolve(subPath));
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        Path devPath = DEV_FOLDER.resolve(file);
-        if (Files.isReadable(file)) {
-            return Files.newInputStream(file, StandardOpenOption.READ);
-        } else if (useDevFolder && Files.isReadable(devPath)) {
-            return Files.newInputStream(devPath, StandardOpenOption.READ);
-        } else {
-            if (file.isAbsolute()) {
-                throw new IOException("Could not find absolute file: " + file);
-            }
-
-            String f = file.toString();
-            if (!f.startsWith("/")) {
-                f = "/" + f;
-            }
-            
-            InputStream in = ClasspathFileHandler.class.getResourceAsStream(f);
-            if (in == null) {
-                throw new IOException("Could not find file in classpath: " + file);
-            } else {
-                return in;
-            }
         }
     }
 

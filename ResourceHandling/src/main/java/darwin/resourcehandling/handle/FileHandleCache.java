@@ -18,12 +18,13 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.nio.file.*;
+import java.net.*;
 import java.util.*;
 
-import darwin.resourcehandling.factory.ResourceHandleFactory;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
+import com.google.common.base.*;
+import com.google.common.collect.*;
 import javax.inject.*;
 
 /**
@@ -34,14 +35,11 @@ import javax.inject.*;
 public class FileHandleCache {
 
     private final WatchServiceNotifier notifier;
-    private final boolean devMode;
-    private final ResourceHandleFactory factory;
-    private Map<Path, ResourceHandle> handle = new HashMap<>();
+    private Map<URI, ResourceHandle> handles = new HashMap<>();
 
     public static class Builder {
 
-        private boolean withNotify = false, dev = false;
-        private ResourceHandleFactory factory = new ClasspathFileHandler.Factory();
+        private boolean withNotify = false;//, dev = false;
 
         public Builder withChangeNotification() {
             return withChangeNotification(true);
@@ -52,27 +50,13 @@ public class FileHandleCache {
             return this;
         }
 
-        public Builder withDevFolder() {
-            return withDevFolder(true);
-        }
-
-        public Builder withDevFolder(boolean w) {
-            dev = w;
-            return this;
-        }
-
-        public Builder withHandelFactory(ResourceHandleFactory factory) {
-            this.factory = factory;
-            return this;
-        }
-
         public FileHandleCache create() {
             WatchServiceNotifier n = null;
             if (withNotify) {
                 n = new WatchServiceNotifier();
                 n.createNotifierThread().start();
             }
-            return new FileHandleCache(n, dev, factory);
+            return new FileHandleCache(n);
         }
     }
 
@@ -81,23 +65,36 @@ public class FileHandleCache {
     }
 
     @Inject
-    public FileHandleCache( WatchServiceNotifier notifier,
-                           boolean devMode, ResourceHandleFactory factory) {
+    public FileHandleCache(WatchServiceNotifier notifier) {
         this.notifier = notifier;
-        this.devMode = devMode;
-        this.factory = factory;
     }
 
-    public ResourceHandle get(String file) {
-        return get(Paths.get(file));
-    }
+    public ResourceHandle get(final URI file) {
+        URI tmp = null;
+        if (file.isAbsolute()) {
+            FluentIterable<URI> folders = ClasspathHelper.getClasspathFolders();
 
-    public ResourceHandle get(Path file) {
-        ResourceHandle fh = handle.get(file);
-        if (fh == null) {
-            fh = factory.createHandle(devMode, notifier, file);
-            handle.put(file, fh);
+            Optional<URI> match = folders.firstMatch(new Predicate<URI>() {
+                @Override
+                public boolean apply(URI input) {
+                    return !input.relativize(file).equals(file);
+                }
+            });
+
+            if (match.isPresent()) {
+                tmp = match.get().relativize(file);
+            }
         }
-        return fh;
+        if (tmp == null) {
+            tmp = file;
+        }
+
+        ResourceHandle h = handles.get(tmp);
+        if (h == null) {
+            h = new ClasspathFileHandler(notifier, tmp);
+            handles.put(tmp, h);
+        }
+
+        return h;
     }
 }

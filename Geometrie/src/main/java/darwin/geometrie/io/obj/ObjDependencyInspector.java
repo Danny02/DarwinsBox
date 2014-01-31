@@ -17,7 +17,7 @@
 package darwin.geometrie.io.obj;
 
 import java.io.*;
-import java.nio.file.Path;
+import java.net.*;
 import java.util.ArrayList;
 
 import darwin.annotations.ServiceProvider;
@@ -37,8 +37,8 @@ public class ObjDependencyInspector extends ResourceDependecyInspector {
     }
 
     @Override
-    public Iterable<Path> getDependencys(ClasspathFileHandler resource) {
-        ArrayList<Path> dependencys = new ArrayList<>();
+    public Iterable<URI> getDependencys(ClasspathFileHandler resource) {
+        ArrayList<URI> dependencys = new ArrayList<>();
         if (getFileExtension(resource.getName()).equalsIgnoreCase("obj")) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getStream()))) {
                 String line;
@@ -46,7 +46,7 @@ public class ObjDependencyInspector extends ResourceDependecyInspector {
                     line = line.trim();
                     if (line.startsWith(ObjFileParser.MATERIAL_LIB)) {
                         String path = line.substring(ObjFileParser.MATERIAL_LIB.length()).trim();
-                        dependencys.add(resource.resolve(path).getPath());
+                        dependencys.add(resource.resolve(path).getFile());
                     }
                 }
             } catch (IOException ex) {

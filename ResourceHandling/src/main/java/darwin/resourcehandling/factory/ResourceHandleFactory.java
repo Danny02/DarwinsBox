@@ -19,7 +19,6 @@ package darwin.resourcehandling.factory;
 
 import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
-import java.net.URL;
 
 /**
  *
@@ -27,5 +26,5 @@ import java.net.URL;
  */
 public interface ResourceHandleFactory {
 
-    public ResourceHandle createHandle(WatchServiceNotifier notifier, URL path);
+    public ResourceHandle createHandle(WatchServiceNotifier notifier, String path);
 }
