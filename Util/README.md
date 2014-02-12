@@ -32,8 +32,8 @@ The factories to create rotation matrices are a little special case. A rotation 
 and the factory methods can infer the needed arity. So you can write the following:
 ```scala
 import Matrix._
-val m = identity[_3, _2] * rotZ(0.5)
-val n = identity[_4, _4] * rotX(0.6)
+val m: Matrix[_2, _2] = identity[_3, _2] * rotZ(0.5)
+val n: Matrix[_4, _4] = identity[_4, _4] * rotX(0.6)
 val o: Matrix[_3, _3] = rotY(0.7) 
 ```
 
@@ -76,7 +76,7 @@ Values of type Tuple<N> can be converted implicitly to a Vector.
 ```scala
 val v: Vector[_3] = Vector(2, 4, 6)
 val y: Float = v dot (1, 1, 1) // 12f
-val y: Float = (2, 2, 2) cross (1, 1, 1) // Vector(0, 0, 0)
+val y: Vector[_3] = (2, 2, 2) cross (1, 1, 1) // Vector(0, 0, 0)
 
 ```
 
