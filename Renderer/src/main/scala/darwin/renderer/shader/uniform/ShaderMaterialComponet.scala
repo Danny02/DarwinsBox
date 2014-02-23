@@ -20,14 +20,16 @@ import darwin.geometrie.unpacked.Material
 import darwin.renderer.shader._
 import com.google.common.base.Optional
 import com.jogamp.opengl.util.texture.Texture
+import darwin.resourcehandling.ResourceComponent
 
 /**
  *
  * @author daniel
  */
-object ShaderMaterial {
+trait ShaderMaterialComponent {
+  this: ShaderComponent with ResourceComponent=>
 
-  def create(shader: Shader, material: Material, setter: Seq[UniformSetter] = Seq()): UniformSetter = {
+  def createMaterial(shader: Shader, material: Material, setter: Seq[UniformSetter] = Seq()): UniformSetter = {
     val s = Seq(("mat_diffuse", material.getDiffuse),
       ("mat_ambient", material.getAmbient),
       ("mat_specular", material.getSpecular)).map(t => createSetter(shader, t._1, t._2: _*)) ++
@@ -42,10 +44,10 @@ object ShaderMaterial {
 
   implicit def optional2option[T](o: Optional[T]) = Option(o.orNull())
 
-  def create(s: Shader, texs: Array[Texture], unames: String*): UniformSetter = {
-    val setter = (texs zip unames) map {
+  def createMaterial(s: Shader, textures: Seq[(String, Texture)]): UniformSetter = {
+    val setter = textures map {
       t =>
-        s.getSampler(t._2).map(s => () => s bindTexture t._1)
+        s.getSampler(t._1).map(s => () => s bindTexture t._2)
     } flatten
 
     () => setter foreach (_.apply())
@@ -56,5 +58,8 @@ object ShaderMaterial {
     shader.getUniform(name).map(u => () => u.setData(values: _*))
   }
 
-  private def createSetter(shader: Shader, name: String, texturePath: String): Option[UniformSetter] = ???
+  private def createSetter(shader: Shader, name: String, texturePath: String): Option[UniformSetter] = {
+    val tex: Texture = resource(texturePath)
+    shader.getSampler(name).map(u => () => u.bindTexture(tex))
+  }
 }

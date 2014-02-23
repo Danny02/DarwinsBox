@@ -1,8 +1,9 @@
 package darwin.resourcehandling
 
-import darwin.resourcehandling.cache.{MapResourceCache, ResourceCache}
+import darwin.resourcehandling.cache._
 import darwin.resourcehandling.handle.{ResourceBundle, ResourceHandle, FileHandleCache}
 import darwin.resourcehandling.factory.ResourceFrom
+import java.net.URI
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +19,6 @@ trait ResourceCacheComponent {
 
 trait ResourceComponentConfig {
   val changeNotification: Boolean
-  val devFolder: Boolean
 }
 
 trait ResourceComponent {
@@ -26,10 +26,9 @@ trait ResourceComponent {
 
   val fileHandleCache = FileHandleCache.build().
     withChangeNotification(changeNotification).
-    withDevFolder(devFolder).
     create()
 
-  def handle(file: String) = fileHandleCache.get(file)
+  def handle(file: String) = fileHandleCache.get(new URI(file))
 
   def resource[T](file: String)(implicit fac: ResourceFrom[ResourceHandle, T]) = {
     resourceCache.get(fac, handle(file), false)
@@ -40,7 +39,7 @@ trait ResourceComponent {
   }
 
   def bundle(files: String*)(prefix: String = "", options: Seq[String] = Seq()) = {
-    val handles = files map (p => fileHandleCache get (p + prefix))
+    val handles = files map (f => handle(f + prefix))
     new ResourceBundle(handles.toArray, options: _*)
   }
 
@@ -54,15 +53,13 @@ trait ResourceComponent {
 }
 
 object ResourceComponent {
-
   trait MappedCacheComponent extends ResourceCacheComponent {
     val resourceCache = new MapResourceCache
   }
 
   trait DebugConfig extends ResourceComponentConfig {
     val changeNotification = true
-    val devFolder = false
   }
 
-  type Default = ResourceComponent with MappedCacheComponent with DebugConfig
+  trait Default extends ResourceComponent with MappedCacheComponent with DebugConfig
 }

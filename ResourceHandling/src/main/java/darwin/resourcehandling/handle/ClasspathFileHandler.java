@@ -17,52 +17,68 @@
 package darwin.resourcehandling.handle;
 
 import java.io.*;
+import java.net.*;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Objects;
 
 import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.factory.ResourceHandleFactory;
 import darwin.resourcehandling.watchservice.*;
+
+import com.google.common.base.*;
+import com.google.common.collect.*;
 
 /**
  *
  * @author daniel
  */
-//TODO enable creation of handles relative to others and Path variables like ($TEXTURES, $MODELS ...)
 public class ClasspathFileHandler extends ListenerHandler {
 
-    public static final Path DEV_FOLDER = Paths.get("src/main/resources");
-    private final boolean useDevFolder;
     private final WatchServiceNotifier notifier;
     private boolean registered = false;
-    private final Path path;
+    private final URI file;
 
-    public static class Factory implements ResourceHandleFactory {
-
-        @Override
-        public ResourceHandle createHandle(boolean useDevFolder,
-                                           WatchServiceNotifier notifier,
-                                           Path path) {
-            return new ClasspathFileHandler(useDevFolder, notifier, path);
-        }
-    }
-
-    public ClasspathFileHandler(Path path) {
-        this(false, null, path);
-    }
-
-    public ClasspathFileHandler(boolean useDevFolder, WatchServiceNotifier notifier, Path path) {
-        this.useDevFolder = useDevFolder;
+    public ClasspathFileHandler(WatchServiceNotifier notifier, final URI file) {
         this.notifier = notifier;
-        this.path = path;
+
+        this.file = file;
     }
 
     @Override
     public void registerChangeListener(ResourceChangeListener listener) {
         super.registerChangeListener(listener);
+        iniNotifier();
+    }
 
-        if (!registered && notifier != null) {
+    @Override
+    public String getName() {
+        return file.getPath();
+    }
+
+    @Override
+    public ClasspathFileHandler resolve(String subPath) {
+        return new ClasspathFileHandler(notifier, file.resolve(subPath));
+    }
+
+    public URI getFile() {
+        return file;
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        if (file.isAbsolute()) {
+            return file.toURL().openStream();
+        } else {
+            InputStream in = ClassLoader.getSystemResourceAsStream(file.getPath());
+            if (in == null) {
+                throw new IOException("Could not find file in classpath: " + file);
+            }
+            return in;
+        }
+    }
+
+    private void iniNotifier() {
+        if (!registered && notifier != null && !file.isAbsolute()) {
             FileChangeListener fileChangeListener = new FileChangeListener() {
                 @Override
                 public void fileChanged(Kind kind) {
@@ -70,54 +86,22 @@ public class ClasspathFileHandler extends ListenerHandler {
                 }
             };
 
-            notifier.register(path, fileChangeListener);
-            if (useDevFolder) {
-                notifier.register(DEV_FOLDER.resolve(path), fileChangeListener);
+            Function<URI, Path> toPath = new Function<URI, Path>() {
+                @Override
+                public Path apply(URI f) {
+                    return Paths.get(f.resolve(file));
+                }
+            };
+
+            ImmutableSet<Path> folders = ClasspathHelper.getClasspathFolders()
+                    .transform(toPath)
+                    .toSet();
+
+            for (Path path : folders) {
+                notifier.register(path, fileChangeListener);
             }
+
             registered = true;
-        }
-    }
-
-    @Override
-    public String getName() {
-        return path.toString();
-    }
-
-    public Path getPath() {
-        return path;
-    }
-
-    @Override
-    public ClasspathFileHandler resolve(String subPath) {
-        Path parent = path.getParent();
-        if (parent == null) {
-            parent = Paths.get(".");
-        }
-        return new ClasspathFileHandler(useDevFolder, notifier, parent.resolve(subPath));
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        Path devPath = DEV_FOLDER.resolve(path);
-        if (Files.isReadable(path)) {
-            return Files.newInputStream(path, StandardOpenOption.READ);
-        } else if (useDevFolder && Files.isReadable(devPath)) {
-            return Files.newInputStream(devPath, StandardOpenOption.READ);
-        } else {
-            if (path.isAbsolute()) {
-                throw new IOException("Could not find absolute file. " + path);
-            }
-
-            String f = path.toString();
-            if (!f.startsWith("/")) {
-                f = "/" + f;
-            }
-            InputStream in = ClasspathFileHandler.class.getResourceAsStream(f);
-            if (in == null) {
-                throw new IOException("Could not find file in classpath." + path);
-            } else {
-                return in;
-            }
         }
     }
 
@@ -129,7 +113,7 @@ public class ClasspathFileHandler extends ListenerHandler {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.path);
+        hash = 97 * hash + Objects.hashCode(this.file);
         return hash;
     }
 
@@ -142,7 +126,7 @@ public class ClasspathFileHandler extends ListenerHandler {
             return false;
         }
         final ClasspathFileHandler other = (ClasspathFileHandler) obj;
-        if (!Objects.equals(this.path, other.path)) {
+        if (!Objects.equals(this.file, other.file)) {
             return false;
         }
         return true;

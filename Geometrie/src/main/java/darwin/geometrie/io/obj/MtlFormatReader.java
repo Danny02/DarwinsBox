@@ -17,6 +17,7 @@
 package darwin.geometrie.io.obj;
 
 import java.io.*;
+import java.net.*;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -46,11 +47,11 @@ public class MtlFormatReader
         this.path = path;
     }
 
-    public Map<String, ObjMaterial> loadMaterials() throws IOException
+    public Map<String, ObjMaterial> loadMaterials() throws IOException, URISyntaxException
     {
         if (materials == null) {
             materials = new HashMap<>();
-            InputStream is = new ClasspathFileHandler(Paths.get(modelfolder + path)).getStream();
+            InputStream is = new ClasspathFileHandler(null, new URI(modelfolder + path)).getStream();
             try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {

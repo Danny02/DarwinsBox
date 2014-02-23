@@ -16,7 +16,6 @@
  */
 package darwin.renderer.shader;
 
-import java.io.Serializable;
 import java.nio.*;
 
 import darwin.renderer.opengl.*;

@@ -25,17 +25,17 @@ package darwin.renderer.shader
  * <http://www.gnu.org/licenses/>.
  */
 
-import darwin.renderer.opengl.ShaderProgramm
 import com.jogamp.opengl.util.texture.Texture
 import javax.media.opengl.{GL2ES2, GL}
 import darwin.renderer.{GProfile, GraphicComponent}
+import darwin.renderer.shader.ShaderProgrammComponent
 
 /**
  *
  * @author dheinrich
  */
 trait SamplerComponent {
-  this: GraphicComponent with GProfile[GL2ES2] =>
+  this: GraphicComponent with GProfile[GL2ES2] with ShaderProgrammComponent =>
 
   import context._
 
@@ -67,7 +67,7 @@ trait SamplerComponent {
 
     def setShader(s: ShaderProgramm) {
       uniform_pos = s.getUniformLocation(uniName)
-      s.use
+      s.bind()
       gl.glUniform1i(uniform_pos, textureUnit - GL.GL_TEXTURE0)
     }
   }

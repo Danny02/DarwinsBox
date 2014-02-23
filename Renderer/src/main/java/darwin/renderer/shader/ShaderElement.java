@@ -17,7 +17,6 @@
 package darwin.renderer.shader;
 
 import darwin.geometrie.data.Element;
-import darwin.renderer.opengl.ShaderProgramm;
 
 /**
  *

@@ -17,6 +17,7 @@
 package darwin.geometrie.io.obj;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -30,23 +31,21 @@ import org.slf4j.helpers.NOPLogger;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ObjFileParser
-{
+public class ObjFileParser {
+
     public static final String MATERIAL_LIB = "mtllib";
     @InjectLogger
     private Logger logger = NOPLogger.NOP_LOGGER;
     private Pattern leer, slash;
     private Map<String, ObjMaterial> materials;
 
-    public ObjFileParser()
-    {
+    public ObjFileParser() {
         materials = new HashMap<>();
         leer = Pattern.compile(" ");
         slash = Pattern.compile("/");
     }
 
-    public synchronized ObjFile loadOBJ(InputStream in) throws IOException
-    {
+    public synchronized ObjFile loadOBJ(InputStream in) throws IOException {
         ObjFile obj = new ObjFile();
         Reader fr = new InputStreamReader(in);
         BufferedReader br = new BufferedReader(fr);
@@ -61,8 +60,7 @@ public class ObjFileParser
         return obj;
     }
 
-    private void parseValue(ObjFile obj, String type, String[] values) throws IOException
-    {
+    private void parseValue(ObjFile obj, String type, String[] values) throws IOException {
         switch (type) {
             case "v":
                 float[] d = parseFloats(values);
@@ -97,8 +95,7 @@ public class ObjFileParser
         }
     }
 
-    private float[] parseFloats(String[] values) throws IOException
-    {
+    private float[] parseFloats(String[] values) throws IOException {
         float[] vals = new float[values.length];
         for (int i = 0; i < values.length; i++) {
             if (!values[i].isEmpty()) {
@@ -112,8 +109,7 @@ public class ObjFileParser
         return vals;
     }
 
-    private Face parseFace(String[] values) throws IOException
-    {
+    private Face parseFace(String[] values) throws IOException {
         VertexIDs[] vertice = new VertexIDs[values.length];
 
         for (int i = 0; i < vertice.length; i++) {
@@ -135,20 +131,18 @@ public class ObjFileParser
         return new Face(vertice);
     }
 
-    private void parseMtlLib(String[] mtllib)
-    {
+    private void parseMtlLib(String[] mtllib) {
         try {
             MtlFormatReader mtl = new MtlFormatReader(mtllib[0]);
             materials = mtl.loadMaterials();
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             logger.error("Eine Material Bibilothek konnte nicht geladen werde.\n\t"
-                    + ex.getLocalizedMessage());
+                         + ex.getLocalizedMessage());
             //TODO import womoeglich abbrechen
         }
     }
 
-    private void useMaterial(ObjFile obj, String[] values)
-    {
+    private void useMaterial(ObjFile obj, String[] values) {
         String name = values[0];
         ObjMaterial mat = materials.get(name);
         if (mat == null) {

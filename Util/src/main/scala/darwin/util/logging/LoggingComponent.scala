@@ -10,5 +10,5 @@ import org.slf4j._
  * To change this template use File | Settings | File Templates.
  */
 trait LoggingComponent {
-  val logger: Logger
+  lazy val logger: Logger = LoggerFactory.getLogger(this.getClass)
 }

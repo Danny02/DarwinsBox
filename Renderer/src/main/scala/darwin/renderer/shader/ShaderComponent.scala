@@ -17,23 +17,22 @@
 package darwin.renderer.shader
 
 import darwin.geometrie.data.Element
-import darwin.renderer.opengl.ShaderProgramm
-import darwin.renderer.shader.uniform.{ShaderMaterial, MatrixSetter}
+import darwin.renderer.shader.uniform.MatrixSetter
 import darwin.resourcehandling.shader.ShaderFile
 import darwin.util.math.util.GenListener
 import darwin.util.math.util.MatrixEvent
 import javax.media.opengl.GL
 import javax.media.opengl.GL2ES2
 import darwin.renderer.{GProfile, GraphicComponent}
-import darwin.renderer.geometrie.packed.Renderable
 import scala.collection.JavaConversions._
+import darwin.renderer.geometry.packed.Renderable
 
 /**
  *
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 trait ShaderComponent {
-  this: SamplerComponent with GraphicComponent with GProfile[GL2ES2] =>
+  this: ShaderProgrammComponent with SamplerComponent with GraphicComponent with GProfile[GL2ES2] =>
 
   import context._
 
@@ -87,14 +86,14 @@ trait ShaderComponent {
       return hash
     }
 
-    def bind {
+    def bind() {
       assert(isInitialized)
       programm.use
     }
 
     def updateUniformData {
-      bind
-      matricen.set
+      bind()
+      matricen()
       usetter foreach (_.apply())
       for (su <- uniformMap.values) {
         if (su.wasChanged) {

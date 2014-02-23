@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.attributs
+package darwin.renderer.geometry.attributs
 
 import darwin.renderer.{GProfile, Bindable}
 import darwin.renderer.opengl.GLResource
@@ -27,7 +27,7 @@ import darwin.renderer.dependencies.Components
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 trait VAOComponent extends StdAttributesComponent {
-  this: Components#VBO with GProfile[GL2GL3] with ShaderComponent=>
+  this: Components.VBO with GProfile[GL2GL3] with ShaderComponent=>
 
   import context._
 

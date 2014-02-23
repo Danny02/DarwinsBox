@@ -17,8 +17,7 @@
 package darwin.renderer;
 
 import darwin.renderer.geometry.packed.Renderable;
-import darwin.renderer.geometry.packed.RenderObjekt;
-import darwin.renderer.geometry.packed.RenderWrapper;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

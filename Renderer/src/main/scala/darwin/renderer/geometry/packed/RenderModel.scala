@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.packed
+package darwin.renderer.geometry.packed
 
 import darwin.geometrie.unpacked._
 import darwin.renderer.shader._
@@ -31,13 +31,14 @@ import darwin.renderer.opengl.buffer.BufferObjectComponent
  * @author Daniel Heinrich
  */
 trait RenderModelComponent {
-  this: VBOComponent with BufferObjectComponent with RenderMeshComponent with ShaderComponent with SamplerComponent=>
+  this: VBOComponent with BufferObjectComponent with RenderMeshComponent
+    with ShaderMaterialComponent with ShaderComponent with SamplerComponent=>
 
   def create(model: Model, shader: Shader): RenderModel = {
     val material = model.getMat
     val m: Mesh = model.getMesh
     val vbo = createVBO(m.getVertices)
-    var indices = Option(m.getIndicies).map(createIndexBuffer(_))
+    val indices = Option(m.getIndicies).map(createIndexBuffer(_))
 
     val rbuffer = createRenderMesh(shader, indices, m.getPrimitiv_typ)(vbo)
 
@@ -47,7 +48,7 @@ trait RenderModelComponent {
   def create(rbuffer: RenderMesh, shader: Shader, mat: Material): RenderModel = new RenderModel(rbuffer, shader, mat)
 
   class RenderModel(rbuffer: RenderMesh, var shader: Shader, material: Material) extends Shaded with Cloneable {
-    private var uniforms = Seq[ShaderMaterial.UniformSetter]()
+    private var uniforms = Seq[UniformSetter]()
 
     setShader(shader)
 
@@ -62,7 +63,8 @@ trait RenderModelComponent {
     def setShader(shader: Shader) {
       this.shader = shader
       if (material != null) {
-        uniforms :+= ShaderMaterial.create(shader, material)
+        uniforms = Seq[UniformSetter]()
+        uniforms :+= createMaterial(shader, material)
       }
     }
 
@@ -73,7 +75,7 @@ trait RenderModelComponent {
       sampler.foreach(s =>  uniforms :+= (() => s.bindTexture(tc)))
     }
 
-    def addUniformSetter(us: ShaderMaterial.UniformSetter) {
+    def addUniformSetter(us: UniformSetter) {
       uniforms :+= us
     }
 

@@ -34,15 +34,16 @@ import darwin.util.logging.LoggingComponent
  * @author some
  */
 object ShaderLoaderComponent {
-  val INCLUDE_PREFIX: String = "#pragma include"
-  val BRDF_PREFIX: String = "#pragma brdf"
-  val BRDF_PATH_PREFIX: String = "resources/brdfs/"
-  val SHADER_PATH_PREFIX: String = "resources/shaders/"
-  val SHADER_PATH: Path = Paths.get(SHADER_PATH_PREFIX)
+  val INCLUDE_PREFIX = "#pragma include"
+  val BRDF_PREFIX = "#pragma brdf"
+  val BRDF_PATH_PREFIX = "resources/brdfs/"
+  val SHADER_PATH_PREFIX = "resources/shaders/"
+  val SHADER_PATH = Paths.get(SHADER_PATH_PREFIX)
 }
 
-trait ShaderLoaderComponent {
-  this: ShaderComponent with ShaderObjektComponent with ResourceComponent with GraphicComponent with GProfile[GL2GL3] with LoggingComponent =>
+trait ShaderLoaderComponent extends LoggingComponent{
+  this: ShaderComponent with ShaderObjektComponent with ResourceComponent
+    with GraphicComponent with GProfile[GL2GL3] =>
 
   import ShaderLoaderComponent._
 
@@ -198,7 +199,7 @@ trait ShaderLoaderComponent {
       }
 
       val lines = scala.io.Source.fromInputStream(file).getLines()
-      val end: List[String] = Nil
+      var end: List[String] = Nil
 
       val prepared = (lines.filterNot(_ startsWith "#version").map {
         case l if l startsWith INCLUDE_PREFIX => {

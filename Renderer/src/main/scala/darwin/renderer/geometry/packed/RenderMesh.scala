@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.packed
+package darwin.renderer.geometry.packed
 
 import javax.media.opengl._
 import darwin.renderer.Bindable
-import darwin.renderer.geometrie.attributs.VertexAttributeComponent
+import darwin.renderer.geometry.attributs.VertexAttributeComponent
 import darwin.renderer.dependencies.Components
 import darwin.renderer.shader.ShaderComponent
 
@@ -27,7 +27,7 @@ import darwin.renderer.shader.ShaderComponent
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 trait RenderMeshComponent {
-  this: Components#VBO with VertexAttributeComponent with ShaderComponent =>
+  this: Components.VBO with VertexAttributeComponent with ShaderComponent =>
 
   import context._
 

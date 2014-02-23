@@ -40,6 +40,6 @@ public class RelativeHandleFactory implements RelativeFileFactory {
 
     @Override
     public OutputStream writeRelative(String name) throws IOException {
-        return Files.newOutputStream(handle.resolve(name).getPath(), StandardOpenOption.WRITE);
+        return Files.newOutputStream(Paths.get(handle.resolve(name).getFile()), StandardOpenOption.WRITE);
     }
 }

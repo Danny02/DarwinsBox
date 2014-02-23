@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.opengl
+package darwin.renderer.shader
 
 import java.io._
 import java.nio.charset.Charset
@@ -24,6 +24,7 @@ import darwin.renderer.shader.BuildException
 import javax.media.opengl._
 import java.lang.Integer.parseInt
 import darwin.renderer.{GProfile, GraphicComponent}
+import darwin.renderer.opengl.GLResource
 
 /**
  *
@@ -35,17 +36,20 @@ trait ShaderObjektComponent {
 
   import context._
 
-  def createShaderObject(`type`: ShaderType, shadertext: Array[String]): ShaderObjekt = {
-    val glObjectID: Int = compileShaderObject(`type`, shadertext)
-    return new ShaderObjekt(`type`, glObjectID)
+  case class ShaderObjekt(shaderType: ShaderType, id: Int) extends GLResource{
+    def delete() {
+      gl.glDeleteShader(id)
+    }
   }
 
-  private def compileShaderObject(`type`: ShaderType, shaderText: Array[String]): Int = {
-    val glObject: Int = gl.glCreateShader(`type`.glConst)
-    gl.glShaderSource(glObject, shaderText.length, shaderText, null)
-    gl.glCompileShader(glObject)
-    handleError(glObject, shaderText)
-    return glObject
+  def createShaderObject(`type`: ShaderType, shaderText: Array[String]): ShaderObjekt = {
+    val glObjectID: Int = gl.glCreateShader(`type`.glConst)
+    gl.glShaderSource(glObjectID, shaderText.length, shaderText, null)
+    gl.glCompileShader(glObjectID)
+
+    handleError(glObjectID, shaderText)
+
+    ShaderObjekt(`type`, glObjectID)
   }
 
   private def handleError(shader: Int, sources: Array[String]) {

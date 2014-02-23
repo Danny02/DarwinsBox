@@ -8,7 +8,6 @@
     </parent>
 
     <artifactId>Renderer</artifactId>
-    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>

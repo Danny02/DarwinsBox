@@ -183,8 +183,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <repositories>
+<!--    <repositories>
         <repository>
             <id>checker-framework-repo</id>
             <url>http://types.cs.washington.edu/m2-repo</url>
@@ -195,5 +194,5 @@
             <id>checker-framework-repo</id>
             <url>http://types.cs.washington.edu/m2-repo</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories>-->
 </project>

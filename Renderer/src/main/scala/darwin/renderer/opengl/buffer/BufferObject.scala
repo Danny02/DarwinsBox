@@ -56,7 +56,7 @@ trait BufferObjectComponent {
     private var psize: Int = 0
 
     /**
-     * Writes data to the buffer and allcoates as much memory as needed for the
+     * Writes data to the buffer and allocates as much memory as needed for the
      * data
      * <p/>
      * @param data  data which should be written to the buffer

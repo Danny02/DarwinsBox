@@ -83,9 +83,9 @@ public class UsedResourceProcessor extends AbstractProcessor {
         for (ResourceTupel tupel : resources) {
             m.printMessage(Kind.NOTE, tupel.path.toString());
 
-            if (!Files.exists(ClasspathFileHandler.DEV_FOLDER.resolve(tupel.path))) {
-                m.printMessage(Kind.WARNING, "Could not find resource at path: " + tupel.path.toString());
-            }
+//            if (!Files.exists(ClasspathFileHandler.DEV_FOLDER.resolve(tupel.path))) {
+//                m.printMessage(Kind.WARNING, "Could not find resource at path: " + tupel.path.toString());
+//            }
         }
 
         processResources();
@@ -115,9 +115,9 @@ public class UsedResourceProcessor extends AbstractProcessor {
             resources.add(resourceTupel);
             ResourceDependecyInspector<?> get = getInspectors().get(type);
             if (get != null) {
-                for (Path object : get.getDependencys(new ClasspathFileHandler(path))) {
-                    appendResource(object, null);
-                }
+//                for (Path object : get.getDependencys(new ClasspathFileHandler(path))) {
+//                    appendResource(object, null);
+//                }
             }
         }
     }

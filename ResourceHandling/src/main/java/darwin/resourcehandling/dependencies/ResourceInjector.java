@@ -17,7 +17,7 @@
 package darwin.resourcehandling.dependencies;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.net.*;
 
 import darwin.resourcehandling.cache.ResourceCache;
 import darwin.resourcehandling.dependencies.annotation.*;
@@ -28,6 +28,12 @@ import darwin.util.dependencies.*;
 
 import com.google.common.base.*;
 import com.google.inject.MembersInjector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.logging.*;
 import javax.inject.*;
 
 /**
@@ -64,9 +70,8 @@ public class ResourceInjector {
 
     @SuppressWarnings("nullness")
     public void injectResources(Object object) {
-
         Class clz = object.getClass();
-         Iterable<MembersInjector> inj = injectors.get(clz);
+        Iterable<MembersInjector> inj = injectors.get(clz);
         if (inj == null) {
             inj = retriveMemberInjectors(clz);
             injectors.put(clz, inj);
@@ -77,8 +82,16 @@ public class ResourceInjector {
         }
     }
 
-    public <T> T get(ResourceFromHandle<T> loader, String resourceName) {
-        ResourceHandle get = fileCache.get(resourceName);
+//    public <T> T get(ResourceFromHandle<T> loader, String resourcePath) {
+//        try {
+//            return get(loader, new URI(resourcePath));
+//        } catch (URISyntaxException ex) {
+//            throw new RuntimeException(ex);
+//        }
+//    }
+
+    public <T> T get(ResourceFromHandle<T> loader, URI resource) {
+        ResourceHandle get = fileCache.get(resource);
         return cache.get(loader, get, false);
     }
 
@@ -120,9 +133,9 @@ public class ResourceInjector {
 
     private void retriveHandleInections(Field field, ArrayList<MembersInjector> list) {
         final boolean unique = field.getAnnotation(Unique.class) != null;
-         InjectResource anno = field.getAnnotation(InjectResource.class);
+        InjectResource anno = field.getAnnotation(InjectResource.class);
         if (anno != null) {
-            final ResourceHandle handle = fileCache.get(anno.file());
+            final ResourceHandle handle = getHandleFromString(anno.file());
             if (field.getType() == ResourceHandle.class) {
                 list.add(new SimpleMembersInjector(field, handle));
             } else {
@@ -141,12 +154,12 @@ public class ResourceInjector {
 
     private void retriveBundleInjections(Field field, ArrayList<MembersInjector> list) {
         final boolean unique = field.getAnnotation(Unique.class) != null;
-         InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
+        InjectBundle anno2 = field.getAnnotation(InjectBundle.class);
         if (anno2 != null) {
             String[] pp = anno2.files();
-             ResourceHandle[] handles = new ResourceHandle[pp.length];
+            ResourceHandle[] handles = new ResourceHandle[pp.length];
             for (int i = 0; i < pp.length; ++i) {
-                handles[i] = fileCache.get(anno2.prefix() + pp[i].trim());
+                handles[i] = getHandleFromString(anno2.prefix() + pp[i].trim());
             }
 
             @SuppressWarnings("nullness")
@@ -166,6 +179,14 @@ public class ResourceInjector {
                 }
             }
 
+        }
+    }
+
+    private ResourceHandle getHandleFromString(String path) {
+        try {
+            return fileCache.get(new URI(path));
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException(ex);
         }
     }
 }

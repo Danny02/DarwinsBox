@@ -14,15 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.attributs
+package darwin.renderer.geometry.attributs
 
-import darwin.renderer.opengl.buffer.BufferObjectComponent
 import darwin.renderer.shader._
-import darwin.renderer.{GProfile, GraphicComponent, Bindable}
+import darwin.renderer._
 import javax.media.opengl.GL2ES2
-import darwin.renderer.opengl.VBOComponent
 import scala.collection.JavaConversions._
 import darwin.renderer.dependencies.Components
+import darwin.renderer.opengl.VBOComponent
+import darwin.renderer.opengl.buffer.BufferObjectComponent
 
 /**
  *
@@ -30,7 +30,7 @@ import darwin.renderer.dependencies.Components
  */
 
 trait StdAttributesComponent extends VertexAttributeComponent {
-  this: Components#VBO with GProfile[GL2ES2] with ShaderComponent=>
+  this: VBOComponent with BufferObjectComponent with GraphicComponent with GProfile[GL2ES2] with ShaderComponent=>
   import context._
 
   def createAttributes(shader: Shader, vbuffers: Seq[VertexBO], indices: Option[BufferObject]): Bindable = {

@@ -11,6 +11,6 @@ import darwin.renderer.GraphicComponent
  * Time: 01:33
  * To change this template use File | Settings | File Templates.
  */
-trait Components {
+object Components {
   type VBO = VBOComponent with BufferObjectComponent with GraphicComponent
 }

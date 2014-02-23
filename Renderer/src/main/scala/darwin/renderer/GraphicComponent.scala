@@ -14,8 +14,8 @@ import darwin.util.logging.LoggingComponent
  */
 
 
-trait GraphicComponent {
-  this: GProfile[_] with LoggingComponent =>
+trait GraphicComponent extends LoggingComponent{
+  this: GProfile[_] =>
 
   def capabilities(c: GLCapabilities) {}
 

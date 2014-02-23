@@ -16,7 +16,6 @@
  */
 package darwin.resourcehandling.shader;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.regex.*;
 
