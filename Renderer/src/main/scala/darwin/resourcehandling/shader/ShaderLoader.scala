@@ -198,7 +198,7 @@ trait ShaderLoaderComponent {
       }
 
       val lines = scala.io.Source.fromInputStream(file).getLines()
-      var end: List[String] = Nil
+      val end: List[String] = Nil
 
       val prepared = (lines.filterNot(_ startsWith "#version").map {
         case l if l startsWith INCLUDE_PREFIX => {
