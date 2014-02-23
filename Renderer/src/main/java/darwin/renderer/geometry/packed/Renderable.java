@@ -14,26 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.attributs;
+package darwin.renderer.geometry.packed;
 
-import darwin.geometrie.data.DataAttribut;
-import darwin.renderer.shader.ShaderAttribute;
 
 /**
  *
- ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
+ * @author dheinrich
  */
-class AttributConfig
-{
-
-    public final int index, stride, offset, glconst, size;
-
-    AttributConfig(ShaderAttribute sa, DataAttribut dattr)
-    {
-        this.index = sa.getIndex();
-        stride = dattr.stride;
-        offset = dattr.offset;
-        glconst = sa.element.getDataType().getGLConst();
-        size = sa.element.getVectorType().getElementCount();
-    }
+public interface Renderable {
+    public void render();
 }

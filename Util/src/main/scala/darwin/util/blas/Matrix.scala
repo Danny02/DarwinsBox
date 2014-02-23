@@ -74,17 +74,17 @@ object Matrix {
     }
   }
 
-  implicit class VectorOps[N <: Nat](v: Vector[N]) {
-    def asColumn[M <: Column[N]](implicit b: Builder[_1, N, M]) = v match {
-      case cv : M => cv
-      case _ => b.build((x, y) => v(y))
-    }
-
-    def asRow[M <: Row[N]](implicit b: Builder[N, _1, M]) = v match {
-      case rv: M => rv
-      case _ => b.build((x, y) => v(x))
-    }
-  }
+//  implicit class VectorOps[N <: Nat](v: Vector[N]) {
+//    def asColumn[M <: Column[N]](implicit b: Builder[_1, N, M]) = v match {
+//      case cv : M => cv
+//      case _ => b.build((x, y) => v(y))
+//    }
+//
+//    def asRow[M <: Row[N]](implicit b: Builder[N, _1, M]) = v match {
+//      case rv: M => rv
+//      case _ => b.build((x, y) => v(x))
+//    }
+//  }
 
   private def iniRot[X <: Nat, Y <: Nat](m: Matrix[X, Y], r: Radian, a: Int, b: Int) = {
     val sin = r.sinF

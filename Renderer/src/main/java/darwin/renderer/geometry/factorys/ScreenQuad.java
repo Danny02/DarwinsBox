@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.factorys;
+package darwin.renderer.geometry.factorys;
 
 import darwin.geometrie.data.*;
 import darwin.renderer.geometrie.packed.RenderMesh.RenderMeshFactory;

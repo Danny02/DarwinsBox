@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.geometrie.packed;
-
+package darwin.renderer.geometry.factorys;
 
 /**
  *
- * @author dheinrich
+ ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public interface Renderable {
-    public void render();
+public interface GeometryFactory {
+    public RenderMesh buildRenderable(Shader shader);
 }

@@ -16,11 +16,13 @@
  */
 package darwin.renderer;
 
+import darwin.renderer.geometry.packed.Renderable;
+import darwin.renderer.geometry.packed.RenderObjekt;
+import darwin.renderer.geometry.packed.RenderWrapper;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import darwin.renderer.dependencies.MemoryInfoProvider;
-import darwin.renderer.geometrie.packed.*;
 import darwin.renderer.shader.*;
 import darwin.renderer.util.memory.*;
 import darwin.util.logging.InjectLogger;

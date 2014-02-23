@@ -33,7 +33,7 @@ class MappedBuffer[T](b: ByteBuffer)(implicit mapped: MappedObject[T]) extends I
     mapped.map(b.slice)
   }
   
-  def length() = b.capacity / mapped.size
+  def length = b.capacity / mapped.size
 }
 
 trait Vec extends Vector[_3]{  
@@ -64,13 +64,13 @@ trait Vec extends Vector[_3]{
 }
 
 case class BVec(buffer: ByteBuffer) extends Vec{
-  override def x() = buffer.getFloat(0)
+  override def x = buffer.getFloat(0)
   override def x_=(f: Float) = buffer.putFloat(0, f)
   
-  def y() = buffer.getFloat(4)
+  def y = buffer.getFloat(4)
   def y_=(f: Float) = buffer.putFloat(0, f)
   
-  def z() = buffer.getFloat(8)
+  def z = buffer.getFloat(8)
   def z_=(f: Float) = buffer.putFloat(0, f)
 }
 

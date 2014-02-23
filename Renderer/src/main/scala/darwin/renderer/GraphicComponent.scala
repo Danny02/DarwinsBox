@@ -103,15 +103,25 @@ trait GProfile[+T <: GL] {
     val profile = GLProfile.GL2ES2
     implicit def toSpecific(gl: GL) = gl.getGL2ES2
   }
+
+  trait GL3Profile extends GProfile[GL3] {
+    val profile = GLProfile.GL3
+    implicit def toSpecific(gl: GL) = gl.getGL3
+  }
+
+  trait GL3bcProfile extends GProfile[GL3bc] {
+    val profile = GLProfile.GL3bc
+    implicit def toSpecific(gl: GL) = gl.getGL3bc
+  }
+
+  trait GL4Profile extends GProfile[GL4] {
+    val profile = GLProfile.GL4
+    implicit def toSpecific(gl: GL) = gl.getGL4
+  }
+
+  trait GL4bcProfile extends GProfile[GL4bc] {
+    val profile = GLProfile.GL4bc
+    implicit def toSpecific(gl: GL) = gl.getGL4bc
+  }
 }
-
-
-//  gles1
-//  gles2
-//  gl2
-//  gl2gl3
-//  gl3
-//  gl3bc
-//  GL4
-//  gl4bc
 
