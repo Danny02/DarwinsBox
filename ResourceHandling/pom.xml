@@ -6,19 +6,17 @@
         <artifactId>DarwinsBox</artifactId>
         <version>2.2-SNAPSHOT</version>
     </parent>
+    
     <artifactId>ResourceHandling</artifactId>
-    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>AnnotationsProcessing</artifactId>
-            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -28,7 +26,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>15.0</version>
         </dependency>
     </dependencies>
 </project>

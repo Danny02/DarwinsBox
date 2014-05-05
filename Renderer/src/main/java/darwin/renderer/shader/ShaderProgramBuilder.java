@@ -67,7 +67,7 @@ public class ShaderProgramBuilder {
             //Loggen wenn zeug ned geht
         }
 
-        gl.glProgramParameteri(programObject, GL2GL3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL.GL_TRUE);
+        gl.glProgramParameteriARB(programObject, GL4ES3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL.GL_TRUE);
 
         gl.glLinkProgram(programObject);
 

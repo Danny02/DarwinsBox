@@ -52,7 +52,7 @@ public class CompiledShader implements Externalizable {
         int pid = prog.getPObject();
         IntBuffer length = Buffers.newDirectIntBuffer(1);
 
-        gl.glGetProgramiv(pid, GL2.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, length);
+        gl.glGetProgramiv(pid, GL4ES3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, length);
         if (length.get(0) == GL.GL_FALSE) {
             throw new RuntimeException("The binary of this shader program is not retrievable(set PROGRAM_BINARY_RETRIEVABLE_HINT to true)!");
         }
