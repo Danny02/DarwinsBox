@@ -16,15 +16,15 @@
  */
 package darwin.resourcehandling.texture
 
-import java.io.IOException
 import java.nio.file._
-import darwin.renderer.GraphicComponent
+import darwin.resourcehandling.ResourceComponent
 import darwin.resourcehandling.factory.ResourceFromHandle
-import darwin.resourcehandling.handle.ResourceHandle
-import com.jogamp.common.util.IOUtil
 import com.jogamp.opengl.util.texture._
-import javax.inject.Inject
+import com.jogamp.common.util.IOUtil
+import java.io.IOException
 import scala.util.Try
+import darwin.renderer.{GProfile, GraphicComponent}
+import javax.media.opengl.GL
 
 /**
  *
@@ -35,37 +35,40 @@ object TextureLoader {
   final val TEXTURE_PATH = Paths.get(TEXTURE_PATH_PREFIX)
 }
 
-class TextureLoader(@Inject val gc: GraphicComponent) extends ResourceFromHandle[Texture] {
+trait TextureLoaderComponent {
+  this: ResourceComponent with GraphicComponent =>
 
-  def create(handle: ResourceHandle): Texture = {
-    var a: Texture = null
+  implicit val textureLoader = new ResourceFromHandle[Texture] {
+    def create(handle: ResourceFromHandle): Texture = {
+      var a: Texture = null
 
-    gc.context.invoke(true, glad => {
-      Try(
-        a = TextureIO.newTexture(handle.getStream, true, IOUtil.getFileSuffix(handle.getName))
-      ).isSuccess
-    })
+      context.invoke(true, glad => {
+        Try(
+          a = TextureIO.newTexture(handle.getStream, true, IOUtil.getFileSuffix(handle.getName))
+        ).isSuccess
+      })
 
-    if (a == null) throw new RuntimeException("Somehow the GLContext did not load this texture.")
+      if (a == null) throw new RuntimeException("Somehow the GLContext did not load this texture.")
 
-    return a
-  }
+      return a
+    }
 
-  def update(changed: ResourceHandle, old: Texture) {
-    try {
-      val data: TextureData = TextureIO.newTextureData(gc.context.gl.getGLProfile, changed.getStream, true, IOUtil.getFileSuffix(changed.getName))
-      gc.context.invoke(false, glad => {
+    def update(changed: ResourceFromHandle, old: Texture) {
+      try {
+        val data: TextureData = TextureIO.newTextureData(profile, changed.getStream, true, IOUtil.getFileSuffix(changed.getName))
+        context.invoke(false, glad => {
           old.updateImage(glad.getGL, data)
           true
-      })
-    }
-    catch {
-      case ex: IOException => {
+        })
+      }
+      catch {
+        case ex: IOException => {
+        }
       }
     }
-  }
 
-  def getFallBack: Texture = {
-    throw new UnsupportedOperationException("Not supported yet.")
+    def getFallBack: Texture = {
+      throw new UnsupportedOperationException("Not supported yet.")
+    }
   }
 }

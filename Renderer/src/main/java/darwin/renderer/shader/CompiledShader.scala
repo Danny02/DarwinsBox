@@ -16,13 +16,10 @@
  */
 package darwin.renderer.shader
 
-import java.io._
 import java.nio._
-import java.util.Arrays
 import com.jogamp.common.nio.Buffers
 import javax.media.opengl._
 import darwin.renderer.{GProfile, GraphicComponent}
-import darwin.renderer.shader.ShaderProgrammComponent
 
 /**
  *

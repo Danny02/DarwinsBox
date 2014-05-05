@@ -18,16 +18,14 @@ package darwin.resourcehandling.shader
 
 import java.io._
 import java.nio.file._
-import darwin.renderer.opengl._
 import darwin.renderer.shader._
 import darwin.resourcehandling.factory.ResourceFromBundle
 import darwin.resourcehandling.handle._
-import darwin.resourcehandling.shader.brdf._
-import com.google.common.base.Optional
 import javax.media.opengl._
 import darwin.resourcehandling.ResourceComponent
 import darwin.renderer.{GProfile, GraphicComponent}
 import darwin.util.logging.LoggingComponent
+import darwin.resourcehandling.shader.brdf.BrdfReader
 
 /**
  *
@@ -41,8 +39,8 @@ object ShaderLoaderComponent {
   val SHADER_PATH = Paths.get(SHADER_PATH_PREFIX)
 }
 
-trait ShaderLoaderComponent extends LoggingComponent{
-  this: ShaderComponent with ShaderObjektComponent with ResourceComponent
+trait ShaderLoaderComponent extends LoggingComponent {
+  this: ShaderComponent with ShaderObjektComponent with ShaderProgrammComponent with ResourceComponent
     with GraphicComponent with GProfile[GL2GL3] =>
 
   import ShaderLoaderComponent._
@@ -55,26 +53,25 @@ trait ShaderLoaderComponent extends LoggingComponent{
       val iter = Iterator.tabulate(bundle.getCount)(bundle get _)
       val facs = Iterator(builder.withFragment _, builder.withVertex _, builder.withGeometrie _)
 
-      (iter zip facs) foreach (t => t._2(getData(t._1.getStream)))
+      (iter zip facs) foreach (t => t._2(getData(t._1.getStream).get))
 
       builder.withName(bundle.toString).withMutations(bundle.getOptions: _*)
       val file: ShaderFile = builder.create
       val shader: Shader = createShader(file)
       context.invoke(false, {
         glad =>
-          try {
-            val compiledShader: ShaderProgramm = compileShader(file)
+          val compiledShader = compileShader(file)
+
+          for (cs <- compiledShader.left) {
             val old: ShaderProgramm = shader.getProgramm
-            shader.ini(compiledShader)
+            shader.ini(cs)
             logger.info("Shader " + file.name + " was succesfully compiled!")
             if (old != null) {
               old.delete
             }
           }
-          catch {
-            case ex: Throwable => {
-              logger.warn("" + ex.getLocalizedMessage)
-            }
+          for (ex <- compiledShader.right) {
+            logger.warn("" + ex.getLocalizedMessage)
           }
           true
       })
@@ -84,65 +81,53 @@ trait ShaderLoaderComponent extends LoggingComponent{
 
     def update(bundle: ResourceBundle, changed: ResourceHandle, shader: Shader) {
       try {
-        var d: String = null
-        var t: ShaderType = null
-        bundle.getCount match {
-          case _ =>
-          case 3 if bundle.get(2) eq changed =>
-            d = getData(bundle.get(2).getStream)
-            t = ShaderType.Geometrie
-          case 2 if (bundle.get(1) eq changed) => {
-            d = getData(bundle.get(1).getStream)
-            t = ShaderType.Vertex
-          }
-          case 1 if (bundle.get(0) eq changed) => {
-            d = getData(bundle.get(0).getStream)
-            t = ShaderType.Fragment
-          }
-          case 0 =>
-            return
-        }
-        val `type`: ShaderType = t
-        val data: String = d
+        val types = Seq(ShaderType.Fragment, ShaderType.Vertex, ShaderType.Geometrie)
+        val which = (1 to 3).map(bundle.get).indexOf(changed)
 
-        context.invoke(false, {
-          glad =>
-            try {
-              val gl: GL2GL3 = glad.getGL.getGL2GL3
-              val so: ShaderObjekt = createSObject(`type`, data, bundle.getOptions: _*)
-              val po: Int = shader.getProgramm.getPObject
-              val ret: Array[Int] = new Array[Int](1)
-              gl.glGetProgramiv(po, GL2ES2.GL_ATTACHED_SHADERS, ret, 0)
-              val shaderNames: Array[Int] = new Array[Int](ret(0))
-              gl.glGetAttachedShaders(po, ret(0), ret, 0, shaderNames, 0)
+        if (which == -1)
+          return
 
-              for (i <- shaderNames) {
-                gl.glGetShaderiv(i, GL2ES2.GL_SHADER_TYPE, ret, 0)
-                if (ret(0) == so.getType.glConst) {
-                  gl.glDetachShader(po, i)
-                  gl.glDeleteShader(i)
+        val `type`: ShaderType = types(which)
+        for (data <- getData(bundle.get(which).getStream)) {
+          context.invoke(false, {
+            glad =>
+              try {
+                val gl: GL2GL3 = glad.getGL.getGL2GL3
+                val so: ShaderObjekt = createSObject(`type`, data, bundle.getOptions: _*)
+                val po: Int = shader.getProgramm.id
+                val ret: Array[Int] = new Array[Int](1)
+                gl.glGetProgramiv(po, GL2ES2.GL_ATTACHED_SHADERS, ret, 0)
+                val shaderNames: Array[Int] = new Array[Int](ret(0))
+                gl.glGetAttachedShaders(po, ret(0), ret, 0, shaderNames, 0)
+
+                for (i <- shaderNames) {
+                  gl.glGetShaderiv(i, GL2ES2.GL_SHADER_TYPE, ret, 0)
+                  if (ret(0) == so.shaderType.glConst) {
+                    gl.glDetachShader(po, i)
+                    gl.glDeleteShader(i)
+                  }
+                }
+
+                gl.glAttachShader(po, so.id)
+                gl.glLinkProgram(po)
+                shader.ini(shader.getProgramm)
+                val error: Option[String] = shader.getProgramm.verify
+                if (error.isDefined) {
+                  logger.warn(error.get)
+                  shader.ini(getFallBack.getProgramm)
+                }
+                else {
+                  logger.info("Shader " + bundle + " was succesfully updated!")
                 }
               }
-
-              gl.glAttachShader(po, so.getShaderobjekt)
-              gl.glLinkProgram(po)
-              shader.ini(shader.getProgramm)
-              val error: Optional[String] = shader.getProgramm.verify
-              if (error.isPresent) {
-                logger.warn(error.get)
-                shader.ini(getFallBack.getProgramm)
+              catch {
+                case ex: Throwable => {
+                  logger.warn("" + ex.getLocalizedMessage)
+                }
               }
-              else {
-                logger.info("Shader " + bundle + " was succesfully updated!")
-              }
-            }
-            catch {
-              case ex: Throwable => {
-                logger.warn("" + ex.getLocalizedMessage)
-              }
-            }
-            true
-        })
+              true
+          })
+        }
       }
       catch {
         case ex: IOException => {
@@ -162,7 +147,7 @@ trait ShaderLoaderComponent extends LoggingComponent{
       }
     }
 
-    def compileShader(sfile: ShaderFile): ShaderProgramm = {
+    def compileShader(sfile: ShaderFile): Either[ShaderProgramm, BuildException] = {
       val sobjects = for (st <- ShaderType.values()) yield {
         val src = st.extract(sfile)
 
@@ -177,15 +162,14 @@ trait ShaderLoaderComponent extends LoggingComponent{
       }
 
       val errors = sobjects.flatMap(_.left.toOption)
-      if(!errors.isEmpty){
+      if (!errors.isEmpty) {
         val es = errors.map(e => s"\t${e._2.getErrorType.name} error in ${e._1.name}: ${e._2.getMessage}")
         throw new RuntimeException(s"Error(s) in Shader {${sfile.name}}:\n" + es.mkString("\n"))
       }
 
       val sos = sobjects.flatMap(_.right.toOption).flatten
-      val builder = sos.foldLeft(new ShaderProgramBuilder)((prog, obj) => prog `with` obj)
-
-      builder.`with`(sfile.getAttributs).link(context.gl)
+      import scala.collection.JavaConverters._
+      linkShaderProgramm(sos, sfile.getAttributs.asScala: _*)
     }
 
     def createSObject(target: ShaderType, source: String, mut: String*): ShaderObjekt = {
@@ -193,9 +177,9 @@ trait ShaderLoaderComponent extends LoggingComponent{
       return createShaderObject(target, sources)
     }
 
-    def getData(file: InputStream): String = {
+    def getData(file: InputStream): Option[String] = {
       if (file == null) {
-        return null
+        return None
       }
 
       val lines = scala.io.Source.fromInputStream(file).getLines()
@@ -221,7 +205,7 @@ trait ShaderLoaderComponent extends LoggingComponent{
 
       file.close()
 
-      prepared
+      Some(prepared)
     }
   }
 

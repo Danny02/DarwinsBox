@@ -82,7 +82,7 @@ trait RenderBufferComponent {
     val texformat = ret(0)
 
     val samples = if (gl.isGL2GL3) {
-      gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, GL2GL3.GL_RENDERBUFFER_SAMPLES, ret, 0)
+      gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, GL2ES3.GL_RENDERBUFFER_SAMPLES, ret, 0)
       ret(0)
     }
     else {

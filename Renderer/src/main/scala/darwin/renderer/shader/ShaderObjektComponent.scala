@@ -20,7 +20,6 @@ import java.io._
 import java.nio.charset.Charset
 import java.nio.file._
 import java.util.regex._
-import darwin.renderer.shader.BuildException
 import javax.media.opengl._
 import java.lang.Integer.parseInt
 import darwin.renderer.{GProfile, GraphicComponent}

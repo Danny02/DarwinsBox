@@ -14,7 +14,7 @@ import darwin.util.logging.LoggingComponent
  */
 
 
-trait GraphicComponent extends LoggingComponent{
+trait GraphicComponent extends LoggingComponent {
   this: GProfile[_] =>
 
   def capabilities(c: GLCapabilities) {}
@@ -23,14 +23,7 @@ trait GraphicComponent extends LoggingComponent{
     val window = {
       GLProfile.initSingleton
 
-      val p = if (profile == null) {
-        GLProfile.getMaximum(true)
-      }
-      else {
-        GLProfile.get(profile)
-      }
-
-      val capa = new GLCapabilities(p)
+      val capa = new GLCapabilities(profile)
       capabilities(capa)
 
       GLWindow.create(capa)
@@ -38,6 +31,14 @@ trait GraphicComponent extends LoggingComponent{
 
     new GraphicContext(window)
   }
+
+  val profile = if (profileName == null) {
+    GLProfile.getMaximum(true)
+  }
+  else {
+    GLProfile.get(profile)
+  }
+
 
   class GraphicContext(val window: GLWindow) {
     def gl = window.getGL
@@ -67,7 +68,7 @@ trait GraphicComponent extends LoggingComponent{
 
   val maxSamples = {
     val container = new Array[Int](1)
-    context.gl.glGetIntegerv(GL2GL3.GL_MAX_SAMPLES, container, 0)
+    context.gl.glGetIntegerv(GL2ES3.GL_MAX_SAMPLES, container, 0)
     container(0)
   }
 
@@ -79,49 +80,63 @@ trait GraphicComponent extends LoggingComponent{
 }
 
 trait GProfile[+T <: GL] {
-  val profile: String
+  val profileName: String
 
   implicit def toSpecific(gl: GL): T
 
+  trait BaseProfile extends GProfile[GL] {
+    val profileName = null
+
+    implicit def toSpecific(gl: GL) = gl
+  }
 
   trait GL2Profile extends GProfile[GL2] {
-    val profile = GLProfile.GL2
+    val profileName = GLProfile.GL2
+
     implicit def toSpecific(gl: GL) = gl.getGL2
   }
 
   trait GL2GL3Profile extends GProfile[GL2GL3] {
-    val profile = GLProfile.GL2GL3
+    val profileName = GLProfile.GL2GL3
+
     implicit def toSpecific(gl: GL) = gl.getGL2GL3
   }
 
   trait GL2ES1Profile extends GProfile[GL2ES1] {
-    val profile = GLProfile.GL2ES1
+    val profileName = GLProfile.GL2ES1
+
     implicit def toSpecific(gl: GL) = gl.getGL2ES1
   }
 
   trait GL2ES2Profile extends GProfile[GL2ES2] {
-    val profile = GLProfile.GL2ES2
+    val profileName = GLProfile.GL2ES2
+
     implicit def toSpecific(gl: GL) = gl.getGL2ES2
   }
 
   trait GL3Profile extends GProfile[GL3] {
-    val profile = GLProfile.GL3
+    val profileName = GLProfile.GL3
+
     implicit def toSpecific(gl: GL) = gl.getGL3
   }
 
   trait GL3bcProfile extends GProfile[GL3bc] {
-    val profile = GLProfile.GL3bc
+    val profileName = GLProfile.GL3bc
+
     implicit def toSpecific(gl: GL) = gl.getGL3bc
   }
 
   trait GL4Profile extends GProfile[GL4] {
-    val profile = GLProfile.GL4
+    val profileName = GLProfile.GL4
+
     implicit def toSpecific(gl: GL) = gl.getGL4
   }
 
   trait GL4bcProfile extends GProfile[GL4bc] {
-    val profile = GLProfile.GL4bc
+    val profileName = GLProfile.GL4bc
+
     implicit def toSpecific(gl: GL) = gl.getGL4bc
   }
+
 }
 

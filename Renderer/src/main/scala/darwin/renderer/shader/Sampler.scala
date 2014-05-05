@@ -28,7 +28,6 @@ package darwin.renderer.shader
 import com.jogamp.opengl.util.texture.Texture
 import javax.media.opengl.{GL2ES2, GL}
 import darwin.renderer.{GProfile, GraphicComponent}
-import darwin.renderer.shader.ShaderProgrammComponent
 
 /**
  *
