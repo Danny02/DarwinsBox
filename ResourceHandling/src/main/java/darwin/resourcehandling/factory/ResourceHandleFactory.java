@@ -16,7 +16,6 @@
  */
 package darwin.resourcehandling.factory;
 
-import java.nio.file.Path;
 
 import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
@@ -27,5 +26,5 @@ import darwin.resourcehandling.watchservice.WatchServiceNotifier;
  */
 public interface ResourceHandleFactory {
 
-    public ResourceHandle createHandle(boolean useDevFolder,  WatchServiceNotifier notifier, Path path);
+    public ResourceHandle createHandle(WatchServiceNotifier notifier, String path);
 }

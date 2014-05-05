@@ -16,7 +16,7 @@
  */
 package darwin.resourcehandling;
 
-import java.nio.file.Path;
+import java.net.*;
 
 import darwin.resourcehandling.handle.ClasspathFileHandler;
 
@@ -36,5 +36,5 @@ public abstract class ResourceDependecyInspector<T> {
         return t;
     }
 
-    public abstract Iterable<Path> getDependencys(ClasspathFileHandler resource);
+    public abstract Iterable<URI> getDependencys(ClasspathFileHandler resource);
 }

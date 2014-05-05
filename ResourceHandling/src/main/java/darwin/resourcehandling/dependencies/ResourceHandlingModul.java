@@ -34,7 +34,6 @@ public class ResourceHandlingModul extends AbstractModule {
 
         FileHandleCache factory = FileHandleCache.build()
                 .withChangeNotification(devMode)
-                .withDevFolder(devMode)
                 .create();
         bind(FileHandleCache.class).toInstance(factory);
 

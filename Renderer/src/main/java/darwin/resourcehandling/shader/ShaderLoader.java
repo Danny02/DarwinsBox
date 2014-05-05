@@ -17,6 +17,7 @@
 package darwin.resourcehandling.shader;
 
 import java.io.*;
+import java.net.*;
 import java.nio.file.*;
 
 import darwin.renderer.GraphicContext;
@@ -268,20 +269,16 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                 line = line.trim();
                 if (line.startsWith(INCLUDE_PREFIX)) {
                     String path = line.substring(INCLUDE_PREFIX.length()).trim();
-                    InputStream shader = fileFactory.get(SHADER_PATH_PREFIX + path).getStream();
-                    if (shader != null) {
+                    URI uri = new URI(SHADER_PATH_PREFIX + path);
+                    try (InputStream shader = fileFactory.get(uri).getStream()) {
                         String src = getData(shader);
                         sb.append(src);
-                        try {
-                            shader.close();
-                        } catch (IOException ex) {
-                        }
                     }
                     continue;
                 } else if (line.startsWith(BRDF_PREFIX)) {
                     String brdfName = line.substring(BRDF_PREFIX.length()).trim();
-                    try {
-                        InputStream stream = fileFactory.get(BRDF_PATH_PREFIX + brdfName + ".brdf").getStream();
+                    URI uri = new URI(BRDF_PATH_PREFIX + brdfName + ".brdf");
+                    try (InputStream stream = fileFactory.get(uri).getStream()) {
                         BRDF brdf = BrdfReader.readBrdf(stream, brdfName);
                         sb.append(brdf.getFunctionTemplate());
                         end.append(getData(new ByteArrayInputStream(brdf.getCode().getBytes())));
@@ -294,7 +291,7 @@ public class ShaderLoader implements ResourceFromBundle<Shader> {
                 }
                 sb.append(line).append('\n');
             }
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             logger.error("Fehler beim laden eines Shader Source Strings: "
                          + ex.getLocalizedMessage());
         }

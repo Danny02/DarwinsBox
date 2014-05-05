@@ -21,10 +21,10 @@ import java.net.*;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.*;
-import java.util.jar.*;
 
 import com.google.common.base.*;
 import com.google.common.collect.*;
+import org.slf4j.*;
 
 /**
  *
@@ -32,74 +32,86 @@ import com.google.common.collect.*;
  */
 public class ClasspathHelper {
 
-    public static final Predicate<URL> JarFile = new EndsWith("jar");
-    public static final Predicate<URL> Folder = new EndsWith("/");
+    private static final Logger logger = LoggerFactory.getLogger(ClasspathHelper.class);
 
     public static URLClassLoader getClassLoader() {
         return (URLClassLoader) URLClassLoader.getSystemClassLoader();
     }
 
-    public static List<URL> getClasspath() {
-        return Arrays.asList(getClassLoader().getURLs());
-    }
-
-    public static List<URL> elementsOfFolder(String folder) throws IOException, URISyntaxException {
-        List<URL> elements = new ArrayList<>();
-
-        for (URL url : Iterables.filter(getClasspath(), JarFile)) {
-            JarFile jar = new JarFile(url.getPath());
-            for (JarEntry entry : Collections.list(jar.entries())) {
-                String name = entry.getName();
-                if (name.startsWith(folder)) {
-                    elements.add(new URL("jar:" + url + "!/" + name));
+    public static List<URI> getClasspath() {
+        Function<URL, URI> func = new Function<URL, URI>() {
+            @Override
+            public URI apply(URL f) {
+                try {
+                    return f.toURI();
+                } catch (URISyntaxException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
-        }
-        for (URL url : Iterables.filter(getClasspath(), Folder)) {
-            Path root = Paths.get(url.toURI());
-            FileCollector collector = new FileCollector(root.resolve(folder));
-            Files.walkFileTree(root, collector);
-            elements.addAll(collector.collected);
+        };
+
+        return Lists.transform(Arrays.asList(getClassLoader().getURLs()), func);
+    }
+
+    /**
+     * Searches for files in classpath folders and files(i.e. zip, jar)
+     *
+     * @param glob define a search string for the file(syntax
+     * {@link FileSystem#getPathMatcher definition})
+     * @return
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    public static List<URI> elementsOfFolder(String glob) {
+        List<URI> elements = new ArrayList<>();
+
+        for (URI url : getClasspath()) {
+            Path path = Paths.get(url);
+
+            //we have to discrimate between normal folders and i.e. zip/jar files
+            boolean isDir = Files.isDirectory(path);
+            try (FileSystem fs = isDir
+                                 ? path.getFileSystem()
+                                 : FileSystems.newFileSystem(path, null)) {
+
+                PathMatcher matcher = fs.getPathMatcher("glob:" + glob);
+                Path root = isDir ? path : fs.getPath("/");
+
+                FileCollector collector = new FileCollector(matcher, elements);
+                Files.walkFileTree(root, collector);
+            } catch (UnsupportedOperationException ex) {
+            } catch (Throwable t) {
+                logger.info(String.format("Classpath element %s can not be searched!\n%s", url, t));
+            }
         }
 
         return elements;
     }
 
-    public static Collection<URL> elementsOfFolder(String folder, String postfix) throws IOException, URISyntaxException {
-        return elementsOfFolder(folder, new EndsWith(postfix));
-    }
-
-    public static Collection<URL> elementsOfFolder(String folder, Predicate<URL> pred) throws IOException, URISyntaxException {
-        return Collections2.filter(elementsOfFolder(folder), pred);
-    }
-
-    private static class EndsWith implements Predicate<URL> {
-
-        private final String postfix;
-
-        public EndsWith(String postfix) {
-            this.postfix = postfix;
-        }
-
-        @Override
-        public boolean apply(URL url) {
-            return url.getPath().endsWith(postfix);
-        }
+    public static FluentIterable<URI> getClasspathFolders() {
+        return FluentIterable.from(ClasspathHelper.getClasspath()).filter(new Predicate<URI>() {
+            @Override
+            public boolean apply(URI t) {
+                return "file".equals(t.getScheme());
+            }
+        });
     }
 
     private static class FileCollector extends SimpleFileVisitor<Path> {
 
-        private final List<URL> collected = new ArrayList<>();
-        private final Path root;
+        private final PathMatcher matcher;
+        private final List<URI> collected;
 
-        private FileCollector(Path resolve) {
-            root = resolve;
+        public FileCollector(PathMatcher matcher, List<URI> collected) {
+            this.matcher = matcher;
+            this.collected = collected;
         }
 
         @Override
         public FileVisitResult visitFile(Path path, BasicFileAttributes mainAtts) throws IOException {
-            if (path.startsWith(root))
-                collected.add(path.toUri().toURL());
+            if (matcher.matches(path)) {
+                collected.add(path.toUri());
+            }
             return FileVisitResult.CONTINUE;
         }
     }
