@@ -83,7 +83,7 @@ public class InputController implements MouseListener {
     @Override
     public void mouseWheelMoved(MouseEvent e) {
         if (view != null) {
-            view.steps(e.getWheelRotation(), e.isControlDown(), e.isShiftDown());
+            view.steps((int) e.getRotation()[1], e.isControlDown(), e.isShiftDown());
             matrice.fireChange(MatType.VIEW);
         }
     }
