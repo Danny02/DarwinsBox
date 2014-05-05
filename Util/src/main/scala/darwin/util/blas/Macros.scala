@@ -2,7 +2,7 @@ package darwin.util.blas
 
 import scala.language.dynamics
 import scala.language.experimental.macros
-import scala.reflect.macros.WhiteboxContext
+import scala.reflect.macros.whitebox.Context
 import shapeless._
 
 
@@ -11,14 +11,14 @@ trait BaseVector[N <: Nat] extends Dynamic {
   def apply(i: Int): Float
 
   @inline
-  def selectDynamic(name: String) = macro VectorMacros.tupleApply[N]
+  def selectDynamic(name: String) : Vector[_] = macro VectorMacros.tupleApply[N]
 
   @inline
   def x = apply(0)
 
   def update(i: Int, v: Float): Unit
 
-  def updateDynamic(name: String)(value: Float) = macro VectorMacros.tupleUpdate[N]
+  def updateDynamic(name: String)(value: Float) : Unit = macro VectorMacros.tupleUpdate[N]
 
   //  def updateDynamic[M <: Nat](name: String)(value: Vector[M]) = macro VectorMacros.tupleUpdate[N, M]
 
@@ -54,7 +54,7 @@ object VectorMacros {
     }
   }
 
-  def tupleApply[A <: Nat : c.WeakTypeTag](c: WhiteboxContext)(name: c.Expr[String]): c.Tree = {
+  def tupleApply[A <: Nat : c.WeakTypeTag](c: Context)(name: c.Expr[String]): c.Tree = {
     import c.universe._
 
     val typeName = weakTypeTag[A].tpe.toString
@@ -82,7 +82,7 @@ object VectorMacros {
     }
   }
 
-  def tupleUpdate[A <: Nat : c.WeakTypeTag](c: WhiteboxContext)(name: c.Expr[String])(value: c.Expr[Float]): c.Tree = {
+  def tupleUpdate[A <: Nat : c.WeakTypeTag](c: Context)(name: c.Expr[String])(value: c.Expr[Float]): c.Tree = {
     import c.universe._
 
     val typeName = weakTypeTag[A].tpe.toString
@@ -103,7 +103,7 @@ object VectorMacros {
 
   val tupleRegx = ".*Tuple(\\d+)".r
 
-  def tupleBuilder[T <: Product : c.WeakTypeTag](c: WhiteboxContext)(tuple: c.Tree)(l: c.Tree): c.Tree = {
+  def tupleBuilder[T <: Product : c.WeakTypeTag](c: Context)(tuple: c.Tree)(l: c.Tree): c.Tree = {
     import c.universe._
 
     val typeName = weakTypeTag[T].tpe.typeConstructor.toString // to get Tuple2 from (Float, Float)
@@ -124,7 +124,7 @@ object VectorMacros {
     darwin.util.blas.Vector(..$values)}"""
   }
 
-  def prefixTupleBuilder[T <: Product : c.WeakTypeTag](c: WhiteboxContext)(b: c.Tree): c.Tree = {
+  def prefixTupleBuilder[T <: Product : c.WeakTypeTag](c: Context)(b: c.Tree): c.Tree = {
     import c.universe._
     tupleBuilder(c)(q"${c.prefix}.t")(b)
   }
