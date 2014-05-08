@@ -37,14 +37,15 @@ trait CompiledShaderComponent {
 
   def fromShader(prog: ShaderProgramm): CompiledShader = {
     val pid: Int = prog.id
-    val length: IntBuffer = Buffers.newDirectIntBuffer(1)
-    gl.glGetProgramiv(pid, GL4ES3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT, length)
-    if (length.get(0) == GL_FALSE) {
+    val hint = prog.property(GL4ES3.GL_PROGRAM_BINARY_RETRIEVABLE_HINT)
+    if (hint == GL_FALSE) {
       throw new RuntimeException("The binary of this shader program is not retrievable(set PROGRAM_BINARY_RETRIEVABLE_HINT to true)!")
     }
-    gl.glGetProgramiv(pid, GL_PROGRAM_BINARY_LENGTH, length)
+
+    val length = prog.property(GL_PROGRAM_BINARY_LENGTH)
+
     val format: IntBuffer = Buffers.newDirectIntBuffer(1)
-    val data: ByteBuffer = Buffers.newDirectByteBuffer(length.get(0))
+    val data: ByteBuffer = Buffers.newDirectByteBuffer(length)
     gl.glGetProgramBinary(pid, length.get(0), length, format, data)
     if (gl.glGetError == GL_INVALID_OPERATION) {
       throw new RuntimeException("The given shader program is not in a valid state(not linked correctly)")
@@ -54,15 +55,13 @@ trait CompiledShaderComponent {
 
 
   lazy val formats = {
-    var c: IntBuffer = Buffers.newDirectIntBuffer(1)
-    gl.glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, c)
-    c = Buffers.newDirectIntBuffer(c.get(0))
+    val len = get(GL_NUM_PROGRAM_BINARY_FORMATS)
+    val c = Buffers.newDirectIntBuffer(len)
     gl.glGetIntegerv(GL_PROGRAM_BINARY_FORMATS, c)
     c.array
   }
 
   def isAvailable = gl.isExtensionAvailable(EXTENSION_STRING)
-
 
   case class CompiledShader(format: Int, data: ByteBuffer) {
     def toShader: Either[ShaderProgramm, String] = {

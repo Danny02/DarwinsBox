@@ -16,9 +16,9 @@
  */
 package darwin.renderer.opengl.framebuffer
 
-import darwin.renderer.opengl.GLResource
+import darwin.renderer.opengl._
 import javax.media.opengl._
-import darwin.renderer.{GProfile, GraphicComponent, Bindable}
+import darwin.renderer.{ GProfile, GraphicComponent, Bindable }
 
 /**
  *
@@ -29,7 +29,6 @@ trait MultiSampledRBufferComponent extends RenderBufferComponent {
   this: GraphicComponent with GProfile[GL2GL3] =>
 
   import context._
-
 
   /**
    * erstellt einen MultiSampled RenderBuffer <br>
@@ -64,28 +63,22 @@ trait RenderBufferComponent {
 
   import context._
 
-  protected def genId() = {
-    val ids = new Array[Int](1)
-    gl.glGenRenderbuffers(1, ids, 0)
-    ids(0)
-  }
+  protected def genId() = gl.glGenRenderbuffers()
 
   def retrieveRbFrom(id: Int) {
+    def property(glconst: Int) = {
+      gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, _, _).apply(glconst)
+    }
+    
     RenderBuffer(id, 0, 0, 0).bind
 
-    val ret: Array[Int] = new Array[Int](1)
-    gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, GL.GL_RENDERBUFFER_WIDTH, ret, 0)
-    val width = ret(0)
-    gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, GL.GL_RENDERBUFFER_HEIGHT, ret, 0)
-    val height = ret(0)
-    gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, GL.GL_RENDERBUFFER_INTERNAL_FORMAT, ret, 0)
-    val texformat = ret(0)
+    val width = property(GL.GL_RENDERBUFFER_WIDTH)
+    val height = property(GL.GL_RENDERBUFFER_HEIGHT)
+    val texformat = property(GL.GL_RENDERBUFFER_INTERNAL_FORMAT)
 
     val samples = if (gl.isGL2GL3) {
-      gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, GL2ES3.GL_RENDERBUFFER_SAMPLES, ret, 0)
-      ret(0)
-    }
-    else {
+      property(GL2ES3.GL_RENDERBUFFER_SAMPLES)
+    } else {
       1
     }
 
@@ -120,19 +113,9 @@ trait RenderBufferComponent {
    */
   def createRB(width: Int, height: Int, texformat: Int) = RenderBuffer(genId(), width, height, texformat)
 
-  case class RenderBuffer(id: Int, width: Int, height: Int, texformat: Int, samples: Int = 1) extends GLResource with Bindable {
-
-    def bind {
-      gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, id)
-    }
-
-    def unbind {
-      gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, 0)
-    }
-
-    def delete {
-      gl.glDeleteRenderbuffers(1, Array[Int](id), 0)
-    }
+  case class RenderBuffer(id: Int, width: Int, height: Int, texformat: Int, samples: Int = 1) extends SimpleGLResource {
+    val deleteFunc = gl.glDeleteRenderbuffers
+    val bindFunc = gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, _)
   }
 
 }

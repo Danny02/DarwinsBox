@@ -8,6 +8,8 @@ package darwin.renderer
  * Time: 14:02
  * To change this template use File | Settings | File Templates.
  */
+import darwin.renderer.opengl._
+
 trait Bindable {
   def bind(): Unit
 
@@ -19,4 +21,12 @@ trait Bindable {
     unbind
     t
   }
+}
+
+trait BindFunc{
+  this: Bindable with GLResource =>
+  val bindFunc: Int => Unit
+
+  def bind() = bindFunc(id)
+  def unbind() = bindFunc(0)
 }

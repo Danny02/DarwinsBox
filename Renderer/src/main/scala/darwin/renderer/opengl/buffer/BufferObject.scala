@@ -19,7 +19,7 @@ package darwin.renderer.opengl.buffer
 import java.nio._
 import darwin.renderer.{GraphicComponent, Bindable}
 import com.jogamp.common.nio.Buffers
-import darwin.renderer.opengl.GLResource
+import darwin.renderer.opengl._
 
 /**
  *
@@ -45,14 +45,12 @@ trait BufferObjectComponent {
     buff
   }
 
-  def createBuffer(target: Target) = {
-    val ids: Array[Int] = new Array[Int](1)
-    gl.glGenBuffers(1, ids, 0)
+  def createBuffer(target: Target) = new BufferObject(gl.glGenBuffers(), target)
 
-    new BufferObject(ids(0), target)
-  }
+  class BufferObject(val id: Int, val target: Target) extends SimpleGLResource {
+    val bindFunc = gl.glBindBuffer(target.glvalue, _)
+    val deleteFunc = gl.glDeleteBuffers
 
-  class BufferObject(val id: Int, val target: Target) extends GLResource with Bindable {
     private var psize: Int = 0
 
     /**
@@ -113,30 +111,7 @@ trait BufferObjectComponent {
       return gl.getGL2.glMapBufferRange(target.glvalue, offset, length, access.glvalue)
     }
 
-    def bind() {
-      gl.glBindBuffer(target.glvalue, id)
-    }
-
-    def unbind() {
-      gl.glBindBuffer(target.glvalue, 0)
-    }
-
     def size(): Int = psize
-
-    override def equals(obj: Any) = obj match {
-      case null => false
-      case r: AnyRef if r eq this => true
-      case bo: BufferObject => bo.id == id
-      case _ => false
-    }
-
-    override def hashCode: Int = {
-      return id
-    }
-
-    def delete() {
-      gl.glDeleteBuffers(1, Array(id), 0)
-    }
   }
 
 }

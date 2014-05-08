@@ -17,7 +17,7 @@
 package darwin.renderer.geometry.attributs
 
 import darwin.renderer.{GProfile, Bindable}
-import darwin.renderer.opengl.GLResource
+import darwin.renderer.opengl._
 import darwin.renderer.shader.ShaderComponent
 import javax.media.opengl.GL2GL3
 import darwin.renderer.dependencies.Components
@@ -35,7 +35,7 @@ trait VAOComponent extends StdAttributesComponent {
     val i: Array[Int] = new Array[Int](1)
     gl.glGenVertexArrays(1, i, 0)
 
-    val vao = new VAOAttributs(i(0))
+    val vao = VAOAttributs(i(0))
     val sa = super.createAttributes(shader, vbuffers, indice)
 
     vao.bind
@@ -47,18 +47,8 @@ trait VAOComponent extends StdAttributesComponent {
   }
 
 
-  class VAOAttributs(val id: Int) extends GLResource with Bindable {
-    def bind {
-      gl.glBindVertexArray(id)
-    }
-
-    def unbind {
-      gl.glBindVertexArray(0)
-    }
-
-    def delete() {
-      gl.glDeleteVertexArrays(1, Array(id), 0)
-    }
+  case class VAOAttributs(id: Int) extends SimpleGLResource {
+    val bindFunc = gl glBindVertexArray _
+    val deleteFunc = gl glDeleteVertexArrays.update
   }
-
 }

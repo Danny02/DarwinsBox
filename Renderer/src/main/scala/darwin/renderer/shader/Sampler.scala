@@ -26,9 +26,8 @@ package darwin.renderer.shader
  */
 
 import com.jogamp.opengl.util.texture.Texture
-import javax.media.opengl.{GL2ES2, GL}
-import darwin.renderer.{GProfile, GraphicComponent}
-
+import javax.media.opengl.{ GL2ES2, GL }
+import darwin.renderer.{ GProfile, GraphicComponent }
 /**
  *
  * @author dheinrich
@@ -38,36 +37,15 @@ trait SamplerComponent {
 
   import context._
 
-  class Sampler(textureUnit: Int, uniName: String) {
-    private var active: Boolean = true
-    private var uniform_pos: Int = -1
-
-    protected def setActive(active: Boolean) {
-      this.active = active
-    }
-
-    def getTextureUnit: Int = {
-      return textureUnit
-    }
+  class Sampler(val textureUnit: Int, uniName: String) {
 
     def bindTexture(tex: Texture) {
       gl.glActiveTexture(textureUnit)
-      if (!isActive || tex == null) {
-        gl.glBindTexture(GL.GL_TEXTURE_2D, 0)
-      }
-      else {
-        tex.bind(gl)
-      }
-    }
-
-    def isActive: Boolean = {
-      return uniform_pos != -1 && active
+      tex.bind(gl)
     }
 
     def setShader(s: ShaderProgramm) {
-      uniform_pos = s.getUniformLocation(uniName)
-      s.bind()
-      gl.glUniform1i(uniform_pos, textureUnit - GL.GL_TEXTURE0)
+      s.uniform(uniName) = textureUnit - GL.GL_TEXTURE0
     }
   }
 

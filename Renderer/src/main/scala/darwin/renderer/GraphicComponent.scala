@@ -4,6 +4,9 @@ import javax.media.opengl._
 import com.jogamp.newt.opengl.GLWindow
 import scala.Predef.String
 import darwin.util.logging.LoggingComponent
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.util.Try
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +15,6 @@ import darwin.util.logging.LoggingComponent
  * Time: 13:06
  * To change this template use File | Settings | File Templates.
  */
-
 
 trait GraphicComponent extends LoggingComponent {
   this: GProfile[_] =>
@@ -34,20 +36,44 @@ trait GraphicComponent extends LoggingComponent {
 
   val profile = if (profileName == null) {
     GLProfile.getMaximum(true)
+  } else {
+    GLProfile.get(profileName)
   }
-  else {
-    GLProfile.get(profile)
-  }
-
 
   class GraphicContext(val window: GLWindow) {
     def gl = window.getGL
 
     def glContext = window.getContext
 
-    def invoke(wait: Boolean, f: GLAutoDrawable => Boolean) = window.invoke(wait, new GLRunnable {
+    def invoke(wait: Boolean)(f: GLAutoDrawable => Boolean) = window.invoke(wait, new GLRunnable {
       def run(d: GLAutoDrawable): Boolean = f(d)
     })
+
+    def asyncInvoke(f: GLAutoDrawable => _) {
+      invoke(false)(f.andThen(_ => true))
+    }
+
+    def futureInvoke[T](f: GLAutoDrawable => T): Future[T] = {
+      val pro = Promise[T]
+
+      invoke(false) { drawable =>
+        pro.complete(Try(f(drawable)))
+        true
+      }
+
+      pro.future
+    }
+
+    def directInvoke[T](f: GLAutoDrawable => T): T = {
+      var t: Try[T] = null
+
+      invoke(true) { drawable =>
+        t = Try(f(drawable))
+        true
+      }
+
+      t.get
+    }
   }
 
   val glslVersion = {
@@ -57,8 +83,7 @@ trait GraphicComponent extends LoggingComponent {
       val s = ver.split(" ")(0).substring(0, 4)
       val d = s.substring(0, 4).toDouble
       v = Math.round(d * 100).toInt
-    }
-    catch {
+    } catch {
       case ex: Throwable => {
         logger.warn(ex.getLocalizedMessage)
       }
@@ -66,16 +91,24 @@ trait GraphicComponent extends LoggingComponent {
     "#version " + v + '\n'
   }
 
-  val maxSamples = {
-    val container = new Array[Int](1)
-    context.gl.glGetIntegerv(GL2ES3.GL_MAX_SAMPLES, container, 0)
-    container(0)
+  val maxSamples = get(GL2ES3.GL_MAX_SAMPLES)
+
+  val maxColorAttachments = get(GL2ES2.GL_MAX_COLOR_ATTACHMENTS)
+
+  def get[E](glConst: Int)(implicit g: GLTypeGetter[E]): E = g.get(glConst)
+
+  trait GLTypeGetter[E] {
+    def get(glc: Int): E
   }
 
-  val maxColorAttachments = {
-    val container = new Array[Int](1)
-    context.gl.glGetIntegerv(GL2ES2.GL_MAX_COLOR_ATTACHMENTS, container, 0)
-    container(0)
+  object GLTypeGetter {
+    implicit object IntGetter extends GLTypeGetter[Int] {
+      private val buf: IntBuffer = Buffers.newDirectIntBuffer(1)
+      def get(glc: Int) = {
+        context.gl.glGetIntegerv(glc, buf)
+        v.get(0)
+      }
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2014 Daniel Heinrich <Daniel.Heinrich@procon-it.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package darwin.renderer.opengl.framebuffer;
 
-import java.lang.annotation.*;
+package darwin.util
 
-import com.google.inject.BindingAnnotation;
+object tag {
+  def apply[U] = new Tagger[U]
 
-/**
- *
- * @author daniel
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
-@BindingAnnotation
-public @interface Default
-{
+  trait Tagged[U]
+  type @@[+T, U] = T with Tagged[U]
+
+  class Tagger[U] {
+    def apply[T](t : T) : T @@ U = t.asInstanceOf[T @@ U]
+  }
 }
