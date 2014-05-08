@@ -23,7 +23,8 @@ import java.util.regex._
 import javax.media.opengl._
 import java.lang.Integer.parseInt
 import darwin.renderer.{GProfile, GraphicComponent}
-import darwin.renderer.opengl.GLResource
+import darwin.renderer.opengl._
+import scala.util.Try
 
 /**
  *
@@ -35,10 +36,9 @@ trait ShaderObjektComponent {
 
   import context._
 
-  case class ShaderObjekt(shaderType: ShaderType, id: Int) extends GLResource{
-    def delete() {
-      gl.glDeleteShader(id)
-    }
+  case class ShaderObjekt(shaderType: ShaderType, id: Int) extends GLResource with DeleteFunc with Properties{
+    val deleteFunc = gl.glDeleteShader
+    val propertyFunc = gl.glGetShaderiv
   }
 
   def createShaderObject(`type`: ShaderType, shaderText: Array[String]): ShaderObjekt = {
@@ -46,87 +46,59 @@ trait ShaderObjektComponent {
     gl.glShaderSource(glObjectID, shaderText.length, shaderText, null)
     gl.glCompileShader(glObjectID)
 
-    handleError(glObjectID, shaderText)
+    val so = ShaderObjekt(`type`, glObjectID)
 
-    ShaderObjekt(`type`, glObjectID)
+    chekForError(so, shaderText)
   }
 
-  private def handleError(shader: Int, sources: Array[String]) {
-    val error: Array[Int] = Array[Int](-1)
-    gl.glGetShaderiv(shader, GL2ES2.GL_COMPILE_STATUS, error, 0)
-    if (error(0) != GL.GL_TRUE) {
-      val len: Array[Int] = new Array[Int](1)
-      gl.glGetShaderiv(shader, GL2ES2.GL_INFO_LOG_LENGTH, len, 0)
-      if (len(0) == 0) {
+  private def chekForError(shader: ShaderObjekt, sources: Array[String]) {
+    val error = shader.property(GL2ES2.GL_COMPILE_STATUS)
+    if (error != GL.GL_TRUE) {
+      val len = shader.property(GL2ES2.GL_INFO_LOG_LENGTH)
+      if (len == 0) {
         return
       }
       val errormessage: Array[Byte] = new Array[Byte](len(0))
       gl.glGetShaderInfoLog(shader, len(0), len, 0, errormessage, 0)
-      val tmp: String = new String(errormessage, 0, len(0) + 1)
-      val errors: BufferedReader = new BufferedReader(new StringReader(tmp))
+      val errors = new String(errormessage, 0, len(0) + 1)
+
       val location: Pattern = Pattern.compile("(\\d):(\\d+)")
       val sb: StringBuilder = new StringBuilder("<")
-      try {
-        val texts: Array[Array[String]] = new Array(sources.length);
-        {
-          var i: Int = 0
-          while (i < sources.length) {
-            {
-              texts(i) = sources(i).split("\n")
-            }
-            ({
-              i += 1;
-              i - 1
-            })
+      val texts = sources.map(_.split("\n"));
+      for(err <- errors.split("\n")) yield {
+        sb.append("-\t")
+        .append(err)
+        .append('\n')
+
+        val er: Matcher = location.matcher(err)
+        if (er.find) {
+          Try{
+            val file: Int = parseInt(er.group(1))
+            val fLine: Int = parseInt(er.group(2))
+            val sline: String = texts(file)(fLine)
+            sb.append("\t\t").append(sline).append('\n')
           }
-        }
-        var line: String = null
-        while ((({
-          line = errors.readLine;
-          line
-        })) != null) {
-          sb.append("-\t").append(line).append('\n')
-          val er: Matcher = location.matcher(line)
-          if (er.find) {
-            try {
-              val file: Int = parseInt(er.group(1))
-              val fLine: Int = parseInt(er.group(2))
-              val sline: String = texts(file)(fLine)
-              sb.append("\t\t").append(sline).append('\n')
-            }
-            catch {
-              case t: Throwable => {
-              }
-            }
-          }
-        }
-      }
-      catch {
-        case ex: IOException => {
         }
       }
       sb.append(">")
-      val file: String = writeSourceFile(sources)
-      if (file != null) {
+      val file = writeSourceFile(sources)
+      if (file.isSuccess) {
         sb.append(" source: ").append(writeSourceFile(sources))
       }
       throw new BuildException(sb.toString, BuildException.BuildError.CompileTime)
     }
+
+    shader
   }
 
-  private def writeSourceFile(sources: Array[String]): String = {
-    try {
+  private def writeSourceFile(sources: Array[String]): Try[String] = {
+    Try(
       import scala.collection.JavaConverters._
-      val lines: Iterable[_ <: CharSequence] = sources.flatMap(_.split("\n")).toIterable
+      val lines = sources.flatMap(_.split("\n")).toIterable
       val tmp: Path = Files.createTempFile(null, null)
 
       Files.write(tmp, lines.asJava, Charset.defaultCharset)
-      return tmp.toAbsolutePath.toString
-    }
-    catch {
-      case ex: IOException => {
-      }
-    }
-    return null
+      tmp.toAbsolutePath.toString
+    )
   }
 }

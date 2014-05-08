@@ -23,7 +23,7 @@ import darwin.resourcehandling.factory.ResourceFromBundle
 import darwin.resourcehandling.handle._
 import javax.media.opengl._
 import darwin.resourcehandling.ResourceComponent
-import darwin.renderer.{GProfile, GraphicComponent}
+import darwin.renderer.{ GProfile, GraphicComponent }
 import darwin.util.logging.LoggingComponent
 import darwin.resourcehandling.shader.brdf.BrdfReader
 
@@ -40,8 +40,7 @@ object ShaderLoaderComponent {
 }
 
 trait ShaderLoaderComponent extends LoggingComponent {
-  this: ShaderComponent with ShaderObjektComponent with ShaderProgrammComponent with ResourceComponent
-    with GraphicComponent with GProfile[GL2GL3] =>
+  this: ShaderComponent with ShaderObjektComponent with ShaderProgrammComponent with ResourceComponent with GraphicComponent with GProfile[GL2GL3] =>
 
   import ShaderLoaderComponent._
 
@@ -58,7 +57,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
       builder.withName(bundle.toString).withMutations(bundle.getOptions: _*)
       val file: ShaderFile = builder.create
       val shader: Shader = createShader(file)
-      context.invoke(false, {
+      context.asyncInvoke {
         glad =>
           val compiledShader = compileShader(file)
 
@@ -73,65 +72,44 @@ trait ShaderLoaderComponent extends LoggingComponent {
           for (ex <- compiledShader.right) {
             logger.warn("" + ex.getLocalizedMessage)
           }
-          true
-      })
+      }
 
       return shader
     }
 
     def update(bundle: ResourceBundle, changed: ResourceHandle, shader: Shader) {
-      try {
-        val types = Seq(ShaderType.Fragment, ShaderType.Vertex, ShaderType.Geometrie)
-        val which = (1 to 3).map(bundle.get).indexOf(changed)
+      val types = Seq(ShaderType.Fragment, ShaderType.Vertex, ShaderType.Geometrie)
+      val which = (1 to 3).map(bundle.get).indexOf(changed)
 
-        if (which == -1)
-          return
+      assert(which == -1, "Resource handle to update isn't part of the bundle")
 
-        val `type`: ShaderType = types(which)
-        for (data <- getData(bundle.get(which).getStream)) {
-          context.invoke(false, {
-            glad =>
-              try {
-                val gl: GL2GL3 = glad.getGL.getGL2GL3
-                val so: ShaderObjekt = createSObject(`type`, data, bundle.getOptions: _*)
-                val po: Int = shader.getProgramm.id
-                val ret: Array[Int] = new Array[Int](1)
-                gl.glGetProgramiv(po, GL2ES2.GL_ATTACHED_SHADERS, ret, 0)
-                val shaderNames: Array[Int] = new Array[Int](ret(0))
-                gl.glGetAttachedShaders(po, ret(0), ret, 0, shaderNames, 0)
+      val `type`: ShaderType = types(which)
+      for (data <- getData(bundle.get(which).getStream)) {
+        context.asyncInvoke { glad =>
+          log {
+            val gl: GL2GL3 = glad.getGL.getGL2GL3
+            val so: ShaderObjekt = createSObject(`type`, data, bundle.getOptions: _*)
 
-                for (i <- shaderNames) {
-                  gl.glGetShaderiv(i, GL2ES2.GL_SHADER_TYPE, ret, 0)
-                  if (ret(0) == so.shaderType.glConst) {
-                    gl.glDetachShader(po, i)
-                    gl.glDeleteShader(i)
-                  }
-                }
+            val prog = shader.getProgramm
 
-                gl.glAttachShader(po, so.id)
-                gl.glLinkProgram(po)
-                shader.ini(shader.getProgramm)
-                val error: Option[String] = shader.getProgramm.verify
-                if (error.isDefined) {
-                  logger.warn(error.get)
-                  shader.ini(getFallBack.getProgramm)
-                }
-                else {
-                  logger.info("Shader " + bundle + " was succesfully updated!")
-                }
-              }
-              catch {
-                case ex: Throwable => {
-                  logger.warn("" + ex.getLocalizedMessage)
-                }
-              }
-              true
-          })
-        }
-      }
-      catch {
-        case ex: IOException => {
-          logger.warn("" + ex.getLocalizedMessage)
+            val sobjects = prog.shaderObjects
+            for (old <- sobjects.find(_.shaderType == so.shaderType)) {
+              prog.detach(old)
+              old.delete
+            }
+
+            prog.attach(so)
+            prog.link()
+
+            val error = prog.verify
+            if (error.isDefined) {
+              logger.warn(error.get)
+              shader.ini(getFallBack.getProgramm)
+            } else {
+              shader.ini(prog)
+              logger.info("Shader " + bundle + " was succesfully updated!")
+            }
+          }
         }
       }
     }
@@ -139,8 +117,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
     def getFallBack: Shader = {
       try {
         return empty
-      }
-      catch {
+      } catch {
         case ex: IOException => {
           throw new RuntimeException("Could not load fallback shader!")
         }
@@ -153,8 +130,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
 
         try {
           Right(Option(src).map(createSObject(st, _, sfile.mutations: _*)))
-        }
-        catch {
+        } catch {
           case ex: BuildException => {
             Left((st, ex))
           }

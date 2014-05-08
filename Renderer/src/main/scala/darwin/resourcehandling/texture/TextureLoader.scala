@@ -40,29 +40,20 @@ trait TextureLoaderComponent {
 
   implicit val textureLoader = new ResourceFromHandle[Texture] {
     def create(handle: ResourceFromHandle): Texture = {
-      var a: Texture = null
-
-      context.invoke(true, glad => {
+      val tex = context.directInvoke{ glad =>
         Try(
-          a = TextureIO.newTexture(handle.getStream, true, IOUtil.getFileSuffix(handle.getName))
-        ).isSuccess
-      })
+          TextureIO.newTexture(handle.getStream, true, IOUtil.getFileSuffix(handle.getName))
+        )
+      }
 
-      if (a == null) throw new RuntimeException("Somehow the GLContext did not load this texture.")
-
-      return a
+      tex.get
     }
 
     def update(changed: ResourceFromHandle, old: Texture) {
-      try {
+      log {
         val data: TextureData = TextureIO.newTextureData(profile, changed.getStream, true, IOUtil.getFileSuffix(changed.getName))
-        context.invoke(false, glad => {
+        context.ansyncInvoke{glad =>
           old.updateImage(glad.getGL, data)
-          true
-        })
-      }
-      catch {
-        case ex: IOException => {
         }
       }
     }

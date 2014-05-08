@@ -1,6 +1,7 @@
 package darwin.util.logging
 
 import org.slf4j._
+import scala.util.Try
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,4 +12,13 @@ import org.slf4j._
  */
 trait LoggingComponent {
   lazy val logger: Logger = LoggerFactory.getLogger(this.getClass)
+
+  def log[T](f: => T): Try[T] = {
+    val t = Try(f)
+    for(ex <- t.failed) ex match {
+      case _: UnsupportedOperationException =>
+      case ex => logger.warn(ex.getLocalizedMessage)
+    }
+    t
+  }
 }

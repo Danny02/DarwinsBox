@@ -1,6 +1,5 @@
 package darwin.renderer.opengl
 
-
 /**
  * Created with IntelliJ IDEA.
  * User: daniel
@@ -9,8 +8,31 @@ package darwin.renderer.opengl
  * To change this template use File | Settings | File Templates.
  */
 
-
 trait GLResource {
   val id: Int
-  def delete() : Unit
+  def delete(): Unit
+
+  override def hashCode: Int = {
+    return id
+  }
+
+  override def equals(obj: Any) = obj match {
+    case null => false
+    case r: AnyRef if r eq this => true
+    case bo: GLResource => bo.id == id
+    case _ => false
+  }
+}
+
+trait DeleteFunc {
+  this: GLResource =>
+  val deleteFunc: Int => Unit
+  def delete() = deleteFunc(id)
+}
+
+trait Properties {
+  this: GLResource =>
+
+  val propertyFunc: (Int, Int, IntBuffer) => Int
+  def property(glconst: Int) = propertyFunc(id, _, _)(glconst)
 }
