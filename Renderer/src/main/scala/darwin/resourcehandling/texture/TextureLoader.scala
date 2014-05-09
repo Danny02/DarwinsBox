@@ -33,13 +33,10 @@ import javax.media.opengl.GL
  */
 object TextureLoader {
   final val TEXTURE_PATH_PREFIX = "resources/textures/"
-  final val TEXTURE_PATH = Paths.get(TEXTURE_PATH_PREFIX)
 }
 
 trait TextureLoaderComponent {
   this: ResourceComponent with GraphicComponent with TextureComponent =>
-
-  private val TEXTURE_PATH = "resources/Textures/";
 
   trait TextureLoader[T <: Texture] extends ResourceFromHandle[T] {
     def loadData(handle: ResourceFromHandle): TextureData = {
@@ -58,14 +55,13 @@ trait TextureLoaderComponent {
       }
     }
 
-    def getFallBack: T
-    lazy val getFallBack: Texture = resource(TEXTURE_PATH + "error.dds")
+    lazy val fallback: Texture = resource(TEXTURE_PATH_PREFIX + "error.dds")
   }
 
   implicit object SimpleTextureLoader extends TextureLoader[Texture] {
     def create(handle: ResourceFromHandle) = createTex(handle)
 
-    lazy val getFallBack = resource(TEXTURE_PATH + "error.dds")
+    def getFallBack = tag(fallback)
   }
 
   trait HeightMap
@@ -87,7 +83,7 @@ trait TextureLoaderComponent {
       tag(tex)
     }
 
-    lazy val getFallBack = create(handle(TEXTURE_PATH + "error.dds"))
+    lazy val getFallBack: Texture @@ HeightMap = resource(TEXTURE_PATH_PREFIX + "error.dds")
   }
 
   trait CubeMap
@@ -127,7 +123,7 @@ trait TextureLoaderComponent {
       }
     }
 
-    def getFallBack = {
+    lazy val getFallBack = {
       val data = Array.fill(6)(SimpleTextureLoader.getFallBack)
       tag(createCubeTexture(data))
     }

@@ -48,8 +48,8 @@ trait BufferObjectComponent {
   def createBuffer(target: Target) = new BufferObject(gl.glGenBuffers(), target)
 
   class BufferObject(val id: Int, val target: Target) extends SimpleGLResource {
-    val bindFunc = gl.glBindBuffer(target.glvalue, _)
-    val deleteFunc = gl.glDeleteBuffers
+    def bindFunc = gl.glBindBuffer(target.glvalue, _)
+    def deleteFunc = gl.glDeleteBuffers
 
     private var psize: Int = 0
 

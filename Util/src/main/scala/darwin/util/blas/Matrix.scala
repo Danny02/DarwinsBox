@@ -31,8 +31,8 @@ object Matrix {
   type Column[N <: Nat] = Matrix[_1, N] with Vector[N]
 
   implicit class TransformOps[X <: Nat, Y <: Nat, M <: Column[Y]](m: Matrix[X, Y])(implicit ev: LT[_3, X], ev2: LT[_2, Y],
-                                                                                   ix: ToInt[X], iy: ToInt[Y],
-                                                                                   b: Vector.Builder[Y, M]) {
+    ix: ToInt[X], iy: ToInt[Y],
+    b: Vector.Builder[Y, M]) {
 
     private val w = ix()
     private val h = iy()
@@ -74,17 +74,36 @@ object Matrix {
     }
   }
 
-//  implicit class VectorOps[N <: Nat](v: Vector[N]) {
-//    def asColumn[M <: Column[N]](implicit b: Builder[_1, N, M]) = v match {
-//      case cv : M => cv
-//      case _ => b.build((x, y) => v(y))
-//    }
-//
-//    def asRow[M <: Row[N]](implicit b: Builder[N, _1, M]) = v match {
-//      case rv: M => rv
-//      case _ => b.build((x, y) => v(x))
-//    }
-//  }
+  implicit def toFloatBuffer[N, M](m: Matrix[N, M])(implicit n: ToInt[N], m: ToInt[M]) = {
+    val nt = n()
+    val mt = m()
+
+    val buffer = ByteBuffer
+      .allocateDirect(4 * nt * mt)
+      .order(ByteOrder.nativeOrder())
+      .asFloatBuffer()
+
+    val nc, mc = 0
+    while (nc < nt) {
+      while (mc < mt) {
+        buffer.put(m(nc, mc))
+        mc += 1
+      }
+      nc += 1
+    }
+  }
+
+  //  implicit class VectorOps[N <: Nat](v: Vector[N]) {
+  //    def asColumn[M <: Column[N]](implicit b: Builder[_1, N, M]) = v match {
+  //      case cv : M => cv
+  //      case _ => b.build((x, y) => v(y))
+  //    }
+  //
+  //    def asRow[M <: Row[N]](implicit b: Builder[N, _1, M]) = v match {
+  //      case rv: M => rv
+  //      case _ => b.build((x, y) => v(x))
+  //    }
+  //  }
 
   private def iniRot[X <: Nat, Y <: Nat](m: Matrix[X, Y], r: Radian, a: Int, b: Int) = {
     val sin = r.sinF
@@ -120,12 +139,10 @@ trait Matrix[X <: Nat, Y <: Nat] {
   def row[M <: Row[X]](n: Int)(implicit b: Builder[X, _1, M]) = b.build((x, y) => this(x, n))
 
   def *[T <: Nat, M <: Matrix[T, Y], R <: Row[X], C <: Column[X]](o: Matrix[T, X])(implicit b: Builder[T, Y, M],
-                                                                                   b2: Builder[X, _1, R], b3: Vector.Builder[X, C]) = {
+    b2: Builder[X, _1, R], b3: Vector.Builder[X, C]) = {
     b.build(o.column(_) dot row(_))
   }
 
   def transpose[M <: Matrix[Y, X]](implicit b: Builder[Y, X, M]) = b.build((x, y) => this(y, x))
 }
-
-
 

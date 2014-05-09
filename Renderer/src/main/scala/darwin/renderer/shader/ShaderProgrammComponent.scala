@@ -72,9 +72,9 @@ trait ShaderProgrammComponent {
   trait AttributeLocation
 
   case class ShaderProgramm(id: Int) extends SimpleGLResource with Properties{
-    val deleteFunc = gl.glDeleteProgram
-    val bindFunc = gl.glUseProgram
-    val propertyFunc = gl.glGetProgramiv
+    def deleteFunc = gl.glDeleteProgram
+    def bindFunc = gl.glUseProgram
+    def propertyFunc = gl.glGetProgramiv
 
     def uniform = new AnyVal {
       def apply(name: String): Int @@ UniformID = {
@@ -138,8 +138,41 @@ trait ShaderProgrammComponent {
   }
 
   object UniformSetter {
-    implicit val intSetter = new UniformSetter[Int] {
+    implicit object IntSetter extends UniformSetter[Int] {
       def set(id: Int, v: Int) = gl.glUniform1i(id, v)
+    }
+    implicit object Int2Setter extends UniformSetter[(Int, Int)] {
+      def set(id: Int, v: (Int, Int)) = gl.glUniform2i(id, v._1, v._2)
+    }
+    implicit object Int3Setter extends UniformSetter[(Int, Int, Int)] {
+      def set(id: Int, v: (Int, Int, Int)) = gl.glUniform3i(id, v._1, v._2, v._3)
+    }
+    implicit object Int4Setter extends UniformSetter[(Int, Int, Int, Int)] {
+      def set(id: Int, v: (Int, Int, Int, Int)) = gl.glUniform4i(id, v._1, v._2, v._3, v._4)
+    }
+
+    implicit object FloatSetter extends UniformSetter[Float] {
+      def set(id: Int, v: Float) = gl.glUniform1f(id, v)
+    }
+
+    implicit object Vec2Setter extends UniformSetter[Vector[_2]] {
+      def set(id: Int, v: Vector[_2]) = gl.glUniform2f(id, v.x, v.y)
+    }
+    implicit object Vec3Setter extends UniformSetter[Vector[_3]] {
+      def set(id: Int, v: Vector[_3]) = gl.glUniform3f(id, v.x, v.y, v.z)
+    }
+    implicit object Vec4Setter extends UniformSetter[Vector[_4]] {
+      def set(id: Int, v: Vector[_4]) = gl.glUniform4f(id, v.x, v.y, v.z, v.w)
+    }
+
+    implicit object Matrix2Setter extends UniformSetter[Matrix[_2, _2]] {
+      def set(id: Int, v: Matrix[_2, _2]) = gl.glUniformMatrix2fv(id, 1, false, v)
+    }
+    implicit object Matrix3Setter extends UniformSetter[Matrix[_3, _3]] {
+      def set(id: Int, v: Matrix[_2, _2]) = gl.glUniformMatrix3fv(id, 1, false, v)
+    }
+    implicit object Matrix4Setter extends UniformSetter[Matrix[_4, _4]] {
+      def set(id: Int, v: Matrix[_2, _2]) = gl.glUniformMatrix4fv(id, 1, false, v)
     }
   }
 

@@ -37,8 +37,8 @@ trait ShaderObjektComponent {
   import context._
 
   case class ShaderObjekt(shaderType: ShaderType, id: Int) extends GLResource with DeleteFunc with Properties{
-    val deleteFunc = gl.glDeleteShader
-    val propertyFunc = gl.glGetShaderiv
+    def deleteFunc = gl.glDeleteShader
+    def propertyFunc = gl.glGetShaderiv
   }
 
   def createShaderObject(`type`: ShaderType, shaderText: Array[String]): ShaderObjekt = {

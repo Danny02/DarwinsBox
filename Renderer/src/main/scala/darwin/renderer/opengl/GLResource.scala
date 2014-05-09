@@ -26,13 +26,13 @@ trait GLResource {
 
 trait DeleteFunc {
   this: GLResource =>
-  val deleteFunc: Int => Unit
+  def deleteFunc: Int => Unit
   def delete() = deleteFunc(id)
 }
 
 trait Properties {
   this: GLResource =>
 
-  val propertyFunc: (Int, Int, IntBuffer) => Int
+  def propertyFunc: (Int, Int, IntBuffer) => Int
   def property(glconst: Int) = propertyFunc(id, _, _)(glconst)
 }

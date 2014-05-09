@@ -29,9 +29,32 @@ package object opengl {
       f(a, buf)
       buf.get(0)
     }
-    def update(a: Int){
+    def update(a: Int) {
       buf.set(0, a)
       f(1, buf)
     }
+  }
+
+  sealed trait GLSL
+  object GL_Float extends GLSL
+  object GL_Int extends GLSL
+  object GL_Bool extends GLSL
+
+  object GL_Vec2 extends GLSL
+  object GL_Vec3 extends GLSL
+  object GL_Vec4 extends GLSL
+
+  object GL_Mat2 extends GLSL
+  object GL_Mat3 extends GLSL
+  object GL_Mat4 extends GLSL
+
+  object GLSL {
+    type BOOL = INT
+    type VEC2 = Vector[_2]
+    type VEC3 = Vector[_3]
+    type VEC4 = Vector[_4]
+    type MAT2 = Matrix[_2, _2]
+    type MAT3 = Matrix[_3, _3]
+    type MAT4 = Matrix[_4, _4]
   }
 }

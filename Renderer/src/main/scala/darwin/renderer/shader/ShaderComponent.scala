@@ -23,7 +23,7 @@ import darwin.util.math.util.GenListener
 import darwin.util.math.util.MatrixEvent
 import javax.media.opengl.GL
 import javax.media.opengl.GL2ES2
-import darwin.renderer.{GProfile, GraphicComponent}
+import darwin.renderer.{ GProfile, GraphicComponent }
 import scala.collection.JavaConversions._
 import darwin.renderer.geometry.packed.Renderable
 
@@ -40,16 +40,18 @@ trait ShaderComponent {
 
   def createShader(sf: ShaderFile) = new Shader(sf.getAttributs, sf.getUniforms, sf.getSampler)
 
-  class Shader(attributes: Seq[ShaderAttribute], uniforms: Seq[ShaderUniform], samplerNames: Seq[String]) extends GenListener[MatrixEvent] {
+  class Shader(attributes: Seq[ShaderAttribute], shaderUniforms: Seq[ShaderUniform], samplerNames: Seq[String]) extends GenListener[MatrixEvent] {
     val attributeMap = attributes.map(a => (a.element, a)).toMap
-    val uniformMap = uniforms.map(su => (su.getName, su)).toMap
+    val uniformMap = shaderUniforms.map(su => (su.getName, su)).toMap
 
     private val matricen = new MatrixSetter
-    uniforms.filter {
+    shaderUniforms.filter {
       su =>
         val bz = su.getElement.getBezeichnung
         (bz ne null) && (bz startsWith "Mat_")
     } foreach (matricen.addUniform(_))
+
+    val uniforms = uniformMap.mapValues(Uniform(_.getName))
 
     val samplerMap = (for ((name, ind) <- samplerNames.zipWithIndex) yield {
       (name, new Sampler(GL.GL_TEXTURE0 + ind, name))
@@ -61,19 +63,15 @@ trait ShaderComponent {
 
     def ini(prog: ShaderProgramm): Shader = {
       programm = prog
-      ini(attributeMap)
-      ini(uniformMap)
+
+      attributeMap.values.foreach(_.ini(prog))
+      uniforms.values.foreach(_.ini(prog))
+
       attrhash = buildAttrHash
       for (s <- samplerMap.values) {
         s.setShader(prog)
       }
       return this
-    }
-
-    private def ini(map: Map[_, _ <: ShaderElement]) {
-      for (se <- map.values) {
-        se.ini(programm)
-      }
     }
 
     private def buildAttrHash: Int = {
@@ -95,11 +93,8 @@ trait ShaderComponent {
       bind()
       matricen()
       usetter foreach (_.apply())
-      for (su <- uniformMap.values) {
-        if (su.wasChanged) {
-          gl.glUniform(su.getData)
-        }
-      }
+
+      uniforms.values.foreach(_.trySetData)
     }
 
     def addUSetter(uss: UniformSetter) {
@@ -110,7 +105,27 @@ trait ShaderComponent {
 
     def getProgramm: ShaderProgramm = programm
 
-    def getUniform(name: String) = uniformMap.get(name)
+    def getUniform[T](name: String)(implicit ct: ClassTag[T]) = {
+      val su = uniformMap(name);
+      val un = uniform(name)
+      val ty = su.getElement.getVectorType
+
+      val isType = ct.runtimeClass match {
+        import GLSL._
+        case _: classOf[Float] => ty == GLSLType.FLOAT
+        case _: classOf[Int] => ty == GLSLType.INT || ty == GLSLType.BOOL
+        case _: classOf[VEC2] => ty == GLSLType.VEC2
+        case _: classOf[VEC3] => ty == GLSLType.VEC3
+        case _: classOf[VEC4] => ty == GLSLType.VEC4
+        case _: classOf[MAT2] => ty == GLSLType.MAT2
+        case _: classOf[MAT3] => ty == GLSLType.MAT3
+        case _: classOf[MAT4] => ty == GLSLType.MAT4
+      }
+
+      assert(isType)
+
+      un.asInstanceOf[Uniform[T]]
+    }
 
     def getAttribut(ele: Element) = attributeMap.get(ele)
 
@@ -129,6 +144,29 @@ trait ShaderComponent {
 
   trait Shaded extends Renderable {
     def getShader: Shader
+  }
+
+  case class Uniform[T](name: String) {
+    private var id = -1
+    private var dataSetter = (i: Int) => {}
+    private var changed = false
+
+    def ini(prog: ShaderProgram) {
+      id = prog.uniform(name)
+      changed = true
+    }
+
+    def trySetData() {
+      if (changed && id != -1) {
+        dataSetter(id)
+        changed = false
+      }
+    }
+
+    def set(data: T)(implicit us: UniformSetter[T]) {
+      dataSetter = us.set(_, data)
+      changed = true
+    }
   }
 
 }

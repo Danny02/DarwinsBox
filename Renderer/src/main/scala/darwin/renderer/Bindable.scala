@@ -25,7 +25,7 @@ trait Bindable {
 
 trait BindFunc{
   this: Bindable with GLResource =>
-  val bindFunc: Int => Unit
+  def bindFunc: Int => Unit
 
   def bind() = bindFunc(id)
   def unbind() = bindFunc(0)

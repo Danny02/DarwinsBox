@@ -44,7 +44,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
 
   import ShaderLoaderComponent._
 
-  implicit val shaderLoader = new ResourceFromBundle[Shader] {
+  implicit object ShaderLoader extends ResourceFromBundle[Shader] {
 
     def create(bundle: ResourceBundle): Shader = {
       val builder: ShaderFile.Builder = new ShaderFile.Builder
@@ -57,6 +57,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
       builder.withName(bundle.toString).withMutations(bundle.getOptions: _*)
       val file: ShaderFile = builder.create
       val shader: Shader = createShader(file)
+
       context.asyncInvoke {
         glad =>
           val compiledShader = compileShader(file)
@@ -114,15 +115,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
       }
     }
 
-    def getFallBack: Shader = {
-      try {
-        return empty
-      } catch {
-        case ex: IOException => {
-          throw new RuntimeException("Could not load fallback shader!")
-        }
-      }
-    }
+    lazy val getFallBack: Shader = resource("Empty.frag", "Empty.vert")(SHADER_PATH_PREFIX)
 
     def compileShader(sfile: ShaderFile): Either[ShaderProgramm, BuildException] = {
       val sobjects = for (st <- ShaderType.values()) yield {
@@ -185,5 +178,6 @@ trait ShaderLoaderComponent extends LoggingComponent {
     }
   }
 
-  lazy val empty: Shader = resource("Empty.frag", "Empty.vert")(SHADER_PATH_PREFIX)
+
+
 }

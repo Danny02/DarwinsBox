@@ -27,7 +27,7 @@ import javax.media.opengl.GLUniformData;
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
-public class ShaderUniform implements ShaderElement{
+public class ShaderUniform implements ShaderElement {
 
     private final String name;
     private final GlElement element;

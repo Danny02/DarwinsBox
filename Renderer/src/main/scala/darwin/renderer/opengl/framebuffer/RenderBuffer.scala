@@ -69,7 +69,7 @@ trait RenderBufferComponent {
     def property(glconst: Int) = {
       gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, _, _).apply(glconst)
     }
-    
+
     RenderBuffer(id, 0, 0, 0).bind
 
     val width = property(GL.GL_RENDERBUFFER_WIDTH)
@@ -114,8 +114,8 @@ trait RenderBufferComponent {
   def createRB(width: Int, height: Int, texformat: Int) = RenderBuffer(genId(), width, height, texformat)
 
   case class RenderBuffer(id: Int, width: Int, height: Int, texformat: Int, samples: Int = 1) extends SimpleGLResource {
-    val deleteFunc = gl.glDeleteRenderbuffers
-    val bindFunc = gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, _)
+    def deleteFunc = gl.glDeleteRenderbuffers
+    def bindFunc = gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, _)
   }
 
 }
