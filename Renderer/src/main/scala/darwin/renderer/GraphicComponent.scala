@@ -1,11 +1,13 @@
 package darwin.renderer
 
+import java.nio.IntBuffer
 import javax.media.opengl._
+
+import com.jogamp.common.nio.Buffers
 import com.jogamp.newt.opengl.GLWindow
-import scala.Predef.String
 import darwin.util.logging.LoggingComponent
-import scala.concurrent.Future
-import scala.concurrent.Promise
+
+import scala.concurrent.{Future, Promise}
 import scala.util.Try
 
 /**
@@ -38,6 +40,22 @@ trait GraphicComponent extends LoggingComponent {
     GLProfile.getMaximum(true)
   } else {
     GLProfile.get(profileName)
+  }
+
+  trait GLTypeGetter[E] {
+    def get(glc: Int): E
+  }
+
+  object GLTypeGetter {
+
+    implicit object IntGetter extends GLTypeGetter[Int] {
+      private val buf: IntBuffer = Buffers.newDirectIntBuffer(1)
+
+      def get(glc: Int) = {
+        context.gl.glGetIntegerv(glc, buf)
+        buf.get(0)
+      }
+    }
   }
 
   class GraphicContext(val window: GLWindow) {
@@ -76,38 +94,31 @@ trait GraphicComponent extends LoggingComponent {
     }
   }
 
-  val glslVersion = {
-    var v: Int = 120
-    try {
-      val ver: String = context.gl.glGetString(GL2ES2.GL_SHADING_LANGUAGE_VERSION)
-      val s = ver.split(" ")(0).substring(0, 4)
-      val d = s.substring(0, 4).toDouble
-      v = Math.round(d * 100).toInt
-    } catch {
-      case ex: Throwable => {
-        logger.warn(ex.getLocalizedMessage)
-      }
-    }
-    "#version " + v + '\n'
-  }
-
-  val maxSamples = get(GL2ES3.GL_MAX_SAMPLES)
-
-  val maxColorAttachments = get(GL2ES2.GL_MAX_COLOR_ATTACHMENTS)
+  val maxSamples = get[Int](GL2ES3.GL_MAX_SAMPLES)
 
   def get[E](glConst: Int)(implicit g: GLTypeGetter[E]): E = g.get(glConst)
+}
 
-  trait GLTypeGetter[E] {
-    def get(glc: Int): E
-  }
+object GraphicComponent {
+  implicit class GL2ES2Extras(gc: GraphicComponent with GProfile[GL2ES2]) {
 
-  object GLTypeGetter {
-    implicit object IntGetter extends GLTypeGetter[Int] {
-      private val buf: IntBuffer = Buffers.newDirectIntBuffer(1)
-      def get(glc: Int) = {
-        context.gl.glGetIntegerv(glc, buf)
-        v.get(0)
+    object Constants {
+      val glslVersion = {
+        var v: Int = 120
+        try {
+          val ver: String = gc.context.gl.glGetString(GL2ES2.GL_SHADING_LANGUAGE_VERSION)
+          val s = ver.split(" ")(0).substring(0, 4)
+          val d = s.substring(0, 4).toDouble
+          v = Math.round(d * 100).toInt
+        } catch {
+          case ex: Throwable => {
+            gc.logger.warn(ex.getLocalizedMessage)
+          }
+        }
+        "#version " + v + '\n'
       }
+
+      val maxColorAttachments = gc.get[Int](GL2ES2.GL_MAX_COLOR_ATTACHMENTS)
     }
   }
 }

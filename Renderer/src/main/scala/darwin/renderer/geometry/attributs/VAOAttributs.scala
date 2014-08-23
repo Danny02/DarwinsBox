@@ -16,6 +16,8 @@
  */
 package darwin.renderer.geometry.attributs
 
+import java.nio.IntBuffer
+
 import darwin.renderer.{GProfile, Bindable}
 import darwin.renderer.opengl._
 import darwin.renderer.shader.ShaderComponent
@@ -48,7 +50,7 @@ trait VAOComponent extends StdAttributesComponent {
 
 
   case class VAOAttributs(id: Int) extends SimpleGLResource {
-    def bindFunc = gl glBindVertexArray _
-    def deleteFunc = gl glDeleteVertexArrays.update
+    def bindFunc = gl.glBindVertexArray
+    def deleteFunc = (gl.glDeleteVertexArrays _).update
   }
 }

@@ -16,14 +16,15 @@
  */
 package darwin.renderer.shader
 
-import java.io._
+import java.lang.Integer.parseInt
 import java.nio.charset.Charset
 import java.nio.file._
 import java.util.regex._
 import javax.media.opengl._
-import java.lang.Integer.parseInt
-import darwin.renderer.{GProfile, GraphicComponent}
+
 import darwin.renderer.opengl._
+import darwin.renderer.{GProfile, GraphicComponent}
+
 import scala.util.Try
 
 /**
@@ -36,8 +37,9 @@ trait ShaderObjektComponent {
 
   import context._
 
-  case class ShaderObjekt(shaderType: ShaderType, id: Int) extends GLResource with DeleteFunc with Properties{
+  case class ShaderObjekt(shaderType: ShaderType, id: Int) extends GLResource with DeleteFunc with Properties {
     def deleteFunc = gl.glDeleteShader
+
     def propertyFunc = gl.glGetShaderiv
   }
 
@@ -65,14 +67,14 @@ trait ShaderObjektComponent {
       val location: Pattern = Pattern.compile("(\\d):(\\d+)")
       val sb: StringBuilder = new StringBuilder("<")
       val texts = sources.map(_.split("\n"));
-      for(err <- errors.split("\n")) yield {
+      for (err <- errors.split("\n")) yield {
         sb.append("-\t")
-        .append(err)
-        .append('\n')
+          .append(err)
+          .append('\n')
 
         val er: Matcher = location.matcher(err)
         if (er.find) {
-          Try{
+          Try {
             val file: Int = parseInt(er.group(1))
             val fLine: Int = parseInt(er.group(2))
             val sline: String = texts(file)(fLine)
@@ -92,13 +94,13 @@ trait ShaderObjektComponent {
   }
 
   private def writeSourceFile(sources: Array[String]): Try[String] = {
-    Try(
+    Try {
       import scala.collection.JavaConverters._
       val lines = sources.flatMap(_.split("\n")).toIterable
       val tmp: Path = Files.createTempFile(null, null)
 
       Files.write(tmp, lines.asJava, Charset.defaultCharset)
       tmp.toAbsolutePath.toString
-    )
+    }
   }
 }

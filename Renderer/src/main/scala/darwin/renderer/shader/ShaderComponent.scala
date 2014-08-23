@@ -27,6 +27,8 @@ import darwin.renderer.{ GProfile, GraphicComponent }
 import scala.collection.JavaConversions._
 import darwin.renderer.geometry.packed.Renderable
 
+import scala.reflect.ClassTag
+
 /**
  *
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
@@ -36,9 +38,38 @@ trait ShaderComponent {
 
   import context._
 
-  type UniformSetter = () => Unit
-
   def createShader(sf: ShaderFile) = new Shader(sf.getAttributs, sf.getUniforms, sf.getSampler)
+
+  trait GLSLTypeChecker[T] extends (GLSLType => Boolean)
+
+  object GLSLTypeChecker{
+    import darwin.renderer.opengl.GLSL._
+
+    implicit object FloatChecker extends GLSLTypeChecker[Float]{
+      def apply(t: GLSLType) = t == GLSLType.FLOAT
+    }
+    implicit object IntBoolChecker extends GLSLTypeChecker[Int]{
+      def apply(t: GLSLType) = t == GLSLType.INT || t == GLSLType.BOOL
+    }
+    implicit object Vec2Checker extends GLSLTypeChecker[VEC2]{
+      def apply(t: GLSLType) = t == GLSLType.VEC2
+    }
+    implicit object Vec3Checker extends GLSLTypeChecker[VEC3]{
+      def apply(t: GLSLType) = t == GLSLType.VEC3
+    }
+    implicit object Vec4Checker extends GLSLTypeChecker[VEC4]{
+      def apply(t: GLSLType) = t == GLSLType.VEC4
+    }
+    implicit object Mat2Checker extends GLSLTypeChecker[MAT2]{
+      def apply(t: GLSLType) = t == GLSLType.MAT2
+    }
+    implicit object Mat3Checker extends GLSLTypeChecker[MAT3]{
+      def apply(t: GLSLType) = t == GLSLType.MAT3
+    }
+    implicit object Mat4Checker extends GLSLTypeChecker[MAT4]{
+      def apply(t: GLSLType) = t == GLSLType.MAT4
+    }
+  }
 
   class Shader(attributes: Seq[ShaderAttribute], shaderUniforms: Seq[ShaderUniform], samplerNames: Seq[String]) extends GenListener[MatrixEvent] {
     val attributeMap = attributes.map(a => (a.element, a)).toMap
@@ -105,24 +136,12 @@ trait ShaderComponent {
 
     def getProgramm: ShaderProgramm = programm
 
-    def getUniform[T](name: String)(implicit ct: ClassTag[T]) = {
+    def getUniform[T](name: String)(implicit check: GLSLTypeChecker[T]) = {
       val su = uniformMap(name);
       val un = uniform(name)
       val ty = su.getElement.getVectorType
 
-      val isType = ct.runtimeClass match {
-        import GLSL._
-        case _: classOf[Float] => ty == GLSLType.FLOAT
-        case _: classOf[Int] => ty == GLSLType.INT || ty == GLSLType.BOOL
-        case _: classOf[VEC2] => ty == GLSLType.VEC2
-        case _: classOf[VEC3] => ty == GLSLType.VEC3
-        case _: classOf[VEC4] => ty == GLSLType.VEC4
-        case _: classOf[MAT2] => ty == GLSLType.MAT2
-        case _: classOf[MAT3] => ty == GLSLType.MAT3
-        case _: classOf[MAT4] => ty == GLSLType.MAT4
-      }
-
-      assert(isType)
+      assert(check(ty))
 
       un.asInstanceOf[Uniform[T]]
     }
@@ -151,7 +170,7 @@ trait ShaderComponent {
     private var dataSetter = (i: Int) => {}
     private var changed = false
 
-    def ini(prog: ShaderProgram) {
+    def ini(prog: ShaderProgramm) {
       id = prog.uniform(name)
       changed = true
     }

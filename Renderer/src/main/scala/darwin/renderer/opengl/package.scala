@@ -16,21 +16,23 @@
  */
 package darwin.renderer
 
+import java.nio.IntBuffer
+
+import com.jogamp.common.nio.Buffers
+import darwin.util.blas._
+import shapeless.nat._
+
 package object opengl {
   trait SimpleGLResource extends GLResource with DeleteFunc with Bindable with BindFunc
 
   private val buf: IntBuffer = Buffers.newDirectIntBuffer(1)
   implicit def array2SingleFunc(f: (Int, IntBuffer) => _) = {
-    def apply(): Int = {
-      f(1, buf)
-      buf.get(0)
-    }
-    def apply(a: Int): Int = {
+    def apply(a: Int = 1): Int = {
       f(a, buf)
       buf.get(0)
     }
     def update(a: Int) {
-      buf.set(0, a)
+      buf.put(0, a)
       f(1, buf)
     }
   }
@@ -49,7 +51,7 @@ package object opengl {
   object GL_Mat4 extends GLSL
 
   object GLSL {
-    type BOOL = INT
+    type BOOL = Int
     type VEC2 = Vector[_2]
     type VEC3 = Vector[_3]
     type VEC4 = Vector[_4]

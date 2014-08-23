@@ -17,11 +17,14 @@
 package darwin.renderer.shader
 
 import javax.media.opengl._
+
 import darwin.renderer._
 import darwin.renderer.opengl._
-import darwin.renderer.opengl.GLResource
 import darwin.renderer.shader.BuildException.BuildError
-import darwin.util.tag._
+import darwin.util.blas._
+import shapeless.nat._
+import shapeless.tag._
+import shapeless.tag
 
 /**
  * CPU seitige Repr�sentation eines OpenGL Shader Programmes
@@ -37,11 +40,9 @@ trait ShaderProgrammComponent {
   def linkShaderProgramm(objects: Seq[ShaderObjekt], attributs: ShaderAttribute*) = {
     val program = ShaderProgramm()
 
-    for (so <- objects) {
+    for (so <- objects if so != null) {
       //TODO sollte nie null übergeben werden, eingaben überprüfen
-      if (so != null) {
-        gl.glAttachShader(program.id, so.id)
-      }
+      gl.glAttachShader(program.id, so.id)
     }
 
     val max: Int = get(GL2ES2.GL_MAX_VERTEX_ATTRIBS)
@@ -69,23 +70,28 @@ trait ShaderProgrammComponent {
   }
 
   trait UniformID
+
   trait AttributeLocation
 
-  case class ShaderProgramm(id: Int) extends SimpleGLResource with Properties{
+  case class ShaderProgramm(id: Int) extends SimpleGLResource with Properties {
     def deleteFunc = gl.glDeleteProgram
+
     def bindFunc = gl.glUseProgram
+
     def propertyFunc = gl.glGetProgramiv
 
     def uniform = new AnyVal {
       def apply(name: String): Int @@ UniformID = {
         val i = gl.glGetUniformLocation(id, name)
 
-        assert(i != -1, s"Uniform with name \"$name\" doesn't exist in shader programm")
+        assert(i != -1, s"""Uniform with name "$name" doesn't exist in shader program""")
 
         tag(i)
       }
+
       def update[V](name: String, value: V)(implicit us: UniformSetter[V]) = update(apply(name), value)
-      def update(i: Int @@ UniformID, value: V)(implicit us: UniformSetter[V]) = {
+
+      def update[V](i: Int @@ UniformID, value: V)(implicit us: UniformSetter[V]) = {
         bind()
         us.set(i, value)
       }
@@ -123,13 +129,15 @@ trait ShaderProgrammComponent {
       gl.glGetAttachedShaders(id, amount, count, 0, names, 0)
 
       val types = names.map(n => gl.glGetShaderiv(n, _, _)(GL2ES2.GL_SHADER_TYPE))
-      .map(t => ShaderType.values.find(_.glConst == t).get)
+        .map(t => ShaderType.values.find(_.glConst == t).get)
 
-      for((id, t) <- names zip types) yield ShaderObjekt(t, id)
+      for ((id, t) <- names zip types) yield ShaderObjekt(t, id)
     }
 
     def attach(so: ShaderObjekt) = gl.glAttachShader(id, so.id)
+
     def detach(so: ShaderObjekt) = gl.glDetachShader(id, so.id)
+
     def link() = gl.glLinkProgram(id)
   }
 
@@ -138,15 +146,19 @@ trait ShaderProgrammComponent {
   }
 
   object UniformSetter {
+
     implicit object IntSetter extends UniformSetter[Int] {
       def set(id: Int, v: Int) = gl.glUniform1i(id, v)
     }
+
     implicit object Int2Setter extends UniformSetter[(Int, Int)] {
       def set(id: Int, v: (Int, Int)) = gl.glUniform2i(id, v._1, v._2)
     }
+
     implicit object Int3Setter extends UniformSetter[(Int, Int, Int)] {
       def set(id: Int, v: (Int, Int, Int)) = gl.glUniform3i(id, v._1, v._2, v._3)
     }
+
     implicit object Int4Setter extends UniformSetter[(Int, Int, Int, Int)] {
       def set(id: Int, v: (Int, Int, Int, Int)) = gl.glUniform4i(id, v._1, v._2, v._3, v._4)
     }
@@ -158,9 +170,11 @@ trait ShaderProgrammComponent {
     implicit object Vec2Setter extends UniformSetter[Vector[_2]] {
       def set(id: Int, v: Vector[_2]) = gl.glUniform2f(id, v.x, v.y)
     }
+
     implicit object Vec3Setter extends UniformSetter[Vector[_3]] {
       def set(id: Int, v: Vector[_3]) = gl.glUniform3f(id, v.x, v.y, v.z)
     }
+
     implicit object Vec4Setter extends UniformSetter[Vector[_4]] {
       def set(id: Int, v: Vector[_4]) = gl.glUniform4f(id, v.x, v.y, v.z, v.w)
     }
@@ -168,12 +182,15 @@ trait ShaderProgrammComponent {
     implicit object Matrix2Setter extends UniformSetter[Matrix[_2, _2]] {
       def set(id: Int, v: Matrix[_2, _2]) = gl.glUniformMatrix2fv(id, 1, false, v)
     }
+
     implicit object Matrix3Setter extends UniformSetter[Matrix[_3, _3]] {
-      def set(id: Int, v: Matrix[_2, _2]) = gl.glUniformMatrix3fv(id, 1, false, v)
+      def set(id: Int, v: Matrix[_3, _3]) = gl.glUniformMatrix3fv(id, 1, false, v)
     }
+
     implicit object Matrix4Setter extends UniformSetter[Matrix[_4, _4]] {
-      def set(id: Int, v: Matrix[_2, _2]) = gl.glUniformMatrix4fv(id, 1, false, v)
+      def set(id: Int, v: Matrix[_4, _4]) = gl.glUniformMatrix4fv(id, 1, false, v)
     }
+
   }
 
 }

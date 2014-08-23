@@ -19,8 +19,6 @@ package darwin.geometrie.data;
 import java.io.Serializable;
 import java.util.*;
 
-import com.google.common.base.Optional;
-
 /**
  *
  ** @author Daniel Heinrich <DannyNullZwo@gmail.com>
@@ -126,12 +124,10 @@ public class DataLayout {
     }
 
     public Optional<Element> getElementByName(String name) {
-        for (Element element : getElements()) {
-            if (name.equals(element.getBezeichnung())) {
-                return Optional.of(element);
-            }
-        }
-        return Optional.absent();
+        return getElements()
+                .stream()
+                .filter(e -> name.equals(e.getBezeichnung()))
+                .findFirst();
     }
 
     public boolean hasElement(Element e) {

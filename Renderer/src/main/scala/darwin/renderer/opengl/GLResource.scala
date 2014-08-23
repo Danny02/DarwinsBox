@@ -1,5 +1,7 @@
 package darwin.renderer.opengl
 
+import java.nio.IntBuffer
+
 /**
  * Created with IntelliJ IDEA.
  * User: daniel

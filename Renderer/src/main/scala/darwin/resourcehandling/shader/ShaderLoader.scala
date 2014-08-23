@@ -40,7 +40,12 @@ object ShaderLoaderComponent {
 }
 
 trait ShaderLoaderComponent extends LoggingComponent {
-  this: ShaderComponent with ShaderObjektComponent with ShaderProgrammComponent with ResourceComponent with GraphicComponent with GProfile[GL2GL3] =>
+  this: ShaderComponent
+    with ShaderObjektComponent
+    with ShaderProgrammComponent
+    with ResourceComponent
+    with GraphicComponent
+    with GProfile[GL2GL3] =>
 
   import ShaderLoaderComponent._
 
@@ -142,7 +147,7 @@ trait ShaderLoaderComponent extends LoggingComponent {
     }
 
     def createSObject(target: ShaderType, source: String, mut: String*): ShaderObjekt = {
-      val sources = (glslVersion +: mut.map(m => s"#define $m\n") :+ source).toArray
+      val sources = (this.Constants.glslVersion +: mut.map(m => s"#define $m\n") :+ source).toArray
       return createShaderObject(target, sources)
     }
 
