@@ -16,20 +16,18 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
+import darwin.resourcehandling.ResourceChangeListener;
+import darwin.resourcehandling.watchservice.FileChangeListener;
+import darwin.resourcehandling.watchservice.WatchServiceNotifier;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Objects;
 
-import darwin.resourcehandling.ResourceChangeListener;
-import darwin.resourcehandling.watchservice.*;
-
-import com.google.common.base.*;
-import com.google.common.collect.*;
-
 /**
- *
  * @author daniel
  */
 public class ClasspathFileHandler extends ListenerHandler {
@@ -79,27 +77,10 @@ public class ClasspathFileHandler extends ListenerHandler {
 
     private void iniNotifier() {
         if (!registered && notifier != null && !file.isAbsolute()) {
-            FileChangeListener fileChangeListener = new FileChangeListener() {
-                @Override
-                public void fileChanged(Kind kind) {
-                    fireChangeEvent();
-                }
-            };
-
-            Function<URI, Path> toPath = new Function<URI, Path>() {
-                @Override
-                public Path apply(URI f) {
-                    return Paths.get(f.resolve(file));
-                }
-            };
-
-            ImmutableSet<Path> folders = ClasspathHelper.getClasspathFolders()
-                    .transform(toPath)
-                    .toSet();
-
-            for (Path path : folders) {
-                notifier.register(path, fileChangeListener);
-            }
+            ClasspathHelper.getClasspathFolders()
+                    .map(f -> Paths.get(f.resolve(file)))
+                    .distinct()
+                    .forEach(p -> notifier.register(p, k -> fireChangeEvent()));
 
             registered = true;
         }

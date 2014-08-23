@@ -16,32 +16,76 @@
  */
 package darwin.resourcehandling.dependencies;
 
-import java.lang.reflect.Field;
-import java.net.*;
-
 import darwin.resourcehandling.cache.ResourceCache;
-import darwin.resourcehandling.dependencies.annotation.*;
-import darwin.resourcehandling.factory.*;
+import darwin.resourcehandling.dependencies.annotation.InjectBundle;
+import darwin.resourcehandling.dependencies.annotation.InjectResource;
+import darwin.resourcehandling.dependencies.annotation.Unique;
+import darwin.resourcehandling.factory.ResourceFromBundle;
+import darwin.resourcehandling.factory.ResourceFromBundleProvider;
+import darwin.resourcehandling.factory.ResourceFromHandle;
+import darwin.resourcehandling.factory.ResourceFromHandleProvider;
+import darwin.resourcehandling.handle.FileHandleCache;
 import darwin.resourcehandling.handle.ResourceBundle;
-import darwin.resourcehandling.handle.*;
-import darwin.util.dependencies.*;
+import darwin.resourcehandling.handle.ResourceHandle;
 
-import com.google.common.base.*;
-import com.google.inject.MembersInjector;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.logging.*;
-import javax.inject.*;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
- *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @Singleton
 public class ResourceInjector {
+    private static interface MembersInjector<T> {
+        void injectMembers(T t);
+    }
+
+    private static class SimpleMembersInjector<T> implements MembersInjector<T> {
+
+        final Field field;
+        final Object value;
+
+        SimpleMembersInjector(Field field, Object value) {
+            this.field = field;
+            this.value = value;
+            field.setAccessible(true);
+        }
+
+        @Override
+        public void injectMembers(T anArg0) {
+            try {
+                field.set(anArg0, value);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static class AsyncMemberInjector implements MembersInjector {
+
+        final Field field;
+        final Provider prov;
+
+        AsyncMemberInjector(Field field, Provider prov) {
+            this.field = field;
+            field.setAccessible(true);
+            this.prov = prov;
+        }
+
+        @Override
+        public void injectMembers(Object instance) {
+            try {
+                field.set(instance, prov.get());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     private final FileHandleCache fileCache;
     private final ResourceCache cache;
@@ -108,27 +152,13 @@ public class ResourceInjector {
         return list;
     }
 
-    @SuppressWarnings("nullness")
-    public static Optional<ResourceFromBundle<Object>> getBundleFactory(Class c) {
-        Optional<ResourceFromBundleProvider> o = Optional.fromNullable(bundleProvider.get(c));
-        return o.transform(new Function<ResourceFromBundleProvider, ResourceFromBundle<Object>>() {
-            @Override
-            public ResourceFromBundle apply(ResourceFromBundleProvider input) {
-                //generic bullshit
-                return ((ResourceFromBundleProvider<?>) input).get();
-            }
-        });
+    public static Optional<ResourceFromBundle<Object>> getBundleFactory(Class<?> c) {
+        return Optional.ofNullable((ResourceFromBundle<Object>) bundleProvider.get(c));
     }
 
     @SuppressWarnings("nullness")
     public static Optional<ResourceFromHandle<Object>> getHandleFactory(Class c, final String[] options) {
-        Optional<ResourceFromHandleProvider> o = Optional.fromNullable(handleProvider.get(c));
-        return o.transform(new Function<ResourceFromHandleProvider, ResourceFromHandle<Object>>() {
-            @Override
-            public ResourceFromHandle apply(ResourceFromHandleProvider input) {
-                return input.get(options);
-            }
-        });
+        return Optional.ofNullable(handleProvider.get(c)).map(i -> i.get(options));
     }
 
     private void retriveHandleInections(Field field, ArrayList<MembersInjector> list) {

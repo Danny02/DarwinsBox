@@ -18,17 +18,18 @@
  */
 package darwin.resourcehandling.handle;
 
-import java.net.*;
-import java.util.*;
-
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
-import com.google.common.base.*;
-import com.google.common.collect.*;
-import javax.inject.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static darwin.resourcehandling.handle.ClasspathHelper.getClasspathFolders;
 
 /**
- *
  * @author some
  */
 @Singleton
@@ -72,20 +73,13 @@ public class FileHandleCache {
     public ResourceHandle get(final URI file) {
         URI tmp = null;
         if (file.isAbsolute()) {
-            FluentIterable<URI> folders = ClasspathHelper.getClasspathFolders();
+            Stream<URI> folders = getClasspathFolders();
 
-            Optional<URI> match = folders.firstMatch(new Predicate<URI>() {
-                @Override
-                public boolean apply(URI input) {
-                    return !input.relativize(file).equals(file);
-                }
-            });
-
-            if (match.isPresent()) {
-                tmp = match.get().relativize(file);
-            }
-        }
-        if (tmp == null) {
+            tmp = folders
+                    .map(f -> f.relativize(file))
+                    .filter(f -> !f.equals(file))
+                    .findFirst().orElseGet(() -> file);
+        } else {
             tmp = file;
         }
 

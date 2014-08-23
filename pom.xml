@@ -51,17 +51,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version.short>2.11</scala.version.short>  
-        <scala.version>2.11.0</scala.version>  
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <guice.version>3.0</guice.version>
-        <jogl.version>2.1.5-01</jogl.version>
+        <scala.version.short>2.11</scala.version.short>
+        <scala.version>2.11.2</scala.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <jogl.version>2.2.0</jogl.version>
     </properties>
 
     <build>
         <pluginManagement>
-            <plugins>                
+            <plugins>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.1</version>
@@ -79,29 +78,21 @@
             </plugin>
             <plugin>
                 <artifactId>maven-scm-plugin</artifactId>
-                <version>1.9</version>
+                <version>1.9.1</version>
             </plugin>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <args>
-                                <!--<arg>-optimise</arg>-->
-                                <arg>-Xlint</arg>
-                                <arg>-deprecation</arg>
-                                <arg>-dependencyfile</arg>
-                                <arg>${project.build.directory}/.scala_dependencies</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <args>
+                        <!--<arg>-optimise</arg>-->
+                        <arg>-Xlint</arg>
+                        <arg>-deprecation</arg>
+                        <arg>-dependencyfile</arg>
+                        <arg>${project.build.directory}/.scala_dependencies</arg>
+                    </args>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -143,7 +134,7 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2.1</version>
+                        <version>2.3</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -175,9 +166,9 @@
             <id>sonatype-nexus-snapshots</id>
             <name>Nexus Snapshot Repository</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>  
+        </snapshotRepository>
     </distributionManagement>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -190,16 +181,6 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>AnnotationsProcessing</artifactId>
                 <version>1.2-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-assistedinject</artifactId>
-                <version>${guice.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jogamp.gluegen</groupId>
@@ -219,7 +200,7 @@
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
-                <version>2.0.3</version>
+                <version>3.0.0</version>
             </dependency>
             <dependency>
                 <groupId>com.github.danny02</groupId>
@@ -229,22 +210,27 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.3.3</version>
+                <version>2.4.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.3.3</version>
+                <version>2.4.2</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.7</version>
             </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-    
-    <repositories>      
+
+    <repositories>
         <!--        <repository>
             <id>sonatype-nexus-snapshots</id>
             <name>Nexus Snapshot Repository</name>

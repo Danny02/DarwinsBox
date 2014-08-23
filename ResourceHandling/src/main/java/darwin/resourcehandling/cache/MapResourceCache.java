@@ -17,20 +17,52 @@
 package darwin.resourcehandling.cache;
 
 
-import darwin.resourcehandling.factory.*;
+import darwin.resourcehandling.factory.ChangeableResource;
+import darwin.resourcehandling.factory.ResourceBuilder;
+import darwin.resourcehandling.factory.ResourceFrom;
 
-import com.google.common.collect.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 public class MapResourceCache implements ResourceCache {
+    private static class FHP<F extends ChangeableResource, T> {
+        private final ResourceFrom<F, T> factory;
+        private final F handle;
+
+        private FHP(ResourceFrom<F, T> factory, F handle) {
+            this.factory = factory;
+            this.handle = handle;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            FHP fhp = (FHP) o;
+
+            if (!factory.equals(fhp.factory)) return false;
+            if (!handle.equals(fhp.handle)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = factory.hashCode();
+            result = 31 * result + handle.hashCode();
+            return result;
+        }
+    }
 
     private static class Wrapper<F extends ChangeableResource, T> {
 
-        private final Table<ResourceFrom<F, T>, F, T> resources = HashBasedTable.create();
+        private final Map<FHP<F, T>, T> resources = new HashMap<>();
     }
+
     private final Wrapper wrapper = new Wrapper<>();
     private final ResourceBuilder builder = new ResourceBuilder();
 
@@ -39,13 +71,14 @@ public class MapResourceCache implements ResourceCache {
         if (unique) {
             return builder.createResource(factory, from);
         } else {
+            FHP<F, T> key = new FHP<>(factory, from);
             Wrapper<F, T> w = wrapper;
-            T r = w.resources.get(factory, from);
+            T r = w.resources.get(key);
             if (r != null) {
                 return r;
             } else {
                 T rr = builder.createResource(factory, from);
-                w.resources.put(factory, from, rr);
+                w.resources.put(key, rr);
                 return rr;
             }
         }

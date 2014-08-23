@@ -16,47 +16,76 @@
  */
 package darwin.resourcehandling;
 
-import java.io.IOException;
-import java.lang.reflect.*;
-import java.nio.file.*;
-import java.util.*;
-
-import darwin.resourcehandling.dependencies.annotation.*;
-import darwin.resourcehandling.handle.*;
+import darwin.resourcehandling.dependencies.annotation.InjectBundle;
+import darwin.resourcehandling.dependencies.annotation.InjectResource;
+import darwin.resourcehandling.handle.ClasspathFileHandler;
+import darwin.resourcehandling.handle.ResourceHandle;
 import darwin.resourcehandling.relative.FilerFactory;
+import darwin.util.misc.FinalWrapper;
 
-import com.google.common.collect.*;
-import javax.annotation.processing.*;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.inject.Named;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
-import javax.tools.*;
+import javax.tools.JavaFileManager;
+import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
- *
  * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class UsedResourceProcessor extends AbstractProcessor {
 
-    private final static Multimap<Class<? extends ResourceProcessor>, ResourceTupel> processed = HashMultimap.create();
+    private static class MultiMap<K, V> extends HashMap<K, List<V>> {
+        public void putSingle(K k, V v) {
+            List<V> l = get(k);
+            if (l == null) {
+                l = new ArrayList<>();
+                put(k, l);
+            }
+            l.add(v);
+        }
+    }
+
+    private final static Map<Class<? extends ResourceProcessor>, List<ResourceTupel>> processed = new MultiMap<>();
     private final Set<ResourceTupel> resources = new HashSet<>();
-     private static FilerFactory filer;
-     private static Map<String, ResourceDependecyInspector> inspectors;
+    private static FilerFactory filer;
 
-    private synchronized Map<String, ResourceDependecyInspector> getInspectors() {
-        if (inspectors == null) {
-            inspectors = new HashMap<>();
+    private static FinalWrapper<Map<String, ResourceDependecyInspector>> inspectors;
 
-            for (ResourceDependecyInspector in : createProccessingLoader(ResourceDependecyInspector.class)) {
-                String name = in.getType().getCanonicalName();
-                if (name != null) {
-                    inspectors.put(name, in);
+
+    private Map<String, ResourceDependecyInspector> getInspectors() {
+        FinalWrapper<Map<String, ResourceDependecyInspector>> wrapper = inspectors;
+
+        if (wrapper == null) {
+            synchronized (this) {
+                if (inspectors == null) {
+                    Map<String, ResourceDependecyInspector> instant = new HashMap<>();
+
+                    for (ResourceDependecyInspector in : createProccessingLoader(ResourceDependecyInspector.class)) {
+                        String name = in.getType().getCanonicalName();
+                        if (name != null) {
+                            instant.put(name, in);
+                        }
+                    }
+                    inspectors = new FinalWrapper<>(instant);
                 }
+                wrapper = inspectors;
             }
         }
-        return inspectors;
+        return wrapper.value;
     }
 
     private synchronized FilerFactory getFiler() {
@@ -66,7 +95,8 @@ public class UsedResourceProcessor extends AbstractProcessor {
         return filer;
     }
 
-    @Override @SuppressWarnings("nullness")
+    @Override
+    @SuppressWarnings("nullness")
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new HashSet<>();
         for (Class a : new Class[]{Named.class, InjectResource.class, InjectBundle.class}) {
@@ -98,8 +128,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
         appendResource(path, type);
     }
 
-    private 
-    String getFileExtension(Path p) {
+    private String getFileExtension(Path p) {
         String fn = p.toFile().getName();
         String[] parts = fn.split("\\.");
         if (parts.length > 1) {
@@ -109,7 +138,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
         }
     }
 
-    private void appendResource(Path path,  String type) {
+    private void appendResource(Path path, String type) {
         ResourceTupel resourceTupel = new ResourceTupel(path, type);
         if (!resources.contains(resourceTupel)) {
             resources.add(resourceTupel);
@@ -155,7 +184,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
             if (e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.PARAMETER) {
                 String typeName = getFQN(e);
                 if (typeName.equals(ResourceHandle.class.getCanonicalName())
-                    || typeName.equals(ClasspathFileHandler.class.getCanonicalName())) {
+                        || typeName.equals(ClasspathFileHandler.class.getCanonicalName())) {
                     appendResource(e.getAnnotation(Named.class).value(), typeName);
                 }
             }
@@ -213,7 +242,7 @@ public class UsedResourceProcessor extends AbstractProcessor {
         }
         m.printMessage(Kind.NOTE, count + " proccesors finished!");
 
-        remove.removeAll(stay);        
+        remove.removeAll(stay);
         for (ResourceTupel resourceTupel : remove) {
             try {
                 getFiler().delete(resourceTupel.path.toString());
@@ -221,11 +250,11 @@ public class UsedResourceProcessor extends AbstractProcessor {
             }
             m.printMessage(Kind.NOTE, "deleted: " + resourceTupel.path.toString());
         }
-        
+
     }
 
-    private boolean isClassSupported(ResourceProcessor processor,  String className) {
-         String[] types = null;
+    private boolean isClassSupported(ResourceProcessor processor, String className) {
+        String[] types = null;
         if (processor.supportedResourceTypes() != null) {
             Class[] st = processor.supportedResourceTypes();
             types = new String[st.length];

@@ -22,9 +22,10 @@ import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.*;
 
-import com.google.common.base.*;
-import com.google.common.collect.*;
 import org.slf4j.*;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 /**
  *
@@ -39,18 +40,13 @@ public class ClasspathHelper {
     }
 
     public static List<URI> getClasspath() {
-        Function<URL, URI> func = new Function<URL, URI>() {
-            @Override
-            public URI apply(URL f) {
-                try {
-                    return f.toURI();
-                } catch (URISyntaxException ex) {
-                    throw new RuntimeException(ex);
-                }
+        return asList(getClassLoader().getURLs()).stream().map(u -> {
+            try {
+                return u.toURI();
+            }catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
             }
-        };
-
-        return Lists.transform(Arrays.asList(getClassLoader().getURLs()), func);
+        }).collect(toList());
     }
 
     /**
@@ -88,13 +84,8 @@ public class ClasspathHelper {
         return elements;
     }
 
-    public static FluentIterable<URI> getClasspathFolders() {
-        return FluentIterable.from(ClasspathHelper.getClasspath()).filter(new Predicate<URI>() {
-            @Override
-            public boolean apply(URI t) {
-                return "file".equals(t.getScheme());
-            }
-        });
+    public static java.util.stream.Stream<URI> getClasspathFolders() {
+        return getClasspath().stream().filter(u -> "file".equals(u.getScheme()));
     }
 
     private static class FileCollector extends SimpleFileVisitor<Path> {

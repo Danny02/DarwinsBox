@@ -1,5 +1,7 @@
 package darwin.util.blas
 
+import java.nio.{ByteOrder, ByteBuffer}
+
 import Angles._
 import shapeless._
 import nat._
@@ -74,7 +76,7 @@ object Matrix {
     }
   }
 
-  implicit def toFloatBuffer[N, M](m: Matrix[N, M])(implicit n: ToInt[N], m: ToInt[M]) = {
+  implicit def toFloatBuffer[N <: Nat, M <: Nat](mat: Matrix[N, M])(implicit n: ToInt[N], m: ToInt[M]) = {
     val nt = n()
     val mt = m()
 
@@ -83,10 +85,10 @@ object Matrix {
       .order(ByteOrder.nativeOrder())
       .asFloatBuffer()
 
-    val nc, mc = 0
+    var nc, mc = 0
     while (nc < nt) {
       while (mc < mt) {
-        buffer.put(m(nc, mc))
+        buffer.put(mat(nc, mc))
         mc += 1
       }
       nc += 1
