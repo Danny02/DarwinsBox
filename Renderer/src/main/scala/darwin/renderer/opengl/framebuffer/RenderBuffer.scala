@@ -16,6 +16,8 @@
  */
 package darwin.renderer.opengl.framebuffer
 
+import java.nio.IntBuffer
+
 import darwin.renderer.opengl._
 import javax.media.opengl._
 import darwin.renderer.{ GProfile, GraphicComponent, Bindable }
@@ -63,21 +65,18 @@ trait RenderBufferComponent {
 
   import context._
 
-  protected def genId() = gl.glGenRenderbuffers()
+  protected def genId() = apply(gl.glGenRenderbuffers)
 
   def retrieveRbFrom(id: Int) {
-    def property(glconst: Int) = {
-      gl.glGetRenderbufferParameteriv(GL.GL_RENDERBUFFER, _, _).apply(glconst)
-    }
+    val rb = RenderBuffer(id, 0, 0, 0)
+    rb.bind()
 
-    RenderBuffer(id, 0, 0, 0).bind
-
-    val width = property(GL.GL_RENDERBUFFER_WIDTH)
-    val height = property(GL.GL_RENDERBUFFER_HEIGHT)
-    val texformat = property(GL.GL_RENDERBUFFER_INTERNAL_FORMAT)
+    val width = rb.property(GL.GL_RENDERBUFFER_WIDTH)
+    val height = rb.property(GL.GL_RENDERBUFFER_HEIGHT)
+    val texformat = rb.property(GL.GL_RENDERBUFFER_INTERNAL_FORMAT)
 
     val samples = if (gl.isGL2GL3) {
-      property(GL2ES3.GL_RENDERBUFFER_SAMPLES)
+      rb.property(GL2ES3.GL_RENDERBUFFER_SAMPLES)
     } else {
       1
     }
@@ -113,9 +112,11 @@ trait RenderBufferComponent {
    */
   def createRB(width: Int, height: Int, texformat: Int) = RenderBuffer(genId(), width, height, texformat)
 
-  case class RenderBuffer(id: Int, width: Int, height: Int, texformat: Int, samples: Int = 1) extends SimpleGLResource {
-    def deleteFunc = gl.glDeleteRenderbuffers
-    def bindFunc = gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, _)
+  case class RenderBuffer(id: Int, width: Int, height: Int, texformat: Int, samples: Int = 1) extends SimpleGLResource with Properties{
+    def deleteFunc = update(gl.glDeleteRenderbuffers)
+    def bindFunc = gl.glBindRenderbuffer(GL.GL_RENDERBUFFER, _: Int)
+    def propertyFunc = gl.glGetRenderbufferParameteriv
+    def property(glconst: Int): Int = (propertyFunc(GL.GL_RENDERBUFFER, _:Int, _:IntBuffer)).apply(glconst)
   }
 
 }

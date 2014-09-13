@@ -16,8 +16,10 @@
  */
 package darwin.renderer.shader
 
+import java.nio._
 import javax.media.opengl._
 
+import com.jogamp.common.nio.Buffers
 import darwin.renderer._
 import darwin.renderer.opengl._
 import darwin.renderer.shader.BuildException.BuildError
@@ -113,9 +115,11 @@ trait ShaderProgrammComponent {
         if (len == 0) {
           None
         } else {
-          val errormessage: Array[Byte] = new Array[Byte](len(0))
-          gl.glGetProgramInfoLog(id, len(0), len, 0, errormessage, 0)
-          Some(new String(errormessage, 0, len(0)))
+          val errormessage = Buffers.newDirectByteBuffer(len)
+          val log = gl.glGetProgramInfoLog(id, _:Int, _:IntBuffer, errormessage)
+          val em = new Array[Byte](log())
+          errormessage.get(em)
+          Some(new String(em))
         }
       } else {
         None

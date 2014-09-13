@@ -17,7 +17,6 @@
 package darwin.renderer.geometry.packed
 
 import darwin.geometrie.unpacked._
-import darwin.renderer.shader.ShaderProgrammComponent.UniformSetter
 import darwin.renderer.shader._
 import darwin.renderer.shader.uniform._
 import com.jogamp.opengl.util.texture.Texture
@@ -48,7 +47,7 @@ trait RenderModelComponent {
   def create(rbuffer: RenderMesh, shader: Shader, mat: Material): RenderModel = new RenderModel(rbuffer, shader, mat)
 
   class RenderModel(rbuffer: RenderMesh, var shader: Shader, material: Material) extends Shaded with Cloneable {
-    private var uniforms = Seq[() => Unit]()
+    private var uniforms = Seq[Apply]()
 
     setShader(shader)
 
@@ -63,7 +62,7 @@ trait RenderModelComponent {
     def setShader(shader: Shader) {
       this.shader = shader
       if (material != null) {
-        uniforms = Seq[() => Unit]()
+        uniforms = Seq[Apply]()
         uniforms :+= createMaterial(shader, material)
       }
     }
@@ -75,7 +74,7 @@ trait RenderModelComponent {
       sampler.foreach(s =>  uniforms :+= (() => s.bindTexture(tc)))
     }
 
-    def addUniformSetter(us: () => Unit) {
+    def addUniformSetter(us: Apply) {
       uniforms :+= us
     }
 

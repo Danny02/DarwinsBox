@@ -35,6 +35,6 @@ trait DeleteFunc {
 trait Properties {
   this: GLResource =>
 
-  def propertyFunc: (Int, Int, IntBuffer) => Int
-  def property(glconst: Int) = propertyFunc(id, _, _)(glconst)
+  def propertyFunc: (Int, Int, IntBuffer) => _
+  def property(glconst: Int): Int = (propertyFunc(id, _:Int, _:IntBuffer)).apply(glconst)
 }

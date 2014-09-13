@@ -229,12 +229,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <repositories>
-        <!--        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>-->
-    </repositories>
 </project>

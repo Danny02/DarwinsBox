@@ -26,7 +26,7 @@ package object opengl {
   trait SimpleGLResource extends GLResource with DeleteFunc with Bindable with BindFunc
 
   private val buf: IntBuffer = Buffers.newDirectIntBuffer(1)
-  implicit def array2SingleFunc(f: (Int, IntBuffer) => _) = {
+  implicit def array2SingleFunc(f: (Int, IntBuffer) => _) = new {
     def apply(a: Int = 1): Int = {
       f(a, buf)
       buf.get(0)
@@ -36,6 +36,9 @@ package object opengl {
       f(1, buf)
     }
   }
+
+  def apply(f: (Int, IntBuffer) => _, a: Int = 1) = f(a)
+  def update(f: (Int, IntBuffer) => _)(a: Int) = f.update(a)
 
   sealed trait GLSL
   object GL_Float extends GLSL

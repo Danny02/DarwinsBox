@@ -27,16 +27,12 @@ import darwin.renderer.{ GProfile, GraphicComponent }
 import scala.collection.JavaConversions._
 import darwin.renderer.geometry.packed.Renderable
 
-import scala.reflect.ClassTag
-
 /**
  *
  * * @author Daniel Heinrich <DannyNullZwo@gmail.com>
  */
 trait ShaderComponent {
   this: ShaderProgrammComponent with SamplerComponent with GraphicComponent with GProfile[GL2ES2] =>
-
-  import context._
 
   def createShader(sf: ShaderFile) = new Shader(sf.getAttributs, sf.getUniforms, sf.getSampler)
 
@@ -80,7 +76,7 @@ trait ShaderComponent {
       su =>
         val bz = su.getElement.getBezeichnung
         (bz ne null) && (bz startsWith "Mat_")
-    } foreach (matricen.addUniform(_))
+    } foreach matricen.addUniform
 
     val uniforms = uniformMap.mapValues(Uniform(_.getName))
 

@@ -48,9 +48,8 @@ trait VAOComponent extends StdAttributesComponent {
     vao
   }
 
-
   case class VAOAttributs(id: Int) extends SimpleGLResource {
     def bindFunc = gl.glBindVertexArray
-    def deleteFunc = (gl.glDeleteVertexArrays _).update
+    def deleteFunc = update(gl.glDeleteVertexArrays)
   }
 }
