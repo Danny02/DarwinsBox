@@ -1,3 +1,3 @@
 [submodule "JOpenCTM"]
 	path = JOpenCTM
-	url = git@github.com:Danny02/JOpenCTM.git
+	url = https://github.com/Danny02/JOpenCTM.git

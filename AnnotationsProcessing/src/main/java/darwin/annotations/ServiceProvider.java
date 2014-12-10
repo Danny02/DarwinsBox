@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 daniel
+ * Copyright (C) 2012 Daniel Heinrich <dannynullzwo@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,20 @@
  */
 package darwin.annotations;
 
-
-
-
 import java.lang.annotation.*;
+
+import static darwin.annotations.CheckModus.SAFE;
 
 /**
  *
- * @author daniel
+ * @author Daniel Heinrich <dannynullzwo@gmail.com>
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE})
-public @interface ServiceProvider
-{
-    Class value();
+public @interface ServiceProvider {
+
+  Class<?> value();
+
+  CheckModus modus() default SAFE;
 }
