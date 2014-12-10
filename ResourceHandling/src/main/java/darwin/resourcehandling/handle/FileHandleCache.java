@@ -24,6 +24,7 @@ import java.util.*;
 import darwin.resourcehandling.watchservice.WatchServiceNotifier;
 
 import com.google.common.base.*;
+import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import javax.inject.*;
 
