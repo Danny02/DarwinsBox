@@ -64,7 +64,7 @@ public class ModelLoader implements ResourceFromHandle<Model[]> {
         try {
             Model[] create = create(changed);
             if (create.length == old.length) {
-                System.arraycopy(create, 0, create, 0, create.length);
+                System.arraycopy(create, 0, old, 0, create.length);
             }else
             {
                 logger.warn("Couldn't update model, because the submodel count differed!");
