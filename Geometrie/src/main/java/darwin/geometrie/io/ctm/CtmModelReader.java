@@ -108,8 +108,8 @@ public class CtmModelReader implements ModelReader {
         }
 
         Element[] attEle = new Element[mesh.getAttrCount()];
-        for (int i = 0; i < mesh.attributs.length; ++i) {
-            attEle[i] = new Element(FLOAT4, mesh.attributs[i].name);
+        for (int i = 0; i < mesh.getAttrCount(); ++i) {
+            attEle[i] = new Element(FLOAT4, mesh.attributes[i].name);
             elements.add(attEle[i]);
         }
 
@@ -139,8 +139,8 @@ public class CtmModelReader implements ModelReader {
             }
         }
 
-        for (int i = 0; i < mesh.attributs.length; ++i) {
-            fillElement(vb, attEle[i], mesh.attributs[i].values);
+        for (int i = 0; i < mesh.getAttrCount(); ++i) {
+            fillElement(vb, attEle[i], mesh.attributes[i].values);
         }
 
         Mesh m = new Mesh(mesh.indices, vb, GL.GL_TRIANGLES);

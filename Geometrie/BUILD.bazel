@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "main_dependencies",
+    exports = [
+        "//JOpenCTM:main_dependencies",
+        "//ResourceHandling:main_dependencies",
+        "//Util:main_dependencies",
+        "@com_fasterxml_jackson_core_jackson_core",
+        "@com_fasterxml_jackson_core_jackson_databind",
+        "@org_jogamp_gluegen_gluegen_rt_main",
+        "@org_jogamp_jogl_jogl_all_main"
+    ],
+    runtime_deps = [
+        "//Geometrie/src/main/resources:resources"
+    ],
+)
+     
+
+
+java_library(
+    name = "tests_dependencies",
+    testonly = 1,
+    exports = [
+        "main_dependencies"
+    ],
+)
+     
+
+filegroup(
+    name = "coordinates",
+    srcs = ["MANIFEST.MF"],
+)
