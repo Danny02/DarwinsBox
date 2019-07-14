@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-ArtifactId: AnnotationsProcessing
+Implementation-Version: fixed.version-SNAPSHOT
+Implementation-Vendor-Id: com.github.danny02.darwin
+
